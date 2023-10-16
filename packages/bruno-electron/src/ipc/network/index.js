@@ -296,6 +296,14 @@ const registerNetworkIpc = (mainWindow) => {
       /** @type {import('axios').AxiosResponse} */
       const response = await axiosInstance(request);
 
+      const dataBuffer = Buffer.from(response.data);
+      // Overwrite the original data for backwards compatability
+      response.data = dataBuffer.toString('utf-8');
+      // Try to parse response to JSON, this can quitly fail
+      try {
+        response.data = JSON.parse(response.data);
+      } catch {}
+
       // run post-response vars
       const postResponseVars = get(request, 'vars.res', []);
       if (postResponseVars && postResponseVars.length) {
@@ -413,6 +421,7 @@ const registerNetworkIpc = (mainWindow) => {
         statusText: response.statusText,
         headers: response.headers,
         data: response.data,
+        dataBuffer: dataBuffer.toString('base64'),
         duration: requestDuration
       };
     } catch (error) {
