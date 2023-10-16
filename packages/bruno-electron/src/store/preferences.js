@@ -3,7 +3,8 @@ const Store = require('electron-store');
 
 const defaultPreferences = {
   request: {
-    sslVerification: true
+    sslVerification: true,
+    timeout: 0
   },
   font: {
     codeFont: 'default'
@@ -12,7 +13,8 @@ const defaultPreferences = {
 
 const preferencesSchema = Yup.object().shape({
   request: Yup.object().shape({
-    sslVerification: Yup.boolean()
+    sslVerification: Yup.boolean(),
+    timeout: Yup.number()
   }),
   font: Yup.object().shape({
     codeFont: Yup.string().nullable()
@@ -29,7 +31,7 @@ class PreferencesStore {
 
   getPreferences() {
     return {
-      defaultPreferences,
+      ...defaultPreferences,
       ...this.store.get('preferences')
     };
   }

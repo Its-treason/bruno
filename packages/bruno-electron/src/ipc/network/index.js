@@ -1,4 +1,5 @@
 const os = require('os');
+const fs = require('fs');
 const qs = require('qs');
 const https = require('https');
 const axios = require('axios');
@@ -154,6 +155,10 @@ const registerNetworkIpc = (mainWindow) => {
         }
       }
 
+      const preferences = getPreferences();
+      const timeout = get(preferences, 'request.timeout', 0);
+      request.timeout = timeout;
+
       // run pre-request script
       const requestScript = compact([get(collectionRoot, 'request.script.req'), get(request, 'script.req')]).join(
         os.EOL
@@ -204,36 +209,46 @@ const registerNetworkIpc = (mainWindow) => {
         cancelTokenUid
       });
 
-      const preferences = getPreferences();
       const sslVerification = get(preferences, 'request.sslVerification', true);
       const httpsAgentRequestFields = {};
       if (!sslVerification) {
         httpsAgentRequestFields['rejectUnauthorized'] = false;
-      } else {
-        const cacertArray = [preferences['cacert'], process.env.SSL_CERT_FILE, process.env.NODE_EXTRA_CA_CERTS];
-        cacertFile = cacertArray.find((el) => el);
-        if (cacertFile && cacertFile.length > 1) {
-          try {
-            const fs = require('fs');
-            caCrt = fs.readFileSync(cacertFile);
-            httpsAgentRequestFields['ca'] = caCrt;
-          } catch (err) {
-            console.log('Error reading CA cert file:' + cacertFile, err);
+      }
+
+      const brunoConfig = getBrunoConfig(collectionUid);
+      const interpolationOptions = {
+        envVars,
+        collectionVariables,
+        processEnvVars
+      };
+
+      // client certificate config
+      const clientCertConfig = get(brunoConfig, 'clientCertificates.certs', []);
+
+      for (clientCert of clientCertConfig) {
+        const domain = interpolateString(clientCert.domain, interpolationOptions);
+        const certFilePath = interpolateString(clientCert.certFilePath, interpolationOptions);
+        const keyFilePath = interpolateString(clientCert.keyFilePath, interpolationOptions);
+        if (domain && certFilePath && keyFilePath) {
+          const hostRegex = '^https:\\/\\/' + domain.replaceAll('.', '\\.').replaceAll('*', '.*');
+
+          if (request.url.match(hostRegex)) {
+            try {
+              httpsAgentRequestFields['cert'] = fs.readFileSync(certFilePath);
+              httpsAgentRequestFields['key'] = fs.readFileSync(keyFilePath);
+            } catch (err) {
+              console.log('Error reading cert/key file', err);
+            }
+            httpsAgentRequestFields['passphrase'] = interpolateString(clientCert.passphrase, interpolationOptions);
+            break;
           }
         }
       }
 
       // proxy configuration
-      const brunoConfig = getBrunoConfig(collectionUid);
       const proxyEnabled = get(brunoConfig, 'proxy.enabled', false);
       if (proxyEnabled) {
         let proxyUri;
-
-        const interpolationOptions = {
-          envVars,
-          collectionVariables,
-          processEnvVars
-        };
 
         const proxyProtocol = interpolateString(get(brunoConfig, 'proxy.protocol'), interpolationOptions);
         const proxyHostname = interpolateString(get(brunoConfig, 'proxy.hostname'), interpolationOptions);
@@ -505,6 +520,8 @@ const registerNetworkIpc = (mainWindow) => {
       const preparedRequest = prepareGqlIntrospectionRequest(endpoint, envVars, request, collectionRoot);
 
       const preferences = getPreferences();
+      const timeout = get(preferences, 'request.timeout', 0);
+      request.timeout = timeout;
       const sslVerification = get(preferences, 'request.sslVerification', true);
 
       if (!sslVerification) {
@@ -641,6 +658,11 @@ const registerNetworkIpc = (mainWindow) => {
               }
             }
 
+            const preferences = getPreferences();
+            const timeout = get(preferences, 'request.timeout', 0);
+            request.timeout = timeout;
+            const sslVerification = get(preferences, 'request.sslVerification', true);
+
             // run pre-request script
             const requestScript = compact([get(collectionRoot, 'request.script.req'), get(request, 'script.req')]).join(
               os.EOL
@@ -681,9 +703,6 @@ const registerNetworkIpc = (mainWindow) => {
               },
               ...eventData
             });
-
-            const preferences = getPreferences();
-            const sslVerification = get(preferences, 'request.sslVerification', true);
 
             // proxy configuration
             const brunoConfig = getBrunoConfig(collectionUid);
