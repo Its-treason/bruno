@@ -64,7 +64,9 @@ jobs:
           npm run build:bruno-common
 
       - name: Build electron
-        run: npm run build:electron -- win
+        run: |
+          npm run build:electron -- win
+          ls ./packages/bruno-electron/out/
 
       - uses: actions/upload-artifact@v3
         with:
@@ -94,9 +96,10 @@ jobs:
           npm run build:bruno-common
 
       - name: Build AppImage
-        run: npm run build:electron -- linux
-      - name: Build deb
-        run: npm run build:electron -- deb
+        run: |
+          npm run build:electron -- linux
+          npm run build:electron -- deb
+          ls ./packages/bruno-electron/out/
 
       - uses: actions/upload-artifact@v3
         with:
