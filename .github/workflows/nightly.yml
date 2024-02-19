@@ -1,0 +1,123 @@
+name: Release
+
+on:
+  schedule:
+    - cron: 0 0 * * *
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name for release'
+        required: false
+        default: nightly
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+*']
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+jobs:
+  tagname:
+    runs-on: ubuntu-latest
+    outputs:
+      tag_name: ${{ steps.tag.outputs.tag }}
+    steps:
+      - if: github.event_name == 'workflow_dispatch'
+        run: echo "TAG_NAME=${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
+
+      - if: github.event_name == 'schedule'
+        run: echo 'TAG_NAME=nightly' >> $GITHUB_ENV
+
+      - if: github.event_name == 'push'
+        run: |
+          TAG_NAME=${{ github.ref }}
+          echo "TAG_NAME=${TAG_NAME#refs/tags/}" >> $GITHUB_ENV
+
+      - if: github.event_name == 'pull_request'
+        run: echo 'TAG_NAME=debug' >> $GITHUB_ENV
+
+      - id: vars
+        shell: bash
+        run: echo "sha_short=${GITHUB_SHA::7}" >> $GITHUB_OUTPUT
+
+      - if: env.TAG_NAME == 'nightly'
+        run: echo 'TAG_NAME=nightly-${{ steps.vars.outputs.sha_short }}' >> $GITHUB_ENV
+
+      - id: tag
+        run: echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+
+  linux:
+    runs-on: ubuntu-latest
+    container: ubuntu:22.04
+    needs: tagname
+    env:
+      RELEASE_TAG_NAME: ${{ needs.tagname.outputs.tag_name }}
+      DEBIAN_FRONTEND: noninteractive
+
+    steps:
+      - uses: actions/checkout@v3
+      - name: Install dependencies
+        run: |
+          apt-get -y update
+          apt-get -y install nodejs npm
+
+      - name: Fetch dependencies
+        run: npm i
+
+      - name: Build win
+        run: npm run build:electron -- win
+      - name: Build AppImage
+        run: npm run build:electron -- linux
+      - name: Build deb
+        run: npm run build:electron -- deb
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build
+          path: |
+            ./packages/bruno-electron/out/bruno-lazer_nighly*
+          retention-days: 1
+
+  publish:
+    if: github.event_name != 'pull_request'
+    needs: [linux, linux-musl, windows, macos]
+    runs-on: ubuntu-latest
+    env:
+      GH_REPO: ${{ github.repository }}
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    permissions:
+      contents: write
+    steps:
+      # Must perform checkout first, since it deletes the target directory
+      # before running, and would therefore delete the downloaded artifacts
+      - uses: actions/checkout@v3
+
+      - uses: actions/download-artifact@v3
+
+      - if: github.event_name == 'workflow_dispatch'
+        run: echo "TAG_NAME=${{ github.event.inputs.tag_name }}" >> $GITHUB_ENV
+
+      - if: github.event_name == 'schedule'
+        run: echo 'TAG_NAME=nightly' >> $GITHUB_ENV
+
+      - if: github.event_name == 'push'
+        run: |
+          TAG_NAME=${{ github.ref }}
+          echo "TAG_NAME=${TAG_NAME#refs/tags/}" >> $GITHUB_ENV
+
+      - if: env.TAG_NAME == 'nightly'
+        run: |
+          (echo 'SUBJECT=Lapce development build';
+           echo 'PRERELEASE=--prerelease') >> $GITHUB_ENV
+          gh release delete nightly --yes || true
+          git push origin :nightly || true
+
+      - if: env.TAG_NAME != 'nightly'
+        run: |
+          (echo 'SUBJECT=Lapce release build';
+           echo 'PRERELEASE=') >> $GITHUB_ENV
+
+      - name: Publish release
+        env:
+          DEBUG: api
+        run: |
+          gh release create $TAG_NAME $PRERELEASE --title "$TAG_NAME" --target $GITHUB_SHA lapce-macos/* lapce-linux/* lapce-proxy-linux-*/* lapce-windows/*
