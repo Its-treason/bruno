@@ -47,7 +47,7 @@ jobs:
 
   linux:
     runs-on: ubuntu-latest
-    container: node:22.11
+    container: node:20.11
     needs: tagname
     env:
       RELEASE_TAG_NAME: ${{ needs.tagname.outputs.tag_name }}
