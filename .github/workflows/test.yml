@@ -47,7 +47,7 @@ jobs:
 
   linux:
     runs-on: ubuntu-latest
-    container: ubuntu:22.04
+    container: node:22.11
     needs: tagname
     env:
       RELEASE_TAG_NAME: ${{ needs.tagname.outputs.tag_name }}
@@ -55,10 +55,6 @@ jobs:
 
     steps:
       - uses: actions/checkout@v3
-      - name: Install dependencies
-        run: |
-          apt-get -y update
-          apt-get -y install nodejs npm
 
       - name: Fetch dependencies
         run: npm i
