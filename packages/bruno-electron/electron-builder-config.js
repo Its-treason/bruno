@@ -38,7 +38,8 @@ const config = {
     target: 'msi',
     artifactName: 'bruno-lazer_nightly_${arch}_win.${ext}',
     icon: 'resources/icons/png'
-  }
+  },
+  publish: []
 };
 
 module.exports = config;

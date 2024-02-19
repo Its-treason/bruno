@@ -45,6 +45,34 @@ jobs:
       - id: tag
         run: echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
 
+  windows:
+    runs-on: windows-latest
+    needs: tagname
+    env:
+      RELEASE_TAG_NAME: ${{ needs.tagname.outputs.tag_name }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Fetch dependencies
+        run: npm i
+
+      - name: Build packages
+        run: |
+          npm run build:graphql-docs
+          npm run build:bruno-query
+          npm run build:bruno-common
+
+      - name: Build electron
+        run: npm run build:electron -- win
+
+      - uses: actions/upload-artifact@v3
+        with:
+          name: build-windows
+          path: |
+            ./packages/bruno-electron/out/bruno-lazer_nighly*
+          retention-days: 1
+
   linux:
     runs-on: ubuntu-latest
     container: node:20.11
@@ -65,8 +93,6 @@ jobs:
           npm run build:bruno-query
           npm run build:bruno-common
 
-      - name: Build win
-        run: npm run build:electron -- win
       - name: Build AppImage
         run: npm run build:electron -- linux
       - name: Build deb
@@ -74,14 +100,14 @@ jobs:
 
       - uses: actions/upload-artifact@v3
         with:
-          name: build
+          name: build-linux
           path: |
             ./packages/bruno-electron/out/bruno-lazer_nighly*
           retention-days: 1
 
   publish:
     if: github.event_name != 'pull_request'
-    needs: linux
+    needs: [linux, windows]
     runs-on: ubuntu-latest
     env:
       GH_REPO: ${{ github.repository }}
@@ -122,4 +148,4 @@ jobs:
         env:
           DEBUG: api
         run: |
-          gh release create $TAG_NAME $PRERELEASE --title "$TAG_NAME" --target $GITHUB_SHA build/*
+          gh release create $TAG_NAME $PRERELEASE --title "$TAG_NAME" --target $GITHUB_SHA build-linux/* build-windows/*
