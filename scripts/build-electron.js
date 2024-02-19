@@ -95,7 +95,6 @@ async function main(args) {
   }
 
   log('Clean up old build artifacts');
-  await deleteFileIfExists('packages/bruno-electron/out');
   await deleteFileIfExists('packages/bruno-electron/web');
   await deleteFileIfExists('packages/bruno-app/out');
 
