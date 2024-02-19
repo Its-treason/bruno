@@ -79,7 +79,7 @@ jobs:
 
   publish:
     if: github.event_name != 'pull_request'
-    needs: [linux, linux-musl, windows, macos]
+    needs: linux
     runs-on: ubuntu-latest
     env:
       GH_REPO: ${{ github.repository }}
