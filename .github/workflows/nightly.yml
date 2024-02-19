@@ -72,7 +72,7 @@ jobs:
         with:
           name: build-windows
           path: |
-            ./packages/bruno-electron/out/bruno-lazer_nighly*
+            ./packages/bruno-electron/out/bruno-lazer_nightly_x64_win.msi
           retention-days: 1
 
   linux:
@@ -105,7 +105,8 @@ jobs:
         with:
           name: build-linux
           path: |
-            ./packages/bruno-electron/out/bruno-lazer_nighly*
+            ./packages/bruno-electron/out/bruno-lazer_nightly_amd64_linux.deb
+            ./packages/bruno-electron/out/bruno-lazer_nightly_amd64_linux.AppImage
           retention-days: 1
 
   publish:
