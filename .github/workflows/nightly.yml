@@ -106,7 +106,7 @@ jobs:
           name: build-linux
           path: |
             ./packages/bruno-electron/out/bruno-lazer_nightly_amd64_linux.deb
-            ./packages/bruno-electron/out/bruno-lazer_nightly_amd64_linux.AppImage
+            ./packages/bruno-electron/out/bruno-lazer_nightly_x86_64_linux.AppImage
           retention-days: 1
 
   publish:
