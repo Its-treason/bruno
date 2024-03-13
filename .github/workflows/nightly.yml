@@ -91,7 +91,7 @@ jobs:
           pnpm run make
           ls ./packages/bruno-electron/out/
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: build-linux
           path: |
@@ -128,14 +128,14 @@ jobs:
 
       - if: env.TAG_NAME == 'nightly'
         run: |
-          (echo 'SUBJECT=Lapce development build';
+          (echo 'SUBJECT=Bruno development build';
            echo 'PRERELEASE=--prerelease') >> $GITHUB_ENV
           gh release delete nightly --yes || true
           git push origin :nightly || true
 
       - if: env.TAG_NAME != 'nightly'
         run: |
-          (echo 'SUBJECT=Lapce release build';
+          (echo 'SUBJECT=Bruno release build';
            echo 'PRERELEASE=') >> $GITHUB_ENV
 
       - name: Publish release
