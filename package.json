@@ -19,7 +19,7 @@
     "dev": "pnpm run --parallel --recursive --if-present dev",
     "prettier:web": "pnpm run --filter @usebruno/app prettier",
     "electron": "pnpm run --filter bruno-lazer electron",
-    "build": "pnpm run --parallel --recursive --if-present build",
+    "build": "pnpm run --filter @usebruno/query build && pnpm run --parallel --recursive --if-present build",
     "make": "node ./scripts/make.js",
     "test:e2e": "npx playwright test",
     "test:report": "npx playwright show-report",

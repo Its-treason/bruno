@@ -103,7 +103,7 @@ async function main(args) {
   await execCommandWithOutput('pnpm', ['run', 'clean']);
 
   log('Building packages');
-  await execCommandWithOutput('npm', ['run', 'build']);
+  await execCommandWithOutput('pnpm', ['run', 'build']);
   // Copy the output of bruno-app into electron
   await fs.ensureDir('packages/bruno-electron/web');
   await copyFolderIfExists('packages/bruno-app/out', 'packages/bruno-electron/web');
