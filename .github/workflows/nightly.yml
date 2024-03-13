@@ -127,7 +127,7 @@ jobs:
 
   publish:
     if: github.event_name != 'pull_request'
-    needs: [linux, windows]
+    needs: [linux, windows, macos]
     runs-on: ubuntu-latest
     env:
       GH_REPO: ${{ github.repository }}
