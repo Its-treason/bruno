@@ -71,6 +71,32 @@ jobs:
           retention-days: 1
           if-no-files-found: error
 
+  macos:
+    runs-on: macos-latest
+    needs: tagname
+    env:
+      RELEASE_TAG_NAME: ${{ needs.tagname.outputs.tag_name }}
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Fetch dependencies
+        run: |
+          npm i -g pnpm
+          pnpm i
+      - name: Make
+        run: |
+          pnpm run make
+          ls ./packages/bruno-electron/out/
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: build-macos
+          path: |
+            ./packages/bruno-electron/out/bruno-*
+          retention-days: 1
+          if-no-files-found: error
+
   linux:
     runs-on: ubuntu-latest
     container: node:20.11
@@ -142,4 +168,4 @@ jobs:
         env:
           DEBUG: api
         run: |
-          gh release create $TAG_NAME $PRERELEASE --title "$TAG_NAME" --target $GITHUB_SHA build-linux/* build-windows/*
+          gh release create $TAG_NAME $PRERELEASE --title "$TAG_NAME" --target $GITHUB_SHA build-linux/* build-windows/* build-macos/*
