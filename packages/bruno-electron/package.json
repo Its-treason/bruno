@@ -4,22 +4,17 @@
   "homepage": "https://www.usebruno.com",
   "private": true,
   "version": "1.10.0",
-  "main": ".vite/*",
+  "main": ".vite/build/index.js",
   "author": "Anoop M D <anoop.md1421@gmail.com> (https://helloanoop.com/)",
   "scripts": {
-    "clean": "rimraf dist",
-    "dev": "electron .",
-    "dist:mac": "electron-builder --mac --config electron-builder-config.js",
-    "dist:win": "electron-builder --win --config electron-builder-config.js",
-    "dist:linux": "electron-builder --linux AppImage --config electron-builder-config.js",
-    "dist:deb": "electron-builder --linux deb --config electron-builder-config.js",
-    "dist:rpm": "electron-builder --linux rpm --config electron-builder-config.js",
-    "dist:snap": "electron-builder --linux snap --config electron-builder-config.js",
-    "pack": "electron-builder --dir",
-    "test": "jest",
-    "start": "electron-forge start",
-    "package": "electron-forge package",
-    "make": "electron-forge make"
+    "build": "vite build -c vite.main.config.ts && vite build -c vite.preload.config.ts",
+    "predev": "pnpm run build",
+    "dev": "vite build -c vite.main.config.ts --watch",
+    "preelectron": "pnpm run build",
+    "electron": "electron .",
+    "dist": "electron-builder --config electron-builder-config.js",
+    "clean": "rimraf out web .vite",
+    "test": "jest"
   },
   "dependencies": {
     "@aws-sdk/credential-providers": "^3.425.0",
@@ -36,7 +31,6 @@
     "decomment": "^0.9.5",
     "dotenv": "^16.0.3",
     "electron-notarize": "^1.2.2",
-    "electron-squirrel-startup": "^1.0.0",
     "electron-store": "^8.1.0",
     "electron-util": "^0.17.2",
     "form-data": "^4.0.0",
@@ -61,22 +55,15 @@
     "dmg-license": "^1.0.11"
   },
   "devDependencies": {
-    "@electron-forge/cli": "^7.3.0",
-    "@electron-forge/maker-deb": "^7.3.0",
-    "@electron-forge/maker-rpm": "^7.3.0",
-    "@electron-forge/maker-squirrel": "^7.3.0",
-    "@electron-forge/maker-zip": "^7.3.0",
-    "@electron-forge/plugin-auto-unpack-natives": "^7.3.0",
-    "@electron-forge/plugin-fuses": "^7.3.0",
-    "@electron-forge/plugin-vite": "^7.3.0",
-    "@electron-forge/shared-types": "^7.3.0",
-    "@electron/fuses": "^1.7.0",
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
+    "rimraf": "^5.0.5",
     "typescript": "^5.4.2",
     "ts-node": "^10.0.0",
     "electron": "29.1.0",
+    "electron-builder": "23.0.2",
     "electron-icon-maker": "^0.0.5",
-    "vite": "^5.1.5"
+    "vite": "^5.1.5",
+    "vite-plugin-commonjs": "^0.10.1"
   }
 }

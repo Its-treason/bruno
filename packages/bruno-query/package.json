@@ -13,9 +13,11 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
+    "clean": "rimraf dist",
     "test": "jest"
   },
   "devDependencies": {
+    "rimraf": "^5.0.5",
     "typescript": "^5.4.2",
     "vite": "^5.1.5",
     "vite-plugin-dts": "^3.7.3"

@@ -1,16 +1,19 @@
-import type { ConfigEnv, UserConfig } from 'vite';
+import type { UserConfig } from 'vite';
 import { defineConfig, mergeConfig } from 'vite';
-import { external, getBuildConfig, getBuildDefine, pluginHotRestart } from './vite.base.config';
+import { external, getBuildConfig } from './vite.base.config';
+import { resolve } from 'path';
+import commonjs from 'vite-plugin-commonjs';
+import { cpSync, mkdirSync } from 'node:fs';
 
-// https://vitejs.dev/config
 export default defineConfig((env) => {
-  const forgeEnv = env as ConfigEnv<'build'>;
-  const { forgeConfigSelf } = forgeEnv;
-  const define = getBuildDefine(forgeEnv);
+  // Copy the about files
+  mkdirSync(resolve(__dirname, '.vite/build/about'), { recursive: true });
+  cpSync(resolve(__dirname, 'src/about/'), resolve(__dirname, '.vite/build/about/'), { recursive: true });
+
   const config: UserConfig = {
     build: {
       lib: {
-        entry: forgeConfigSelf.entry!,
+        entry: resolve(__dirname, 'src/index.js'),
         fileName: () => '[name].js',
         formats: ['cjs']
       },
@@ -18,13 +21,12 @@ export default defineConfig((env) => {
         external
       }
     },
-    plugins: [pluginHotRestart('restart')],
-    define,
     resolve: {
       // Load the Node.js entry.
       mainFields: ['module', 'jsnext:main', 'jsnext']
-    }
+    },
+    plugins: [commonjs()]
   };
 
-  return mergeConfig(getBuildConfig(forgeEnv), config);
+  return mergeConfig(getBuildConfig(env), config);
 });

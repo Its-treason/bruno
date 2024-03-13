@@ -6,10 +6,11 @@ import commonjs from 'vite-plugin-commonjs';
 export default defineConfig({
   plugins: [commonjs(), dts()],
   build: {
+    minify: false,
     sourcemap: true,
     lib: {
       entry: resolve(__dirname, 'src/index.js'),
-      formats: ['cjs', 'es'],
+      name: '@usebruno/schema',
       fileName: 'index'
     }
   },

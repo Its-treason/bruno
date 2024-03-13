@@ -13,6 +13,7 @@
   "scripts": {
     "build": "vite build",
     "dev": "vite build --watch",
+    "clean": "rimraf dist",
     "test": "jest --testPathIgnorePatterns test.js"
   },
   "dependencies": {
@@ -36,6 +37,7 @@
   },
   "devDependencies": {
     "@types/node": "^20.11.25",
+    "rimraf": "^5.0.5",
     "typescript": "^5.4.2",
     "vite": "^5.1.5",
     "vite-plugin-commonjs": "^0.10.1",
