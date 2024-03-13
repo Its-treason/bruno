@@ -32,6 +32,7 @@ const menu = Menu.buildFromTemplate(menuTemplate);
 
 let mainWindow;
 let watcher;
+let launchFailed = false;
 
 // Prepare the renderer once the app is ready
 app.on('ready', async () => {
@@ -71,6 +72,8 @@ app.on('ready', async () => {
         'If you are using an official production build: the above error is most likely a bug! ' +
           ' Please report this under: https://github.com/usebruno/bruno/issues'
       );
+      mainWindow.loadURL(`data:text/html;charset=utf,Failed to load: ${reason}`);
+      launchFailed = true;
     });
   } else {
     mainWindow.loadURL('http://localhost:3000').catch((reason) => {
@@ -82,6 +85,8 @@ app.on('ready', async () => {
         'Could not connect to Next.Js dev server, is it running?' +
           ' Start the dev server using "npm run dev:web" and restart electron'
       );
+      mainWindow.loadURL(`data:text/html;charset=utf,Failed to load: ${reason}`);
+      launchFailed = true;
     });
   }
 
@@ -99,6 +104,9 @@ app.on('ready', async () => {
   mainWindow.on('maximize', () => saveMaximized(true));
   mainWindow.on('unmaximize', () => saveMaximized(false));
   mainWindow.on('close', (e) => {
+    if (launchFailed) {
+      return;
+    }
     e.preventDefault();
     ipcMain.emit('main:start-quit-flow');
   });
