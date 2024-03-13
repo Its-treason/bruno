@@ -102,7 +102,7 @@ async function main(args) {
   log('Clean up old build artifacts');
   await execCommandWithOutput('pnpm', ['run', 'clean']);
 
-  log('Building web');
+  log('Building packages');
   await execCommandWithOutput('npm', ['run', 'build']);
   // Copy the output of bruno-app into electron
   await fs.ensureDir('packages/bruno-electron/web');
@@ -120,15 +120,9 @@ async function main(args) {
 
   // Run npm dist command
   log(`Building the Electron app for: ${os}/${arch}`);
-  await execCommandWithOutput('npm', [
-    'run',
-    '--workspace=packages/bruno-electron',
-    'dist',
-    '--',
-    `--${arch}`,
-    `--${os}`
-  ]);
+  await execCommandWithOutput('pnpm', ['run', '--filter', 'bruno-lazer', 'dist', '--', `--${arch}`, `--${os}`]);
   log('Build complete');
+
   return 0;
 }
 

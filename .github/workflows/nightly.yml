@@ -55,25 +55,19 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Fetch dependencies
-        run: npm i
-
-      - name: Build packages
+        run: pnpm i
+      - name: Make
         run: |
-          npm run build:graphql-docs
-          npm run build:bruno-query
-          npm run build:bruno-common
-
-      - name: Build electron
-        run: |
-          npm run build:electron -- win
+          pnpm run make
           ls ./packages/bruno-electron/out/
 
-      - uses: actions/upload-artifact@v3
+      - uses: actions/upload-artifact@v4
         with:
           name: build-windows
           path: |
-            ./packages/bruno-electron/out/bruno-lazer_nightly_x64_win.msi
+            ./packages/bruno-electron/out/bruno-*
           retention-days: 1
+          if-no-files-found: error
 
   linux:
     runs-on: ubuntu-latest
@@ -87,27 +81,19 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Fetch dependencies
-        run: npm i
-
-      - name: Build packages
+        run: pnpm i
+      - name: Make
         run: |
-          npm run build:graphql-docs
-          npm run build:bruno-query
-          npm run build:bruno-common
-
-      - name: Build AppImage
-        run: |
-          npm run build:electron -- linux
-          npm run build:electron -- deb
+          pnpm run make
           ls ./packages/bruno-electron/out/
 
       - uses: actions/upload-artifact@v3
         with:
           name: build-linux
           path: |
-            ./packages/bruno-electron/out/bruno-lazer_nightly_amd64_linux.deb
-            ./packages/bruno-electron/out/bruno-lazer_nightly_x86_64_linux.AppImage
+            ./packages/bruno-electron/out/bruno-*
           retention-days: 1
+          if-no-files-found: error
 
   publish:
     if: github.event_name != 'pull_request'
