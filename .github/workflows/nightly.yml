@@ -55,7 +55,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Fetch dependencies
-        run: pnpm i
+        run: |
+          npm i -g pnpm
+          pnpm i
       - name: Make
         run: |
           pnpm run make
@@ -81,7 +83,9 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Fetch dependencies
-        run: pnpm i
+        run: |
+          npm i -g pnpm
+          pnpm i
       - name: Make
         run: |
           pnpm run make
