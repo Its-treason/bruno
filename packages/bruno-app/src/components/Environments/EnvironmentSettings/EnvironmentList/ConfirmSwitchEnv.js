@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconAlertTriangle } from '@tabler/icons';
+import { IconAlertTriangle } from '@tabler/icons-react';
 import Modal from 'components/Modal';
 import { createPortal } from 'react-dom';
 

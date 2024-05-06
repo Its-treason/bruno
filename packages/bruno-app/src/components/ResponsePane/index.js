@@ -16,6 +16,8 @@ import TestResultsLabel from './TestResultsLabel';
 import StyledWrapper from './StyledWrapper';
 import ResponseSave from 'src/components/ResponsePane/ResponseSave';
 import ResponseClear from 'src/components/ResponsePane/ResponseClear';
+import { TimelineNew } from 'components/ResponsePane/TimelineNew';
+import { DebugTab } from 'components/ResponsePane/Debug';
 
 const ResponsePane = ({ rightPaneWidth, item, collection }) => {
   const dispatch = useDispatch();
@@ -52,12 +54,22 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
         return <ResponseHeaders headers={response.headers} />;
       }
       case 'timeline': {
-        return <Timeline request={item.requestSent} response={item.response} />;
+        return item.response.isNew ? (
+          <TimelineNew timeline={item.response.timeline} maxWidth={rightPaneWidth} />
+        ) : (
+          <Timeline request={item.requestSent} response={item.response} />
+        );
+      }
+      case 'debug': {
+        return item.response.isNew ? (
+          <DebugTab debugInfo={item.response.debug} timings={item.response.timings} maxWidth={rightPaneWidth} />
+        ) : (
+          'Only with new Request method'
+        );
       }
       case 'tests': {
         return <TestResults results={item.testResults} assertionResults={item.assertionResults} />;
       }
-
       default: {
         return <div>404 | Not found</div>;
       }
@@ -110,6 +122,9 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
         </div>
         <div className={getTabClassname('tests')} role="tab" onClick={() => selectTab('tests')}>
           <TestResultsLabel results={item.testResults} assertionResults={item.assertionResults} />
+        </div>
+        <div className={getTabClassname('debug')} role="tab" onClick={() => selectTab('debug')}>
+          Debug
         </div>
         {!isLoading ? (
           <div className="flex flex-grow justify-end items-center">

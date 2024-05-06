@@ -11,7 +11,7 @@
     "predev": "pnpm run build",
     "dev": "vite build -c vite.main.config.ts --watch",
     "preelectron": "pnpm run build",
-    "electron": "electron .",
+    "electron": "electron --inspect .",
     "dist": "electron-builder --config electron-builder-config.js",
     "clean": "rimraf out web .vite",
     "test": "jest"
@@ -19,6 +19,7 @@
   "dependencies": {
     "@aws-sdk/credential-providers": "3.525.0",
     "@usebruno/common": "workspace:*",
+    "@usebruno/core": "workspace:*",
     "@usebruno/js": "workspace:*",
     "@usebruno/lang": "workspace:*",
     "@usebruno/schema": "workspace:*",
