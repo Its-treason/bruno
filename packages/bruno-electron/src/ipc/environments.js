@@ -3,20 +3,11 @@ const { getLastSelectedEnvironment, updateLastSelectedEnvironment } = require('.
 
 const registerEnvironmentsIpc = (_mainWindow, _watcher) => {
   ipcMain.handle('renderer:get-last-selected-environment', async (_event, collectionUid) => {
-    try {
-      const environmentName = getLastSelectedEnvironment(collectionUid);
-      return environmentName;
-    } catch (error) {
-      return Promise.reject(error);
-    }
+    return getLastSelectedEnvironment(collectionUid);
   });
 
   ipcMain.handle('renderer:update-last-selected-environment', async (_event, collectionUid, environmentName) => {
-    try {
-      updateLastSelectedEnvironment(collectionUid, environmentName);
-    } catch (error) {
-      return Promise.reject(error);
-    }
+    updateLastSelectedEnvironment(collectionUid, environmentName);
   });
 };
 
