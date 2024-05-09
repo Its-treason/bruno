@@ -27,6 +27,22 @@ const queryClient = new QueryClient();
 const theme = createTheme({
   focusRing: 'never',
   defaultRadius: 'xs',
+  primaryColor: 'orange',
+
+  colors: {
+    orange: [
+      '#fff5e1',
+      '#ffebcd',
+      '#fbd59e',
+      '#f7be6c',
+      '#f4aa41',
+      '#f29d25',
+      '#f29714',
+      '#d88304',
+      '#c07300',
+      '#a76200'
+    ]
+  },
 
   components: {
     Timeline: Timeline.extend({
