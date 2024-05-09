@@ -35,7 +35,7 @@ export function EnvironmentSelector({ collection }) {
       <Tooltip label="Edit environments">
         <ActionIcon
           size="input-sm"
-          variant={environmentModalOpen ? 'light' : 'default'}
+          variant={environmentModalOpen ? 'filled' : 'default'}
           aria-label="Edit environments"
           onClick={onEnvironmentModalOpen}
           styles={{

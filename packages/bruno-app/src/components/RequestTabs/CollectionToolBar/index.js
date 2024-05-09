@@ -8,6 +8,7 @@ import { addTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch, useSelector } from 'react-redux';
 import StyledWrapper from './StyledWrapper';
 import { findItemInCollection } from 'utils/collections';
+import { CollectionTabButtons } from './CollectionTabButtons';
 
 const CollectionToolBar = ({ collection, activeTabUid }) => {
   const dispatch = useDispatch();
@@ -44,6 +45,7 @@ const CollectionToolBar = ({ collection, activeTabUid }) => {
     );
   };
 
+  let tabType = null;
   let tabInfo = null;
   switch (activeTab.type) {
     case 'request':
@@ -57,12 +59,15 @@ const CollectionToolBar = ({ collection, activeTabUid }) => {
       break;
     case 'collection-settings':
       tabInfo = 'Settings';
+      tabType = 'collection-settings';
       break;
     case 'variables':
       tabInfo = 'Variables';
+      tabType = 'variables';
       break;
     case 'collection-runner':
       tabInfo = 'Runner';
+      tabType = 'collection-runner';
       break;
     default:
       console.error('No tab type case for: ', activeTab.type);
@@ -89,7 +94,7 @@ const CollectionToolBar = ({ collection, activeTabUid }) => {
           ) : null}
         </div>
         <div className="flex flex-1 items-center justify-end">
-          <span className="mr-2">
+          <span className="mr-4">
             <Switch
               label={'New request method'}
               onClick={(evt) => {
@@ -98,15 +103,8 @@ const CollectionToolBar = ({ collection, activeTabUid }) => {
               checked={useNewRequest === 'true'}
             />
           </span>
-          <span className="mr-2">
-            <IconRun className="cursor-pointer" size={20} strokeWidth={1.5} onClick={handleRun} />
-          </span>
-          <span className="mr-3">
-            <IconEye className="cursor-pointer" size={18} strokeWidth={1.5} onClick={viewVariables} />
-          </span>
-          <span className="mr-3">
-            <IconSettings className="cursor-pointer" size={18} strokeWidth={1.5} onClick={viewCollectionSettings} />
-          </span>
+
+          <CollectionTabButtons activeTabType={tabType} collectionUid={collection.uid} />
 
           <EnvironmentSelector collection={collection} />
         </div>
