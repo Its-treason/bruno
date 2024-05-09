@@ -38,6 +38,10 @@ const EnvironmentVariables = ({ collection, formik }) => {
     formik.setValues(formik.values.filter((variable) => variable.uid !== id));
   };
 
+  const handleReset = () => {
+    formik.resetForm();
+  };
+
   return (
     <StyledWrapper className="w-full mt-6 mb-6">
       <div className="h-[50vh] overflow-y-auto w-full">
@@ -120,6 +124,9 @@ const EnvironmentVariables = ({ collection, formik }) => {
       <div>
         <button type="submit" className="submit btn btn-md btn-secondary mt-2" onClick={formik.handleSubmit}>
           Save
+        </button>
+        <button type="submit" className="ml-2 px-1 submit btn btn-md btn-secondary mt-2" onClick={handleReset}>
+          Reset
         </button>
       </div>
     </StyledWrapper>

@@ -16,14 +16,12 @@ const EnvironmentList = ({ selectedEnvironment, setSelectedEnvironment, collecti
   const [openManageSecretsModal, setOpenManageSecretsModal] = useState(false);
 
   const [switchEnvConfirmClose, setSwitchEnvConfirmClose] = useState(false);
-  const [originalEnvironmentVariables, setOriginalEnvironmentVariables] = useState([]);
 
   const envUids = environments ? environments.map((env) => env.uid) : [];
   const prevEnvUids = usePrevious(envUids);
 
   useEffect(() => {
     if (selectedEnvironment) {
-      setOriginalEnvironmentVariables(selectedEnvironment.variables);
       return;
     }
 
@@ -52,7 +50,7 @@ const EnvironmentList = ({ selectedEnvironment, setSelectedEnvironment, collecti
     if (!formik.dirty) {
       setSelectedEnvironment(env);
     } else {
-      setSwitchEnvConfirmClose(true);
+      setSwitchEnvConfirmClose(env);
     }
   };
 
@@ -81,12 +79,17 @@ const EnvironmentList = ({ selectedEnvironment, setSelectedEnvironment, collecti
   };
 
   const handleConfirmSwitch = (saveChanges) => {
+    // This will be the new env, if the dialog was opened from the switcher
+    if (typeof switchEnvConfirmClose === 'object') {
+      setSelectedEnvironment(switchEnvConfirmClose);
+    }
+
     if (saveChanges) {
       formik.handleSubmit();
       setSwitchEnvConfirmClose(false);
     } else {
       setSwitchEnvConfirmClose(false);
-      formik.resetForm({ originalEnvironmentVariables });
+      formik.resetForm();
     }
   };
 
@@ -114,7 +117,7 @@ const EnvironmentList = ({ selectedEnvironment, setSelectedEnvironment, collecti
                 <div
                   key={env.uid}
                   className={selectedEnvironment.uid === env.uid ? 'environment-item active' : 'environment-item'}
-                  onClick={() => handleEnvironmentClick(env)} // Use handleEnvironmentClick to handle clicks
+                  onClick={() => handleEnvironmentClick(env)}
                 >
                   <span className="break-all">{env.name}</span>
                 </div>
