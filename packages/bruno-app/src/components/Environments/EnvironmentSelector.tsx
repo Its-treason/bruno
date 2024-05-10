@@ -1,3 +1,7 @@
+/*
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
 import { ActionIcon, Group, Select, Tooltip, rem } from '@mantine/core';
 import EnvironmentSettings from './EnvironmentSettings';
 import { IconPencilCog } from '@tabler/icons-react';

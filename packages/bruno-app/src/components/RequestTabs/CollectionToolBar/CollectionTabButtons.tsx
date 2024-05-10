@@ -1,3 +1,7 @@
+/*
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
 import { ActionIcon, Tooltip, rem } from '@mantine/core';
 import { IconRun, IconSettings, IconVariable } from '@tabler/icons-react';
 import { addTab } from 'providers/ReduxStore/slices/tabs';

@@ -1,3 +1,7 @@
+/*
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
 import { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { selectEnvironment } from 'providers/ReduxStore/slices/collections/actions';

@@ -1,3 +1,7 @@
+/*
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
 import { useMemo } from 'react';
 import { Stack, Group, Text, Space, ThemeIcon, Alert, Spoiler } from '@mantine/core';
 import { IconAlertTriangle, IconInfoCircle } from '@tabler/icons-react';
