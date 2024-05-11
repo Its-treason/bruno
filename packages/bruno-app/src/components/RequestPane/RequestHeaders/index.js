@@ -118,6 +118,7 @@ const RequestHeaders = ({ item, collection }) => {
                         }
                         onRun={handleRun}
                         allowNewlines={true}
+                        allowLinebreaks={true}
                         collection={collection}
                       />
                     </td>

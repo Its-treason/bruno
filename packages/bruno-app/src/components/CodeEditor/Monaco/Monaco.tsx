@@ -1,40 +1,61 @@
-import { Editor, useMonaco } from '@monaco-editor/react';
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
+import { Editor, Monaco, useMonaco } from '@monaco-editor/react';
 import { useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
-import { addMonacoCommands, addMonacoSingleLineActions, setMonacoVariables } from 'utils/monaco/monacoUtils';
+import { BrunoEditorCallbacks, addMonacoCommands, setMonacoVariables } from 'utils/monaco/monacoUtils';
 import { getAllVariables } from 'utils/collections';
 import { useTheme } from 'providers/Theme';
+import { editor } from 'monaco-editor';
 
-const languages = {
-  text: 'text',
+const languages: Record<string, string> = {
+  text: 'plaintext',
   plaintext: 'plaintext',
   graphql: 'graphql',
-  sparql: 'graphql',
+  sparql: 'sparql',
   'graphql-query': 'graphql',
   'application/sparql-query': 'sparql',
   'application/ld+json': 'json',
-  'application/text': 'text',
+  'application/text': 'plaintext',
   'application/xml': 'xml',
   'application/javascript': 'typescript',
   javascript: 'typescript'
 };
 
-export const MonacoEditor = ({
+type MonacoProps = {
+  collection: {
+    collectionVariables: unknown;
+    activeEnvironmentUid: string | undefined;
+  };
+  fontSize: number;
+  readOnly: boolean;
+  value: string;
+  withVariables: boolean;
+  mode: string;
+  height: string | number;
+
+  onChange: (newValue: string) => void;
+  onRun: () => void;
+  onSave: () => void;
+};
+
+export const MonacoEditor: React.FC<MonacoProps> = ({
   collection,
-  font,
+  fontSize,
   mode = 'plaintext',
   onChange,
   onRun,
   onSave,
   readOnly,
   value,
-  singleLine,
   withVariables = false,
   height = '60vh'
 }) => {
   const monaco = useMonaco();
   const { displayedTheme } = useTheme();
-  const callbackRefs = useRef({});
+  const callbackRefs = useRef<BrunoEditorCallbacks>({});
 
   useEffect(() => {
     // Save the reference to the callback so the callbacks always update
@@ -47,51 +68,25 @@ export const MonacoEditor = ({
   const debounceChanges = debounce((newValue) => {
     onChange(newValue);
   }, 300);
-  const handleEditorChange = (value, event) => {
+  const handleEditorChange = (value: string | undefined) => {
     debounceChanges(value);
   };
 
-  const onMount = (editor, monaco) => {
+  const onMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
     addMonacoCommands(monaco, editor, callbackRefs.current);
-    if (singleLine) {
-      addMonacoSingleLineActions(editor);
-    }
   };
 
-  const allVariables = getAllVariables(collection);
   useEffect(() => {
-    if (allVariables && withVariables) {
+    const allVariables = getAllVariables(collection);
+    if (allVariables && withVariables && monaco) {
       setMonacoVariables(monaco, allVariables, languages[mode] ?? 'plaintext');
     }
-  }, [allVariables, withVariables, mode]);
-
-  const singleLineOptions = singleLine
-    ? {
-        folding: false,
-        renderLineHighlight: 'none',
-        lineNumbers: 'off',
-        lineDecorationsWidth: 0,
-        lineNumbersMinChars: 0,
-        glyphMargin: false,
-        links: false,
-        wordWrap: 'off',
-        overviewRulerLanes: 0,
-        overviewRulerBorder: false,
-        hideCursorInOverviewRuler: true,
-        scrollBeyondLastColumn: 0,
-        showFoldingControls: 'never',
-        selectionHighlight: false,
-        occurrencesHighlight: 'off',
-        scrollbar: { horizontal: 'hidden', vertical: 'hidden' },
-        find: { addExtraSpaceOnTop: false, autoFindInSelection: 'never', seedSearchStringFromSelection: false },
-        minimap: { enabled: false }
-      }
-    : {};
+  }, [collection.collectionVariables, collection.activeEnvironmentUid, withVariables, mode]);
 
   return (
     <Editor
       options={{
-        fontSize: font,
+        fontSize,
         readOnly: readOnly,
         wordWrap: 'off',
         wrappingIndent: 'indent',
@@ -104,13 +99,11 @@ export const MonacoEditor = ({
           vertical: 'hidden',
           horizontal: 'hidden'
         },
-        renderLineHighlight: 'none',
-        ...singleLineOptions
+        renderLineHighlight: 'none'
       }}
-      height={singleLine ? '22px' : height}
-      className={!singleLine ? 'rounded-md border border-zinc-200 dark:border-zinc-700' : undefined}
+      height={height}
+      className={'rounded-xs border border-zinc-200 dark:border-zinc-700'}
       theme={displayedTheme === 'dark' ? 'bruno-dark' : 'bruno-light'}
-      loading={singleLine ? null : undefined}
       language={languages[mode] ?? 'plaintext'}
       value={value}
       onMount={onMount}
@@ -118,5 +111,3 @@ export const MonacoEditor = ({
     />
   );
 };
-
-export default MonacoEditor;

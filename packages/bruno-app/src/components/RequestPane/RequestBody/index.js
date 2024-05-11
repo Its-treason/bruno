@@ -55,6 +55,7 @@ const RequestBody = ({ item, collection }) => {
           onRun={onRun}
           onSave={onSave}
           mode={mode[bodyMode]}
+          withVariables
         />
       </StyledWrapper>
     );

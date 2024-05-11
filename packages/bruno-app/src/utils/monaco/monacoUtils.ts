@@ -1,6 +1,15 @@
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
+import { Monaco } from '@monaco-editor/react';
+import { stringify } from 'lossless-json';
+import { IDisposable, Position, editor, IRange } from 'monaco-editor';
 import colors from 'tailwindcss/colors';
 
-const buildSuggestions = (monaco) => [
+type MonacoEditor = editor.IStandaloneCodeEditor;
+
+const buildSuggestions = (monaco: Monaco) => [
   {
     label: 'res',
     kind: monaco.languages.CompletionItemKind.Variable,
@@ -225,55 +234,13 @@ const buildSuggestions = (monaco) => [
   }
 ];
 
-export const ___getWordAtPosition = (model, position) => {
-  const wordAtPos = model.getWordUntilPosition(position);
-  let word = wordAtPos.word;
-  let startPos = wordAtPos.startColumn;
-  let endPos = wordAtPos.endColumn;
-
-  while (
-    startPos > 0 &&
-    isAllowedChar(
-      model.getValueInRange({
-        startLineNumber: position.lineNumber,
-        startColumn: startPos - 1,
-        endLineNumber: position.lineNumber,
-        endColumn: startPos
-      })
-    )
-  ) {
-    startPos--;
-  }
-
-  while (
-    endPos < model.getLineMaxColumn(position.lineNumber) &&
-    isAllowedChar(
-      model.getValueInRange({
-        startLineNumber: position.lineNumber,
-        startColumn: endPos,
-        endLineNumber: position.lineNumber,
-        endColumn: endPos + 1
-      })
-    )
-  ) {
-    endPos++;
-  }
-
-  return model.getValueInRange({
-    startLineNumber: position.lineNumber,
-    startColumn: startPos,
-    endLineNumber: position.lineNumber,
-    endColumn: endPos
-  });
-
-  function isAllowedChar(char) {
-    return /[a-zA-Z0-9._]/.test(char); // Allow letters, numbers, dots, and underscores
-  }
-};
-
 // This function will check if we hover over a variable by first going the left and then to right to find the
 // opening and closing curly brackets
-export const getWordAtPosition = (model, position) => {
+export const getWordAtPosition = (
+  model: editor.ITextModel,
+  monaco: Monaco,
+  position: Position
+): null | [string, IRange] => {
   const range = {
     startColumn: position.column,
     endColumn: position.column,
@@ -318,7 +285,7 @@ export const getWordAtPosition = (model, position) => {
   }
 
   // Check for the ending }} of a variable
-  for (let i; true; i++) {
+  for (let i = 0; true; i++) {
     // Reached left char limit, just break here
     if (i > 32) {
       return null;
@@ -336,25 +303,14 @@ export const getWordAtPosition = (model, position) => {
 
   const foundWord = model.getValueInRange(range);
   // Trim {{, }} and any other spaces, then return the variable
-  return foundWord.substring(2, foundWord.length - 2).trim();
+  return [
+    foundWord.substring(2, foundWord.length - 2).trim(),
+    new monaco.Range(range.startLineNumber, range.startColumn, range.endLineNumber, range.endColumn)
+  ];
 };
 
-export const setCustomLanguage = (monaco) => {
-  monaco.languages.register({ id: 'myCustomLanguage' });
-
-  monaco.languages.setMonarchTokensProvider('myCustomLanguage', {
-    tokenizer: {
-      root: [
-        [/{{.*?}}/, 'variable'], // Match anything inside {{}}
-        [/\w+/, 'other'] // Match other words
-      ]
-    }
-  });
-};
-
-let oldHoverProvider = null;
-
-export const setMonacoVariables = (monaco, variables, mode = '*') => {
+let hoverProvider: IDisposable | null;
+export const setMonacoVariables = (monaco: Monaco, variables: Record<string, unknown>, mode = '*') => {
   const allVariables = Object.entries(variables ?? {});
   monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
     diagnosticCodesToIgnore: [1109, 2580, 2451, 80005, 1375, 1378]
@@ -391,32 +347,51 @@ export const setMonacoVariables = (monaco, variables, mode = '*') => {
   const newHoverProvider = monaco.languages.registerHoverProvider(mode, {
     provideHover: (model, position) => {
       // Rebuild the hoverProvider to avoid memory leaks
-      const word = getWordAtPosition(model, position);
-      if (word === null) {
+      const wordPos = getWordAtPosition(model, monaco, position);
+      if (wordPos === null) {
         return null;
       }
+      const [word, range] = wordPos;
 
       const variable = allVariables.find(([key, _]) => key === word);
       if (variable) {
+        // Ensure variables value is string
+        let value = '';
+        if (typeof variable[1] === 'object') {
+          try {
+            value = stringify(variable[1], null, 2) || 'Unknown object';
+          } catch (e) {
+            value = `Failed to stringify object: ${e}`;
+          }
+        } else {
+          value = String(variable[1]);
+        }
+
+        // Truncate value
+        if (value.length > 255) {
+          value = value.substring(0, 255) + '... (Truncated)';
+        }
+
         return {
-          range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
-          contents: [{ value: `**${variable[0]}**` }, { value: variable[1].substring(0, 255) }]
+          range,
+          contents: [{ value: `**${variable[0]}**` }, { value }]
         };
       } else {
         return {
-          range: new monaco.Range(position.lineNumber, position.column, position.lineNumber, position.column),
+          range,
           contents: [{ value: `**${word}**` }, { value: 'Variable not found in environment.' }]
         };
       }
     }
   });
-  oldHoverProvider?.dispose();
-  oldHoverProvider = newHoverProvider;
+  hoverProvider?.dispose();
+  hoverProvider = newHoverProvider;
+
   const typedVariables = Object.entries(variables ?? {}).map(([key, value]) => `declare const ${key}: string`);
   monaco.languages.typescript.javascriptDefaults.setExtraLibs([{ content: typedVariables.join('\n') }]);
 };
 
-export const initMonaco = (monaco) => {
+export const initMonaco = (monaco: Monaco) => {
   monaco.editor.defineTheme('bruno-dark', {
     base: 'vs-dark',
     inherit: true,
@@ -431,7 +406,7 @@ export const initMonaco = (monaco) => {
         foreground: '#4ade80',
         fontStyle: 'medium'
       },
-      { background: colors.zinc[800] }
+      { background: colors.zinc[800], token: '' }
     ],
     colors: {
       'editor.background': '#00000000',
@@ -453,7 +428,7 @@ export const initMonaco = (monaco) => {
         foreground: '#15803d',
         fontStyle: 'medium'
       },
-      { background: colors.zinc[50] }
+      { background: colors.zinc[50], token: '' }
     ],
     colors: {
       'editor.background': '#00000000',
@@ -504,11 +479,10 @@ export const initMonaco = (monaco) => {
   };
 `);
   monaco.languages.registerCompletionItemProvider('typescript', {
-    provideCompletionItems: () => {
-      return {
-        suggestions: buildSuggestions(monaco)
-      };
-    }
+    provideCompletionItems: () => ({
+      // @ts-expect-error `range` is missing here, but is still works
+      suggestions: buildSuggestions(monaco)
+    })
   });
   // javascript is solely used for the query editor
   monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
@@ -519,39 +493,54 @@ export const initMonaco = (monaco) => {
   });
 };
 
-const createEditorAction = (id, keybindings, label, run) => {
+const createEditorAction = (id: string, keybindings: number[], label: string, run: () => void) => {
   return {
-    id: id,
-    keybindings: keybindings,
-    label: label,
-    run: run
+    id,
+    keybindings,
+    label,
+    run
   };
 };
 
-export const addMonacoCommands = (monaco, editor, callbacks) => {
+export type BrunoEditorCallbacks = {
+  onChange?: (newValue: string) => void;
+  onSave?: () => void;
+  onRun?: () => void;
+};
+
+export const addMonacoCommands = (
+  monaco: Monaco,
+  editor: editor.IStandaloneCodeEditor,
+  callbacks: BrunoEditorCallbacks
+) => {
   const editorActions = [
     createEditorAction('save', [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS], 'Save', () => {
-      callbacks.onChange(editor.getValue());
-      callbacks.onSave();
+      callbacks.onChange && callbacks.onChange(editor.getValue());
+      callbacks.onSave && callbacks.onSave();
     }),
     createEditorAction('run', [monaco.KeyMod.CtrlCmd | monaco.KeyCode.Enter], 'Run', () => {
       callbacks.onRun && callbacks.onRun();
     }),
     createEditorAction('foldAll', [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyY], 'FoldAll', () => {
-      editor.trigger('fold', 'editor.foldAll');
+      editor.trigger('fold', 'editor.foldAll', null);
     }),
     createEditorAction('unfoldAll', [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyI], 'UnfoldAll', () => {
-      editor.trigger('fold', 'editor.unfoldAll');
+      editor.trigger('fold', 'editor.unfoldAll', null);
     })
   ];
   editorActions.forEach((action) => editor.addAction(action));
 };
 
-export const addMonacoSingleLineActions = (editor) => {
+export const addMonacoSingleLineActions = (
+  editor: MonacoEditor,
+  monaco: Monaco,
+  allowNewlines: boolean,
+  setHeight: (newHeight: number) => void
+) => {
   editor.onKeyDown((e) => {
-    if (e.keyCode === monaco.KeyCode.Enter) {
-      // We only prevent enter when the suggest model is not active
-      if (editor.getContribution('editor.contrib.suggestController').model.state == 0) {
+    if (e.keyCode === monaco.KeyCode.Enter && allowNewlines === false) {
+      // @ts-expect-error Not sure why the type does not work
+      if (editor.getContribution('editor.contrib.suggestController')?.model.state == 0) {
         e.preventDefault();
       }
     }
@@ -559,13 +548,18 @@ export const addMonacoSingleLineActions = (editor) => {
 
   editor.onDidPaste((e) => {
     // Remove all newlines for the singleline editor
-    if (e.range.endLineNumber > 1) {
-      let newContent = '';
-      let lineCount = editor.getModel().getLineCount();
-      for (let i = 0; i < lineCount; i++) {
-        newContent += editor.getModel().getLineContent(i + 1);
+    if (e.range.endLineNumber > 1 && allowNewlines === false) {
+      const modal = editor.getModel();
+      if (!modal) {
+        return;
       }
-      editor.getModel().setValue(newContent);
+
+      let newContent = '';
+      let lineCount = modal.getLineCount() || 0;
+      for (let i = 0; i < lineCount; i++) {
+        newContent += modal.getLineContent(i + 1) || 1;
+      }
+      modal.setValue(newContent);
     }
   });
 
@@ -573,9 +567,14 @@ export const addMonacoSingleLineActions = (editor) => {
   editor.onDidBlurEditorText(() => {
     editor.setPosition({ column: 1, lineNumber: 1 });
   });
+
+  editor.onDidContentSizeChange(() => {
+    setHeight(Math.min(128, editor.getContentHeight()));
+  });
+  setHeight(Math.min(128, editor.getContentHeight()));
 };
 
-export const getMonacoModeFromContent = (contentType, body) => {
+export const getMonacoModeFromContent = (contentType: string, body: string | Record<string, unknown>) => {
   if (typeof body === 'object') {
     return 'application/ld+json';
   }

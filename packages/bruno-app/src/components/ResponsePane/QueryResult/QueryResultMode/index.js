@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import StyledWrapper from 'components/ResponsePane/QueryResult/QueryResultMode/StyledWrapper';
 import QueryResultPreview from 'components/ResponsePane/QueryResult/QueryResultViewer';
 import QueryResultFilter from 'components/ResponsePane/QueryResult/QueryResultFilter';
-import { getMonacoModeFromContent } from 'utils/monaco/monacoUtils';
+import { getMonacoModeFromContent } from 'utils/monaco/monacoUtils.ts';
 import { JSONPath } from 'jsonpath-plus';
 
 /**
