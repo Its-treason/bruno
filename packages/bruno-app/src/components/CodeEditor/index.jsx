@@ -14,7 +14,9 @@ const CodeEditor = ({
   readOnly,
   theme,
   value,
+  defaultValue,
   singleLine,
+  asInput,
   withVariables = false,
   allowLinebreaks = false,
   height = '60vh'
@@ -30,7 +32,9 @@ const CodeEditor = ({
     readOnly,
     theme,
     value,
+    defaultValue,
     singleLine,
+    asInput,
     withVariables,
     allowLinebreaks,
     height

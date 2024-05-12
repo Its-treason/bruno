@@ -102,7 +102,6 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
         renderLineHighlight: 'none'
       }}
       height={height}
-      className={'rounded-xs border border-zinc-200 dark:border-zinc-700'}
       theme={displayedTheme === 'dark' ? 'bruno-dark' : 'bruno-light'}
       language={languages[mode] ?? 'plaintext'}
       value={value}

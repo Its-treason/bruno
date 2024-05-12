@@ -19,6 +19,7 @@
     "@fortawesome/react-fontawesome": "^0.1.16",
     "@mantine/core": "^7.9.1",
     "@mantine/charts": "^7.9.1",
+    "@mantine/form": "^7.9.1",
     "@mantine/hooks": "^7.9.1",
     "@monaco-editor/react": "^4.6.0",
     "@reduxjs/toolkit": "^1.8.0",

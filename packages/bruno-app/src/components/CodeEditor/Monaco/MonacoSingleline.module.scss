@@ -3,18 +3,32 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 .paper {
-  width: 100%;
   height: fit-content; /* Monaco will auto set the height */
+  width: 100%;
 
-  padding: var(--mantine-spacing-xs);
+  padding: calc(var(--mantine-spacing-xs) - 2px);
   border: 1px solid var(--mantine-color-dark-4);
   border-radius: var(--mantine-radius-xs);
+  background-color: var(--mantine-color-dark-6) !important;
+  // This ensures corrent shrinking / expanding https://github.com/microsoft/monaco-editor/issues/3393
+  display: grid;
+  grid-template-columns: minmax(0px, auto);
+  grid-template-rows: 100%;
 }
+.paper[data-focused='true'] {
+  border-color: var(--mantine-primary-color-filled);
+}
+
 .paperHidden {
   width: 100%;
   height: fit-content; /* Monaco will auto set the height */
 
   background-color: transparent !important;
+
+  // This ensures corrent shrinking / expanding https://github.com/microsoft/monaco-editor/issues/3393
+  display: grid;
+  grid-template-columns: minmax(0px, auto);
+  grid-template-rows: 100%;
 }
 
 .editor {

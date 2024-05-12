@@ -23,7 +23,8 @@ type MonacoSinglelineProps = {
     activeEnvironmentUid: string | undefined;
   };
   readOnly: boolean;
-  value: string;
+  value?: string;
+  defaultValue?: string;
   withVariables: boolean;
   allowLinebreaks: boolean;
   asInput: boolean;
@@ -40,6 +41,7 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
   onSave,
   readOnly = false,
   value,
+  defaultValue,
   withVariables = false,
   allowLinebreaks = false,
   asInput = false
@@ -59,7 +61,7 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
 
   const debounceChanges = debounce((newValue) => {
     onChange(newValue);
-  }, 300);
+  }, 500);
   const handleEditorChange = (value: string | undefined) => {
     debounceChanges(value);
   };
@@ -114,6 +116,7 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
         loading={null} // Loading looks weird with singeline editor
         language={'plaintext'}
         value={value}
+        defaultValue={defaultValue}
         onMount={onMount}
         onChange={!readOnly ? handleEditorChange : () => {}}
         height={height}

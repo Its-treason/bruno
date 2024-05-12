@@ -1,0 +1,9 @@
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
+.tableRow {
+  display: grid;
+  grid-template-rows: 100%;
+  grid-template-columns: 70px 250px minmax(0px, auto) 60px 70px;
+}

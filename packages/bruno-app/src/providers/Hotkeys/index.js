@@ -4,12 +4,12 @@ import find from 'lodash/find';
 import Mousetrap from 'mousetrap';
 import { useSelector, useDispatch } from 'react-redux';
 import SaveRequest from 'components/RequestPane/SaveRequest';
-import EnvironmentSettings from 'components/Environments/EnvironmentSettings';
 import NetworkError from 'components/ResponsePane/NetworkError';
 import NewRequest from 'components/Sidebar/NewRequest';
 import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import { findCollectionByUid, findItemInCollection } from 'utils/collections';
 import { closeTabs } from 'providers/ReduxStore/slices/tabs';
+import { EnvironmentDrawer } from 'src/feature/environment-editor';
 
 export const HotkeysContext = React.createContext();
 
@@ -159,9 +159,11 @@ export const HotkeysProvider = (props) => {
       {showSaveRequestModal && (
         <SaveRequest items={getCurrentCollectionItems()} onClose={() => setShowSaveRequestModal(false)} />
       )}
-      {showEnvSettingsModal && (
-        <EnvironmentSettings collection={getCurrentCollection()} onClose={() => setShowEnvSettingsModal(false)} />
-      )}
+      <EnvironmentDrawer
+        opened={showEnvSettingsModal}
+        collection={getCurrentCollection()}
+        onClose={() => setShowEnvSettingsModal(false)}
+      />
       {showNewRequestModal && (
         <NewRequest collection={getCurrentCollection()} onClose={() => setShowNewRequestModal(false)} />
       )}
