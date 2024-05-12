@@ -82,6 +82,7 @@ export const useEnvironmentEditorProvider = (
   const onSubmit = useCallback(
     (values: CollectionEnvironment['variables']) => {
       dispatch(saveEnvironment(structuredClone(values), selectedEnvironment?.uid, collection.uid))
+        // @ts-expect-error
         .then(() => {
           toast.success('Changes saved successfully');
           form.setInitialValues({ variables: values });

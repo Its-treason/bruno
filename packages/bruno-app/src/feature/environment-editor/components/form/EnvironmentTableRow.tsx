@@ -28,6 +28,7 @@ export const EnvironmentTableRow: React.FC<EnvironmentTableRowProps> = ({ pos })
         <TextInput {...form.getInputProps(`variables.${pos}.name`)} key={form.key(`variables.${pos}.name`)} />
       </Table.Td>
       <Table.Td>
+        {/* @ts-expect-error Needs be remade in ts */}
         <CodeEditor
           {...form.getInputProps(`variables.${pos}.value`)}
           key={form.key(`variables.${pos}.value`)}
