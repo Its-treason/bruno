@@ -49,12 +49,12 @@ export const useEnvironmentEditorProvider = (
   });
 
   useEffect(() => {
-    setAllEnvironments(collection.environments);
-
     if (collection.environments.length === 0) {
       setSelectedEnvironment(null);
       return;
     }
+
+    setAllEnvironments(collection.environments);
 
     // This will ensure, that there is always a corrent enrionment selected
     const foundSelectedEnv = allEnvironments.find((env) => env.name === selectedEnvironment?.name);
