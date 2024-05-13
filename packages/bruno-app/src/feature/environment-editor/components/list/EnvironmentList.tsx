@@ -10,11 +10,6 @@ import { Stack } from '@mantine/core';
 export const EnvironmentList: React.FC = () => {
   const { allEnvironments, selectedEnvironment, onEnvironmentSwitch } = useEnvironmentEditor();
 
-  // This should never happen
-  if (allEnvironments.length === 0) {
-    return null;
-  }
-
   const items = useMemo(() => {
     return allEnvironments.map((env) => (
       <EnvironmentListItem
@@ -25,6 +20,10 @@ export const EnvironmentList: React.FC = () => {
       />
     ));
   }, [allEnvironments, selectedEnvironment?.uid]);
+
+  if (allEnvironments.length === 0) {
+    return null;
+  }
 
   return (
     <Stack gap={0} ml={'md'} style={{ borderRight: '1px solid var(--mantine-color-default-border)' }}>

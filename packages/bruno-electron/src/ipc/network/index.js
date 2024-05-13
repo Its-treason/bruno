@@ -473,7 +473,7 @@ const registerNetworkIpc = (mainWindow) => {
           type: 'testrun-ended',
           collectionUid: collection.uid,
           folderUid,
-          error: new Error('Request runner cancelled')
+          error: 'Request runner cancelled'
         });
         return;
       }
