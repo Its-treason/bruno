@@ -48,7 +48,7 @@ export function useEnvironmentSelector(collection: Collection): UseEnvironmentSe
 
       dispatch(selectEnvironment(newUid, collection.uid));
     },
-    [dispatch]
+    [dispatch, collection.uid]
   );
 
   const [environmentModalOpen, setEnvironmentModalOpen] = useState(false);
