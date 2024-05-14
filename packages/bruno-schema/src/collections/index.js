@@ -20,7 +20,7 @@ const environmentSchema = Yup.object({
   .noUnknown(true)
   .strict();
 
-const environmentsSchema = Yup.array().of(environmentSchema);
+const environmentsSchema = Yup.array().of(environmentSchema).default([]);
 
 const keyValueSchema = Yup.object({
   uid: uidSchema,
