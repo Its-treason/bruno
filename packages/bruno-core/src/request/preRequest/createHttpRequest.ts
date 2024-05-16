@@ -281,7 +281,6 @@ export async function createHttpRequest(context: RequestContext) {
       method: context.requestItem.request.method,
       protocol: urlObject.protocol,
       host: urlObject.host,
-      port: urlObject.port,
       path: `${urlObject.pathname}${urlObject.search}${urlObject.hash}`,
       headers: getRequestHeaders(context, extraHeaders),
       timeout: context.prefences.request.timeout,

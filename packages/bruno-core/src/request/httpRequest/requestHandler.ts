@@ -47,11 +47,7 @@ export async function makeHttpRequest(context: RequestContext) {
 }
 
 function addMandatoryHeader(requestOptions: RequestOptions, body?: string | Buffer) {
-  let hostHeader = requestOptions.host!;
-  if (requestOptions.port) {
-    hostHeader = `:${requestOptions.port}`;
-  }
-  requestOptions.headers!['host'] = hostHeader;
+  requestOptions.headers!['host'] = requestOptions.host!;
 
   if (body !== undefined) {
     const length = Buffer.isBuffer(body) ? body.length : Buffer.byteLength(body);
