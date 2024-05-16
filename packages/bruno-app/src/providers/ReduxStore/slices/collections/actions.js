@@ -400,6 +400,7 @@ export const cloneItem = (newName, itemUid, collectionUid) => (dispatch, getStat
         (i) => i.type !== 'folder' && trim(i.filename) === trim(filename)
       );
       if (!reqWithSameNameExists) {
+        const fullName = `${collection.pathname}${PATH_SEPARATOR}${filename}`;
         const { ipcRenderer } = window;
         const requestItems = filter(collection.items, (i) => i.type !== 'folder');
         itemToSave.seq = requestItems ? requestItems.length + 1 : 1;
@@ -428,6 +429,7 @@ export const cloneItem = (newName, itemUid, collectionUid) => (dispatch, getStat
       );
       if (!reqWithSameNameExists) {
         const pathname = getDirectoryName(item.pathname);
+        const fullName = `${collection.pathname}${PATH_SEPARATOR}${filename}`;
         const { ipcRenderer } = window;
         const requestItems = filter(parentItem.items, (i) => i.type !== 'folder');
         itemToSave.seq = requestItems ? requestItems.length + 1 : 1;
