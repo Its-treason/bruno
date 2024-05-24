@@ -3,3 +3,4 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 export { EnvironmentDrawer } from './components/EnvironmentDrawer';
+export { EnvironmentSelector } from './components/EnvironmentSelector';

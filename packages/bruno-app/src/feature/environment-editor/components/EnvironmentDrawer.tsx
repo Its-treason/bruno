@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Box, Button, Divider, Drawer, Group, Space, rem } from '@mantine/core';
+import { Anchor, Box, Button, Divider, Drawer, Group, Space, rem } from '@mantine/core';
 import { IconDownload, IconPlus, IconShieldCheck } from '@tabler/icons-react';
 import { EnvironmentList } from './list/EnvironmentList';
 import { EnvironmentForm } from './form/EnvironmentForm';
@@ -11,10 +11,11 @@ import { EnvironmentEditorProvider } from '../provider/EnvironmentEditorProvider
 import classes from './EnvironmentDrawer.module.css';
 import { UnsavedEnvironmentModal } from './modals/UnsavedEnvironmentModal';
 import { CloneEnvironmentModal } from './modals/CloneEnvironmentModal';
-import CreateEnvironment from 'components/Environments/EnvironmentSettings/CreateEnvironment';
 import { CreateEnvironmentModal } from './modals/CreateEnvironmentModal';
 import { DeleteEnvironmentModal } from './modals/DeleteEnvironmentModal';
 import { RenameEnvironmentModal } from './modals/RenameEnvironmentModal';
+import { ImportEnvironmentModal } from './modals/ImportEnvironmentModal';
+import { ManageSecretModals } from './modals/ManageSecretsModal';
 
 type EnvironmentDrawerProps = {
   opened: boolean;
@@ -50,7 +51,7 @@ export const EnvironmentDrawer: React.FC<EnvironmentDrawerProps> = ({
           New environment
         </Button>
         <Button
-          variant="subtle"
+          variant="default"
           onClick={() => providerData.openActionModal('import')}
           leftSection={<IconDownload style={{ width: rem(14) }} />}
         >
@@ -58,14 +59,8 @@ export const EnvironmentDrawer: React.FC<EnvironmentDrawerProps> = ({
         </Button>
 
         <Space style={{ flexGrow: 1 }} />
-        <Button
-          variant="subtle"
-          onClick={() => providerData.openActionModal('manage-secrets')}
-          leftSection={<IconShieldCheck style={{ width: rem(14) }} />}
-          style={{ float: 'right' }}
-        >
-          Managing secrets
-        </Button>
+
+        <Anchor onClick={() => providerData.openActionModal('manage-secrets')}>Managing secrets</Anchor>
       </Group>
       <Divider mt={'md'} />
 
@@ -75,6 +70,8 @@ export const EnvironmentDrawer: React.FC<EnvironmentDrawerProps> = ({
         <DeleteEnvironmentModal />
         <RenameEnvironmentModal />
         <UnsavedEnvironmentModal />
+        <ImportEnvironmentModal />
+        <ManageSecretModals />
 
         <Box className={classes.content}>
           <EnvironmentList />

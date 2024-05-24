@@ -3,7 +3,7 @@ import { Switch } from '@mantine/core';
 import { useLocalStorage } from '@mantine/hooks';
 import { uuid } from 'utils/common';
 import { IconFiles, IconRun, IconEye, IconSettings } from '@tabler/icons-react';
-import { EnvironmentSelector } from 'components/Environments/EnvironmentSelector';
+import { EnvironmentSelector } from 'src/feature/environment-editor/components/EnvironmentSelector';
 import { addTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch, useSelector } from 'react-redux';
 import StyledWrapper from './StyledWrapper';

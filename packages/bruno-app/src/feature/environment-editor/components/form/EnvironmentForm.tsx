@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { ActionIcon, Box, Button, Group, Space, Table, Title, Tooltip, rem } from '@mantine/core';
+import { ActionIcon, ActionIconGroup, Box, Button, Group, Space, Table, Title, Tooltip, rem } from '@mantine/core';
 import React, { useCallback, useMemo } from 'react';
 import { useEnvironmentEditor } from '../../hooks/useEnvironmentEditor';
 import { IconArrowBack, IconCopy, IconDeviceFloppy, IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';
@@ -29,26 +29,28 @@ export const EnvironmentForm: React.FC = () => {
     <Box p={'md'} mah={'100%'}>
       <Group gap={'xs'}>
         <Title order={3}>{selectedEnvironment.name}</Title>
-        <Tooltip label="Rename environment">
-          <ActionIcon aria-label="Rename environment" variant="subtle" onClick={() => openActionModal('rename')}>
-            <IconPencil style={{ width: rem(18) }} />
-          </ActionIcon>
-        </Tooltip>
-        <Tooltip label="Clone environment">
-          <ActionIcon aria-label="Clone environment" variant="subtle" onClick={() => openActionModal('clone')}>
-            <IconCopy style={{ width: rem(18) }} />
-          </ActionIcon>
-        </Tooltip>
-        <Tooltip label="Delete environment">
-          <ActionIcon
-            aria-label="Delete environment"
-            c="red"
-            variant="subtle"
-            onClick={() => openActionModal('delete')}
-          >
-            <IconTrash style={{ width: rem(18) }} />
-          </ActionIcon>
-        </Tooltip>
+        <ActionIconGroup>
+          <Tooltip label="Rename environment">
+            <ActionIcon aria-label="Rename environment" variant="default" onClick={() => openActionModal('rename')}>
+              <IconPencil style={{ width: rem(16) }} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Clone environment">
+            <ActionIcon aria-label="Clone environment" variant="default" onClick={() => openActionModal('clone')}>
+              <IconCopy style={{ width: rem(16) }} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
+          <Tooltip label="Delete environment">
+            <ActionIcon
+              aria-label="Delete environment"
+              c="red"
+              variant="default"
+              onClick={() => openActionModal('delete')}
+            >
+              <IconTrash style={{ width: rem(16) }} stroke={1.5} />
+            </ActionIcon>
+          </Tooltip>
+        </ActionIconGroup>
       </Group>
       <Group my={'md'}>
         <Button leftSection={<IconDeviceFloppy />} type="submit" form="env-edit-form">
@@ -84,7 +86,7 @@ export const EnvironmentForm: React.FC = () => {
           </Table>
         </form>
       ) : (
-        <EnvironmentFormEmptyState onCreate={addRow} />
+        <EnvironmentFormEmptyState />
       )}
     </Box>
   );

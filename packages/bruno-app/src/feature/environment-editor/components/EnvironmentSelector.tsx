@@ -3,11 +3,15 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { ActionIcon, Group, Select, Tooltip, rem } from '@mantine/core';
-import EnvironmentSettings from './EnvironmentSettings';
 import { IconPencilCog } from '@tabler/icons-react';
-import { useEnvironmentSelector } from './useEnvironmentSelector';
+import { useEnvironmentSelector } from '../hooks/useEnvironmentSelector';
+import { EnvironmentDrawer } from 'src/feature/environment-editor';
 
-export function EnvironmentSelector({ collection }) {
+type EnvironmentSelectorProps = {
+  collection: any;
+};
+
+export const EnvironmentSelector: React.FC<EnvironmentSelectorProps> = ({ collection }) => {
   const {
     activeEnvironment,
     data,
@@ -54,7 +58,7 @@ export function EnvironmentSelector({ collection }) {
         </ActionIcon>
       </Tooltip>
 
-      {environmentModalOpen ? <EnvironmentSettings collection={collection} onClose={onEnvironmentModalClose} /> : null}
+      <EnvironmentDrawer collection={collection} onClose={onEnvironmentModalClose} opened={environmentModalOpen} />
     </Group>
   );
-}
+};
