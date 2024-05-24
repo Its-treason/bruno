@@ -266,9 +266,14 @@ const parseDataFromResponse = (response) => {
   } catch {
     data = dataBuffer.toString('utf-8');
   }
+
+  // Filter out BOM / ZWNBSP character
+  // https://gist.github.com/antic183/619f42b559b78028d1fe9e7ae8a1352d
+  data = data.replace(/^\uFEFF/, '');
+
   // Try to parse response to JSON, this can quietly fail
   try {
-    data = JSON.parse(response.data);
+    data = JSON.parse(data);
   } catch {}
 
   return { data, dataBuffer };
