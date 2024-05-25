@@ -254,7 +254,7 @@ const CollectionItem = ({ item, collection, searchText }) => {
               paddingLeft: 8
             }}
           >
-            <div style={{ width: 16, minWidth: 16 }}>
+            <div>
               {isFolder ? (
                 <IconChevronRight
                   size={16}
