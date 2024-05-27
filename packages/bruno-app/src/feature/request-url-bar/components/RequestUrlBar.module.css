@@ -1,0 +1,13 @@
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
+.bar {
+  display: grid;
+  grid-template-rows: 100%;
+  grid-template-columns: 8rem 1fr min-content min-content;
+
+  align-items: center;
+
+  background-color: var(--mantine-color-dark-6);
+}

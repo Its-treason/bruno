@@ -10,14 +10,13 @@ import { findItemInCollection } from 'utils/collections';
 import { updateRequestPaneTabWidth } from 'providers/ReduxStore/slices/tabs';
 import { sendRequest } from 'providers/ReduxStore/slices/collections/actions';
 import RequestNotFound from './RequestNotFound';
-import QueryUrl from 'components/RequestPane/QueryUrl';
 import NetworkError from 'components/ResponsePane/NetworkError';
 import RunnerResults from 'components/RunnerResults';
 import VariablesEditor from 'components/VariablesEditor';
 import CollectionSettings from 'components/CollectionSettings';
 import { DocExplorer } from '@usebruno/graphql-docs';
-
 import StyledWrapper from './StyledWrapper';
+import { RequestUrlBar } from 'src/feature/request-url-bar';
 
 const MIN_LEFT_PANE_WIDTH = 300;
 const MIN_RIGHT_PANE_WIDTH = 350;
@@ -147,9 +146,7 @@ const RequestTabPanel = () => {
 
   return (
     <StyledWrapper className={`flex flex-col flex-grow relative ${dragging ? 'dragging' : ''}`}>
-      <div className="pt-4 pb-3 px-4">
-        <QueryUrl item={item} collection={collection} handleRun={handleRun} />
-      </div>
+      <RequestUrlBar item={item} collection={collection} handleRun={handleRun} />
       <section className="main flex flex-grow pb-4 relative">
         <section className="request-pane">
           <div

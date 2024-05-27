@@ -6,17 +6,17 @@ import { MonacoEditor } from './Monaco/Monaco';
 
 const CodeEditor = ({
   collection,
-  font,
+  font = 'default',
   mode = 'plaintext',
   onChange,
   onRun,
   onSave,
-  readOnly,
-  theme,
+  readOnly = false,
+  theme = 'dark',
   value,
-  defaultValue,
-  singleLine,
-  asInput,
+  defaultValue = undefined,
+  singleLine = false,
+  asInput = false,
   withVariables = false,
   allowLinebreaks = false,
   height = '60vh'

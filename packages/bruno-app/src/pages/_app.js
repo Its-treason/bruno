@@ -4,7 +4,7 @@ import { AppProvider } from 'providers/App';
 import { ToastProvider } from 'providers/Toaster';
 import { HotkeysProvider } from 'providers/Hotkeys';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { createTheme, MantineProvider, Timeline } from '@mantine/core';
+import { createTheme, MantineProvider, Timeline, Tooltip } from '@mantine/core';
 
 import ReduxStore from 'providers/ReduxStore';
 import ThemeProvider from 'providers/Theme/index';
@@ -48,6 +48,12 @@ const theme = createTheme({
     Timeline: Timeline.extend({
       defaultProps: {
         radius: 'xs'
+      }
+    }),
+
+    Tooltip: Tooltip.extend({
+      defaultProps: {
+        openDelay: 250
       }
     })
   }
