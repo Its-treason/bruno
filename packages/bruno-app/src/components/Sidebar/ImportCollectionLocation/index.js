@@ -4,7 +4,7 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import { browseDirectory } from 'providers/ReduxStore/slices/collections/actions';
 import Modal from 'components/Modal';
-import { IconAlertTriangle, IconArrowRight, IconCaretDown, IconCaretRight, IconCopy } from '@tabler/icons';
+import { IconAlertTriangle, IconCaretDown, IconCaretRight, IconCopy } from '@tabler/icons-react';
 import toast from 'react-hot-toast';
 
 const TranslationLog = ({ translationLog }) => {
