@@ -17,7 +17,6 @@ type MethodSelectorProps = {
 
 export const MethodSelector: React.FC<MethodSelectorProps> = ({ collectionUid, requestUid, selectedMethod }) => {
   const dispatch = useDispatch();
-  console.log(selectedMethod);
 
   const onMethodSelect = (method) => {
     dispatch(

@@ -1,9 +1,9 @@
 const _ = require('lodash');
 
 const envToJson = (json) => {
-  const meta = `meta {
-  name: ${json.name}
-}\n\n`;
+  //   const meta = `meta {
+  //   name: ${json.name}
+  // }\n\n`;
 
   const variables = _.get(json, 'variables', []);
   const vars = variables
@@ -23,12 +23,12 @@ const envToJson = (json) => {
     });
 
   if (!variables || !variables.length) {
-    return `${meta}vars {
+    return `vars {
 }
 `;
   }
 
-  let output = meta;
+  let output = '';
   if (vars.length) {
     output += `vars {
 ${vars.join('\n')}
