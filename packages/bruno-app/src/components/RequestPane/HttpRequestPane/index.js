@@ -1,5 +1,4 @@
 import React, { useMemo } from 'react';
-import find from 'lodash/find';
 import classnames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateRequestPaneTab } from 'providers/ReduxStore/slices/tabs';
@@ -8,13 +7,12 @@ import RequestHeaders from 'components/RequestPane/RequestHeaders';
 import RequestBody from 'components/RequestPane/RequestBody';
 import RequestBodyMode from 'components/RequestPane/RequestBody/RequestBodyMode';
 import Auth from 'components/RequestPane/Auth';
-import AuthMode from 'components/RequestPane/Auth/AuthMode';
 import Vars from 'components/RequestPane/Vars';
 import Assertions from 'components/RequestPane/Assertions';
 import Script from 'components/RequestPane/Script';
 import Tests from 'components/RequestPane/Tests';
 import StyledWrapper from './StyledWrapper';
-import { get } from 'lodash';
+import { find, get } from 'lodash';
 import Documentation from 'components/Documentation/index';
 
 const componentMap = (item, collection) => ({
@@ -66,6 +64,8 @@ const HttpRequestPane = ({ item, collection, leftPaneWidth }) => {
     });
   };
 
+  const isMultipleContentTab = ['params', 'script', 'vars', 'auth', 'docs'].includes(focusedTab.requestPaneTab);
+
   // get the length of active params, headers, asserts and vars
   const params = item.draft ? get(item, 'draft.request.params', []) : get(item, 'request.params', []);
   const headers = item.draft ? get(item, 'draft.request.headers', []) : get(item, 'request.headers', []);
@@ -84,7 +84,7 @@ const HttpRequestPane = ({ item, collection, leftPaneWidth }) => {
     <StyledWrapper className="flex flex-col h-full relative">
       <div className="flex flex-wrap items-center tabs" role="tablist">
         <div className={getTabClassname('params')} role="tab" onClick={() => selectTab('params')}>
-          Query
+          Params
           {activeParamsLength > 0 && <sup className="ml-1 font-medium">{activeParamsLength}</sup>}
         </div>
         <div className={getTabClassname('body')} role="tab" onClick={() => selectTab('body')}>
@@ -121,9 +121,9 @@ const HttpRequestPane = ({ item, collection, leftPaneWidth }) => {
         ) : null}
       </div>
       <section
-        className={`flex w-full flex-grow ${
-          ['script', 'vars', 'auth', 'docs'].includes(focusedTab.requestPaneTab) ? '' : 'mt-5'
-        }`}
+        className={classnames('flex w-full', {
+          'mt-5': !isMultipleContentTab
+        })}
       >
         {tabPanel}
       </section>

@@ -35,6 +35,28 @@ function interpolateRequestItem(context: RequestContext, i: InterpolationShortha
 
   request.url = i(request.url, 'Request url');
 
+  let urlParsed;
+  try {
+    urlParsed = new URL(context.requestItem.request.url);
+  } catch (error) {
+    throw new Error(`Could not parse your URL "${context.requestItem.request.url}": "${error}"`);
+  }
+  const urlPathname = urlParsed.pathname
+    .split('/')
+    .filter((path) => path !== '')
+    .map((path) => {
+      // Doesn't start with a ":" so its not a path parameter
+      if (path[0] !== ':') {
+        return '/' + path;
+      }
+      const name = path.slice(1);
+      const existingPathParam = request.params.find((param) => param.type === 'path' && param.name === name);
+      return existingPathParam ? '/' + i(existingPathParam.value, `Path param "${existingPathParam.name}"`) : '';
+    })
+    .join('');
+  urlParsed.pathname = urlPathname;
+  request.url = urlParsed.href;
+
   let pos = 0;
   for (const header of request.headers) {
     pos++;

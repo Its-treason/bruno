@@ -150,6 +150,7 @@ export type RequestItem = {
       name: string;
       value: string;
       enabled: boolean;
+      type: 'path' | 'query';
     }[];
     headers: {
       name: string;

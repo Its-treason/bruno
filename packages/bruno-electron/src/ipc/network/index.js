@@ -38,6 +38,7 @@ const {
 } = require('./oauth2-helper');
 const Oauth2Store = require('../../store/oauth2');
 const { request: newRequest } = require('@usebruno/core');
+const iconv = require('iconv-lite');
 
 const safeStringifyJSON = (data) => {
   try {
@@ -254,23 +255,18 @@ const configureRequest = async (
 };
 
 const parseDataFromResponse = (response) => {
-  const dataBuffer = Buffer.from(response.data);
   // Parse the charset from content type: https://stackoverflow.com/a/33192813
-  const contentTypeHeader = response.headers['Content-Type'] || response.headers['content-type'] || '';
-  const charset = /charset=([^()<>@,;:"/[\]?.=\s]*)/i.exec(contentTypeHeader);
-  // Overwrite the original data for backwards compatability
+  const charsetMatch = /charset=([^()<>@,;:"/[\]?.=\s]*)/i.exec(response.headers['content-type'] || '');
+  // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/exec#using_exec_with_regexp_literals
+  const charsetValue = charsetMatch?.[1];
+  const dataBuffer = Buffer.from(response.data);
+  // Overwrite the original data for backwards compatibility
   let data;
-  try {
-    // If the response returned an unknown encoding, toString will throw an error
-    data = dataBuffer.toString(charset[1] || 'utf-8');
-  } catch {
-    data = dataBuffer.toString('utf-8');
+  if (iconv.encodingExists(charsetValue)) {
+    data = iconv.decode(dataBuffer, charsetValue);
+  } else {
+    data = iconv.decode(dataBuffer, 'utf-8');
   }
-
-  // Filter out BOM / ZWNBSP character
-  // https://gist.github.com/antic183/619f42b559b78028d1fe9e7ae8a1352d
-  data = data.replace(/^\uFEFF/, '');
-
   // Try to parse response to JSON, this can quietly fail
   try {
     data = JSON.parse(data);
