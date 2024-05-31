@@ -84,11 +84,11 @@ async function handleServerResponse(
   if (mustRedirect) {
     // Use the users redirect limit or default to 25
     const redirectLimit = context.requestItem.request.maxRedirects ?? 25;
-    if (context.httpRequest!.redirectDepth > redirectLimit) {
+    if (context.httpRequest!.redirectDepth >= redirectLimit) {
       response.info = 'Server returned redirect, but redirect limit is reached';
       return false;
     }
-
+    context.httpRequest!.redirectDepth++;
     response.info = 'Server returned redirect';
     return request;
   }
