@@ -34,8 +34,8 @@ function applyCollectionAuth(context: RequestContext) {
 function applyGlobalProxy(context: RequestContext) {
   const proxyStatus = context.collection.brunoConfig.proxy?.enabled ?? 'global';
   if (proxyStatus === 'global') {
-    context.debug.log('Global proxy config applied', context.prefences.proxy);
-    context.collection.brunoConfig.proxy = context.prefences.proxy;
+    context.debug.log('Global proxy config applied', context.preferences.proxy);
+    context.collection.brunoConfig.proxy = context.preferences.proxy;
   }
 }
 

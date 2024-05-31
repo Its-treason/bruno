@@ -1,12 +1,11 @@
 import { request as requestHttp } from 'node:http';
 import { request as requestHttps } from 'node:https';
 import { Buffer } from 'node:buffer';
-import { RequestOptions } from 'node:https';
-import { createWriteStream } from 'node:fs';
+import { BrunoRequestOptions } from '../types';
 
 export type HttpRequestInfo = {
   // RequestInfo
-  finalOptions: Readonly<RequestOptions>;
+  finalOptions: Readonly<BrunoRequestOptions>;
   requestBody?: string;
   // Response
   responseTime?: number;
@@ -20,7 +19,7 @@ export type HttpRequestInfo = {
 };
 
 export async function execHttpRequest(
-  options: RequestOptions,
+  options: BrunoRequestOptions,
   body?: string | Buffer,
   signal?: AbortSignal
 ): Promise<HttpRequestInfo> {
@@ -47,9 +46,9 @@ export async function execHttpRequest(
   return requestInfo;
 }
 
-async function doExecHttpRequest(info: HttpRequestInfo, options: RequestOptions, body?: string | Buffer) {
+async function doExecHttpRequest(info: HttpRequestInfo, options: BrunoRequestOptions, body?: string | Buffer) {
   if (options.protocol !== 'https:' && options.protocol !== 'http:') {
-    throw new Error(`Unsuported protocol: "${options.protocol}", only "https:" & "http:" are supported`);
+    throw new Error(`Unsupported protocol: "${options.protocol}", only "https:" & "http:" are supported`);
   }
 
   const req = options.protocol === 'http:' ? requestHttp(options) : requestHttps(options);

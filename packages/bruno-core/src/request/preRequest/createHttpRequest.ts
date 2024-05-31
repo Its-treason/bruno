@@ -164,7 +164,7 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
 
 async function createClientCertOptions(
   certConfig: Exclude<BrunoConfig['clientCertificates'], undefined>,
-  prefences: Preferences,
+  preferences: Preferences,
   host: string,
   collectionPath: string
 ): Promise<TlsOptions> {
@@ -180,14 +180,14 @@ async function createClientCertOptions(
     const absoluteCertFilePath = path.isAbsolute(certFilePath) ? certFilePath : path.join(collectionPath, certFilePath);
     const cert = await fs.readFile(absoluteCertFilePath, { encoding: 'utf8' });
 
-    const asoluteKeyFilePath = path.isAbsolute(keyFilePath) ? keyFilePath : path.join(collectionPath, keyFilePath);
-    const key = await fs.readFile(asoluteKeyFilePath, { encoding: 'utf8' });
+    const absoluteKeyFilePath = path.isAbsolute(keyFilePath) ? keyFilePath : path.join(collectionPath, keyFilePath);
+    const key = await fs.readFile(absoluteKeyFilePath, { encoding: 'utf8' });
 
     options = { cert, key, passphrase };
     break;
   }
 
-  const { customCaCertificate, keepDefaultCaCertificates } = prefences.request;
+  const { customCaCertificate, keepDefaultCaCertificates } = preferences.request;
   if (customCaCertificate.enabled && customCaCertificate.filePath) {
     options.ca = await fs.readFile(customCaCertificate.filePath, { encoding: 'utf8' });
 
@@ -260,14 +260,14 @@ export async function createHttpRequest(context: RequestContext) {
   try {
     urlObject = new URL(context.requestItem.request.url);
   } catch (error) {
-    throw new Error(`Could not your URL: "${context.requestItem.request.url}". Original error: ${error}`);
+    throw new Error(`Could not parse your URL "${context.requestItem.request.url}": "${error}"`);
   }
 
   let certOptions = {};
   if (context.collection.brunoConfig.clientCertificates) {
     certOptions = await createClientCertOptions(
       context.collection.brunoConfig.clientCertificates,
-      context.prefences,
+      context.preferences,
       urlObject.host,
       context.collection.pathname
     );
@@ -280,11 +280,12 @@ export async function createHttpRequest(context: RequestContext) {
     options: {
       method: context.requestItem.request.method,
       protocol: urlObject.protocol,
-      host: urlObject.host,
+      hostname: urlObject.hostname,
+      port: urlObject.port,
       path: `${urlObject.pathname}${urlObject.search}${urlObject.hash}`,
       headers: getRequestHeaders(context, extraHeaders),
-      timeout: context.prefences.request.timeout,
-      rejectUnauthorized: context.prefences.request.sslVerification,
+      timeout: context.preferences.request.timeout,
+      rejectUnauthorized: context.preferences.request.sslVerification,
       ...certOptions
     }
   };

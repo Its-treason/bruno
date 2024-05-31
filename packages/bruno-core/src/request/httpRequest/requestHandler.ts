@@ -1,5 +1,4 @@
-import { RequestOptions } from 'http';
-import { RequestContext } from '../types';
+import { BrunoRequestOptions, RequestContext } from '../types';
 import { handleDigestAuth } from './digestAuth';
 import { addAwsAuthHeader } from './awsSig4vAuth';
 import { HttpRequestInfo, execHttpRequest } from './httpRequest';
@@ -19,8 +18,8 @@ export async function makeHttpRequest(context: RequestContext) {
 
   while (true) {
     addMandatoryHeader(requestOptions, body);
-    if (context.prefences.request.sendCookies) {
-      addCookieHeader(requestOptions, context.cookieJar);
+    if (context.preferences.request.sendCookies) {
+      await addCookieHeader(requestOptions, context.cookieJar);
     }
     if (context.requestItem.request.auth.mode === 'awsv4') {
       addAwsAuthHeader(context.requestItem.request.auth, requestOptions, body);
@@ -30,7 +29,7 @@ export async function makeHttpRequest(context: RequestContext) {
     context.debug.log('Request', {
       options: {
         ...requestOptions,
-        agent: undefined
+        agent: undefined // agent cannot be stringified
       }
     });
     const response = await execHttpRequest(requestOptions, body, context.abortController?.signal);
@@ -46,8 +45,12 @@ export async function makeHttpRequest(context: RequestContext) {
   }
 }
 
-function addMandatoryHeader(requestOptions: RequestOptions, body?: string | Buffer) {
-  requestOptions.headers!['host'] = requestOptions.host!;
+function addMandatoryHeader(requestOptions: BrunoRequestOptions, body?: string | Buffer) {
+  let hostHeader = requestOptions.hostname;
+  if (requestOptions.port) {
+    hostHeader += `:${requestOptions.port}`;
+  }
+  requestOptions.headers!['host'] = hostHeader;
 
   if (body !== undefined) {
     const length = Buffer.isBuffer(body) ? body.length : Buffer.byteLength(body);
@@ -55,7 +58,7 @@ function addMandatoryHeader(requestOptions: RequestOptions, body?: string | Buff
   }
 }
 
-async function addCookieHeader(requestOptions: RequestOptions, cookieJar: CookieJar) {
+async function addCookieHeader(requestOptions: BrunoRequestOptions, cookieJar: CookieJar) {
   const currentUrl = urlFromRequestOptions(requestOptions);
   const cookieHeader = await cookieJar.getCookieString(currentUrl.href);
   if (cookieHeader) {
@@ -65,16 +68,16 @@ async function addCookieHeader(requestOptions: RequestOptions, cookieJar: Cookie
 
 async function handleServerResponse(
   context: RequestContext,
-  request: RequestOptions,
+  request: BrunoRequestOptions,
   response: HttpRequestInfo
-): Promise<RequestOptions | false> {
+): Promise<BrunoRequestOptions | false> {
   // We did not get a response / an error occurred
   if (response.statusCode === undefined) {
     return false;
   }
 
-  if (context.prefences.request.storeCookies) {
-    storeCookies(context.cookieJar, request, response);
+  if (context.preferences.request.storeCookies) {
+    await storeCookies(context.cookieJar, request, response);
   }
 
   const mustRedirect = handleRedirect(request, response);
@@ -106,7 +109,7 @@ async function handleServerResponse(
 }
 
 // This is basically copied from: https://github.com/nodejs/undici/blob/main/lib/handler/redirect-handler.js#L91
-function handleRedirect(request: RequestOptions, response: HttpRequestInfo): boolean {
+function handleRedirect(request: BrunoRequestOptions, response: HttpRequestInfo): boolean {
   // Should only be counted with one of these status codes
   if (response.statusCode === undefined || ![300, 301, 302, 303, 307, 308].includes(response.statusCode)) {
     return false;
@@ -123,22 +126,25 @@ function handleRedirect(request: RequestOptions, response: HttpRequestInfo): boo
   // e.g. https://my-new-site.net
   let newLocationUrl;
   try {
-    newLocationUrl = new URL(newLocation, new URL(request.path!, `${request.protocol}//${request.host}`));
+    const oldBaseUrl = urlFromRequestOptions(request);
+    newLocationUrl = new URL(newLocation, new URL(request.path, `${request.protocol}//${request.hostname}`));
   } catch (error) {
     throw new Error(
       'Could not create Url to redirect location! Server returned this location: ' +
-        `"${newLocation}", old path: "${request.path}" & old base: "${request.protocol}//${request.host}". ` +
+        `"${newLocation}", old path: "${request.path}" & old base: "${request.protocol}//${request.hostname}". ` +
         `Original error: ${error}`
     );
   }
-  request.host = newLocationUrl.host;
+
+  request.hostname = newLocationUrl.hostname;
+  request.port = newLocationUrl.port;
   request.protocol = newLocationUrl.protocol;
   request.path = `${newLocationUrl.pathname}${newLocationUrl.search}`;
 
   return true;
 }
 
-async function storeCookies(cookieJar: CookieJar, request: RequestOptions, response: HttpRequestInfo) {
+async function storeCookies(cookieJar: CookieJar, request: BrunoRequestOptions, response: HttpRequestInfo) {
   const currentUrl = urlFromRequestOptions(request);
 
   for (const cookieString of response.headers!['set-cookie'] ?? []) {
@@ -163,10 +169,10 @@ async function handleFinalResponse(response: HttpRequestInfo, context: RequestCo
   };
 }
 
-export function urlFromRequestOptions(opts: RequestOptions): URL {
+export function urlFromRequestOptions(opts: BrunoRequestOptions): URL {
   let port = '';
   if (opts.port) {
     port = `:${port}`;
   }
-  return new URL(`${opts.protocol}//${opts.host}${port}${opts.path}`);
+  return new URL(`${opts.protocol}//${opts.hostname}${port}${opts.path}`);
 }

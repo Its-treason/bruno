@@ -259,7 +259,7 @@ export type Collection = {
   };
 };
 
-// This should always be equal to `prefences.js` in bruno-electron
+// This should always be equal to `preferences.js` in bruno-electron
 export type Preferences = {
   request: {
     sslVerification: boolean;
@@ -325,6 +325,14 @@ export type BrunoConfig = {
   };
 };
 
+// Method, protocol, hostname and path are always set
+export type BrunoRequestOptions = Omit<RequestOptions, 'host'> & {
+  method: string;
+  protocol: string;
+  hostname: string;
+  path: string;
+} & TlsOptions;
+
 export type RequestContext = {
   uid: string;
   dataDir: string;
@@ -334,7 +342,7 @@ export type RequestContext = {
 
   requestItem: RequestItem;
   collection: Collection;
-  prefences: Preferences;
+  preferences: Preferences;
   cookieJar: CookieJar;
   variables: {
     collection: Record<string, unknown>;
@@ -352,7 +360,7 @@ export type RequestContext = {
   timeline?: Timeline;
 
   httpRequest?: {
-    options: RequestOptions & TlsOptions;
+    options: BrunoRequestOptions;
     body?: string | Buffer;
     redirectDepth: number;
   };

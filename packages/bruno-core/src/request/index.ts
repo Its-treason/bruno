@@ -21,7 +21,7 @@ import { readResponseBodyAsync } from './runtime/utils';
 export async function request(
   requestItem: RequestItem,
   collection: Collection,
-  prefences: Preferences,
+  preferences: Preferences,
   cookieJar: CookieJar,
   dataDir: string,
   cancelToken: string,
@@ -45,7 +45,7 @@ export async function request(
 
     requestItem,
     collection,
-    prefences,
+    preferences,
     cookieJar,
     variables: {
       process: {

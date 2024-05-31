@@ -12,7 +12,7 @@
     "allowSyntheticDefaultImports": true,
     "target": "ES2021",
     "module": "esnext",
-    "lib": ["es2017", "dom"],
+    "lib": ["es2021"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
