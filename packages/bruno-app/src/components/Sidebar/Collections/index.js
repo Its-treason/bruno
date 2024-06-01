@@ -97,7 +97,7 @@ const Collections = () => {
         <CollectionsBadge />
       </Group>
 
-      <div className="flex flex-col overflow-y-auto absolute bottom-10 left-0 right-0" style={{ top: rem(90) }}>
+      <div className="flex flex-col overflow-y-auto absolute bottom-12 left-0 right-0" style={{ top: rem(90) }}>
         {collections && collections.length
           ? collections.map((c) => {
               return (
