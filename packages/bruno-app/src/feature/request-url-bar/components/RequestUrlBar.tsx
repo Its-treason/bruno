@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { ActionIcon, Indicator, Paper, Tooltip, rem } from '@mantine/core';
+import { ActionIcon, Button, Indicator, Loader, Paper, Tooltip, rem } from '@mantine/core';
 import classes from './RequestUrlBar.module.css';
 import { useDispatch } from 'react-redux';
 import { saveRequest } from 'providers/ReduxStore/slices/collections/actions';
@@ -10,12 +10,13 @@ import { requestUrlChanged } from 'providers/ReduxStore/slices/collections';
 import { MethodSelector } from './MethodSelector';
 import { get } from 'lodash';
 import CodeEditor from 'components/CodeEditor';
-import { IconArrowRight, IconDeviceFloppy } from '@tabler/icons-react';
+import { IconDeviceFloppy, IconSend2 } from '@tabler/icons-react';
 
 type Request = {
   uid: string;
   method: string;
   url: string;
+  requestState: string;
 
   draft?: Request;
 };
@@ -46,6 +47,8 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item, 
   const method = item.draft ? get(item, 'draft.request.method') : get(item, 'request.method');
   const url = item.draft ? get(item, 'draft.request.url', '') : get(item, 'request.url', '');
 
+  const isLoading = ['queued', 'sending'].includes(item.requestState);
+
   return (
     <Paper className={classes.bar} m={'xs'}>
       <MethodSelector collectionUid={collection.uid} requestUid={item.uid} selectedMethod={method} />
@@ -60,7 +63,7 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item, 
         collection={collection}
       />
 
-      <Tooltip label={'Save'}>
+      <Tooltip label={'Save request'}>
         <Indicator position="top-start" disabled={!item.draft} offset={8}>
           <ActionIcon onClick={onSave} size={'input-sm'} variant="transparent" c={'gray'}>
             <IconDeviceFloppy style={{ width: rem(32) }} stroke={1.5} />
@@ -68,11 +71,21 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item, 
         </Indicator>
       </Tooltip>
 
-      <Tooltip label={'Send request'}>
-        <ActionIcon onClick={handleRun} size={'input-sm'}>
-          <IconArrowRight style={{ width: rem(32) }} stroke={1.5} />
-        </ActionIcon>
-      </Tooltip>
+      <Button
+        size="input-sm"
+        rightSection={
+          isLoading ? (
+            <Loader style={{ width: rem(32), marginRight: 'calc(var(--button-padding-x-sm) / 2)' }} size={'xs'} />
+          ) : (
+            <IconSend2 style={{ width: rem(32), marginRight: 'calc(var(--button-padding-x-sm) / 2)' }} stroke={1.5} />
+          )
+        }
+        onClick={handleRun}
+        variant="filled"
+        disabled={isLoading}
+      >
+        Send
+      </Button>
     </Paper>
   );
 };
