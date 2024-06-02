@@ -12,7 +12,7 @@ type RequestTimeline = {
   finalOptions: {
     method: string;
     protocol: string;
-    host: string;
+    hostname: string;
     port: string;
     path: string;
     headers: Record<string, string[]>;
@@ -31,8 +31,8 @@ type RequestTimeline = {
 
 const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
   const requestHeader: string[] = useMemo(() => {
-    const port = item.finalOptions.port ? `:${item.finalOptions.protocol}` : '';
-    const url = `${item.finalOptions.protocol}//${item.finalOptions.host}${port}${item.finalOptions.path}`;
+    const port = item.finalOptions.port ? `:${item.finalOptions.port}` : '';
+    const url = `${item.finalOptions.protocol}//${item.finalOptions.hostname}${port}${item.finalOptions.path}`;
 
     const data = [`${item.finalOptions.method} ${url}`];
     for (const [name, value] of Object.entries(item.finalOptions.headers)) {
