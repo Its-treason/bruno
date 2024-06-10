@@ -25,7 +25,7 @@ export const ImportEnvironmentModal: React.FC = () => {
           environment = await importPostmanEnvironment();
           break;
         default:
-          throw new Error(`Unknown enviornment type: ${values.type}`);
+          throw new Error(`Unknown environment type: ${values.type}`);
       }
 
       dispatch(importEnvironment(environment.name, environment.variables, collection.uid));

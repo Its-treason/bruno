@@ -66,7 +66,7 @@ export const RenameEnvironmentModal: React.FC = () => {
       }}
       title="Rename environment"
     >
-      <Text>Choose a name for the clone of "{selectedEnvironment?.name}"</Text>
+      <Text>Choose a new name for "{selectedEnvironment?.name}"</Text>
 
       <form
         onSubmit={renameForm.onSubmit((values) => {
@@ -81,7 +81,7 @@ export const RenameEnvironmentModal: React.FC = () => {
           {...renameForm.getInputProps('name')}
           key={renameForm.key('name')}
           label={'Name'}
-          placeholder={'New environment name'}
+          placeholder={'Updated environment name'}
           my={'md'}
         />
 

@@ -61,7 +61,7 @@ export const CreateEnvironmentModal: React.FC = () => {
       }}
       title="Create environment"
     >
-      <Text>Choose a name for the clone of "{selectedEnvironment?.name}"</Text>
+      <Text>Choose a name for the new environment</Text>
 
       <form
         onSubmit={createForm.onSubmit((values) => {
