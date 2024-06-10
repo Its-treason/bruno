@@ -13,28 +13,11 @@ const Wrapper = styled.div`
     }
 
     .collection-actions {
-      .dropdown {
-        div[aria-expanded='true'] {
-          visibility: visible;
-        }
-        div[aria-expanded='false'] {
-          visibility: hidden;
-        }
-      }
-
-      svg {
-        height: 22px;
-        color: ${(props) => props.theme.sidebar.dropdownIcon.color};
-      }
+      visibility: hidden;
     }
-
     &:hover {
       .collection-actions {
-        .dropdown {
-          div[aria-expanded='false'] {
-            visibility: visible;
-          }
-        }
+        visibility: visible;
       }
     }
 

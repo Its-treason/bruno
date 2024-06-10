@@ -8,15 +8,12 @@ import { collectionSchema } from '@usebruno/schema';
 import { BrunoError } from 'utils/common/error';
 
 export const validateSchema = (collection = {}) => {
-  return new Promise((resolve, reject) => {
-    collectionSchema
-      .validate(collection)
-      .then(() => resolve(collection))
-      .catch((err) => {
-        console.log(err);
-        reject(new BrunoError('The Collection file is corrupted'));
-      });
-  });
+  const parseResult = collectionSchema.safeParse(collection);
+  if (parseResult.success) {
+    return parseResult.data;
+  }
+  console.error('Import failed, because schema did not match!', parseResult.error);
+  throw new BrunoError(`The Collection file is corrupted. Schema validation failed: ${parseResult.error.format()}`);
 };
 
 export const updateUidsInCollection = (_collection) => {

@@ -1,58 +1,24 @@
-import React, { useState, forwardRef, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import classnames from 'classnames';
-import { uuid } from 'utils/common';
 import filter from 'lodash/filter';
 import { useDrop } from 'react-dnd';
-import { IconChevronRight, IconDots } from '@tabler/icons-react';
-import Dropdown from 'components/Dropdown';
+import { IconChevronRight } from '@tabler/icons-react';
 import { collectionClicked } from 'providers/ReduxStore/slices/collections';
 import { moveItemToRootOfCollection } from 'providers/ReduxStore/slices/collections/actions';
-import { shellOpenCollectionPath } from 'providers/ReduxStore/slices/collections/actions';
 import { useDispatch } from 'react-redux';
-import { addTab } from 'providers/ReduxStore/slices/tabs';
-import NewRequest from 'components/Sidebar/NewRequest';
-import NewFolder from 'components/Sidebar/NewFolder';
 import CollectionItem from './CollectionItem';
-import RemoveCollection from './RemoveCollection';
-import ExportCollection from './ExportCollection';
 import { doesCollectionHaveItemsMatchingSearchText } from 'utils/collections/search';
-import { isItemAFolder, isItemARequest, transformCollectionToSaveToExportAsFile } from 'utils/collections';
-import exportCollection from 'utils/collections/export';
+import { isItemAFolder, isItemARequest } from 'utils/collections';
 
-import RenameCollection from './RenameCollection';
 import StyledWrapper from './StyledWrapper';
-import CloneCollection from './CloneCollection/index';
 import { selectEnvironment } from 'providers/ReduxStore/slices/collections/actions';
+import { CollectionMenu } from 'src/feature/sidebar-menu';
 
 const Collection = ({ collection, searchText }) => {
-  const [showNewFolderModal, setShowNewFolderModal] = useState(false);
-  const [showNewRequestModal, setShowNewRequestModal] = useState(false);
-  const [showRenameCollectionModal, setShowRenameCollectionModal] = useState(false);
-  const [showCloneCollectionModalOpen, setShowCloneCollectionModalOpen] = useState(false);
-  const [showExportCollectionModal, setShowExportCollectionModal] = useState(false);
-  const [showRemoveCollectionModal, setShowRemoveCollectionModal] = useState(false);
   const [collectionIsCollapsed, setCollectionIsCollapsed] = useState(collection.collapsed);
   const dispatch = useDispatch();
 
   const menuDropdownTippyRef = useRef();
-  const onMenuDropdownCreate = (ref) => (menuDropdownTippyRef.current = ref);
-  const MenuIcon = forwardRef((props, ref) => {
-    return (
-      <div ref={ref} className="pr-2">
-        <IconDots size={22} />
-      </div>
-    );
-  });
-
-  const handleRun = () => {
-    dispatch(
-      addTab({
-        uid: uuid(),
-        collectionUid: collection.uid,
-        type: 'collection-runner'
-      })
-    );
-  };
 
   useEffect(() => {
     if (searchText && searchText.length) {
@@ -96,24 +62,6 @@ const Collection = ({ collection, searchText }) => {
     }
   };
 
-  const handleShellRevealCollection = () => {
-    dispatch(shellOpenCollectionPath(collection.pathname, true, false));
-  };
-
-  const handleShellEditCollection = () => {
-    dispatch(shellOpenCollectionPath(collection.pathname, true, true));
-  };
-
-  const viewCollectionSettings = () => {
-    dispatch(
-      addTab({
-        uid: uuid(),
-        collectionUid: collection.uid,
-        type: 'collection-settings'
-      })
-    );
-  };
-
   const [{ isOver }, drop] = useDrop({
     accept: `COLLECTION_ITEM_${collection.uid}`,
     drop: (draggedItem) => {
@@ -149,20 +97,6 @@ const Collection = ({ collection, searchText }) => {
 
   return (
     <StyledWrapper className="flex flex-col">
-      {showNewRequestModal && <NewRequest collection={collection} onClose={() => setShowNewRequestModal(false)} />}
-      {showNewFolderModal && <NewFolder collection={collection} onClose={() => setShowNewFolderModal(false)} />}
-      {showRenameCollectionModal && (
-        <RenameCollection collection={collection} onClose={() => setShowRenameCollectionModal(false)} />
-      )}
-      {showRemoveCollectionModal && (
-        <RemoveCollection collection={collection} onClose={() => setShowRemoveCollectionModal(false)} />
-      )}
-      {showExportCollectionModal && (
-        <ExportCollection collection={collection} onClose={() => setShowExportCollectionModal(false)} />
-      )}
-      {showCloneCollectionModalOpen && (
-        <CloneCollection collection={collection} onClose={() => setShowCloneCollectionModalOpen(false)} />
-      )}
       <div className="flex py-1 collection-name items-center" ref={drop}>
         <div
           className="flex flex-grow items-center overflow-hidden"
@@ -180,98 +114,7 @@ const Collection = ({ collection, searchText }) => {
           </div>
         </div>
         <div className="collection-actions">
-          <Dropdown onCreate={onMenuDropdownCreate} icon={<MenuIcon />} placement="bottom-start">
-            <div
-              className="dropdown-item"
-              onClick={(e) => {
-                menuDropdownTippyRef.current.hide();
-                setShowNewRequestModal(true);
-              }}
-            >
-              New Request
-            </div>
-            <div
-              className="dropdown-item"
-              onClick={(e) => {
-                menuDropdownTippyRef.current.hide();
-                setShowNewFolderModal(true);
-              }}
-            >
-              New Folder
-            </div>
-            <div
-              className="dropdown-item"
-              onClick={(e) => {
-                menuDropdownTippyRef.current.hide();
-                setShowCloneCollectionModalOpen(true);
-              }}
-            >
-              Clone
-            </div>
-            <div
-              className="dropdown-item"
-              onClick={(e) => {
-                menuDropdownTippyRef.current.hide();
-                handleRun();
-              }}
-            >
-              Run
-            </div>
-            <div
-              className="dropdown-item"
-              onClick={(e) => {
-                menuDropdownTippyRef.current.hide();
-                setShowRenameCollectionModal(true);
-              }}
-            >
-              Rename
-            </div>
-            <div
-              className="dropdown-item"
-              onClick={(e) => {
-                menuDropdownTippyRef.current.hide();
-                setShowExportCollectionModal(true);
-              }}
-            >
-              Export
-            </div>
-            <div
-              className="dropdown-item"
-              onClick={(e) => {
-                menuDropdownTippyRef.current.hide();
-                setShowRemoveCollectionModal(true);
-              }}
-            >
-              Close
-            </div>
-            <div
-              className="dropdown-item"
-              onClick={(e) => {
-                menuDropdownTippyRef.current.hide();
-                viewCollectionSettings();
-              }}
-            >
-              Settings
-            </div>
-            <div
-              className="dropdown-item"
-              onClick={(e) => {
-                menuDropdownTippyRef.current.hide();
-                handleShellRevealCollection();
-              }}
-            >
-              Open in Explorer
-            </div>
-            <div
-              className="dropdown-item"
-              onClick={(e) => {
-                menuDropdownTippyRef.current.hide();
-                handleShellEditCollection();
-              }}
-            >
-              Edit bruno.json
-            </div>
-          </Dropdown>
+          <CollectionMenu collection={collection} />
         </div>
       </div>
 

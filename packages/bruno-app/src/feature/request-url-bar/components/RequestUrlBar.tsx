@@ -6,7 +6,7 @@ import { ActionIcon, Button, Indicator, Loader, Paper, Tooltip, rem } from '@man
 import classes from './RequestUrlBar.module.css';
 import { useDispatch } from 'react-redux';
 import { saveRequest } from 'providers/ReduxStore/slices/collections/actions';
-import { requestUrlChanged } from 'providers/ReduxStore/slices/collections';
+import { requestUrlChanged, updateRequestMethod } from 'providers/ReduxStore/slices/collections';
 import { MethodSelector } from './MethodSelector';
 import { get } from 'lodash';
 import CodeEditor from 'components/CodeEditor';
@@ -44,6 +44,16 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item, 
     );
   };
 
+  const onMethodSelect = (method) => {
+    dispatch(
+      updateRequestMethod({
+        method,
+        itemUid: item.uid,
+        collectionUid: collection.uid
+      })
+    );
+  };
+
   const method = item.draft ? get(item, 'draft.request.method') : get(item, 'request.method');
   const url = item.draft ? get(item, 'draft.request.url', '') : get(item, 'request.url', '');
 
@@ -51,7 +61,7 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item, 
 
   return (
     <Paper className={classes.bar} m={'xs'}>
-      <MethodSelector collectionUid={collection.uid} requestUid={item.uid} selectedMethod={method} />
+      <MethodSelector value={method} onChange={onMethodSelect} />
 
       <CodeEditor
         singleLine

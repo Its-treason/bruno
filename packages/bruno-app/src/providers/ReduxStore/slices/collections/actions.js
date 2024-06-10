@@ -18,7 +18,7 @@ import {
   refreshUidsInItem,
   transformRequestToSaveToFilesystem
 } from 'utils/collections';
-import { collectionSchema, itemSchema, environmentSchema } from '@usebruno/schema';
+import { collectionSchema, requestItemSchema, environmentSchema } from '@usebruno/schema';
 import { PATH_SEPARATOR, getDirectoryName } from 'utils/common/platform';
 import { cancelNetworkRequest, sendNetworkRequest } from 'utils/network';
 
@@ -54,38 +54,38 @@ export const renameCollection = (newName, collectionUid) => (dispatch, getState)
   });
 };
 
-export const saveRequest = (itemUid, collectionUid, saveSilently) => (dispatch, getState) => {
+export const saveRequest = (itemUid, collectionUid, saveSilently) => async (dispatch, getState) => {
   const state = getState();
   const collection = findCollectionByUid(state.collections.collections, collectionUid);
 
-  return new Promise((resolve, reject) => {
-    if (!collection) {
-      return reject(new Error('Collection not found'));
-    }
+  if (!collection) {
+    throw new Error('Collection not found');
+  }
 
-    const collectionCopy = cloneDeep(collection);
-    const item = findItemInCollection(collectionCopy, itemUid);
-    if (!item) {
-      return reject(new Error('Not able to locate item'));
-    }
+  const collectionCopy = cloneDeep(collection);
+  const item = findItemInCollection(collectionCopy, itemUid);
+  if (!item) {
+    throw new Error('Not able to locate item');
+  }
 
-    const itemToSave = transformRequestToSaveToFilesystem(item);
-    const { ipcRenderer } = window;
+  const itemToSave = transformRequestToSaveToFilesystem(item);
+  const { ipcRenderer } = window;
 
-    itemSchema
-      .validate(itemToSave)
-      .then(() => ipcRenderer.invoke('renderer:save-request', item.pathname, itemToSave))
-      .then(() => {
-        if (!saveSilently) {
-          toast.success('Request saved successfully');
-        }
-      })
-      .then(resolve)
-      .catch((err) => {
-        toast.error('Failed to save request!');
-        reject(err);
-      });
-  });
+  const parseResult = requestItemSchema.safeParse(itemToSave);
+  if (!parseResult.success) {
+    toast.error('Could not save, request item is invalid');
+    throw new Error(`Item is invalid: ${parseResult.error}`);
+  }
+
+  try {
+    await ipcRenderer.invoke('renderer:save-request', item.pathname, parseResult.data);
+  } catch (error) {
+    toast.error('Failed to save request!');
+    throw error;
+  }
+  if (!saveSilently) {
+    toast.success('Request saved successfully');
+  }
 };
 
 export const saveMultipleRequests = (items) => (dispatch, getState) => {
@@ -98,7 +98,7 @@ export const saveMultipleRequests = (items) => (dispatch, getState) => {
       const collection = findCollectionByUid(collections, item.collectionUid);
       if (collection) {
         const itemToSave = transformRequestToSaveToFilesystem(item);
-        const itemIsValid = itemSchema.validateSync(itemToSave);
+        const itemIsValid = requestItemSchema.safeParse(itemToSave).success;
         if (itemIsValid) {
           itemsToSave.push({
             item: itemToSave,
@@ -405,8 +405,8 @@ export const cloneItem = (newName, itemUid, collectionUid) => (dispatch, getStat
         const requestItems = filter(collection.items, (i) => i.type !== 'folder');
         itemToSave.seq = requestItems ? requestItems.length + 1 : 1;
 
-        itemSchema
-          .validate(itemToSave)
+        requestItemSchema
+          .parseAsync(itemToSave)
           .then(() => ipcRenderer.invoke('renderer:new-request', collection.pathname, itemToSave))
           .then(resolve)
           .catch(reject);
@@ -434,8 +434,8 @@ export const cloneItem = (newName, itemUid, collectionUid) => (dispatch, getStat
         const requestItems = filter(parentItem.items, (i) => i.type !== 'folder');
         itemToSave.seq = requestItems ? requestItems.length + 1 : 1;
 
-        itemSchema
-          .validate(itemToSave)
+        requestItemSchema
+          .parseAsync(itemToSave)
           .then(() => ipcRenderer.invoke('renderer:new-request', pathname, itemToSave))
           .then(resolve)
           .catch(reject);
@@ -849,7 +849,7 @@ export const renameEnvironment = (newName, environmentUid, collectionUid) => (di
     environment.name = newName;
 
     environmentSchema
-      .validate(environment)
+      .parseAsync(environment)
       .then(() => ipcRenderer.invoke('renderer:rename-environment', collection.pathname, oldName, newName))
       .then(resolve)
       .catch(reject);
@@ -895,7 +895,7 @@ export const saveEnvironment = (variables, environmentUid, collectionUid) => (di
     environment.variables = variables;
 
     environmentSchema
-      .validate(environment)
+      .parseAsync(environment)
       .then(() => ipcRenderer.invoke('renderer:save-environment', collection.pathname, environment))
       .then(resolve)
       .catch(reject);
@@ -992,12 +992,13 @@ export const openCollectionEvent = (uid, pathname, brunoConfig) => (dispatch, ge
     items: [],
     collectionVariables: {},
     environments: [],
-    brunoConfig: brunoConfig
+    brunoConfig: brunoConfig,
+    activeEnvironmentUid: null
   };
 
   return new Promise((resolve, reject) => {
     collectionSchema
-      .validate(collection)
+      .parseAsync(collection)
       .then(() => dispatch(_createCollection(collection)))
       .then(resolve)
       .catch(reject);
@@ -1044,7 +1045,7 @@ export const collectionAddEnvFileEvent = (payload) => (dispatch, getState) => {
     }
 
     environmentSchema
-      .validate(environment)
+      .parseAsync(environment)
       .then(() =>
         dispatch(
           _collectionAddEnvFileEvent({

@@ -111,11 +111,12 @@ const addEnvironmentFile = async (win, pathname, collectionUid, collectionPath) 
     // hydrate environment variables with secrets
     if (envHasSecrets(file.data)) {
       const envSecrets = environmentSecretsStore.getEnvSecrets(collectionPath, file.data);
-      _.each(envSecrets, (secret) => {
-        const variable = _.find(file.data.variables, (v) => v.name === secret.name);
-        if (variable && secret.value) {
-          variable.value = decryptString(secret.value);
+      _.each(file.data.variables, (variable) => {
+        if (!variable.secret) {
+          return;
         }
+        const secret = _.find(envSecrets, (v) => v.name === secret.name);
+        variable.value = secret ? decryptString(secret.value) : '';
       });
     }
 

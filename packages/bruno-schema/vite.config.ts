@@ -1,17 +1,19 @@
 import { resolve } from 'path';
 import { defineConfig } from 'vite';
 import dts from 'vite-plugin-dts';
-import commonjs from 'vite-plugin-commonjs';
 
 export default defineConfig({
-  plugins: [commonjs(), dts()],
+  plugins: [dts()],
   build: {
     minify: false,
     sourcemap: true,
     lib: {
-      entry: resolve(__dirname, 'src/index.js'),
+      entry: resolve(__dirname, 'src/index.ts'),
       name: '@usebruno/schema',
       fileName: 'index'
+    },
+    rollupOptions: {
+      external: ['zod']
     }
   },
   clearScreen: false

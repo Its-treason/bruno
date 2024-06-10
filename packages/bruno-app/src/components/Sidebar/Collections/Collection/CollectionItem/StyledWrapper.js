@@ -2,16 +2,7 @@ import styled from 'styled-components';
 
 const Wrapper = styled.div`
   .menu-icon {
-    color: ${(props) => props.theme.sidebar.dropdownIcon.color};
-
-    .dropdown {
-      div[aria-expanded='true'] {
-        visibility: visible;
-      }
-      div[aria-expanded='false'] {
-        visibility: hidden;
-      }
-    }
+    visibility: hidden;
   }
 
   .indent-block {
@@ -37,11 +28,7 @@ const Wrapper = styled.div`
     &.item-hovered {
       background: ${(props) => props.theme.sidebar.collection.item.hoverBg};
       .menu-icon {
-        .dropdown {
-          div[aria-expanded='false'] {
-            visibility: visible;
-          }
-        }
+        visibility: visible;
       }
     }
 

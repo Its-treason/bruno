@@ -12,6 +12,7 @@
   "exports": {
     ".": {
       "import": "./dist/index.mjs",
+      "types": "./dist/index.d.ts",
       "require": "./dist/index.umd.cjs"
     }
   },
@@ -22,12 +23,12 @@
     "test": "jest"
   },
   "dependencies": {
-    "yup": "^0.32.11"
+    "zod": "^3.23.8"
   },
   "devDependencies": {
     "rimraf": "^5.0.5",
     "vite": "^5.1.6",
-    "vite-plugin-dts": "^3.7.3",
-    "vite-plugin-commonjs": "^0.10.1"
+    "typescript": "^5.4.2",
+    "vite-plugin-dts": "^3.7.3"
   }
 }
