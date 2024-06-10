@@ -21,7 +21,6 @@ export const useEnvironmentEditorProvider = (
   closeModal: () => void
 ): EnvironmentProviderProps => {
   const dispatch = useDispatch();
-  const [allEnvironments, setAllEnvironments] = useState<CollectionEnvironment[]>([]);
   const [selectedEnvironment, setSelectedEnvironment] = useState<CollectionEnvironment | null>(
     collection.environments[0] ?? null
   );
@@ -48,36 +47,38 @@ export const useEnvironmentEditorProvider = (
     }
   });
 
+  // Try to always select the active environment
   useEffect(() => {
+    if (collection.activeEnvironmentUid === null) {
+      return;
+    }
+
+    const foundSelectedEnv = collection.environments.find((env) => env.uid === collection.activeEnvironmentUid);
+    if (!foundSelectedEnv) {
+      return;
+    }
+
+    setSelectedEnvironment(foundSelectedEnv);
+    form.setInitialValues({ variables: structuredClone(foundSelectedEnv.variables) });
+    form.reset();
+  }, [collection.activeEnvironmentUid]);
+
+  useEffect(() => {
+    // If the collection has no environments, reset the selected environment
     if (collection.environments.length === 0) {
       setSelectedEnvironment(null);
       return;
     }
 
-    setAllEnvironments(collection.environments);
-
-    // This will ensure, that there is always a corrent enrionment selected
-    const foundSelectedEnv = allEnvironments.find((env) => env.name === selectedEnvironment?.name);
-    if ((foundSelectedEnv === undefined || selectedEnvironment === null) && allEnvironments.length > 0) {
-      setSelectedEnvironment(allEnvironments[0]);
-      form.setInitialValues({ variables: structuredClone(allEnvironments[0]?.variables ?? []) });
+    const foundSelectedEnv = collection.environments.find((env) => env.name === selectedEnvironment?.name);
+    // If the selected environment is not found in the collection, select the first one
+    if (!foundSelectedEnv) {
+      setSelectedEnvironment(collection.environments[0]);
+      form.setInitialValues({ variables: structuredClone(collection.environments[0]?.variables ?? []) });
       form.reset();
       return;
     }
-
-    // Auto selected a newly created/cloned envrionment.
-    // First check if the collection length is bigger and then find the new environmetn
-    if (collection.environments.length - allEnvironments.length === 1) {
-      const newEnvironment = collection.environments.find((newEnv) => {
-        return !allEnvironments.find((currentEnv) => currentEnv.uid === newEnv.uid);
-      });
-      if (newEnvironment) {
-        setSelectedEnvironment(newEnvironment);
-        form.setInitialValues({ variables: structuredClone(newEnvironment.variables) });
-        form.reset();
-      }
-    }
-  }, [collection.activeEnvironmentUid, collection.environments, selectedEnvironment, allEnvironments]);
+  }, [collection.environments, selectedEnvironment]);
 
   const onSubmit = useCallback(
     (values: CollectionEnvironment['variables']) => {

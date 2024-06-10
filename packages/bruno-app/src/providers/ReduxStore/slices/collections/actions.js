@@ -851,7 +851,21 @@ export const renameEnvironment = (newName, environmentUid, collectionUid) => (di
     environmentSchema
       .parseAsync(environment)
       .then(() => ipcRenderer.invoke('renderer:rename-environment', collection.pathname, oldName, newName))
-      .then(resolve)
+      .then(() => {
+        // This will automaticly reselect the renamed environment
+        if (environmentUid === collection.activeEnvironmentUid) {
+          dispatch(
+            updateLastAction({
+              collectionUid,
+              lastAction: {
+                type: 'ADD_ENVIRONMENT',
+                payload: newName
+              }
+            })
+          );
+        }
+        resolve();
+      })
       .catch(reject);
   });
 };

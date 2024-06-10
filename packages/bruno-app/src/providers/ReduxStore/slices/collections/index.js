@@ -102,6 +102,10 @@ export const collectionsSlice = createSlice({
       const collection = findCollectionByUid(state.collections, meta.collectionUid);
 
       if (collection) {
+        // Unset the selected environment, when it was deleted
+        if (collection.activeEnvironmentUid === environment.uid) {
+          collection.activeEnvironmentUid = undefined;
+        }
         collection.environments = filter(collection.environments, (e) => e.uid !== environment.uid);
       }
     },
