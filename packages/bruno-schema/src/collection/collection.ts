@@ -2,35 +2,51 @@ import { z } from 'zod';
 import { requestItemSchema } from './request';
 import { environmentSchema } from './environment';
 
+// This has a lot of defaults because the Config may be older and Bruno set any defaults
 export const brunoConfigSchema = z
   .object({
     version: z.literal('1'),
     name: z.string(),
     type: z.literal('collection'),
     ignore: z.array(z.string()).default([]),
-    scripts: z.object({
-      moduleWhitelist: z.array(z.string())
-    }),
-    proxy: z.object({
-      enabled: z.boolean().default(false),
-      protocol: z.enum(['http', 'https', 'socks4', 'socks5']),
-      hostname: z.string(),
-      port: z.number(),
-      auth: z.object({
-        enabled: z.boolean(),
-        username: z.string(),
-        password: z.string()
+    scripts: z
+      .object({
+        moduleWhitelist: z.array(z.string()).default([])
+      })
+      .default({ moduleWhitelist: [] }),
+    proxy: z
+      .object({
+        enabled: z.boolean().default(false),
+        protocol: z.enum(['http', 'https', 'socks4', 'socks5']),
+        hostname: z.string(),
+        port: z.number().or(z.string()),
+        auth: z.object({
+          enabled: z.boolean(),
+          username: z.string(),
+          password: z.string()
+        }),
+        bypassProxy: z.string().default('')
+      })
+      .default({
+        enabled: false,
+        protocol: 'http',
+        hostname: '',
+        port: 0,
+        auth: { enabled: false, username: '', password: '' },
+        bypassProxy: ''
       }),
-      bypassProxy: z.string()
-    }),
-    clientCertificates: z.object({
-      enabled: z.boolean(),
-      certs: z.array(z.unknown())
-    }),
-    presets: z.object({
-      requestType: z.enum(['graphql', 'http']).default('http'),
-      requestUrl: z.string().default('')
-    })
+    clientCertificates: z
+      .object({
+        enabled: z.boolean(),
+        certs: z.array(z.unknown())
+      })
+      .default({ enabled: false, certs: [] }),
+    presets: z
+      .object({
+        requestType: z.enum(['graphql', 'http']).default('http'),
+        requestUrl: z.string().default('')
+      })
+      .default({ requestType: 'http', requestUrl: '' })
   })
   .passthrough();
 export type BrunoConfigSchema = z.infer<typeof brunoConfigSchema>;

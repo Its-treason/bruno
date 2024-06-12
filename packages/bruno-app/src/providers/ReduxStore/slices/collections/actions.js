@@ -1013,7 +1013,7 @@ export const openCollectionEvent = (uid, pathname, brunoConfig) => (dispatch, ge
   return new Promise((resolve, reject) => {
     collectionSchema
       .parseAsync(collection)
-      .then(() => dispatch(_createCollection(collection)))
+      .then((parsedCollection) => dispatch(_createCollection(parsedCollection)))
       .then(resolve)
       .catch(reject);
   });
