@@ -42,10 +42,10 @@ export const RenameCollectionModal: React.FC<RenameCollectionModalProps> = ({ op
   });
   useEffect(() => {
     renameForm.setInitialValues({
-      name: `${collection.name}`
+      name: `${collection?.name}`
     });
     renameForm.reset();
-  }, [collection.name]);
+  }, [collection?.name]);
 
   return (
     <Modal
@@ -57,7 +57,7 @@ export const RenameCollectionModal: React.FC<RenameCollectionModalProps> = ({ op
       }}
       title="Rename collection"
     >
-      <Text>Rename collection "{collection.name}"</Text>
+      <Text>Rename collection "{collection?.name}"</Text>
 
       <form
         onSubmit={renameForm.onSubmit((values) => {

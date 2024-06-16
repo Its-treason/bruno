@@ -1,0 +1,50 @@
+.aside {
+  position: relative;
+  display: grid;
+  grid-template-columns: 100%;
+  grid-template-rows: auto 1fr auto;
+  max-height: 100vh;
+  width: 250px;
+  min-width: 240px;
+  max-width: 500px;
+
+  // This will prevent hover and events and stuff be applied, while dragging
+  &[data-dragging='true'] {
+    > *:not(:first-child) {
+      pointer-events: none;
+    }
+  }
+
+  // This will prevent the collection list div from overflowing and shit
+  & > * {
+    min-height: 0;
+    overflow-y: auto;
+  }
+}
+
+.resizable {
+  position: absolute;
+  right: -0.3rem;
+  width: 0.5rem;
+  height: 100%;
+  z-index: 2;
+
+  cursor: col-resize;
+
+  &::after {
+    content: '';
+    position: absolute;
+    width: 1px;
+    height: 100%;
+    left: 0.2rem;
+    background-color: var(--mantine-color-default-border);
+  }
+
+  &:hover::after {
+    background-color: var(--mantine-primary-color-filled-hover);
+  }
+  &:active::after {
+    background-color: var(--mantine-primary-color-filled);
+    width: 2px;
+  }
+}

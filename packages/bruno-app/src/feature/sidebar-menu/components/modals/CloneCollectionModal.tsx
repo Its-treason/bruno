@@ -28,15 +28,21 @@ type CloneCollectionFormSchema = z.infer<typeof cloneCollectionFormSchema>;
 type CloneCollectionModalProps = {
   opened: boolean;
   onClose: () => void;
-  collection: CollectionSchema;
+  collectionName: string;
+  collectionPath: string;
 };
 
-export const CloneCollectionModal: React.FC<CloneCollectionModalProps> = ({ opened, onClose, collection }) => {
+export const CloneCollectionModal: React.FC<CloneCollectionModalProps> = ({
+  opened,
+  onClose,
+  collectionName,
+  collectionPath
+}) => {
   const dispatch = useDispatch();
 
   const cloneMutation = useMutation({
     mutationFn: async (values: CloneCollectionFormSchema) => {
-      await dispatch(cloneCollection(values.name, values.folder, values.location, collection.pathname));
+      await dispatch(cloneCollection(values.name, values.folder, values.location, collectionPath));
     },
     onSuccess: () => {
       toast.success('Cloned collection');
@@ -49,12 +55,12 @@ export const CloneCollectionModal: React.FC<CloneCollectionModalProps> = ({ open
   });
   useEffect(() => {
     cloneForm.setInitialValues({
-      name: `${collection.name} - Clone`,
+      name: `${collectionName} - Clone`,
       location: '',
-      folder: `${collection.name} - Clone`
+      folder: `${collectionName} - Clone`
     });
     cloneForm.reset();
-  }, [collection.name]);
+  }, [collectionName]);
 
   return (
     <Modal
@@ -66,7 +72,7 @@ export const CloneCollectionModal: React.FC<CloneCollectionModalProps> = ({ open
       }}
       title="Clone collection"
     >
-      <Text>Cloning collection "{collection.name}"</Text>
+      <Text>Cloning collection "{collectionName}"</Text>
 
       <form
         onSubmit={cloneForm.onSubmit((values) => {

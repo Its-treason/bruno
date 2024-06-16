@@ -1,3 +1,7 @@
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
 import { ActionIcon, Menu, rem } from '@mantine/core';
 import {
   IconCopy,
@@ -13,109 +17,91 @@ import {
   IconSettings
 } from '@tabler/icons-react';
 import React from 'react';
-import { useCollectionMenu } from '../hooks/useCollectionMenu';
-import { CloneCollectionModal } from './modals/CloneCollectionModal';
-import { CollectionSchema } from '@usebruno/schema';
-import { CloseCollectionModal } from './modals/CloseCollectionModal';
-import { NewFolderModal } from './modals/NewFolderModal';
-import { NewRequestModal } from './modals/NewRequestModal';
-import { RenameCollectionModal } from './modals/RenameCollectionModal';
-import { ExportCollectionModal } from './modals/ExportCollectionModal';
+import { useSidebarActions } from '../hooks/useSidebarActions';
 
 const ICON_STYLE = { width: rem(16), height: rem(16) };
 
 type CollectionMenuProps = {
-  collection: CollectionSchema;
+  collectionUid: string;
+  onOpen: () => void;
+  onClose: () => void;
 };
 
-export const CollectionMenu: React.FC<CollectionMenuProps> = ({ collection }) => {
-  const { activeModal, setActiveModal, onEditBrunoJson, onOpenInExplorer, onOpenCollectionSettings, onRun } =
-    useCollectionMenu(collection.uid, collection.pathname);
+export const CollectionMenu: React.FC<CollectionMenuProps> = ({ collectionUid, onClose, onOpen }) => {
+  const { setActiveAction, openRunner, openInExplorer, editBrunoJson, openCollectionSettings } = useSidebarActions();
 
   return (
-    <Menu>
-      <CloneCollectionModal
-        collection={collection}
-        onClose={() => setActiveModal(null)}
-        opened={activeModal === 'clone'}
-      />
-      <CloseCollectionModal
-        collection={collection}
-        onClose={() => setActiveModal(null)}
-        opened={activeModal === 'close'}
-      />
-      <RenameCollectionModal
-        collection={collection}
-        onClose={() => setActiveModal(null)}
-        opened={activeModal === 'rename'}
-      />
-      <NewFolderModal
-        onClose={() => setActiveModal(null)}
-        opened={activeModal === 'new-folder'}
-        collectionUid={collection.uid}
-        itemUid={null}
-      />
-      <NewRequestModal
-        onClose={() => setActiveModal(null)}
-        opened={activeModal === 'new-request'}
-        brunoConfig={collection.brunoConfig}
-        collectionUid={collection.uid}
-        itemUid={null}
-      />
-      <ExportCollectionModal
-        onClose={() => setActiveModal(null)}
-        opened={activeModal === 'export'}
-        collection={collection}
-      />
-
+    <Menu offset={2} onOpen={onOpen} onClose={onClose}>
       <Menu.Target>
         <ActionIcon variant={'transparent'} color={'gray'}>
-          <IconDots style={ICON_STYLE} />
+          <IconDots style={{ width: 22, height: 22 }} />
         </ActionIcon>
       </Menu.Target>
 
       <Menu.Dropdown>
-        <Menu.Item leftSection={<IconPlus style={ICON_STYLE} />} onClick={() => setActiveModal('new-request')}>
+        <Menu.Item
+          leftSection={<IconPlus style={ICON_STYLE} />}
+          onClick={() => setActiveAction('new-request', collectionUid)}
+        >
           New request
         </Menu.Item>
 
-        <Menu.Item leftSection={<IconFolderPlus style={ICON_STYLE} />} onClick={() => setActiveModal('new-folder')}>
+        <Menu.Item
+          leftSection={<IconFolderPlus style={ICON_STYLE} />}
+          onClick={() => setActiveAction('new-folder', collectionUid)}
+        >
           New folder
         </Menu.Item>
 
-        <Menu.Item leftSection={<IconPencil style={ICON_STYLE} />} onClick={() => setActiveModal('rename')}>
+        <Menu.Item
+          leftSection={<IconPencil style={ICON_STYLE} />}
+          onClick={() => setActiveAction('rename-collection', collectionUid)}
+        >
           Rename
         </Menu.Item>
 
-        <Menu.Item leftSection={<IconCopy style={ICON_STYLE} />} onClick={() => setActiveModal('clone')}>
+        <Menu.Item
+          leftSection={<IconCopy style={ICON_STYLE} />}
+          onClick={() => setActiveAction('clone-collection', collectionUid)}
+        >
           Clone
         </Menu.Item>
 
-        <Menu.Item c={'red'} leftSection={<IconMinimize style={ICON_STYLE} />} onClick={() => setActiveModal('close')}>
+        <Menu.Item
+          c={'red'}
+          leftSection={<IconMinimize style={ICON_STYLE} />}
+          onClick={() => setActiveAction('close-collection', collectionUid)}
+        >
           Close
         </Menu.Item>
 
         <Menu.Divider />
 
-        <Menu.Item leftSection={<IconRun style={ICON_STYLE} />} onClick={onRun}>
+        <Menu.Item leftSection={<IconRun style={ICON_STYLE} />} onClick={() => openRunner(collectionUid)}>
           Run
         </Menu.Item>
 
-        <Menu.Item leftSection={<IconSettings style={ICON_STYLE} />} onClick={onOpenCollectionSettings}>
+        <Menu.Item
+          leftSection={<IconSettings style={ICON_STYLE} />}
+          onClick={() => openCollectionSettings(collectionUid)}
+        >
           Collection settings
         </Menu.Item>
 
-        <Menu.Item leftSection={<IconFileExport style={ICON_STYLE} />} onClick={() => setActiveModal('export')}>
+        <Menu.Item
+          leftSection={<IconFileExport style={ICON_STYLE} />}
+          onClick={() => setActiveAction('export-collection', collectionUid)}
+        >
           Export
         </Menu.Item>
 
         <Menu.Divider />
 
-        <Menu.Item leftSection={<IconFolderOpen style={ICON_STYLE} />} onClick={onOpenInExplorer}>
+        <Menu.Item leftSection={<IconFolderOpen style={ICON_STYLE} />} onClick={() => openInExplorer(collectionUid)}>
           Open in Explorer
         </Menu.Item>
 
-        <Menu.Item leftSection={<IconEdit style={ICON_STYLE} />} onClick={onEditBrunoJson}>
+        <Menu.Item leftSection={<IconEdit style={ICON_STYLE} />} onClick={() => editBrunoJson(collectionUid)}>
           Edit bruno.json
         </Menu.Item>
       </Menu.Dropdown>

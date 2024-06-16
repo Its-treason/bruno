@@ -38,7 +38,7 @@ export const CloseCollectionModal: React.FC<CloseCollectionModalProps> = ({ open
       }}
       title="Close collection"
     >
-      <Text>Do you want to close "{collection.name}"?</Text>
+      <Text>Do you want to close "{collection?.name}"?</Text>
       <Text>It will still be available in the file system at the above location and can be re-opened later.</Text>
 
       {closeMutation.error ? (

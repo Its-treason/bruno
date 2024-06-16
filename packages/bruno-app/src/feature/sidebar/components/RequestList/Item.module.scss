@@ -1,0 +1,29 @@
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
+.wrapper {
+  display: grid;
+  grid-template-rows: 100%;
+  grid-template-columns: auto 1fr;
+  align-items: center;
+  gap: var(--mantine-spacing-xs);
+}
+
+.text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  user-select: none;
+  text-align: left;
+}
+
+.icon {
+  width: 22px;
+  height: 22px;
+  transition: transform 0.3s ease;
+
+  &[data-collapsed='true'] {
+    transform: rotate(-90deg);
+  }
+}

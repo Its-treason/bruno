@@ -75,7 +75,8 @@ const baseRequestItemSchema = z.object({
   request: httpRequestSchema,
   fileContent: z.string().optional(),
   filename: z.string().optional(), // TODO: Check if this should really be undefined
-  pathname: z.string().optional()
+  pathname: z.string().optional(),
+  collapsed: z.boolean().default(true)
 });
 export type RequestItemSchema = z.infer<typeof baseRequestItemSchema> & {
   items?: RequestItemSchema[];

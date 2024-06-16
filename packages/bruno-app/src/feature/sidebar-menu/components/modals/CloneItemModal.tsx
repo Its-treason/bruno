@@ -33,10 +33,10 @@ export const CloneItemModal: React.FC<CloneItemModalProps> = ({ opened, onClose,
   });
   useEffect(() => {
     cloneForm.setInitialValues({
-      name: `${item.name} - Clone`
+      name: `${item?.name} - Clone`
     });
     cloneForm.reset();
-  }, [item.name]);
+  }, [item?.name]);
 
   const cloneMutation = useMutation({
     mutationFn: async (values: CloneCollectionFormSchema) => {
@@ -59,7 +59,7 @@ export const CloneItemModal: React.FC<CloneItemModalProps> = ({ opened, onClose,
       }}
       title="Clone collection"
     >
-      <Text>Cloning collection "{item.name}"</Text>
+      <Text>Cloning collection "{item?.name}"</Text>
 
       <form
         onSubmit={cloneForm.onSubmit((values) => {

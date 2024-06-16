@@ -52,6 +52,9 @@ export const NewRequestModal: React.FC<NewRequestModalProps> = ({
       switch (values.type) {
         case 'from-curl':
           const request = getRequestFromCurlCommand(values.curlCommand);
+          if (!request) {
+            throw new Error('Could not generate request from cURL');
+          }
           dispatch(
             newHttpRequest({
               requestName: values.name,
@@ -93,12 +96,11 @@ export const NewRequestModal: React.FC<NewRequestModalProps> = ({
     validate: zodResolver(newRequestFormSchema)
   });
   useEffect(() => {
-    console.log(brunoConfig);
     newRequestForm.setInitialValues({
       name: '',
       method: 'GET',
-      type: brunoConfig.presets.requestType === 'graphql' ? 'graphql-request' : 'http-request',
-      url: brunoConfig.presets.requestUrl
+      type: brunoConfig?.presets?.requestType === 'graphql' ? 'graphql-request' : 'http-request',
+      url: brunoConfig?.presets?.requestUrl
     });
     newRequestForm.reset();
   }, [collectionUid]);

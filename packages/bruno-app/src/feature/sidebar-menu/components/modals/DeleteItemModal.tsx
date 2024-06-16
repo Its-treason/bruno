@@ -7,8 +7,8 @@ import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
 import { IconAlertCircle } from '@tabler/icons-react';
-import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
-import { deleteItem, removeCollection } from 'providers/ReduxStore/slices/collections/actions';
+import { RequestItemSchema } from '@usebruno/schema';
+import { deleteItem } from 'providers/ReduxStore/slices/collections/actions';
 import { closeTabs } from 'providers/ReduxStore/slices/tabs';
 import { recursivelyGetAllItemUids } from 'utils/collections';
 
@@ -16,7 +16,7 @@ type DeleteItemModalProps = {
   opened: boolean;
   onClose: () => void;
   collectionUid: string;
-  item: RequestItemSchema;
+  item?: RequestItemSchema;
 };
 
 export const DeleteItemModal: React.FC<DeleteItemModalProps> = ({ opened, onClose, collectionUid, item }) => {
@@ -48,7 +48,7 @@ export const DeleteItemModal: React.FC<DeleteItemModalProps> = ({ opened, onClos
       }}
       title="Delete request"
     >
-      <Text>Do you really want to delete "{item.name}"?</Text>
+      <Text>Do you really want to delete "{item?.name}"?</Text>
 
       {deleteMutation.error ? (
         <Alert title="Close error" color="red" icon={<IconAlertCircle style={{ width: rem(18) }} />} mt={'md'}>

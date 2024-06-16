@@ -6,10 +6,10 @@ import { Alert, Button, Group, Modal, Text, TextInput, rem } from '@mantine/core
 import { useForm, zodResolver } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
-import { renameCollection, renameItem, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
+import { renameItem, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { IconAlertCircle } from '@tabler/icons-react';
-import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
+import { RequestItemSchema } from '@usebruno/schema';
 import { z } from 'zod';
 import { useEffect } from 'react';
 
@@ -33,10 +33,10 @@ export const RenameItemModal: React.FC<RenameItemModalProps> = ({ opened, onClos
   });
   useEffect(() => {
     renameForm.setInitialValues({
-      name: `${item.name}`
+      name: `${item?.name}`
     });
     renameForm.reset();
-  }, [item.name]);
+  }, [item?.name]);
 
   const renameMutation = useMutation({
     mutationFn: async (values: RenameItemFormSchema) => {
@@ -65,7 +65,7 @@ export const RenameItemModal: React.FC<RenameItemModalProps> = ({ opened, onClos
       }}
       title="Rename request"
     >
-      <Text>Rename "{item.name}"</Text>
+      <Text>Rename "{item?.name}"</Text>
 
       <form
         onSubmit={renameForm.onSubmit((values) => {

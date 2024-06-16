@@ -1,0 +1,46 @@
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
+.box {
+  height: 36px;
+  padding: calc(var(--mantine-spacing-xs) / 2) var(--mantine-spacing-xs);
+  display: grid;
+  grid-template-rows: 100%;
+  grid-template-columns: 1fr auto;
+  gap: var(--mantine-spacing-xs);
+  position: relative;
+
+  &[data-active='true'] {
+    background-color: var(--mantine-primary-color-filled);
+  }
+
+  &[data-drop-hovered='true'] {
+    &::after {
+      content: '';
+      position: absolute;
+      width: 100%;
+      height: 5px;
+      background-color: var(--mantine-color-bright);
+    }
+  }
+
+  &:hover {
+    background-color: var(--mantine-color-default-hover);
+    cursor: pointer;
+    &[data-active='true'] {
+      background-color: var(--mantine-primary-color-filled-hover);
+    }
+  }
+
+  &:active:not(:has(button:active)) {
+    transform: translateY(calc(0.0625rem * var(--mantine-scale)));
+  }
+
+  // This will prevent the collection list div from overflowing and shit
+  & > * {
+    min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+  }
+}

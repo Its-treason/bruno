@@ -60,6 +60,7 @@ export const collectionSchema = z.object({
   environments: z.array(environmentSchema),
   pathname: z.string(),
   collectionVariables: z.record(z.unknown()),
-  brunoConfig: brunoConfigSchema
+  brunoConfig: brunoConfigSchema,
+  collapsed: z.boolean().default(true)
 });
 export type CollectionSchema = z.infer<typeof collectionSchema>;

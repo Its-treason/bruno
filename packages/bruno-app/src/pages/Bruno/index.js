@@ -3,12 +3,13 @@ import classnames from 'classnames';
 import Welcome from 'components/Welcome';
 import RequestTabs from 'components/RequestTabs';
 import RequestTabPanel from 'components/RequestTabPanel';
-import Sidebar from 'components/Sidebar';
+// import Sidebar from 'components/Sidebar';
 import { useSelector } from 'react-redux';
 import StyledWrapper from './StyledWrapper';
 import 'codemirror/theme/material.css';
 import 'codemirror/theme/monokai.css';
 import 'codemirror/addon/scroll/simplescrollbars.css';
+import { Sidebar } from 'src/feature/sidebar';
 
 const SERVER_RENDERED = typeof navigator === 'undefined' || global['PREVENT_CODEMIRROR_RENDER'] === true;
 if (!SERVER_RENDERED) {

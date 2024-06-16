@@ -15,26 +15,6 @@ const CollectionToolBar = ({ collection, activeTabUid }) => {
   const tabs = useSelector((state) => state.tabs.tabs);
   const activeTab = tabs.find((tab) => tab.uid === activeTabUid);
 
-  const handleRun = () => {
-    dispatch(
-      addTab({
-        uid: uuid(),
-        collectionUid: collection.uid,
-        type: 'collection-runner'
-      })
-    );
-  };
-
-  const viewVariables = () => {
-    dispatch(
-      addTab({
-        uid: uuid(),
-        collectionUid: collection.uid,
-        type: 'variables'
-      })
-    );
-  };
-
   const viewCollectionSettings = () => {
     dispatch(
       addTab({
