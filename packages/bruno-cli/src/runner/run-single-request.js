@@ -3,7 +3,9 @@ const qs = require('qs');
 const chalk = require('chalk');
 const decomment = require('decomment');
 const fs = require('fs');
-const { isUndefined, isNull, each, get, compact } = require('lodash');
+const tls = require('tls');
+const { forOwn, isUndefined, isNull, each, extend, get, compact } = require('lodash');
+const FormData = require('form-data');
 const prepareRequest = require('./prepare-request');
 const interpolateVars = require('./interpolate-vars');
 const { interpolateString } = require('./interpolate-string');
@@ -92,7 +94,11 @@ const runSingleRequest = async function (
       const caCert = caCertArray.find((el) => el);
       if (caCert && caCert.length > 1) {
         try {
-          httpsAgentRequestFields['ca'] = fs.readFileSync(caCert);
+          let caCertBuffer = fs.readFileSync(caCert);
+          if (!options['ignoreTruststore']) {
+            caCertBuffer += '\n' + tls.rootCertificates.join('\n'); // Augment default truststore with custom CA certificates
+          }
+          httpsAgentRequestFields['ca'] = caCertBuffer;
         } catch (err) {
           console.log('Error reading CA cert file:' + caCert, err);
         }
