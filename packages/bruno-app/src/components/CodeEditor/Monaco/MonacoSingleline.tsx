@@ -50,6 +50,7 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
   const { displayedTheme } = useTheme();
   const callbackRefs = useRef<BrunoEditorCallbacks>({});
   const [height, setHeight] = useState(22);
+  const [focused, setFocused] = useState(false);
 
   useEffect(() => {
     // Save the reference to the callback so the callbacks always update
@@ -67,6 +68,13 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
   };
 
   const onMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
+    editor.onDidFocusEditorText(() => {
+      setFocused(true);
+    });
+    editor.onDidBlurEditorText(() => {
+      setFocused(false);
+    });
+
     addMonacoCommands(monaco, editor, callbackRefs.current);
     addMonacoSingleLineActions(editor, monaco, allowLinebreaks, setHeight);
   };
@@ -79,7 +87,7 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
   }, [collection.collectionVariables, collection.activeEnvironmentUid, withVariables, monaco]);
 
   return (
-    <Paper className={asInput ? classes.paper : classes.paperHidden}>
+    <Paper className={asInput ? classes.paper : classes.paperHidden} data-focused={focused}>
       <Editor
         options={{
           readOnly: readOnly,

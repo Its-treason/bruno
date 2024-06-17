@@ -74,6 +74,7 @@ export const CreateEnvironmentModal: React.FC = () => {
           label={'Name'}
           placeholder={'New environment name'}
           my={'md'}
+          data-autofocus
         />
 
         {createMutation.error ? (

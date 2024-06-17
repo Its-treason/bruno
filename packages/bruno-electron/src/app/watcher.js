@@ -115,8 +115,13 @@ const addEnvironmentFile = async (win, pathname, collectionUid, collectionPath) 
         if (!variable.secret) {
           return;
         }
-        const secret = _.find(envSecrets, (v) => v.name === secret.name);
-        variable.value = secret ? decryptString(secret.value) : '';
+        const secret = _.find(envSecrets, (secret) => variable.name === secret.name);
+        try {
+          variable.value = secret ? decryptString(secret.value) : '';
+          // Decrypting the value will throw an error if the value is not encrypted
+        } catch {
+          variable.value = '';
+        }
       });
     }
 
@@ -187,8 +192,6 @@ const unlinkEnvironmentFile = async (win, pathname, collectionUid) => {
 };
 
 const add = async (win, pathname, collectionUid, collectionPath) => {
-  console.log(`watcher add: ${pathname}`);
-
   if (isBrunoConfigFile(pathname, collectionPath)) {
     try {
       const content = fs.readFileSync(pathname, 'utf8');

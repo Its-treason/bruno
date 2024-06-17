@@ -78,6 +78,7 @@ export const CloneEnvironmentModal: React.FC = () => {
           label={'Name'}
           placeholder={'Cloned environment name'}
           my={'md'}
+          data-autofocus
         />
 
         {cloneEnvironment.error ? (

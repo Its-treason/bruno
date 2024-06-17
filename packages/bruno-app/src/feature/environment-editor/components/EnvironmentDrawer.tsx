@@ -3,7 +3,7 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { Anchor, Box, Button, Divider, Drawer, Group, Space, rem } from '@mantine/core';
-import { IconDownload, IconPlus, IconShieldCheck } from '@tabler/icons-react';
+import { IconDownload, IconPlus } from '@tabler/icons-react';
 import { EnvironmentList } from './list/EnvironmentList';
 import { EnvironmentForm } from './form/EnvironmentForm';
 import { useEnvironmentEditorProvider } from '../hooks/useEnvironmentEditorProvider';
@@ -16,18 +16,15 @@ import { DeleteEnvironmentModal } from './modals/DeleteEnvironmentModal';
 import { RenameEnvironmentModal } from './modals/RenameEnvironmentModal';
 import { ImportEnvironmentModal } from './modals/ImportEnvironmentModal';
 import { ManageSecretModals } from './modals/ManageSecretsModal';
+import { CollectionSchema } from '@usebruno/schema';
 
 type EnvironmentDrawerProps = {
   opened: boolean;
   onClose: () => void;
-  collection: any;
+  collection: CollectionSchema;
 };
 
-export const EnvironmentDrawer: React.FC<EnvironmentDrawerProps> = ({
-  opened,
-  onClose,
-  collection = { environments: [] }
-}) => {
+export const EnvironmentDrawer: React.FC<EnvironmentDrawerProps> = ({ opened, onClose, collection }) => {
   const providerData = useEnvironmentEditorProvider(collection, onClose);
 
   return (
@@ -37,6 +34,7 @@ export const EnvironmentDrawer: React.FC<EnvironmentDrawerProps> = ({
       title="Environment editor"
       size={'75%'}
       position={'right'}
+      closeOnEscape={providerData.activeModal === null}
       styles={{
         content: { display: 'grid', gridTemplateRows: 'auto 1fr' },
         body: { padding: 0, display: 'grid', gridTemplateRows: 'auto auto 1fr' }

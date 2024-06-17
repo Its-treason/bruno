@@ -74,6 +74,7 @@ export const ImportEnvironmentModal: React.FC = () => {
           name="type"
           label="Select the environment type you want to import"
           withAsterisk
+          data-autofocus
           {...importForm.getInputProps('type')}
         >
           <Group my="xs">

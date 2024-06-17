@@ -83,6 +83,7 @@ export const RenameEnvironmentModal: React.FC = () => {
           label={'Name'}
           placeholder={'Updated environment name'}
           my={'md'}
+          data-autofocus
         />
 
         {renameMutation.error ? (
