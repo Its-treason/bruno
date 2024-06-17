@@ -39,17 +39,6 @@
       .lines-content {
         padding-left: 0;
       }
-      .view-line {
-        font-family: var(--mantine-font-family-monospace);
-        line-height: var(--mantine-line-height-xs);
-        font-size: var(--mantine-font-size-xs);
-        color: var(--mantine-color-text);
-        font-weight: 400;
-
-        * {
-          color: inherit !important;
-        }
-      }
       .scroll-decoration {
         display: none;
       }

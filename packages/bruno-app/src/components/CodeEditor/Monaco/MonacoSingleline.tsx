@@ -117,7 +117,9 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
           selectionHighlight: false,
           occurrencesHighlight: 'off',
           find: { addExtraSpaceOnTop: false, autoFindInSelection: 'never', seedSearchStringFromSelection: 'never' },
-          minimap: { enabled: false }
+          minimap: { enabled: false },
+          fontSize: asInput ? 13 : undefined,
+          fontFamily: 'var(--mantine-font-family)'
         }}
         className={classes.editor}
         theme={displayedTheme === 'dark' ? 'bruno-dark' : 'bruno-light'}

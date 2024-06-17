@@ -159,11 +159,13 @@ export const HotkeysProvider = (props) => {
       {showSaveRequestModal && (
         <SaveRequest items={getCurrentCollectionItems()} onClose={() => setShowSaveRequestModal(false)} />
       )}
-      <EnvironmentDrawer
-        opened={showEnvSettingsModal}
-        collection={getCurrentCollection()}
-        onClose={() => setShowEnvSettingsModal(false)}
-      />
+      {getCurrentCollection() ? (
+        <EnvironmentDrawer
+          opened={showEnvSettingsModal}
+          collection={getCurrentCollection()}
+          onClose={() => setShowEnvSettingsModal(false)}
+        />
+      ) : null}
       {showNewRequestModal && (
         <NewRequest collection={getCurrentCollection()} onClose={() => setShowNewRequestModal(false)} />
       )}
