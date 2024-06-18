@@ -18,7 +18,6 @@ type ReduxState = {
   };
 };
 
-// TODO: Pass collection sort order and filter here
 export const useRequestList = (): RequestListItem[] => {
   const { collections, collectionSortOrder, collectionFilter } = useSelector((state: ReduxState) => state.collections);
   const activeTabUid = useSelector((state: ReduxState) => state.tabs.activeTabUid);
@@ -41,7 +40,7 @@ export const useRequestList = (): RequestListItem[] => {
         } else if (a.type === 'folder' && b.type === 'folder') {
           return 0;
         }
-        return a.seq > b.seq ? -1 : 1;
+        return a.seq < b.seq ? -1 : 1;
       });
       for (const requestItem of sorted) {
         switch (requestItem.type) {
@@ -73,14 +72,13 @@ export const useRequestList = (): RequestListItem[] => {
               collapsed
             });
             if (!collapsed) {
-              insertItemsRecursive(requestItem.items, collectionUid, indent + 1, requestItem.uid, collectionFilter);
+              insertItemsRecursive(requestItem.items, collectionUid, indent + 1, requestItem.uid, filter);
             }
             break;
         }
       }
     };
 
-    console.time('useRequestList');
     for (const collection of collections) {
       items.push({
         type: 'collection',
@@ -89,12 +87,11 @@ export const useRequestList = (): RequestListItem[] => {
         uid: collection.uid
       });
 
-      if (!collection.collapsed) {
-        const filter = collectionFilter.trim().length > 0 ? collectionFilter : null;
+      const filter = collectionFilter.trim().length > 0 ? collectionFilter : null;
+      if (!collection.collapsed || filter !== null) {
         insertItemsRecursive(collection.items, collection.uid, 1, null, filter);
       }
     }
-    console.timeEnd('useRequestList');
 
     return items;
   }, [collections, collectionSortOrder, collectionFilter, activeTabUid]);

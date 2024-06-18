@@ -33,6 +33,7 @@ export const TopPanel: React.FC = () => {
 
   const handleImportCollectionLocation = (collectionLocation) => {
     dispatch(importCollection(importedCollection, collectionLocation))
+      // @ts-expect-error
       .then(() => {
         setImportCollectionLocationModalOpen(false);
         setImportedCollection(null);
@@ -48,6 +49,7 @@ export const TopPanel: React.FC = () => {
   const handleTitleClick = () => dispatch(showHomePage());
 
   const handleOpenCollection = () => {
+    // @ts-expect-error
     dispatch(openCollection()).catch((err) => {
       console.error('Could not open collection!', err);
       toast.error('An error occurred while opening the collection');
