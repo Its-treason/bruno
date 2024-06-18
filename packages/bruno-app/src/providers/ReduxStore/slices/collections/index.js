@@ -20,7 +20,8 @@ import toast from 'react-hot-toast';
 
 const initialState = {
   collections: [],
-  collectionSortOrder: 'default'
+  collectionSortOrder: 'default',
+  collectionFilter: ''
 };
 
 export const collectionsSlice = createSlice({
@@ -79,6 +80,9 @@ export const collectionsSlice = createSlice({
           state.collections = state.collections.sort((a, b) => b.name.localeCompare(a.name));
           break;
       }
+    },
+    filterCollections: (state, action) => {
+      state.collectionFilter = action.payload.filter;
     },
     updateLastAction: (state, action) => {
       const { collectionUid, lastAction } = action.payload;
@@ -1488,6 +1492,7 @@ export const {
   renameCollection,
   removeCollection,
   sortCollections,
+  filterCollections,
   updateLastAction,
   updateSettingsSelectedTab,
   collectionUnlinkEnvFileEvent,

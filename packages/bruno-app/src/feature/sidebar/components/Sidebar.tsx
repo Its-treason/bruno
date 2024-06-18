@@ -9,12 +9,14 @@ import { ResizableSidebarBox } from './ResizableSidebarBox';
 import { TopPanel } from './TopPanel';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
+import { CollectionFilter } from './CollectionFilter';
 
 export const Sidebar: React.FC = ({}) => {
   return (
     <ResizableSidebarBox>
       <TopPanel />
       <div>
+        <CollectionFilter />
         <SidebarActionProvider>
           <DndProvider backend={HTML5Backend}>
             <RequestList />

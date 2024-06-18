@@ -10,6 +10,7 @@ import { useMemo } from 'react';
 type ReduxState = {
   collections: {
     collectionSortOrder: 'default' | 'asc' | 'desc';
+    collectionFilter: string;
     collections: CollectionSchema[];
   };
   tabs: {
@@ -19,7 +20,7 @@ type ReduxState = {
 
 // TODO: Pass collection sort order and filter here
 export const useRequestList = (): RequestListItem[] => {
-  const { collections, collectionSortOrder } = useSelector((state: ReduxState) => state.collections);
+  const { collections, collectionSortOrder, collectionFilter } = useSelector((state: ReduxState) => state.collections);
   const activeTabUid = useSelector((state: ReduxState) => state.tabs.activeTabUid);
 
   return useMemo(() => {
@@ -29,7 +30,8 @@ export const useRequestList = (): RequestListItem[] => {
       requestItems: RequestItemSchema[],
       collectionUid: string,
       indent: number,
-      parentUid: string | null
+      parentUid: string | null,
+      filter: string | null
     ) => {
       const sorted = [...requestItems].sort((a, b) => {
         if (a.type === 'folder' && b.type !== 'folder') {
@@ -45,6 +47,9 @@ export const useRequestList = (): RequestListItem[] => {
         switch (requestItem.type) {
           case 'http-request':
           case 'graphql-request':
+            if (collectionFilter && !requestItem.name.includes(collectionFilter)) {
+              continue;
+            }
             items.push({
               type: 'request',
               collectionUid,
@@ -57,6 +62,7 @@ export const useRequestList = (): RequestListItem[] => {
             });
             break;
           case 'folder':
+            const collapsed = filter === null ? requestItem.collapsed : false;
             items.push({
               type: 'folder',
               collectionUid,
@@ -64,10 +70,10 @@ export const useRequestList = (): RequestListItem[] => {
               name: requestItem.name,
               uid: requestItem.uid,
               parentUid,
-              collapsed: requestItem.collapsed
+              collapsed
             });
-            if (!requestItem.collapsed) {
-              insertItemsRecursive(requestItem.items, collectionUid, indent + 1, requestItem.uid);
+            if (!collapsed) {
+              insertItemsRecursive(requestItem.items, collectionUid, indent + 1, requestItem.uid, collectionFilter);
             }
             break;
         }
@@ -84,11 +90,12 @@ export const useRequestList = (): RequestListItem[] => {
       });
 
       if (!collection.collapsed) {
-        insertItemsRecursive(collection.items, collection.uid, 1, null);
+        const filter = collectionFilter.trim().length > 0 ? collectionFilter : null;
+        insertItemsRecursive(collection.items, collection.uid, 1, null, filter);
       }
     }
     console.timeEnd('useRequestList');
 
     return items;
-  }, [collections, collectionSortOrder, activeTabUid]);
+  }, [collections, collectionSortOrder, collectionFilter, activeTabUid]);
 };

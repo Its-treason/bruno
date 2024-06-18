@@ -28,6 +28,7 @@ import {
   removeCollection as _removeCollection,
   selectEnvironment as _selectEnvironment,
   sortCollections as _sortCollections,
+  filterCollections as _filterCollections,
   requestCancelled,
   resetRunResults,
   responseReceived,
@@ -477,6 +478,10 @@ export const deleteItem = (itemUid, collectionUid) => (dispatch, getState) => {
 export const sortCollections = (payload) => (dispatch) => {
   dispatch(_sortCollections(payload));
 };
+export const filterCollections = (payload) => (dispatch) => {
+  dispatch(_filterCollections(payload));
+};
+
 export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispatch, getState) => {
   const state = getState();
   const collection = findCollectionByUid(state.collections.collections, collectionUid);

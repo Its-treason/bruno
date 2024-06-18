@@ -20,7 +20,6 @@ import { ActionIcon, CloseButton, Input, Group, Tooltip, rem } from '@mantine/co
 // the coding convention is to keep all the components in a folder named after the component
 const CollectionsBadge = () => {
   const dispatch = useDispatch();
-  const { collections } = useSelector((state) => state.collections);
   const { collectionSortOrder } = useSelector((state) => state.collections);
 
   const sortCollectionOrder = () => {
