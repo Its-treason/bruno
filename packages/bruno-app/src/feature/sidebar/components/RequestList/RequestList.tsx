@@ -7,24 +7,46 @@ import { useRequestList } from '../../hooks/useRequestList';
 import { CollectionItem } from './CollectionItem';
 import { RequestItem } from './RequestItem';
 import { FolderItem } from './FolderItem';
+import { FixedSizeList, ListChildComponentProps } from 'react-window';
+import { RequestListItem } from '../../types/requestList';
+import AutoSizer from 'react-virtualized-auto-sizer';
+
+const Row: React.FC<ListChildComponentProps<RequestListItem[]>> = ({ index, style, data }) => {
+  const item = data[index];
+  if (!item) {
+    return null;
+  }
+
+  switch (item.type) {
+    case 'collection':
+      return <CollectionItem {...item} style={style} key={item.uid} />;
+    case 'folder':
+      return <FolderItem {...item} style={style} key={item.uid + item.parentUid} />;
+    case 'request':
+      return <RequestItem {...item} style={style} key={item.uid + item.parentUid} />;
+    default:
+      // @ts-expect-error
+      return <div>Unknown type {item.type}</div>;
+  }
+};
 
 export const RequestList: React.FC = () => {
   const items = useRequestList();
 
-  return items.map((item) => {
-    // Folder and requests keys include their parent ids, because after moving a request / folder
-    // The old and the new request and shortly in the store at the same time and rendered at the same time
-    // This throws an React duplicate key error and leave a "ghost" item behind
-    switch (item.type) {
-      case 'collection':
-        return <CollectionItem {...item} key={item.uid} />;
-      case 'folder':
-        return <FolderItem {...item} key={item.uid + item.parentUid} />;
-      case 'request':
-        return <RequestItem {...item} key={item.uid + item.parentUid} />;
-      default:
-        // @ts-expect-error
-        return <div>Unknown type {item.type}</div>;
-    }
-  });
+  return (
+    <AutoSizer>
+      {({ height, width }) => (
+        <FixedSizeList
+          overscanCount={10}
+          height={height}
+          width={width - 1}
+          itemCount={items.length}
+          itemSize={36}
+          itemData={items}
+        >
+          {Row}
+        </FixedSizeList>
+      )}
+    </AutoSizer>
+  );
 };

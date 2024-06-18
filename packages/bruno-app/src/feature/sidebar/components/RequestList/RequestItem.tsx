@@ -5,6 +5,7 @@
 import { RequestItemWrapper } from './RequestItemWrapper';
 import classes from './Item.module.scss';
 import { RequestItemMethodIcon } from './RequestItemMethodIcon';
+import { CSSProperties } from 'react';
 
 type RequestItemProps = {
   type: 'request';
@@ -14,9 +15,19 @@ type RequestItemProps = {
   method: string;
   indent: number;
   active: boolean;
+  style: CSSProperties;
 };
 
-export const RequestItem: React.FC<RequestItemProps> = ({ name, type, uid, collectionUid, indent, method, active }) => {
+export const RequestItem: React.FC<RequestItemProps> = ({
+  name,
+  type,
+  uid,
+  collectionUid,
+  indent,
+  method,
+  active,
+  style
+}) => {
   return (
     <RequestItemWrapper
       uid={uid}
@@ -25,6 +36,7 @@ export const RequestItem: React.FC<RequestItemProps> = ({ name, type, uid, colle
       indent={indent}
       className={classes.wrapper}
       active={active}
+      style={style}
     >
       <RequestItemMethodIcon method={method} />
       <div className={classes.text}>{name}</div>

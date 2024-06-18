@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import React, { ReactNode, useMemo, useState } from 'react';
+import React, { CSSProperties, ReactNode, useMemo, useState } from 'react';
 import classes from './RequestItemWrapper.module.scss';
 import { CollectionMenu, FolderMenu, RequestMenu } from 'src/feature/sidebar-menu';
 import { useSidebarActions } from 'src/feature/sidebar-menu/hooks/useSidebarActions';
@@ -18,6 +18,7 @@ type RequestItemWrapperProps = {
   indent: number;
   className?: string;
   active?: boolean;
+  style?: CSSProperties;
 };
 
 export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
@@ -27,7 +28,8 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
   type,
   indent,
   className,
-  active = false
+  active = false,
+  style
 }) => {
   const dispatch = useDispatch();
   const { itemClicked } = useSidebarActions();
@@ -78,6 +80,7 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
       data-active={active}
       data-drop-hovered={isOverCurrent && type === 'request'}
       ref={(ref) => drag(drop(ref))}
+      style={style}
     >
       <div style={{ paddingLeft: indent * 24 }} className={className}>
         {children}
