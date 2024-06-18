@@ -13,7 +13,10 @@
     "build": "vite build",
     "dev": "vite build --watch",
     "clean": "rimraf dist",
-    "test": "jest"
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "prebuild": "npm run clean",
+    "prepack": "npm run test && npm run build"
   },
   "devDependencies": {
     "rimraf": "^5.0.5",

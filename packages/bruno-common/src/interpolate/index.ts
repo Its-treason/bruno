@@ -11,6 +11,7 @@
  * Output: Hello, my name is Bruno and I am 4 years old
  */
 
+import { Set } from 'typescript';
 import { flattenObject } from '../utils';
 
 function serializeObject(obj: Object) {
