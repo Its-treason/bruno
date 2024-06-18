@@ -4,6 +4,7 @@
  */
 import { RequestItemWrapper } from './RequestItemWrapper';
 import classes from './Item.module.scss';
+import { RequestItemMethodIcon } from './RequestItemMethodIcon';
 
 type RequestItemProps = {
   type: 'request';
@@ -25,7 +26,7 @@ export const RequestItem: React.FC<RequestItemProps> = ({ name, type, uid, colle
       className={classes.wrapper}
       active={active}
     >
-      <div className={classes.text}>{method}</div>
+      <RequestItemMethodIcon method={method} />
       <div className={classes.text}>{name}</div>
     </RequestItemWrapper>
   );

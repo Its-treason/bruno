@@ -79,7 +79,7 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
       data-drop-hovered={isOverCurrent && type === 'request'}
       ref={(ref) => drag(drop(ref))}
     >
-      <div style={{ paddingLeft: indent * 18 }} className={className}>
+      <div style={{ paddingLeft: indent * 24 }} className={className}>
         {children}
       </div>
       <div onClick={(evt) => evt.stopPropagation()}>{hover || menuOpened ? menu : null}</div>

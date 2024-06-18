@@ -4,12 +4,13 @@
  */
 import { ActionIcon, Group, Text, Tooltip, rem } from '@mantine/core';
 import { IconSettings, IconCookie } from '@tabler/icons-react';
-import { showPreferences } from 'providers/ReduxStore/slices/app';
-import React from 'react';
-import { useDispatch } from 'react-redux';
+import Cookies from 'components/Cookies';
+import Preferences from 'components/Preferences';
+import React, { useState } from 'react';
 
 export const BottomButtons: React.FC = () => {
-  const dispatch = useDispatch();
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const [cookiesOpen, setCookiesOpen] = useState(false);
 
   return (
     <Group
@@ -20,21 +21,19 @@ export const BottomButtons: React.FC = () => {
     >
       <ActionIcon.Group mr={'auto'}>
         <Tooltip label="Preferences" openDelay={250}>
-          <ActionIcon
-            variant="default"
-            size={'md'}
-            aria-label={'Preferences'}
-            onClick={() => dispatch(showPreferences(true))}
-          >
+          <ActionIcon variant="default" size={'md'} aria-label={'Preferences'} onClick={() => setPreferencesOpen(true)}>
             <IconSettings style={{ width: rem(16) }} stroke={1.5} />
           </ActionIcon>
         </Tooltip>
 
         <Tooltip label="Cookies" openDelay={250}>
-          <ActionIcon variant="default" size={'md'} aria-label={'Cookies'} onClick={() => alert('cookie dialog TODO')}>
+          <ActionIcon variant="default" size={'md'} aria-label={'Cookies'} onClick={() => setCookiesOpen(true)}>
             <IconCookie style={{ width: rem(16) }} stroke={1.5} />
           </ActionIcon>
         </Tooltip>
+
+        {preferencesOpen && <Preferences onClose={() => setPreferencesOpen(false)} />}
+        {cookiesOpen && <Cookies onClose={() => setCookiesOpen(false)} />}
       </ActionIcon.Group>
 
       <Text size="sm">v1.18.0-lazer</Text>

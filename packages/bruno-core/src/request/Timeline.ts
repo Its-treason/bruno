@@ -7,6 +7,6 @@ export class Timeline extends Array<HttpRequestInfo> {
       // @ts-expect-error This is used for in the TimelineNew component in the frontned
       unref.responseBody = unref.responseBody.toString().slice(0, 2048);
     }
-    this.push(unref);
+    this.push(structuredClone(unref));
   }
 }

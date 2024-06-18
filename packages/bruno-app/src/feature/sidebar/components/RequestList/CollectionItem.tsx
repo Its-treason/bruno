@@ -17,7 +17,9 @@ export const CollectionItem: React.FC<CollectionItemProps> = ({ collapsed, name,
   return (
     <RequestItemWrapper collectionUid={uid} type={type} indent={0} className={classes.wrapper}>
       <IconChevronDown className={classes.icon} data-collapsed={collapsed} />
-      <div className={classes.text}>{name}</div>
+      <div className={classes.text}>
+        <b>{name}</b>
+      </div>
     </RequestItemWrapper>
   );
 };
