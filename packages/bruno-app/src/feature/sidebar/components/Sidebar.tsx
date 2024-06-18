@@ -15,8 +15,8 @@ export const Sidebar: React.FC = ({}) => {
   return (
     <ResizableSidebarBox>
       <TopPanel />
+      <CollectionFilter />
       <div>
-        <CollectionFilter />
         <SidebarActionProvider>
           <DndProvider backend={HTML5Backend}>
             <RequestList />

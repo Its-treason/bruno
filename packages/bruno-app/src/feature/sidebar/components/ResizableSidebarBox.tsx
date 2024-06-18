@@ -6,7 +6,7 @@ import { MouseEventHandler, ReactElement, useCallback, useRef } from 'react';
 import classes from './ResizableSidebarBox.module.scss';
 
 type ResizableSidebarBoxProps = {
-  children: [ReactElement, ReactElement, ReactElement];
+  children: [ReactElement, ReactElement, ReactElement, ReactElement];
 };
 
 export const ResizableSidebarBox: React.FC<ResizableSidebarBoxProps> = ({ children }) => {
