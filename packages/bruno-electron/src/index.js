@@ -58,10 +58,14 @@ app.on('ready', async () => {
       webviewTag: true
     },
     title: 'Bruno lazer',
-    icon: path.join(__dirname, 'about/256x256.png')
+    icon: path.join(__dirname, 'about/256x256.png'),
     // we will bring this back
     // see https://github.com/usebruno/bruno/issues/440
     // autoHideMenuBar: true
+    show: false
+  });
+  mainWindow.on('ready-to-show', () => {
+    mainWindow.show();
   });
 
   if (maximized) {
