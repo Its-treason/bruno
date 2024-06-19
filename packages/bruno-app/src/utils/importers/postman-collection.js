@@ -54,7 +54,7 @@ const convertV21Auth = (array) => {
   }, {});
 };
 
-const translationLog = {};
+let translationLog = {};
 
 const importPostmanV2CollectionItem = (brunoParent, item, parentAuth, options) => {
   brunoParent.items = brunoParent.items || [];
@@ -405,9 +405,13 @@ const importCollection = (options) => {
       .then((collection) => resolve({ collection, translationLog }))
       .catch((err) => {
         console.error(err);
+        translationLog = {};
         reject(new BrunoError(`Import Postman collection failed: ${err.message}`));
       })
-      .then(() => logTranslationDetails(translationLog));
+      .then(() => {
+        logTranslationDetails(translationLog);
+        translationLog = {};
+      });
   });
 };
 
