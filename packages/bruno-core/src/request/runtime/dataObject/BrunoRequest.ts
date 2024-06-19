@@ -1,4 +1,6 @@
+import { parse } from 'lossless-json';
 import { RequestItem } from '../../types';
+import decomment from 'decomment';
 
 export class BrunoRequest {
   constructor(private _req: RequestItem, private readonly: boolean) {}
@@ -93,6 +95,11 @@ export class BrunoRequest {
       case 'formUrlEncoded':
         return this._req.request.body.formUrlEncoded;
       case 'json':
+        if (typeof this._req.request.body.json === 'string') {
+          try {
+            return parse(decomment(this._req.request.body.json, { tolerant: true }));
+          } catch {}
+        }
         return this._req.request.body.json;
     }
   }

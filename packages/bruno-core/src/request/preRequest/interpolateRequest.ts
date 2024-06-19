@@ -1,6 +1,7 @@
 import { RequestContext } from '../types';
 import { interpolate } from '@usebruno/common';
 import { parse, stringify } from 'lossless-json';
+import decomment from 'decomment';
 
 // This is wrapper/shorthand for the original `interpolate` function.
 // The `name` parameter is used for debugLogging
@@ -104,6 +105,8 @@ function interpolateBody(context: RequestContext, i: InterpolationShorthandFunct
       if (typeof body.json === 'object') {
         body.json = stringify(body.json)!;
       }
+      // Always decomment the body. Tolerant flag will ensure no error is thrown when json is invalid
+      body.json = decomment(body.json, { tolerant: true });
       body.json = i(body.json, 'Json body');
       try {
         // @ts-ignore
