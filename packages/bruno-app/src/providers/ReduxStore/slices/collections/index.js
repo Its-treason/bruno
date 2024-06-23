@@ -1206,11 +1206,9 @@ export const collectionsSlice = createSlice({
       }
     },
     folderAddFileEvent: (state, action) => {
-      console.log('index.js:53 No tab type case for', action.payload);
       const file = action.payload.file;
       const collection = findCollectionByUid(state.collections, file.meta.collectionUid);
       const folder = findItemInCollectionByPathname(collection, file.meta.pathname);
-      console.log(folder);
       if (folder) {
         folder.root = file.data;
       }

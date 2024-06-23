@@ -152,9 +152,11 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
 
   ipcMain.handle('renderer:save-folder-root', async (event, folderPathname, folderRoot) => {
     try {
-      const folderBruFilePath = path.join(folderPathname, 'folder.bru');
+      // const folderBruFilePath = path.join(folderPathname, 'folder.bru');
+      // const content = jsonToBru(folderRoot);
+      const folderBruFilePath = path.join(folderPathname, 'folder.json');
+      const content = JSON.stringify(folderRoot);
 
-      const content = jsonToBru(folderRoot);
       await writeFile(folderBruFilePath, content);
     } catch (error) {
       return Promise.reject(error);

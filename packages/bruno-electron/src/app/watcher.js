@@ -46,7 +46,8 @@ const isCollectionRootBruFile = (pathname, collectionPath) => {
 const isFolderRootBruFile = (pathname, collectionPath) => {
   const dirname = path.dirname(pathname);
   const basename = path.basename(pathname);
-  return dirname !== collectionPath && basename === 'folder.bru';
+  return dirname !== collectionPath && basename === 'folder.json';
+  // return dirname !== collectionPath && basename === 'folder.bru';
 };
 
 const hydrateRequestWithUuid = (request, pathname) => {
@@ -264,7 +265,8 @@ const add = async (win, pathname, collectionUid, collectionPath) => {
           folderRoot: true
         }
       };
-      folder.data = collectionBruToJson(bruContent);
+      // folder.data = collectionBruToJson(bruContent);
+      folder.data = JSON.parse(bruContent);
       hydrateBruCollectionFileWithUuid(folder.data);
       win.webContents.send('main:collection-tree-updated', 'addFileDir', folder);
     }
@@ -372,6 +374,25 @@ const change = async (win, pathname, collectionUid, collectionPath) => {
       console.error(err);
       return;
     }
+  }
+
+  if (isFolderRootBruFile(pathname, collectionPath)) {
+    const bruContent = fs.readFileSync(pathname, 'utf8');
+    if (bruContent) {
+      const folder = {
+        meta: {
+          collectionUid,
+          pathname: path.dirname(pathname),
+          name: path.basename(pathname),
+          folderRoot: true
+        }
+      };
+      // folder.data = collectionBruToJson(bruContent);
+      folder.data = JSON.parse(bruContent);
+      hydrateBruCollectionFileWithUuid(folder.data);
+      win.webContents.send('main:collection-tree-updated', 'addFileDir', folder);
+    }
+    return;
   }
 
   if (hasBruExtension(pathname)) {
