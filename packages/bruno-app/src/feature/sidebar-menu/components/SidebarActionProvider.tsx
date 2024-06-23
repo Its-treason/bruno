@@ -68,7 +68,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
   const openInExplorer = useCallback((collectionUid: string, itemUid?: string) => {
     const [collection, item] = getCollectionAndItem(collectionsRef.current, collectionUid, itemUid);
     const path = item ? item.pathname : collection.pathname;
-    dispatch(shellOpenCollectionPath(path, true, false));
+    dispatch(shellOpenCollectionPath(path, !itemUid, false));
   }, []);
   const openInEditor = useCallback((collectionUid: string, itemUid: string) => {
     const [_, item] = getCollectionAndItem(collectionsRef.current, collectionUid, itemUid);
