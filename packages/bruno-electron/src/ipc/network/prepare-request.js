@@ -162,7 +162,7 @@ const prepareRequest = (request, collectionRoot, collectionPath) => {
     method: request.method,
     url,
     headers,
-    pathParams: request.params.filter((param) => param.type === 'path'),
+    pathParams: request?.params?.filter((param) => param.type === 'path'),
     responseType: 'arraybuffer'
   };
 
@@ -172,11 +172,16 @@ const prepareRequest = (request, collectionRoot, collectionPath) => {
     if (!contentTypeDefined) {
       axiosRequest.headers['content-type'] = 'application/json';
     }
-    const body = decomment(request.body.json);
+    let jsonBody;
     try {
-      axiosRequest.data = JSONbig.parse(body);
-    } catch (ex) {
-      axiosRequest.data = body;
+      jsonBody = decomment(request?.body?.json);
+    } catch (error) {
+      jsonBody = request?.body?.json;
+    }
+    try {
+      axiosRequest.data = JSONbig.parse(jsonBody);
+    } catch (error) {
+      axiosRequest.data = jsonBody;
     }
   }
 

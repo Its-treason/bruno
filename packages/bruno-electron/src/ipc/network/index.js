@@ -120,31 +120,36 @@ const configureRequest = async (
 
   // client certificate config
   const clientCertConfig = get(brunoConfig, 'clientCertificates.certs', []);
+
   for (let clientCert of clientCertConfig) {
-    const domain = interpolateString(clientCert.domain, interpolationOptions);
-
-    let certFilePath = interpolateString(clientCert.certFilePath, interpolationOptions);
-    certFilePath = path.isAbsolute(certFilePath) ? certFilePath : path.join(collectionPath, certFilePath);
-
-    let keyFilePath = interpolateString(clientCert.keyFilePath, interpolationOptions);
-    keyFilePath = path.isAbsolute(keyFilePath) ? keyFilePath : path.join(collectionPath, keyFilePath);
-
-    if (domain && certFilePath && keyFilePath) {
+    const domain = interpolateString(clientCert?.domain, interpolationOptions);
+    const type = clientCert?.type || 'cert';
+    if (domain) {
       const hostRegex = '^https:\\/\\/' + domain.replaceAll('.', '\\.').replaceAll('*', '.*');
-
       if (request.url.match(hostRegex)) {
-        try {
-          httpsAgentRequestFields['cert'] = fs.readFileSync(certFilePath);
-        } catch (err) {
-          console.log('Error reading cert file', err);
-        }
+        if (type === 'cert') {
+          try {
+            let certFilePath = interpolateString(clientCert?.certFilePath, interpolationOptions);
+            certFilePath = path.isAbsolute(certFilePath) ? certFilePath : path.join(collectionPath, certFilePath);
+            let keyFilePath = interpolateString(clientCert?.keyFilePath, interpolationOptions);
+            keyFilePath = path.isAbsolute(keyFilePath) ? keyFilePath : path.join(collectionPath, keyFilePath);
 
-        try {
-          httpsAgentRequestFields['key'] = fs.readFileSync(keyFilePath);
-        } catch (err) {
-          console.log('Error reading key file', err);
+            httpsAgentRequestFields['cert'] = fs.readFileSync(certFilePath);
+            httpsAgentRequestFields['key'] = fs.readFileSync(keyFilePath);
+          } catch (err) {
+            console.error('Error reading cert/key file', err);
+            throw new Error('Error reading cert/key file' + err);
+          }
+        } else if (type === 'pfx') {
+          try {
+            let pfxFilePath = interpolateString(clientCert?.pfxFilePath, interpolationOptions);
+            pfxFilePath = path.isAbsolute(pfxFilePath) ? pfxFilePath : path.join(collectionPath, pfxFilePath);
+            httpsAgentRequestFields['pfx'] = fs.readFileSync(pfxFilePath);
+          } catch (err) {
+            console.error('Error reading pfx file', err);
+            throw new Error('Error reading pfx file' + err);
+          }
         }
-
         httpsAgentRequestFields['passphrase'] = interpolateString(clientCert.passphrase, interpolationOptions);
         break;
       }
@@ -769,8 +774,7 @@ const registerNetworkIpc = (mainWindow) => {
           collectionRoot,
           collectionUid,
           collectionVariables,
-          processEnvVars,
-          scriptingConfig
+          processEnvVars
         );
 
         // run assertions
@@ -1230,7 +1234,7 @@ const registerNetworkIpc = (mainWindow) => {
                 response,
                 envVars,
                 collectionVariables,
-                collectionPath
+                processEnvVars
               );
 
               mainWindow.webContents.send('main:run-folder-event', {
