@@ -93,7 +93,7 @@ export const collectionsSlice = createSlice({
       }
     },
     updateSettingsSelectedTab: (state, action) => {
-      const { collectionUid, tab } = action.payload;
+      const { collectionUid, folderUid, tab } = action.payload;
 
       const collection = findCollectionByUid(state.collections, collectionUid);
 
@@ -1129,6 +1129,44 @@ export const collectionsSlice = createSlice({
         set(collection, 'root.docs', action.payload.docs);
       }
     },
+    addFolderHeader: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      const folder = collection ? findItemInCollection(collection, action.payload.folderUid) : null;
+      if (folder) {
+        const headers = get(folder, 'root.request.headers', []);
+        headers.push({
+          uid: uuid(),
+          name: '',
+          value: '',
+          description: '',
+          enabled: true
+        });
+        set(folder, 'root.request.headers', headers);
+      }
+    },
+    updateFolderHeader: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      const folder = collection ? findItemInCollection(collection, action.payload.folderUid) : null;
+      if (folder) {
+        const headers = get(folder, 'root.request.headers', []);
+        const header = find(headers, (h) => h.uid === action.payload.header.uid);
+        if (header) {
+          header.name = action.payload.header.name;
+          header.value = action.payload.header.value;
+          header.description = action.payload.header.description;
+          header.enabled = action.payload.header.enabled;
+        }
+      }
+    },
+    deleteFolderHeader: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      const folder = collection ? findItemInCollection(collection, action.payload.folderUid) : null;
+      if (folder) {
+        let headers = get(folder, 'root.request.headers', []);
+        headers = filter(headers, (h) => h.uid !== action.payload.headerUid);
+        set(folder, 'root.request.headers', headers);
+      }
+    },
     addCollectionHeader: (state, action) => {
       const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
 
@@ -1167,11 +1205,20 @@ export const collectionsSlice = createSlice({
         set(collection, 'root.request.headers', headers);
       }
     },
+    folderAddFileEvent: (state, action) => {
+      console.log('index.js:53 No tab type case for', action.payload);
+      const file = action.payload.file;
+      const collection = findCollectionByUid(state.collections, file.meta.collectionUid);
+      const folder = findItemInCollectionByPathname(collection, file.meta.pathname);
+      console.log(folder);
+      if (folder) {
+        folder.root = file.data;
+      }
+    },
     collectionAddFileEvent: (state, action) => {
       const file = action.payload.file;
       const isCollectionRoot = file.meta.collectionRoot ? true : false;
       const collection = findCollectionByUid(state.collections, file.meta.collectionUid);
-
       if (isCollectionRoot) {
         if (collection) {
           collection.root = file.data;
@@ -1202,7 +1249,7 @@ export const collectionsSlice = createSlice({
           currentSubItems = childItem.items;
         }
 
-        if (!currentSubItems.find((f) => f.name === file.meta.name)) {
+        if (file.meta.name != 'folder.bru' && !currentSubItems.find((f) => f.name === file.meta.name)) {
           // this happens when you rename a file
           // the add event might get triggered first, before the unlink event
           // this results in duplicate uids causing react renderer to go mad
@@ -1542,6 +1589,9 @@ export const {
   addVar,
   updateVar,
   deleteVar,
+  addFolderHeader,
+  updateFolderHeader,
+  deleteFolderHeader,
   addCollectionHeader,
   updateCollectionHeader,
   deleteCollectionHeader,
@@ -1558,6 +1608,7 @@ export const {
   collectionUnlinkDirectoryEvent,
   collectionAddEnvFileEvent,
   collectionRenamedEvent,
+  folderAddFileEvent,
   resetRunResults,
   runRequestEvent,
   runFolderEvent,

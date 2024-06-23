@@ -49,6 +49,9 @@ const CollectionToolBar = ({ collection, activeTabUid }) => {
       tabInfo = 'Runner';
       tabType = 'collection-runner';
       break;
+    case 'folder-settings':
+      tabInfo = 'Folder Settings';
+      break;
     default:
       console.error('No tab type case for: ', activeTab.type);
   }

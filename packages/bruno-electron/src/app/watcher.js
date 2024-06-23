@@ -40,8 +40,13 @@ const isBruEnvironmentConfig = (pathname, collectionPath) => {
 const isCollectionRootBruFile = (pathname, collectionPath) => {
   const dirname = path.dirname(pathname);
   const basename = path.basename(pathname);
-
   return dirname === collectionPath && basename === 'collection.bru';
+};
+
+const isFolderRootBruFile = (pathname, collectionPath) => {
+  const dirname = path.dirname(pathname);
+  const basename = path.basename(pathname);
+  return dirname !== collectionPath && basename === 'folder.bru';
 };
 
 const hydrateRequestWithUuid = (request, pathname) => {
@@ -235,12 +240,10 @@ const add = async (win, pathname, collectionUid, collectionPath) => {
         collectionRoot: true
       }
     };
-
     try {
-      let bruContent = fs.readFileSync(pathname, 'utf8');
+      const bruContent = fs.readFileSync(pathname, 'utf8');
 
       file.data = collectionBruToJson(bruContent);
-
       hydrateBruCollectionFileWithUuid(file.data);
       win.webContents.send('main:collection-tree-updated', 'addFile', file);
       return;
@@ -248,6 +251,24 @@ const add = async (win, pathname, collectionUid, collectionPath) => {
       console.error(err);
       return;
     }
+  }
+
+  if (isFolderRootBruFile(pathname, collectionPath)) {
+    const bruContent = fs.readFileSync(pathname, 'utf8');
+    if (bruContent) {
+      const folder = {
+        meta: {
+          collectionUid,
+          pathname: path.dirname(pathname),
+          name: path.basename(pathname),
+          folderRoot: true
+        }
+      };
+      folder.data = collectionBruToJson(bruContent);
+      hydrateBruCollectionFileWithUuid(folder.data);
+      win.webContents.send('main:collection-tree-updated', 'addFileDir', folder);
+    }
+    return;
   }
 
   if (hasBruExtension(pathname)) {
@@ -344,7 +365,6 @@ const change = async (win, pathname, collectionUid, collectionPath) => {
       let bruContent = fs.readFileSync(pathname, 'utf8');
 
       file.data = collectionBruToJson(bruContent);
-
       hydrateBruCollectionFileWithUuid(file.data);
       win.webContents.send('main:collection-tree-updated', 'change', file);
       return;

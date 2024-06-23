@@ -6,6 +6,7 @@ import { ActionIcon, Menu, rem } from '@mantine/core';
 import {
   IconCopy,
   IconDots,
+  IconFolderCog,
   IconFolderOpen,
   IconFolderPlus,
   IconPencil,
@@ -26,7 +27,7 @@ type FolderMenuProps = {
 };
 
 export const FolderMenu: React.FC<FolderMenuProps> = ({ collectionUid, itemUid, onClose, onOpen }) => {
-  const { setActiveAction, openRunner, openInExplorer } = useSidebarActions();
+  const { setActiveAction, openRunner, openInExplorer, openFolderSettings } = useSidebarActions();
 
   return (
     <Menu offset={2} onOpen={onOpen} onClose={onClose}>
@@ -77,6 +78,13 @@ export const FolderMenu: React.FC<FolderMenuProps> = ({ collectionUid, itemUid, 
 
         <Menu.Item leftSection={<IconRun style={ICON_STYLE} />} onClick={() => openRunner(collectionUid)}>
           Run
+        </Menu.Item>
+
+        <Menu.Item
+          leftSection={<IconFolderCog style={ICON_STYLE} />}
+          onClick={() => openFolderSettings(collectionUid, itemUid)}
+        >
+          Collection settings
         </Menu.Item>
 
         <Menu.Divider />

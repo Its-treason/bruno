@@ -142,6 +142,16 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
       })
     );
   }, []);
+  const openFolderSettings = useCallback((collectionUid: string, folderUid: string) => {
+    dispatch(
+      addTab({
+        uid: uuid(),
+        collectionUid,
+        folderUid,
+        type: 'folder-settings'
+      })
+    );
+  }, []);
   const openRunner = useCallback((collectionUid: string) => {
     // TODO: This needs to handle folder stuff
     dispatch(
@@ -167,6 +177,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
 
       itemClicked,
       openCollectionSettings,
+      openFolderSettings,
       openRunner,
       runRequest
     }),

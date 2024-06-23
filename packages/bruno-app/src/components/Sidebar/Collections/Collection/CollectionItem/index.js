@@ -138,18 +138,6 @@ const CollectionItem = ({ item, collection, searchText }) => {
     }
   }
 
-  // we need to sort request items by seq property
-  const sortRequestItems = (items = []) => {
-    return items.sort((a, b) => a.seq - b.seq);
-  };
-
-  // we need to sort folder items by name alphabetically
-  const sortFolderItems = (items = []) => {
-    return items.sort((a, b) => a.name.localeCompare(b.name));
-  };
-  const requestItems = sortRequestItems(filter(item.items, (i) => isItemARequest(i)));
-  const folderItems = sortFolderItems(filter(item.items, (i) => isItemAFolder(i)));
-
   return (
     <StyledWrapper className={className}>
       <div className={itemRowClassName} ref={(node) => drag(drop(node))}>
