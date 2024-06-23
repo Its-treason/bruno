@@ -77,8 +77,8 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
   };
 
   useEffect(() => {
-    const allVariables = getAllVariables(collection);
-    if (allVariables && withVariables && monaco) {
+    if (withVariables && monaco) {
+      const allVariables = getAllVariables(collection);
       setMonacoVariables(monaco, allVariables, languages[mode] ?? 'plaintext');
     }
   }, [collection.collectionVariables, collection.activeEnvironmentUid, withVariables, mode]);

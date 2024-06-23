@@ -39,7 +39,7 @@
     "@types/qs": "^6.9.14",
     "@types/tough-cookie": "^4.0.5",
     "rimraf": "^5.0.5",
-    "typescript": "^5.4.2",
+    "typescript": "^5.5",
     "vite": "^5.1.5"
   }
 }
