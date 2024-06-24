@@ -8,7 +8,7 @@ import { CollectionMenu, FolderMenu, RequestMenu } from 'src/feature/sidebar-men
 import { useSidebarActions } from 'src/feature/sidebar-menu/hooks/useSidebarActions';
 import { useDrag, useDrop } from 'react-dnd';
 import { useDispatch } from 'react-redux';
-import { moveItem } from 'providers/ReduxStore/slices/collections/actions';
+import { moveItem, moveItemToRootOfCollection } from 'providers/ReduxStore/slices/collections/actions';
 
 type RequestItemWrapperProps = {
   uid?: string;
@@ -61,8 +61,12 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
     accept: `COLLECTION_ITEM_${collectionUid}`,
     // Defined in useDrag
     drop: (draggedItem: { uid: string }) => {
-      if (draggedItem.uid !== uid && draggedItem.uid !== collectionUid && uid) {
-        dispatch(moveItem(collectionUid, draggedItem.uid, uid));
+      if (draggedItem.uid !== uid && draggedItem.uid !== collectionUid) {
+        if (uid) {
+          dispatch(moveItem(collectionUid, draggedItem.uid, uid));
+        } else {
+          dispatch(moveItemToRootOfCollection(collectionUid, draggedItem.uid));
+        }
       }
     },
     collect: (monitor) => ({

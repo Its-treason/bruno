@@ -16,7 +16,7 @@ function applyCollectionAuth(context: RequestContext) {
   if (context.requestItem.request.auth.mode !== 'inherit') {
     context.debug.log('Collection auth skipped', {
       requestMode: context.requestItem.request.auth.mode,
-      collectionMode: context.collection.root?.request?.auth.mode,
+      collectionMode: context.collection.root?.request?.auth?.mode,
       finalAuth: context.requestItem.request.auth
     });
     return;

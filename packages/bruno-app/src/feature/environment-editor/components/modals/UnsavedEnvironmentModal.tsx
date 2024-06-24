@@ -33,9 +33,10 @@ export const UnsavedEnvironmentModal: React.FC = () => {
         <Button
           variant="filled"
           onClick={() => {
-            onSubmit(form.getValues().variables);
-            unsavedChangesCallback!();
-            setUnsavedChangesCallback(null);
+            onSubmit(form.getValues().variables).then(() => {
+              unsavedChangesCallback!();
+              setUnsavedChangesCallback(null);
+            });
           }}
         >
           Save

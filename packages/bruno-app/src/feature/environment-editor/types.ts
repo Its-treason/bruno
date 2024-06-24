@@ -27,7 +27,7 @@ export type EnvironmentProviderProps = {
   selectedEnvironment: CollectionEnvironment | null;
   form: UseFormReturnType<{ variables: CollectionEnvironment['variables'] }>;
 
-  onSubmit: (values: CollectionEnvironment['variables']) => void;
+  onSubmit: (values: CollectionEnvironment['variables']) => Promise<void>;
   onEnvironmentSwitch: (targetEnvironmentId: string, ignoreUnsaved?: boolean) => void;
   onClose: () => void;
 

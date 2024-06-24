@@ -244,7 +244,7 @@ export type Collection = {
   environments: CollectionEnvironment[];
   root?: {
     request?: {
-      auth: AuthMode;
+      auth?: AuthMode;
       headers: {
         name: string;
         value: string;

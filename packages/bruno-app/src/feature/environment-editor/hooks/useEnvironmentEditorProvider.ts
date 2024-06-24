@@ -81,18 +81,17 @@ export const useEnvironmentEditorProvider = (
   }, [collection.environments, selectedEnvironment]);
 
   const onSubmit = useCallback(
-    (values: CollectionEnvironment['variables']) => {
-      dispatch(saveEnvironment(structuredClone(values), selectedEnvironment?.uid, collection.uid))
-        // @ts-expect-error
-        .then(() => {
-          toast.success('Changes saved successfully');
-          form.setInitialValues({ variables: values });
-          form.reset();
-        })
-        .catch((e: unknown) => {
-          console.error('Could not save environment', e);
-          toast.error('An error occurred while saving the changes');
-        });
+    async (values: CollectionEnvironment['variables']) => {
+      try {
+        await dispatch(saveEnvironment(structuredClone(values), selectedEnvironment?.uid, collection.uid));
+      } catch (error) {
+        console.error('Could not save environment', error);
+        toast.error('An error occurred while saving the changes');
+        throw error;
+      }
+      toast.success('Changes saved successfully');
+      form.setInitialValues({ variables: values });
+      form.reset();
     },
     [selectedEnvironment, collection.uid]
   );

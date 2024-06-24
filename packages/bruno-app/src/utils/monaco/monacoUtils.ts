@@ -491,6 +491,9 @@ export const initMonaco = (monaco: Monaco) => {
   monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
     diagnosticCodesToIgnore: [1109, 2580, 2451, 80005, 1375, 1378]
   });
+  monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
+    allowComments: true
+  });
 };
 
 const createEditorAction = (id: string, keybindings: number[], label: string, run: () => void) => {
