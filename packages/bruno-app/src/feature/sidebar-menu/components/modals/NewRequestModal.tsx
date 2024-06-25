@@ -18,9 +18,9 @@ import { useEffect } from 'react';
 const newRequestFormSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.enum(['http-request', 'graphql-request']),
-    name: z.string().min(1),
+    name: z.string().min(1).max(255),
     method: z.string().min(1),
-    url: z.string().min(1)
+    url: z.string()
   }),
   z.object({
     type: z.literal('from-curl'),

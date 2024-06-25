@@ -1210,7 +1210,8 @@ export const collectionsSlice = createSlice({
       const collection = findCollectionByUid(state.collections, file.meta.collectionUid);
       const folder = findItemInCollectionByPathname(collection, file.meta.pathname);
       if (folder) {
-        folder.root = file.data;
+        folder.root = file.data.root;
+        folder.seq = file.data.seq;
       }
     },
     collectionAddFileEvent: (state, action) => {

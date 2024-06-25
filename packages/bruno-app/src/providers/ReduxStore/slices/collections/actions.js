@@ -189,7 +189,7 @@ export const saveFolderRoot = (collectionUid, folderUid) => (dispatch, getState)
     const { ipcRenderer } = window;
 
     ipcRenderer
-      .invoke('renderer:save-folder-root', folder.pathname, folder.root)
+      .invoke('renderer:save-folder-root', folder.pathname, { root: folder.root, seq: folder.seq })
       .then(() => toast.success('Folder Settings saved successfully'))
       .then(resolve)
       .catch((err) => {
@@ -581,7 +581,7 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
 
     // file item dragged onto another file item and both are in the same folder
     // this is also true when both items are at the root level
-    if (isItemARequest(draggedItem) && isItemARequest(targetItem) && sameParent) {
+    if ((isItemARequest(draggedItem) || isItemAFolder(draggedItem)) && isItemARequest(targetItem) && sameParent) {
       moveCollectionItem(collectionCopy, draggedItem, targetItem);
       const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
 
@@ -592,14 +592,19 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
     }
 
     // file item dragged onto another file item which is at the root level
-    if (isItemARequest(draggedItem) && isItemARequest(targetItem) && !targetItemParent) {
+    if (
+      (isItemARequest(draggedItem) || isItemAFolder(draggedItem)) &&
+      isItemARequest(targetItem) &&
+      !targetItemParent
+    ) {
       const draggedItemPathname = draggedItem.pathname;
       moveCollectionItem(collectionCopy, draggedItem, targetItem);
       const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
       const itemsToResequence2 = getItemsToResequence(targetItemParent, collectionCopy);
 
+      const type = isItemARequest(draggedItem) ? 'file' : 'folder';
       return ipcRenderer
-        .invoke('renderer:move-file-item', draggedItemPathname, collectionCopy.pathname)
+        .invoke(`renderer:move-${type}-item`, draggedItemPathname, collectionCopy.pathname)
         .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence))
         .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence2))
         .then(resolve)
@@ -607,14 +612,15 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
     }
 
     // file item dragged onto another file item and both are in different folders
-    if (isItemARequest(draggedItem) && isItemARequest(targetItem) && !sameParent) {
+    if ((isItemARequest(draggedItem) || isItemAFolder(draggedItem)) && isItemARequest(targetItem) && !sameParent) {
       const draggedItemPathname = draggedItem.pathname;
       moveCollectionItem(collectionCopy, draggedItem, targetItem);
       const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
       const itemsToResequence2 = getItemsToResequence(targetItemParent, collectionCopy);
 
+      const type = isItemARequest(draggedItem) ? 'file' : 'folder';
       return ipcRenderer
-        .invoke('renderer:move-file-item', draggedItemPathname, targetItemParent.pathname)
+        .invoke(`renderer:move-${type}-item`, draggedItemPathname, targetItemParent.pathname)
         .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence))
         .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence2))
         .then(resolve)
@@ -633,8 +639,9 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
       const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
       const itemsToResequence2 = getItemsToResequence(targetItem, collectionCopy);
 
+      const type = isItemARequest(draggedItem) ? 'file' : 'folder';
       return ipcRenderer
-        .invoke('renderer:move-file-item', draggedItemPathname, targetItem.pathname)
+        .invoke(`renderer:move-${type}-item`, draggedItemPathname, targetItem.pathname)
         .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence))
         .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence2))
         .then(resolve)
@@ -673,6 +680,10 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
     // folder dragged into another folder
     if (isItemAFolder(draggedItem) && isItemAFolder(targetItem) && draggedItemParent !== targetItem) {
       const draggedItemPathname = draggedItem.pathname;
+
+      if (targetItem.pathname.startsWith(draggedItemPathname)) {
+        return;
+      }
 
       return ipcRenderer
         .invoke('renderer:move-folder-item', draggedItemPathname, targetItem.pathname)

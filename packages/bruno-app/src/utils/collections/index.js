@@ -137,7 +137,8 @@ export const moveCollectionItem = (collection, draggedItem, targetItem) => {
   if (draggedItemParent) {
     draggedItemParent.items = sortBy(draggedItemParent.items, (item) => item.seq);
     draggedItemParent.items = filter(draggedItemParent.items, (i) => i.uid !== draggedItem.uid);
-    draggedItem.pathname = path.join(draggedItemParent.pathname, draggedItem.filename);
+    const filename = draggedItem.type === 'folder' ? draggedItem.name : draggedItem.filename;
+    draggedItem.pathname = path.join(draggedItemParent.pathname, filename);
   } else {
     collection.items = sortBy(collection.items, (item) => item.seq);
     collection.items = filter(collection.items, (i) => i.uid !== draggedItem.uid);
@@ -146,7 +147,8 @@ export const moveCollectionItem = (collection, draggedItem, targetItem) => {
   if (targetItem.type === 'folder') {
     targetItem.items = sortBy(targetItem.items || [], (item) => item.seq);
     targetItem.items.push(draggedItem);
-    draggedItem.pathname = path.join(targetItem.pathname, draggedItem.filename);
+    const filename = draggedItem.type === 'folder' ? draggedItem.name : draggedItem.filename;
+    draggedItem.pathname = path.join(targetItem.pathname, filename);
   } else {
     let targetItemParent = findParentItemInCollection(collection, targetItem.uid);
 
@@ -154,12 +156,14 @@ export const moveCollectionItem = (collection, draggedItem, targetItem) => {
       targetItemParent.items = sortBy(targetItemParent.items, (item) => item.seq);
       let targetItemIndex = findIndex(targetItemParent.items, (i) => i.uid === targetItem.uid);
       targetItemParent.items.splice(targetItemIndex + 1, 0, draggedItem);
-      draggedItem.pathname = path.join(targetItemParent.pathname, draggedItem.filename);
+      const filename = draggedItem.type === 'folder' ? draggedItem.name : draggedItem.filename;
+      draggedItem.pathname = path.join(targetItemParent.pathname, filename);
     } else {
       collection.items = sortBy(collection.items, (item) => item.seq);
       let targetItemIndex = findIndex(collection.items, (i) => i.uid === targetItem.uid);
       collection.items.splice(targetItemIndex + 1, 0, draggedItem);
-      draggedItem.pathname = path.join(collection.pathname, draggedItem.filename);
+      const filename = draggedItem.type === 'folder' ? draggedItem.name : draggedItem.filename;
+      draggedItem.pathname = path.join(collection.pathname, filename);
     }
   }
 };
@@ -189,7 +193,7 @@ export const getItemsToResequence = (parent, collection) => {
   if (!parent) {
     let index = 1;
     each(collection.items, (item) => {
-      if (isItemARequest(item)) {
+      if (isItemARequest(item) || (isItemAFolder(item) && item.seq !== undefined)) {
         itemsToResequence.push({
           pathname: item.pathname,
           seq: index++
@@ -202,7 +206,7 @@ export const getItemsToResequence = (parent, collection) => {
   if (parent.items && parent.items.length) {
     let index = 1;
     each(parent.items, (item) => {
-      if (isItemARequest(item)) {
+      if (isItemARequest(item) || isItemAFolder(item)) {
         itemsToResequence.push({
           pathname: item.pathname,
           seq: index++

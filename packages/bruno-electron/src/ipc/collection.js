@@ -569,13 +569,29 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
   ipcMain.handle('renderer:resequence-items', async (event, itemsToResequence) => {
     try {
       for (let item of itemsToResequence) {
-        const bru = fs.readFileSync(item.pathname, 'utf8');
-        const jsonData = bruToJson(bru);
+        if (fs.lstatSync(item.pathname).isFile()) {
+          const bru = fs.readFileSync(item.pathname, 'utf8');
+          const jsonData = bruToJson(bru);
 
-        if (jsonData.seq !== item.seq) {
-          jsonData.seq = item.seq;
-          const content = jsonToBru(jsonData);
-          await writeFile(item.pathname, content);
+          if (jsonData.seq !== item.seq) {
+            jsonData.seq = item.seq;
+            const content = jsonToBru(jsonData);
+            await writeFile(item.pathname, content);
+          }
+        } else {
+          const metadataPath = path.join(item.pathname, 'folder.json');
+
+          // folder.json is only created when needed, so it might not exist
+          let contents = { seq: -1, root: {} };
+          if (fs.existsSync(metadataPath)) {
+            const raw = fs.readFileSync(metadataPath, 'utf8');
+            contents = JSON.parse(raw);
+          }
+
+          if (contents.seq !== item.seq) {
+            contents.seq = item.seq;
+            await writeFile(metadataPath, JSON.stringify(contents));
+          }
         }
       }
     } catch (error) {

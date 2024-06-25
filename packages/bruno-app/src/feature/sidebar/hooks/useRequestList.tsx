@@ -33,11 +33,11 @@ export const useRequestList = (): RequestListItem[] => {
       filter: string | null
     ) => {
       const sorted = [...requestItems].sort((a, b) => {
-        if (a.type === 'folder' && b.type !== 'folder') {
+        if (a.seq === undefined && b.seq !== undefined) {
           return -1;
-        } else if (a.type !== 'folder' && b.type === 'folder') {
+        } else if (a.seq !== undefined && b.seq === undefined) {
           return 1;
-        } else if (a.type === 'folder' && b.type === 'folder') {
+        } else if (a.seq === undefined && b.seq === undefined) {
           return 0;
         }
         return a.seq < b.seq ? -1 : 1;
