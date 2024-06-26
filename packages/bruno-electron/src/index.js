@@ -39,6 +39,11 @@ let mainWindow;
 let watcher;
 let launchFailed = false;
 
+// TODO: Check if there is a better workaround: https://github.com/electron/electron/issues/17972
+if (process.platform === 'linux') {
+  app.commandLine.appendSwitch('--no-sandbox');
+}
+
 // Prepare the renderer once the app is ready
 app.on('ready', async () => {
   Menu.setApplicationMenu(menu);
@@ -53,7 +58,6 @@ app.on('ready', async () => {
     minHeight: 640,
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: true,
       preload: path.join(__dirname, 'preload.js'),
       webviewTag: true
     },
