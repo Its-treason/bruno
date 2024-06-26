@@ -9,6 +9,7 @@ const config = {
   },
   files: ['**/*'],
   afterSign: 'notarize.js',
+  afterPack: './linux-sandbox-fix.js',
   mac: {
     artifactName: 'bruno-lazer_nightly_${arch}_${os}.${ext}',
     category: 'public.app-category.developer-tools',
@@ -31,6 +32,7 @@ const config = {
   linux: {
     artifactName: 'bruno-lazer_nightly_${arch}_linux.${ext}',
     icon: 'resources/icons/png',
+    executableName: 'bruno-lazer',
     target: ['AppImage', 'deb', 'snap', 'rpm']
   },
   win: {
