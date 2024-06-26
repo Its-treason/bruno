@@ -1,6 +1,6 @@
 import CodeEditor from 'components/CodeEditor';
 import get from 'lodash/get';
-import { HTTPSnippet } from 'httpsnippet';
+import { HTTPSnippet } from '@readme/httpsnippet';
 import { useTheme } from 'providers/Theme';
 import StyledWrapper from './StyledWrapper';
 import { buildHarRequest } from 'utils/codegenerator/har';
@@ -33,6 +33,9 @@ const CodeView = ({ language, item }) => {
   let snippet = '';
   try {
     snippet = new HTTPSnippet(buildHarRequest({ request: item.request, headers })).convert(target, client);
+    if (Array.isArray(snippet)) {
+      snippet = snippet[0] ?? 'What is happening?';
+    }
   } catch (e) {
     console.error(e);
     snippet = 'Error generating code snippet';
@@ -49,7 +52,6 @@ const CodeView = ({ language, item }) => {
           <IconCopy size={25} strokeWidth={1.5} />
         </CopyToClipboard>
         <CodeEditor
-          readOnly
           collection={collection}
           value={snippet}
           font={get(preferences, 'font.codeFont', 'default')}

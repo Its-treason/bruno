@@ -29,19 +29,19 @@ const languages = [
     client: 'axios'
   },
   {
-    name: 'Python-Python3',
-    target: 'python',
-    client: 'python3'
-  },
-  {
     name: 'Python-Requests',
     target: 'python',
     client: 'requests'
   },
   {
-    name: 'PHP',
+    name: 'PHP (ext-curl)',
     target: 'php',
     client: 'curl'
+  },
+  {
+    name: 'PHP (Guzzle)',
+    target: 'php',
+    client: 'guzzle'
   },
   {
     name: 'Shell-curl',
