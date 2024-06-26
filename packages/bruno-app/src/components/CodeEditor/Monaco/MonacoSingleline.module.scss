@@ -7,9 +7,15 @@
   width: 100%;
 
   padding: calc(var(--mantine-spacing-xs) - 2px);
-  border: 1px solid var(--mantine-color-dark-4);
+  border: 1px solid var(--mantine-color-gray-4);
   border-radius: var(--mantine-radius-xs);
-  background-color: var(--mantine-color-dark-6) !important;
+  background-color: var(--mantine-color-white);
+
+  [data-mantine-color-scheme='dark'] & {
+    background-color: var(--mantine-color-dark-6) !important;
+    border: 1px solid var(--mantine-color-dark-4);
+  }
+
   // This ensures corrent shrinking / expanding https://github.com/microsoft/monaco-editor/issues/3393
   display: grid;
   grid-template-columns: minmax(0px, auto);

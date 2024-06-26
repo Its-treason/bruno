@@ -3,6 +3,7 @@ import useLocalStorage from 'hooks/useLocalStorage/index';
 
 import { createContext, useContext, useEffect, useState } from 'react';
 import { ThemeProvider as SCThemeProvider } from 'styled-components';
+import { useMantineColorScheme } from '@mantine/core';
 
 export const ThemeContext = createContext();
 export const ThemeProvider = (props) => {
@@ -39,6 +40,11 @@ export const ThemeProvider = (props) => {
 
   // storedTheme can have 3 values: 'light', 'dark', 'system'
   // displayedTheme can have 2 values: 'light', 'dark'
+
+  const mantineColorSchema = useMantineColorScheme();
+  useEffect(() => {
+    mantineColorSchema.setColorScheme(displayedTheme);
+  }, [displayedTheme]);
 
   const theme = storedTheme === 'system' ? themes[displayedTheme] : themes[storedTheme];
   const themeOptions = Object.keys(themes);
