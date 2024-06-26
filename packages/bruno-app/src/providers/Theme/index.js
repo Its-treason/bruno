@@ -9,7 +9,7 @@ export const ThemeContext = createContext();
 export const ThemeProvider = (props) => {
   const isBrowserThemeLight = window.matchMedia('(prefers-color-scheme: light)').matches;
   const [displayedTheme, setDisplayedTheme] = useState(isBrowserThemeLight ? 'light' : 'dark');
-  const [storedTheme, setStoredTheme] = useLocalStorage('bruno.theme', 'system');
+  const [storedTheme, setStoredTheme] = useLocalStorage('bruno.theme', 'dark');
   const toggleHtml = () => {
     const html = document.querySelector('html');
     if (html) {
