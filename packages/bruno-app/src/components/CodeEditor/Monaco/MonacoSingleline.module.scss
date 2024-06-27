@@ -5,6 +5,7 @@
 .paper {
   height: fit-content; /* Monaco will auto set the height */
   width: 100%;
+  min-width: 0;
 
   padding: calc(var(--mantine-spacing-xs) - 2px);
   border: 1px solid var(--mantine-color-gray-4);
@@ -28,6 +29,7 @@
 .paperHidden {
   width: 100%;
   height: fit-content; /* Monaco will auto set the height */
+  min-width: 0;
 
   background-color: transparent !important;
 

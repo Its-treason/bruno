@@ -10,7 +10,6 @@ import ReduxStore from 'providers/ReduxStore';
 import ThemeProvider from 'providers/Theme/index';
 import ErrorBoundary from './ErrorBoundary';
 
-import '../styles/app.scss';
 import '../styles/globals.css';
 import 'codemirror/lib/codemirror.css';
 import 'graphiql/graphiql.min.css';

@@ -57,12 +57,7 @@ export const TopPanel: React.FC = () => {
   };
 
   return (
-    <Group
-      justify="space-between"
-      gap={0}
-      p={'xs'}
-      style={{ borderBottom: '1px solid var(--mantine-color-default-border)' }}
-    >
+    <Group justify="space-between" p={'xs'}>
       {createCollectionModalOpen ? <CreateCollection onClose={() => setCreateCollectionModalOpen(false)} /> : null}
       {importCollectionModalOpen ? (
         <ImportCollection onClose={() => setImportCollectionModalOpen(false)} handleSubmit={handleImportCollection} />
