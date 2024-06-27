@@ -10,8 +10,9 @@
   "module": "dist/index.mjs",
   "private": true,
   "scripts": {
-    "build": "vite build",
-    "dev": "vite build --watch",
+    "build": "tsc",
+    "dev": "tsc --watch",
+    "check": "tsc --noEmit",
     "clean": "rimraf dist",
     "test": "jest"
   },
@@ -39,7 +40,6 @@
     "@types/qs": "^6.9.14",
     "@types/tough-cookie": "^4.0.5",
     "rimraf": "^5.0.5",
-    "typescript": "^5.5",
-    "vite": "^5.1.5"
+    "typescript": "^5.5"
   }
 }
