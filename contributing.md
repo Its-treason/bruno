@@ -1,21 +1,3 @@
-**English**
-| [Українська](docs/contributing/contributing_ua.md)
-| [Русский](docs/contributing/contributing_ru.md)
-| [Türkçe](docs/contributing/contributing_tr.md)
-| [Deutsch](docs/contributing/contributing_de.md)
-| [Français](docs/contributing/contributing_fr.md)
-| [Português (BR)](docs/contributing/contributing_pt_br.md)
-| [한국어](docs/contributing/contributing_kr.md)
-| [বাংলা](docs/contributing/contributing_bn.md)
-| [Español](docs/contributing/contributing_es.md)
-| [Italiano](docs/contributing/contributing_it.md)
-| [Română](docs/contributing/contributing_ro.md)
-| [Polski](docs/contributing/contributing_pl.md)
-| [简体中文](docs/contributing/contributing_cn.md)
-| [正體中文](docs/contributing/contributing_zhtw.md)
-| [日本語](docs/contributing/contributing_ja.md)
-| [हिंदी](docs/contributing/contributing_hi.md)
-
 ## Let's make Bruno better, together!!
 
 We are happy that you are looking to improve Bruno. Below are the guidelines to get started bringing up Bruno on your computer.
@@ -26,42 +8,43 @@ Bruno is built using Next.js and React. We also use electron to ship a desktop v
 
 Libraries we use
 
-- CSS - Tailwind
-- Code Editors - Codemirror
-- State Management - Redux
-- Icons - Tabler Icons
-- Forms - formik
-- Schema Validation - Yup
-- Request Client - axios
-- Filesystem Watcher - chokidar
+- Component library: @mantine/\*
+- CSS: Tailwind, Styled components (Deprecated), CSSModules
+- Code Editors: Monaco, Codemirror (Deprecated)
+- State Management: Redux
+- Icons: Tabler Icons
+- Forms: formik, @mantine/forms
+- Schema Validation: Yup, zod
+- Request Client: axios (Depricated), node:http (New request method)
+- Filesystem Watcher: chokidar
 
 ### Dependencies
 
-You would need [Node v18.x or the latest LTS version](https://nodejs.org/en/) and npm 8.x. We use npm workspaces in the project
+You would need [Node ^20](https://nodejs.org/en/) and pnpm ^9. We use pnpm workspaces in the project
 
 ## Development
 
-Bruno is being developed as a desktop app. You need to load the app by running the Next.js app in one terminal and then run the electron app in another terminal.
+For local development you should open Terminal windows. VSCode can create a split terminal.
+
+- `pnpm run dev`: Will build all packages and start the Next.js dev server
+- `pnpm run electron`: Will open electron itself. Electron will not restart automaticly when files are changed
+
+Note that you need to wait ~10 seconds before starting electron, to make sure all packages are built.
 
 ### Local Development
 
 ```bash
-# use nodejs 18 version
+# use nodejs version 20
 nvm use
 
 # install deps
-npm i --legacy-peer-deps
+pnpm  i
 
-# build packages
-npm run build:graphql-docs
-npm run build:bruno-query
-npm run build:bruno-common
+# Build packages and start Next.js dev server
+pnpm run dev
 
-# run next app (terminal 1)
-npm run dev:web
-
-# run electron app (terminal 2)
-npm run dev:electron
+# Start electron
+pnpm run electron
 ```
 
 ### Troubleshooting
@@ -90,9 +73,12 @@ npm test --workspace=packages/bruno-lang
 
 ### Raising Pull Requests
 
-- Please keep the PR's small and focused on one thing
-- Please follow the format of creating branches
-  - feature/[feature name]: This branch should contain changes for a specific feature
-    - Example: feature/dark-mode
-  - bugfix/[bug name]: This branch should contain only bug fixes for a specific bug
-    - Example bugfix/bug-1
+Please keep the PR's small and focused on one thing. Before making bigger changes, please create an issue / feature
+request before and wait for feedback
+
+Please follow the format of creating branches:
+
+- feature/[feature name]: This branch should contain changes for a specific feature
+  - Example: feature/dark-mode
+- bugfix/[bug name]: This branch should contain only bug fixes for a specific bug
+  - Example: bugfix/zyx-modal-text-overflow
