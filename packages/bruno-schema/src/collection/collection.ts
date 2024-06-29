@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { requestItemSchema } from './request';
+import { httpRequestSchema, requestItemSchema } from './request';
 import { environmentSchema } from './environment';
 
 // This has a lot of defaults because the Config may be older and Bruno set any defaults
@@ -60,6 +60,12 @@ export const collectionSchema = z.object({
   environments: z.array(environmentSchema),
   pathname: z.string(),
   collectionVariables: z.record(z.unknown()),
+  processEnvVariables: z.record(z.unknown()).optional(),
+  root: z
+    .object({
+      request: httpRequestSchema.optional()
+    })
+    .default({}),
   brunoConfig: brunoConfigSchema,
   collapsed: z.boolean().default(true)
 });

@@ -21,11 +21,28 @@ const languages: Record<string, string> = {
   'application/text': 'plaintext',
   'application/xml': 'xml',
   'application/javascript': 'typescript',
-  javascript: 'typescript'
+  javascript: 'typescript',
+
+  c: 'c',
+  clojure: 'clojure',
+  csharp: 'csharp',
+  go: 'go',
+  java: 'java',
+  kotlin: 'kotlin',
+  node: 'typescript',
+  objc: 'objective-c',
+  ocaml: 'ocaml',
+  php: 'php',
+  powershell: 'powershell',
+  python: 'python',
+  r: 'r',
+  ruby: 'ruby',
+  shell: 'shell',
+  swift: 'swift'
 };
 
 type MonacoProps = {
-  collection: {
+  collection?: {
     collectionVariables: unknown;
     activeEnvironmentUid: string | undefined;
   };
@@ -35,6 +52,7 @@ type MonacoProps = {
   withVariables: boolean;
   mode: string;
   height: string | number;
+  hideMinimap: boolean;
 
   onChange: (newValue: string) => void;
   onRun: () => void;
@@ -51,6 +69,7 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
   readOnly,
   value,
   withVariables = false,
+  hideMinimap = false,
   height = '60vh'
 }) => {
   const monaco = useMonaco();
@@ -77,11 +96,13 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
   };
 
   useEffect(() => {
-    if (withVariables && monaco) {
+    if (withVariables && monaco && collection) {
       const allVariables = getAllVariables(collection);
       setMonacoVariables(monaco, allVariables, languages[mode] ?? 'plaintext');
     }
-  }, [collection.collectionVariables, collection.activeEnvironmentUid, withVariables, mode]);
+  }, [collection?.collectionVariables, collection?.activeEnvironmentUid, withVariables, mode]);
+
+  console.log('MONACO', mode, languages[mode]);
 
   return (
     <Editor
@@ -95,6 +116,9 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
         formatOnPaste: true,
         scrollBeyondLastLine: false,
         automaticLayout: true,
+        minimap: {
+          enabled: !hideMinimap
+        },
         scrollbar: {
           vertical: 'hidden',
           horizontal: 'hidden'
@@ -106,7 +130,7 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
       language={languages[mode] ?? 'plaintext'}
       value={value}
       onMount={onMount}
-      onChange={!readOnly ? handleEditorChange : () => {}}
+      onChange={!readOnly ? handleEditorChange : null}
     />
   );
 };

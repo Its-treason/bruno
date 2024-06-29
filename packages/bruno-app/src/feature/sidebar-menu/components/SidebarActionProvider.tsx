@@ -15,7 +15,6 @@ import { NewFolderModal } from './modals/NewFolderModal';
 import { NewRequestModal } from './modals/NewRequestModal';
 import { RenameCollectionModal } from './modals/RenameCollectionModal';
 import { RenameItemModal } from './modals/RenameItemModal';
-import GenerateCodeItem from 'components/Sidebar/Collections/Collection/CollectionItem/GenerateCodeItem';
 import { getDefaultRequestPaneTab, isItemARequest } from 'utils/collections';
 import {
   selectEnvironment,
@@ -27,13 +26,12 @@ import { hideHomePage } from 'providers/ReduxStore/slices/app';
 import { addTab, focusTab } from 'providers/ReduxStore/slices/tabs';
 import { collectionClicked, collectionFolderClicked } from 'providers/ReduxStore/slices/collections';
 import { uuid } from 'utils/common';
+import { CodeGeneratorModal } from 'src/feature/code-generator';
 
 type ActiveAction = {
   type: SidebarActionTypes;
-  // collection: CollectionSchema;
-  // item?: RequestItemSchema;
-  collection: any;
-  item?: any; // TODO Fix this
+  collection: any | CollectionSchema; // TODO: Refactor
+  item?: any | RequestItemSchema;
 };
 
 type ReduxState = {
@@ -237,13 +235,12 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
         collectionUid={activeAction?.collection.uid ?? ''}
         item={activeAction?.item}
       />
-      {activeAction?.type === 'generate' ? (
-        <GenerateCodeItem
-          collection={activeAction.collection}
-          onClose={() => setActiveActionState(null)}
-          item={activeAction.item}
-        />
-      ) : null}
+      <CodeGeneratorModal
+        opened={activeAction?.type === 'generate'}
+        onClose={() => setActiveActionState(null)}
+        collectionUid={activeAction?.collection.uid}
+        requestUid={activeAction?.item?.uid}
+      />
 
       {children}
     </SidebarActionContext.Provider>

@@ -3,10 +3,32 @@ import Codemirror from './Codemirror';
 import SingleLineEditor from './Codemirror/SingleLineEditor';
 import { MonacoSingleline } from './Monaco/MonacoSingleline';
 import { MonacoEditor } from './Monaco/Monaco';
+import { CollectionSchema } from '@usebruno/schema';
 
-const CodeEditor = ({
+type CodeEditorProps = {
+  collection?: CollectionSchema;
+  font?: string;
+  fontSize?: number;
+  mode?: string;
+  onChange?: (value: any) => void;
+  onRun?: () => void;
+  onSave?: () => void;
+  readOnly?: boolean;
+  theme?: string;
+  value: string;
+  defaultValue?: string;
+  singleLine?: boolean;
+  asInput?: boolean;
+  withVariables?: boolean;
+  allowLinebreaks?: boolean;
+  hideMinimap?: boolean;
+  height?: string;
+};
+
+const CodeEditor: React.FC<CodeEditorProps> = ({
   collection,
   font = 'default',
+  fontSize = 13,
   mode = 'plaintext',
   onChange,
   onRun,
@@ -19,12 +41,14 @@ const CodeEditor = ({
   asInput = false,
   withVariables = false,
   allowLinebreaks = false,
+  hideMinimap,
   height = '60vh'
 }) => {
-  const preferences = useSelector((state) => state.app.preferences);
+  const preferences = useSelector((state: any) => state.app.preferences);
   const forwardProps = {
     collection,
     font,
+    fontSize,
     mode,
     onChange,
     onRun,
@@ -37,6 +61,7 @@ const CodeEditor = ({
     asInput,
     withVariables,
     allowLinebreaks,
+    hideMinimap,
     height
   };
 
