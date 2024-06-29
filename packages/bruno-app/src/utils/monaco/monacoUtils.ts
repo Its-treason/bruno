@@ -470,10 +470,13 @@ export const initMonaco = (monaco: Monaco) => {
     setTimeout(timeout: number): void;
   };
   declare const bru: {
-    getEnvVar(key: string) : any;
-    setEnvVar(key: string, value: any) : void;
-    getVar(key: string) : any;
+    hasEnvVar(key: string): boolean;
+    getEnvVar(key: string): any;
+    setEnvVar(key: string, value: any): void;
+    hasVar(key: string): boolean;
+    getVar(key: string): any;
     setVar(key: string, value: any): void;
+    deleteVar(key: string): void;
     getProcessEnv(): any;
     cwd(): string;
   };
