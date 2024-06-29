@@ -250,7 +250,7 @@ export type Collection = {
         value: string;
         enabled: boolean;
       }[];
-      script: {
+      script?: {
         req?: string;
         res?: string;
       };
