@@ -3,15 +3,16 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { useCallback, useEffect, useState } from 'react';
-import { CollectionEnvironment, EnvironmentEditorModalTypes, EnvironmentProviderProps } from '../types';
+import { EnvironmentEditorModalTypes, EnvironmentProviderProps } from '../types';
 import { useForm } from '@mantine/form';
 import { useDispatch } from 'react-redux';
 import { saveEnvironment } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { variableNameRegex } from 'utils/common/regex';
+import { EnvironmentSchema, EnvironmentVariableSchema } from '@usebruno/schema';
 
 type Collection = {
-  environments: CollectionEnvironment[];
+  environments: EnvironmentSchema[];
   activeEnvironmentUid: string | undefined;
   uid: string;
 };
@@ -21,13 +22,13 @@ export const useEnvironmentEditorProvider = (
   closeModal: () => void
 ): EnvironmentProviderProps => {
   const dispatch = useDispatch();
-  const [selectedEnvironment, setSelectedEnvironment] = useState<CollectionEnvironment | null>(
+  const [selectedEnvironment, setSelectedEnvironment] = useState<EnvironmentSchema | null>(
     collection.environments[0] ?? null
   );
   const [unsavedChangesCallback, setUnsavedChangesCallback] = useState<(() => void) | null>(null);
   const [activeModal, setActiveModal] = useState<EnvironmentEditorModalTypes>(null);
 
-  const form = useForm<{ variables: CollectionEnvironment['variables'] }>({
+  const form = useForm<{ variables: EnvironmentVariableSchema[] }>({
     mode: 'uncontrolled',
     initialValues: {
       variables: []
@@ -81,7 +82,7 @@ export const useEnvironmentEditorProvider = (
   }, [collection.environments, selectedEnvironment]);
 
   const onSubmit = useCallback(
-    async (values: CollectionEnvironment['variables']) => {
+    async (values: EnvironmentVariableSchema[]) => {
       try {
         await dispatch(saveEnvironment(structuredClone(values), selectedEnvironment?.uid, collection.uid));
       } catch (error) {

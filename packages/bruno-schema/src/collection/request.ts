@@ -74,9 +74,10 @@ const baseRequestItemSchema = z.object({
   name: z.string().min(1),
   request: httpRequestSchema,
   fileContent: z.string().optional(),
-  filename: z.string().optional(), // TODO: Check if this should really be undefined
+  filename: z.string().optional(),
   pathname: z.string().optional(),
-  collapsed: z.boolean().default(true)
+  collapsed: z.boolean().default(true),
+  requestState: z.enum(['queued', 'sending', 'received']).optional()
 });
 export type RequestItemSchema = z.infer<typeof baseRequestItemSchema> & {
   items?: RequestItemSchema[];

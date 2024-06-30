@@ -11,19 +11,11 @@ import { MethodSelector } from './MethodSelector';
 import { get } from 'lodash';
 import CodeEditor from 'components/CodeEditor';
 import { IconDeviceFloppy, IconSend2 } from '@tabler/icons-react';
-
-type Request = {
-  uid: string;
-  method: string;
-  url: string;
-  requestState: string;
-
-  draft?: Request;
-};
+import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 
 type RequestUrlBarProps = {
-  item: Request;
-  collection: { uid: string };
+  item: RequestItemSchema;
+  collection: CollectionSchema;
   handleRun: () => void;
 };
 

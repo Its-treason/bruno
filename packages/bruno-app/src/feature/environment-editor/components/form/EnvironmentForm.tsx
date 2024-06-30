@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { ActionIcon, ActionIconGroup, Box, Button, Group, Space, Table, Title, Tooltip, rem } from '@mantine/core';
+import { ActionIcon, ActionIconGroup, Box, Button, Group, Table, Title, Tooltip, rem } from '@mantine/core';
 import React, { useCallback, useMemo } from 'react';
 import { useEnvironmentEditor } from '../../hooks/useEnvironmentEditor';
 import { IconArrowBack, IconCopy, IconDeviceFloppy, IconPencil, IconPlus, IconTrash } from '@tabler/icons-react';

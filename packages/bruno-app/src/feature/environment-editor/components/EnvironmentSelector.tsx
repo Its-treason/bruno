@@ -6,9 +6,10 @@ import { ActionIcon, Group, Select, Tooltip, rem } from '@mantine/core';
 import { IconPencilCog } from '@tabler/icons-react';
 import { useEnvironmentSelector } from '../hooks/useEnvironmentSelector';
 import { EnvironmentDrawer } from 'src/feature/environment-editor';
+import { CollectionSchema } from '@usebruno/schema';
 
 type EnvironmentSelectorProps = {
-  collection: any;
+  collection: CollectionSchema;
 };
 
 export const EnvironmentSelector: React.FC<EnvironmentSelectorProps> = ({ collection }) => {
