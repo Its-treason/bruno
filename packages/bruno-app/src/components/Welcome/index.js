@@ -9,7 +9,8 @@ import {
   IconFolders,
   IconSpeakerphone,
   IconBook,
-  IconCopyleft
+  IconCopyleft,
+  IconBrandDiscord
 } from '@tabler/icons-react';
 import { Blockquote } from '@mantine/core';
 
@@ -99,6 +100,12 @@ const Welcome = () => {
 
       <div className="uppercase font-semibold heading mt-10 pt-6">Links</div>
       <div className="mt-4 flex flex-col collection-options select-none">
+        <div className="flex items-center mt-2">
+          <a href="https://discord.gg/GTj7QYWPur" target="_blank" className="inline-flex items-center">
+            <IconBrandDiscord size={18} strokeWidth={2} />
+            <span className="label ml-2">Discord</span>
+          </a>
+        </div>
         <div className="flex items-center mt-2">
           <a href="https://docs.usebruno.com" target="_blank" className="inline-flex items-center">
             <IconBook size={18} strokeWidth={2} />

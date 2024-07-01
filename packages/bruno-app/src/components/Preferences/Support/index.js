@@ -13,7 +13,7 @@ const Support = () => {
           </a>
         </div>
         <div className="mt-2">
-          <a href="https://discordapp.com/users/139058134596583424" target="_blank" className="flex items-end">
+          <a href="https://discord.gg/GTj7QYWPur" target="_blank" className="flex items-end">
             <IconBrandDiscord size={18} strokeWidth={2} />
             <span className="label ml-2">Discord</span>
           </a>

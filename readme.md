@@ -124,7 +124,7 @@ Please see [here](publishing.md) for more information.
 
 [𝕏 (Twitter)](https://twitter.com/use_bruno) <br />
 [Website](https://www.usebruno.com) <br />
-[Discord](https://discord.com/invite/KgcZUncpjq) <br />
+[Discord](https://discord.com/invite/CT9VWUEwTv) <br />
 [LinkedIn](https://www.linkedin.com/company/usebruno)
 
 ### Trademark
