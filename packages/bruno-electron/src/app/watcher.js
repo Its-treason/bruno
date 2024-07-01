@@ -254,23 +254,29 @@ const add = async (win, pathname, collectionUid, collectionPath) => {
     }
   }
 
-  if (isFolderRootBruFile(pathname, collectionPath)) {
-    const bruContent = fs.readFileSync(pathname, 'utf8');
-    if (bruContent) {
-      const folder = {
-        meta: {
-          collectionUid,
-          pathname: path.dirname(pathname),
-          name: path.basename(pathname),
-          folderRoot: true
-        }
-      };
-      // folder.data = collectionBruToJson(bruContent);
-      folder.data = JSON.parse(bruContent);
-      hydrateBruCollectionFileWithUuid(folder.data);
-      win.webContents.send('main:collection-tree-updated', 'addFileDir', folder);
+  // Is this a folder.bru file?
+  if (path.basename(pathname) === 'folder.bru') {
+    const file = {
+      meta: {
+        collectionUid,
+        pathname: path.dirname(pathname),
+        name: path.basename(pathname),
+        folderRoot: true
+      }
+    };
+
+    try {
+      let bruContent = fs.readFileSync(pathname, 'utf8');
+
+      file.data = collectionBruToJson(bruContent);
+
+      hydrateBruCollectionFileWithUuid(file.data);
+      win.webContents.send('main:collection-tree-updated', 'addFile', file);
+      return;
+    } catch (err) {
+      console.error(err);
+      return;
     }
-    return;
   }
 
   if (hasBruExtension(pathname)) {
@@ -376,23 +382,29 @@ const change = async (win, pathname, collectionUid, collectionPath) => {
     }
   }
 
-  if (isFolderRootBruFile(pathname, collectionPath)) {
-    const bruContent = fs.readFileSync(pathname, 'utf8');
-    if (bruContent) {
-      const folder = {
-        meta: {
-          collectionUid,
-          pathname: path.dirname(pathname),
-          name: path.basename(pathname),
-          folderRoot: true
-        }
-      };
-      // folder.data = collectionBruToJson(bruContent);
-      folder.data = JSON.parse(bruContent);
-      hydrateBruCollectionFileWithUuid(folder.data);
-      win.webContents.send('main:collection-tree-updated', 'addFileDir', folder);
+  // Is this a folder.bru file?
+  if (path.basename(pathname) === 'folder.bru') {
+    const file = {
+      meta: {
+        collectionUid,
+        pathname: path.dirname(pathname),
+        name: path.basename(pathname),
+        folderRoot: true
+      }
+    };
+
+    try {
+      let bruContent = fs.readFileSync(pathname, 'utf8');
+
+      file.data = collectionBruToJson(bruContent);
+
+      hydrateBruCollectionFileWithUuid(file.data);
+      win.webContents.send('main:collection-tree-updated', 'addFile', file);
+      return;
+    } catch (err) {
+      console.error(err);
+      return;
     }
-    return;
   }
 
   if (hasBruExtension(pathname)) {
@@ -407,6 +419,7 @@ const change = async (win, pathname, collectionUid, collectionPath) => {
 
       const bru = fs.readFileSync(pathname, 'utf8');
       file.data = bruToJson(bru);
+
       hydrateRequestWithUuid(file.data, pathname);
       win.webContents.send('main:collection-tree-updated', 'change', file);
     } catch (err) {

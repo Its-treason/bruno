@@ -63,7 +63,7 @@ export function createDefaultRequestHeader(requestItem: RequestItem, meta: Heade
 function getRequestHeaders(context: RequestContext, extraHeaders: Record<string, string>): Record<string, string> {
   const defaultHeader = createDefaultRequestHeader(context.requestItem, {
     isCli: false,
-    brunoVersion: '1.14.0'
+    brunoVersion: '1.20.0'
   });
 
   // Go through user header and merge them together with default header

@@ -198,21 +198,6 @@ const CollectionItem = ({ item, collection, searchText }) => {
           </div>
         </div>
       </div>
-
-      {!itemIsCollapsed ? (
-        <div>
-          {folderItems && folderItems.length
-            ? folderItems.map((i) => {
-                return <CollectionItem key={i.uid} item={i} collection={collection} searchText={searchText} />;
-              })
-            : null}
-          {requestItems && requestItems.length
-            ? requestItems.map((i) => {
-                return <CollectionItem key={i.uid} item={i} collection={collection} searchText={searchText} />;
-              })
-            : null}
-        </div>
-      ) : null}
     </StyledWrapper>
   );
 };

@@ -84,7 +84,7 @@ export const FolderMenu: React.FC<FolderMenuProps> = ({ collectionUid, itemUid, 
           leftSection={<IconFolderCog style={ICON_STYLE} />}
           onClick={() => openFolderSettings(collectionUid, itemUid)}
         >
-          Collection settings
+          Folder settings
         </Menu.Item>
 
         <Menu.Divider />

@@ -1,4 +1,5 @@
 import { uuid } from 'utils/common';
+import path from 'path';
 import { find, map, forOwn, concat, filter, each, cloneDeep, get, set, debounce } from 'lodash';
 import { createSlice } from '@reduxjs/toolkit';
 import {
@@ -33,6 +34,8 @@ export const collectionsSlice = createSlice({
       const collection = action.payload;
 
       collection.settingsSelectedTab = 'headers';
+
+      collection.folderLevelSettingsSelectedTab = {};
 
       // TODO: move this to use the nextAction approach
       // last action is used to track the last action performed on the collection
@@ -99,6 +102,19 @@ export const collectionsSlice = createSlice({
 
       if (collection) {
         collection.settingsSelectedTab = tab;
+      }
+    },
+    updatedFolderSettingsSelectedTab: (state, action) => {
+      const { collectionUid, folderUid, tab } = action.payload;
+
+      const collection = findCollectionByUid(state.collections, collectionUid);
+
+      if (collection) {
+        const folder = findItemInCollection(collection, folderUid);
+
+        if (folder) {
+          collection.folderLevelSettingsSelectedTab[folderUid] = tab;
+        }
       }
     },
     collectionUnlinkEnvFileEvent: (state, action) => {
@@ -1167,6 +1183,99 @@ export const collectionsSlice = createSlice({
         set(folder, 'root.request.headers', headers);
       }
     },
+    addFolderVar: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      const folder = collection ? findItemInCollection(collection, action.payload.folderUid) : null;
+      const type = action.payload.type;
+      if (folder) {
+        if (type === 'request') {
+          const vars = get(folder, 'root.request.vars.req', []);
+          vars.push({
+            uid: uuid(),
+            name: '',
+            value: '',
+            type: 'request',
+            enabled: true
+          });
+          set(folder, 'root.request.vars.req', vars);
+        } else if (type === 'response') {
+          const vars = get(folder, 'root.request.vars.res', []);
+          vars.push({
+            uid: uuid(),
+            name: '',
+            value: '',
+            type: 'response',
+            enabled: true
+          });
+          set(folder, 'root.request.vars.res', vars);
+        }
+      }
+    },
+    updateFolderVar: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      const folder = collection ? findItemInCollection(collection, action.payload.folderUid) : null;
+      const type = action.payload.type;
+      if (folder) {
+        if (type === 'request') {
+          let vars = get(folder, 'root.request.vars.req', []);
+          const _var = find(vars, (h) => h.uid === action.payload.var.uid);
+          if (_var) {
+            _var.name = action.payload.var.name;
+            _var.value = action.payload.var.value;
+            _var.description = action.payload.var.description;
+            _var.enabled = action.payload.var.enabled;
+          }
+          set(folder, 'root.request.vars.req', vars);
+        } else if (type === 'response') {
+          let vars = get(folder, 'root.request.vars.res', []);
+          const _var = find(vars, (h) => h.uid === action.payload.var.uid);
+          if (_var) {
+            _var.name = action.payload.var.name;
+            _var.value = action.payload.var.value;
+            _var.description = action.payload.var.description;
+            _var.enabled = action.payload.var.enabled;
+          }
+          set(folder, 'root.request.vars.res', vars);
+        }
+      }
+    },
+    deleteFolderVar: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      const folder = collection ? findItemInCollection(collection, action.payload.folderUid) : null;
+      const type = action.payload.type;
+      if (folder) {
+        if (type === 'request') {
+          let vars = get(folder, 'root.request.vars.req', []);
+          vars = filter(vars, (h) => h.uid !== action.payload.varUid);
+          set(folder, 'root.request.vars.req', vars);
+        } else if (type === 'response') {
+          let vars = get(folder, 'root.request.vars.res', []);
+          vars = filter(vars, (h) => h.uid !== action.payload.varUid);
+          set(folder, 'root.request.vars.res', vars);
+        }
+      }
+    },
+    updateFolderRequestScript: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      const folder = collection ? findItemInCollection(collection, action.payload.folderUid) : null;
+      if (folder) {
+        set(folder, 'root.request.script.req', action.payload.script);
+      }
+    },
+    updateFolderResponseScript: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      const folder = collection ? findItemInCollection(collection, action.payload.folderUid) : null;
+      if (folder) {
+        set(folder, 'root.request.script.res', action.payload.script);
+      }
+    },
+    updateFolderTests: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      const folder = collection ? findItemInCollection(collection, action.payload.folderUid) : null;
+      if (folder) {
+        set(folder, 'root.request.tests', action.payload.tests);
+      }
+    },
     addCollectionHeader: (state, action) => {
       const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
 
@@ -1205,22 +1314,22 @@ export const collectionsSlice = createSlice({
         set(collection, 'root.request.headers', headers);
       }
     },
-    folderAddFileEvent: (state, action) => {
-      const file = action.payload.file;
-      const collection = findCollectionByUid(state.collections, file.meta.collectionUid);
-      const folder = findItemInCollectionByPathname(collection, file.meta.pathname);
-      if (folder) {
-        folder.root = file.data.root;
-        folder.seq = file.data.seq;
-      }
-    },
     collectionAddFileEvent: (state, action) => {
       const file = action.payload.file;
       const isCollectionRoot = file.meta.collectionRoot ? true : false;
+      const isFolderRoot = file.meta.folderRoot ? true : false;
       const collection = findCollectionByUid(state.collections, file.meta.collectionUid);
       if (isCollectionRoot) {
         if (collection) {
           collection.root = file.data;
+        }
+        return;
+      }
+
+      if (isFolderRoot) {
+        const folderItem = findItemInCollectionByPathname(collection, file.meta.pathname);
+        if (folderItem) {
+          folderItem.root = file.data;
         }
         return;
       }
@@ -1541,6 +1650,7 @@ export const {
   filterCollections,
   updateLastAction,
   updateSettingsSelectedTab,
+  updatedFolderSettingsSelectedTab,
   collectionUnlinkEnvFileEvent,
   saveEnvironment,
   selectEnvironment,
@@ -1591,6 +1701,12 @@ export const {
   addFolderHeader,
   updateFolderHeader,
   deleteFolderHeader,
+  addFolderVar,
+  updateFolderVar,
+  deleteFolderVar,
+  updateFolderRequestScript,
+  updateFolderResponseScript,
+  updateFolderTests,
   addCollectionHeader,
   updateCollectionHeader,
   deleteCollectionHeader,
@@ -1607,7 +1723,6 @@ export const {
   collectionUnlinkDirectoryEvent,
   collectionAddEnvFileEvent,
   collectionRenamedEvent,
-  folderAddFileEvent,
   resetRunResults,
   runRequestEvent,
   runFolderEvent,

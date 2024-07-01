@@ -42,6 +42,7 @@ import { resolveRequestFilename } from 'utils/common/platform';
 import { uuid, waitForNextTick } from 'utils/common';
 import { sendCollectionOauth2Request as _sendCollectionOauth2Request } from 'utils/network/index';
 import { parseQueryParams, splitOnFirst } from 'utils/url';
+import { name } from 'file-loader';
 
 export const renameCollection = (newName, collectionUid) => (dispatch, getState) => {
   const state = getState();
@@ -144,7 +145,40 @@ export const saveCollectionRoot = (collectionUid) => (dispatch, getState) => {
   });
 };
 
-export const sendCollectionOauth2Request = (collectionUid) => (dispatch, getState) => {
+export const saveFolderRoot = (collectionUid, folderUid) => (dispatch, getState) => {
+  const state = getState();
+  const collection = findCollectionByUid(state.collections.collections, collectionUid);
+  const folder = findItemInCollection(collection, folderUid);
+
+  return new Promise((resolve, reject) => {
+    if (!collection) {
+      return reject(new Error('Collection not found'));
+    }
+
+    if (!folder) {
+      return reject(new Error('Folder not found'));
+    }
+
+    const { ipcRenderer } = window;
+
+    const folderData = {
+      name: folder.name,
+      pathname: folder.pathname,
+      root: folder.root
+    };
+
+    ipcRenderer
+      .invoke('renderer:save-folder-root', folderData)
+      .then(() => toast.success('Folder Settings saved successfully'))
+      .then(resolve)
+      .catch((err) => {
+        toast.error('Failed to save folder settings!');
+        reject(err);
+      });
+  });
+};
+
+export const sendCollectionOauth2Request = (collectionUid, itemUid) => (dispatch, getState) => {
   const state = getState();
   const collection = findCollectionByUid(state.collections.collections, collectionUid);
 
@@ -157,7 +191,10 @@ export const sendCollectionOauth2Request = (collectionUid) => (dispatch, getStat
 
     const environment = findEnvironmentInCollection(collectionCopy, collection.activeEnvironmentUid);
 
-    _sendCollectionOauth2Request(collection, environment, collectionCopy.collectionVariables)
+    const externalSecrets = getExternalCollectionSecretsForActiveEnvironment({ collection });
+    const secretVariables = getFormattedCollectionSecretVariables({ externalSecrets });
+
+    _sendCollectionOauth2Request(collection, environment, collectionCopy.collectionVariables, itemUid, secretVariables)
       .then((response) => {
         if (response?.data?.error) {
           toast.error(response?.data?.error);
@@ -173,31 +210,6 @@ export const sendCollectionOauth2Request = (collectionUid) => (dispatch, getStat
   });
 };
 
-export const saveFolderRoot = (collectionUid, folderUid) => (dispatch, getState) => {
-  const state = getState();
-  const collection = findCollectionByUid(state.collections.collections, collectionUid);
-  const folder = findItemInCollection(collection, folderUid);
-  return new Promise((resolve, reject) => {
-    if (!collection) {
-      return reject(new Error('Collection not found'));
-    }
-
-    if (!folder) {
-      return reject(new Error('Folder not found'));
-    }
-
-    const { ipcRenderer } = window;
-
-    ipcRenderer
-      .invoke('renderer:save-folder-root', folder.pathname, { root: folder.root, seq: folder.seq })
-      .then(() => toast.success('Folder Settings saved successfully'))
-      .then(resolve)
-      .catch((err) => {
-        toast.error('Failed to save folder settings!');
-        reject(err);
-      });
-  });
-};
 export const retrieveDirectoriesBetween = (pathname, parameter, filename) => {
   const parameterIndex = pathname.indexOf(parameter);
   const filenameIndex = pathname.indexOf(filename);
@@ -240,25 +252,7 @@ export const sendRequest = (item, collectionUid) => (dispatch, getState) => {
     const collectionCopy = cloneDeep(collection);
 
     const environment = findEnvironmentInCollection(collectionCopy, collectionCopy.activeEnvironmentUid);
-    const itemTree = retrieveDirectoriesBetween(itemCopy.pathname, collectionCopy.name, itemCopy.filename);
-
-    const folderDatas = itemTree.reduce((acc, currentPath) => {
-      const folder = findItemInCollectionByPathname(collectionCopy, currentPath);
-      if (folder?.root?.request) {
-        return mergeRequests(acc, folder.root?.request);
-      }
-      return acc;
-    }, {});
-    const mergeParams = mergeRequests(collectionCopy.root?.request ?? {}, folderDatas);
-    // merge collection and folder settings with request
-    const mergedCollection = {
-      ...collectionCopy,
-      root: {
-        ...collectionCopy.root,
-        request: mergeParams
-      }
-    };
-    sendNetworkRequest(itemCopy, mergedCollection, environment, collectionCopy.collectionVariables)
+    sendNetworkRequest(itemCopy, collectionCopy, environment, collectionCopy.collectionVariables)
       .then((response) => {
         return dispatch(
           responseReceived({

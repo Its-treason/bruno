@@ -313,7 +313,7 @@ const registerNetworkIpc = (mainWindow) => {
     const preRequestVars = get(request, 'vars.req', []);
     if (preRequestVars?.length) {
       const varsRuntime = new VarsRuntime();
-      const result = varsRuntime.runPreRequestVars(
+      varsRuntime.runPreRequestVars(
         preRequestVars,
         request,
         envVars,
@@ -321,15 +321,6 @@ const registerNetworkIpc = (mainWindow) => {
         collectionPath,
         processEnvVars
       );
-
-      if (result) {
-        mainWindow.webContents.send('main:script-environment-update', {
-          envVariables: result.envVariables,
-          collectionVariables: result.collectionVariables,
-          requestUid,
-          collectionUid
-        });
-      }
     }
 
     // run pre-request script
@@ -414,7 +405,7 @@ const registerNetworkIpc = (mainWindow) => {
     }
 
     // run post-response script
-    const responseScript = compact([get(collectionRoot, 'request.script.res'), get(request, 'script.res')]).join(
+    const responseScript = compact([get(request, 'script.res'), get(collectionRoot, 'request.script.res')]).join(
       os.EOL
     );
 
@@ -657,8 +648,7 @@ const registerNetworkIpc = (mainWindow) => {
       });
 
       const collectionRoot = get(collection, 'root', {});
-      const _request = item.draft ? item.draft.request : item.request;
-      const request = prepareRequest(_request, collectionRoot, collectionPath);
+      const request = prepareRequest(item, collection);
       const envVars = getEnvVars(environment);
       const processEnvVars = getProcessEnvVars(collectionUid);
       const brunoConfig = getBrunoConfig(collectionUid);
@@ -1101,8 +1091,7 @@ const registerNetworkIpc = (mainWindow) => {
             ...eventData
           });
 
-          const _request = item.draft ? item.draft.request : item.request;
-          const request = prepareRequest(_request, collectionRoot, collectionPath);
+          const request = prepareRequest(item, collection);
           const requestUid = uuid();
           const processEnvVars = getProcessEnvVars(collectionUid);
 

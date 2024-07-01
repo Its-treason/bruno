@@ -8,7 +8,6 @@ import { addFolderHeader, updateFolderHeader, deleteFolderHeader } from 'provide
 import { saveFolderRoot } from 'providers/ReduxStore/slices/collections/actions';
 import StyledWrapper from './StyledWrapper';
 import { headers as StandardHTTPHeaders } from 'know-your-http-well';
-import SingleLineEditor from 'components/CodeEditor/Codemirror/SingleLineEditor';
 import CodeEditor from 'components/CodeEditor';
 const headerAutoCompleteList = StandardHTTPHeaders.map((e) => e.header);
 
@@ -64,6 +63,9 @@ const Headers = ({ collection, folder }) => {
 
   return (
     <StyledWrapper className="w-full">
+      <div className="text-xs mb-4 text-muted">
+        Request headers that will be sent with every request inside this folder.
+      </div>
       <table>
         <thead>
           <tr>
@@ -100,7 +102,7 @@ const Headers = ({ collection, folder }) => {
                       />
                     </td>
                     <td>
-                      <SingleLineEditor
+                      <CodeEditor
                         value={header.value}
                         theme={storedTheme}
                         onSave={handleSave}
