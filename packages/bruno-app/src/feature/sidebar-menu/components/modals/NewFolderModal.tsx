@@ -65,6 +65,7 @@ export const NewFolderModal: React.FC<NewFolderModalProps> = ({ opened, onClose,
           label={'Name'}
           placeholder={'New folder name'}
           my={'md'}
+          data-autofocus
         />
 
         {newFolderMutation.error ? (

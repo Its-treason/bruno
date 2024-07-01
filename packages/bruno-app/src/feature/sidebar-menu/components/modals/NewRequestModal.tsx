@@ -126,6 +126,7 @@ export const NewRequestModal: React.FC<NewRequestModalProps> = ({
           key={newRequestForm.key('name')}
           label={'Name'}
           placeholder={'New request name'}
+          data-autofocus
         />
 
         <Radio.Group {...newRequestForm.getInputProps('type')} label={'Request type'} mt={'md'}>

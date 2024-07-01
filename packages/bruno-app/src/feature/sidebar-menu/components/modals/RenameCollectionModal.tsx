@@ -70,6 +70,7 @@ export const RenameCollectionModal: React.FC<RenameCollectionModalProps> = ({ op
           label={'Name'}
           placeholder={'New collection name'}
           my={'md'}
+          data-autofocus
         />
 
         {renameMutation.error ? (

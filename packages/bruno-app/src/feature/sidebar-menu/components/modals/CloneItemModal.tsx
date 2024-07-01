@@ -72,6 +72,7 @@ export const CloneItemModal: React.FC<CloneItemModalProps> = ({ opened, onClose,
           label={'Name'}
           placeholder={'Cloned request name'}
           my={'md'}
+          data-autofocus
         />
 
         {cloneMutation.error ? (

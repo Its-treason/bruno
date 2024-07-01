@@ -78,6 +78,7 @@ export const RenameItemModal: React.FC<RenameItemModalProps> = ({ opened, onClos
           label={'New name'}
           placeholder={'New request name'}
           my={'md'}
+          data-autofocus
         />
 
         {renameMutation.error ? (

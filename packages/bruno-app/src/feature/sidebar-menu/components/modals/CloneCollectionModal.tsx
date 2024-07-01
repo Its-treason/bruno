@@ -85,6 +85,7 @@ export const CloneCollectionModal: React.FC<CloneCollectionModalProps> = ({
           label={'Name'}
           placeholder={'Cloned collection name'}
           my={'md'}
+          data-autofocus
         />
 
         <DirectoryPicker
