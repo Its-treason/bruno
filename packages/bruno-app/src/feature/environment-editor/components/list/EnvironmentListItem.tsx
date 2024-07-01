@@ -3,11 +3,11 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import React from 'react';
-import { CollectionEnvironment } from '../../types';
 import { NavLink } from '@mantine/core';
+import { EnvironmentSchema } from '@usebruno/schema';
 
 type EnvironmentListItemProps = {
-  environment: CollectionEnvironment;
+  environment: EnvironmentSchema;
   active: boolean;
   onClick: () => void;
 };

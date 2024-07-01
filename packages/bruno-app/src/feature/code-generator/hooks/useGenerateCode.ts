@@ -9,9 +9,9 @@ import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { findCollectionByUid, findEnvironmentInCollection, findItemInCollection } from 'utils/collections';
 import { interpolateUrl, interpolateUrlPathParams } from 'utils/url';
-import { buildHarRequest } from '../util/har';
-import { getAuthHeaders } from '../util/auth';
 import { interpolate } from '@usebruno/common';
+import { buildHarRequest } from '../../../utils/codegenerator/har';
+import { getAuthHeaders } from '../../../utils/codegenerator/auth';
 
 type GenerateCodeResult =
   | {
