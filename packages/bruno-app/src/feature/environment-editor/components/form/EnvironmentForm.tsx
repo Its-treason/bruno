@@ -18,8 +18,8 @@ export const EnvironmentForm: React.FC = () => {
   }, [form]);
 
   const tableRows = useMemo(() => {
-    return form.getValues().variables.map((val, index) => <EnvironmentTableRow pos={index} key={val.uid} />);
-  }, [form.getValues().variables.length]);
+    return form.values.variables.map((val, index) => <EnvironmentTableRow pos={index} key={val.uid} />);
+  }, [form.values.variables.length]);
 
   if (!selectedEnvironment) {
     return null;

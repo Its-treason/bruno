@@ -24,9 +24,6 @@ const MIN_RIGHT_PANE_WIDTH = 350;
 const DEFAULT_PADDING = 5;
 
 const RequestTabPanel = () => {
-  if (typeof window == 'undefined') {
-    return <div></div>;
-  }
   const dispatch = useDispatch();
   const tabs = useSelector((state) => state.tabs.tabs);
   const activeTabUid = useSelector((state) => state.tabs.activeTabUid);
