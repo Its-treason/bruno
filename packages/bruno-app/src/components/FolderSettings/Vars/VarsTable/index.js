@@ -1,6 +1,6 @@
 import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
-import { IconTrash } from '@tabler/icons';
+import { IconTrash } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
 import { useTheme } from 'providers/Theme';
 import { saveFolderRoot } from 'providers/ReduxStore/slices/collections/actions';
