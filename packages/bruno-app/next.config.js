@@ -1,5 +1,4 @@
 module.exports = {
-  reactStrictMode: false,
   publicRuntimeConfig: {
     CI: process.env.CI,
     PLAYWRIGHT: process.env.PLAYWRIGHT,
@@ -11,5 +10,5 @@ module.exports = {
       config.resolve.fallback.fs = false;
     }
     return config;
-  },
+  }
 };
