@@ -146,6 +146,7 @@ const AwsV4Auth = ({ collection }) => {
       <label className="block font-medium mb-2">Session Token</label>
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
+          singleLine
           value={awsv4Auth.sessionToken || ''}
           theme={storedTheme}
           onSave={handleSave}
@@ -157,6 +158,7 @@ const AwsV4Auth = ({ collection }) => {
       <label className="block font-medium mb-2">Service</label>
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
+          singleLine
           value={awsv4Auth.service || ''}
           theme={storedTheme}
           onSave={handleSave}
