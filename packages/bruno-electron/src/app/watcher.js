@@ -43,13 +43,6 @@ const isCollectionRootBruFile = (pathname, collectionPath) => {
   return dirname === collectionPath && basename === 'collection.bru';
 };
 
-const isFolderRootBruFile = (pathname, collectionPath) => {
-  const dirname = path.dirname(pathname);
-  const basename = path.basename(pathname);
-  return dirname !== collectionPath && basename === 'folder.json';
-  // return dirname !== collectionPath && basename === 'folder.bru';
-};
-
 const hydrateRequestWithUuid = (request, pathname) => {
   request.uid = getRequestUid(pathname);
 

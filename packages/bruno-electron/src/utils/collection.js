@@ -40,11 +40,9 @@ const findParentItemInCollection = (collection, itemUid) => {
 const getTreePathFromCollectionToItem = (collection, _item) => {
   let path = [];
   let item = findItemInCollection(collection, _item.uid);
-  console.log('INIT', item);
   while (item) {
     path.unshift(item);
     item = findParentItemInCollection(collection, item.uid);
-    console.log('PARENT', item);
   }
 
   return path;

@@ -40,10 +40,11 @@ export async function runScript(
   if (script.trim().length !== 0) {
     try {
       await vm.runInThisContext(`
-        // Only overwrite require in this context, so it doesn't break other packages
-        (async ({ require, ...brunoContext }) => {
+        // Only overwrite require and console in this context, so it doesn't break other packages
+        (async ({ require, console, ...brunoContext }) => {
           // Assign all bruno variables to the global context, so they can be accessed in external scripts
           // See: https://github.com/Its-treason/bruno/issues/6
+          // This will pollute the global context. But i don't a better solution
           Object.assign(global, brunoContext);
           ${script}
         });
@@ -177,7 +178,6 @@ function createCustomRequire(scriptingConfig: BrunoConfig['scripts'], collection
       try {
         return dynamicRequire(fullScriptPath);
       } catch (error) {
-        console.log(error);
         triedPaths.push({ fullScriptPath, error });
       }
     }

@@ -17,6 +17,7 @@ import { rm } from 'node:fs/promises';
 import { makeHttpRequest } from './httpRequest/requestHandler';
 import { CookieJar } from 'tough-cookie';
 import { readResponseBodyAsync } from './runtime/utils';
+import { collectFolderData } from './preRequest/collectFolderData';
 
 export async function request(
   requestItem: RequestItem,
@@ -84,9 +85,11 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
   context.callback.requestQueued(context);
   context.callback.folderRequestQueued(context);
 
-  applyCollectionSettings(context);
-  preRequestVars(context);
-  await preRequestScript(context);
+  const folderData = collectFolderData(context.collection, context.requestItem.uid);
+  // Folder Headers are also applied here
+  applyCollectionSettings(context, folderData);
+  preRequestVars(context, folderData);
+  await preRequestScript(context, folderData);
   interpolateRequest(context);
   await createHttpRequest(context);
 
@@ -102,10 +105,10 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
 
   const body = await readResponseBodyAsync(context.response!.path);
 
-  postRequestVars(context, body);
-  await postRequestScript(context, body);
+  postRequestVars(context, folderData, body);
+  await postRequestScript(context, folderData, body);
   assertions(context, body);
-  await tests(context, body);
+  await tests(context, folderData, body);
 
   context.timings.stopMeasure('total');
 

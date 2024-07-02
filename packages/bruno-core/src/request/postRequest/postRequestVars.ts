@@ -1,9 +1,14 @@
 import { RequestContext } from '../types';
 import { VarsRuntime } from '../runtime/vars-runtime';
+import { FolderData } from '../preRequest/collectFolderData';
 
-export function postRequestVars(context: RequestContext, responseBody: any) {
-  const postRequestVars = context.requestItem.request.vars.res;
-  if (postRequestVars === undefined) {
+export function postRequestVars(context: RequestContext, folderData: FolderData[], responseBody: any) {
+  const postRequestVars = context.requestItem.request.vars.res ?? [];
+  for (const folder of folderData) {
+    // Execute folder vars before request vars
+    postRequestVars.unshift(...(folder.postReqVariables ?? []));
+  }
+  if (postRequestVars.length === 0) {
     context.debug.log('Post request variables skipped');
     return;
   }

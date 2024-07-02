@@ -1,7 +1,16 @@
 import { RequestContext } from '../types';
+import { FolderData } from './collectFolderData';
 
-function applyCollectionHeader(context: RequestContext) {
-  const mergedHeaders = [...(context.collection.root?.request?.headers ?? []), ...context.requestItem.request.headers];
+function applyCollectionHeader(context: RequestContext, folderData: FolderData[]) {
+  const folderHeaders = folderData.reduce<any[]>((acc, data) => {
+    return [...acc, ...(data.headers ?? [])];
+  }, []);
+
+  const mergedHeaders = [
+    ...(context.collection.root?.request?.headers ?? []),
+    ...folderHeaders,
+    ...context.requestItem.request.headers
+  ];
 
   context.debug.log('Collection header applied', {
     collectionHeaders: context.collection.root?.request?.headers ?? [],
@@ -39,8 +48,8 @@ function applyGlobalProxy(context: RequestContext) {
   }
 }
 
-export function applyCollectionSettings(context: RequestContext) {
-  applyCollectionHeader(context);
+export function applyCollectionSettings(context: RequestContext, folderData: FolderData[]) {
+  applyCollectionHeader(context, folderData);
   applyCollectionAuth(context);
 
   applyGlobalProxy(context);

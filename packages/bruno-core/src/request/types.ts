@@ -204,6 +204,25 @@ export type FolderItem = {
   type: 'folder';
   items: (RequestItem | FolderItem)[];
   depth: number;
+  root?: {
+    request?: {
+      headers: {
+        name: string;
+        value: string;
+        enabled: boolean;
+      }[];
+      script?: {
+        req?: string;
+        res?: string;
+      };
+      tests?: string;
+      vars: {
+        req?: RequestVariable[];
+        res?: RequestVariable[];
+      };
+    };
+    docs: string;
+  };
 };
 
 export type CollectionVariables = Record<string, unknown>;

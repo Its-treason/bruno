@@ -1330,6 +1330,7 @@ export const collectionsSlice = createSlice({
         const folderItem = findItemInCollectionByPathname(collection, file.meta.pathname);
         if (folderItem) {
           folderItem.root = file.data;
+          folderItem.seq = file.data.meta.seq;
         }
         return;
       }

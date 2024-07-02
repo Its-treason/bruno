@@ -1,15 +1,15 @@
 import { RequestContext } from '../types';
 import { runScript } from '../runtime/script-runner';
 import os from 'node:os';
+import { FolderData } from './collectFolderData';
 
-export async function preRequestScript(context: RequestContext) {
+export async function preRequestScript(context: RequestContext, folderData: FolderData[]) {
   const collectionPreRequestScript = context.collection.root?.request?.script?.req ?? '';
+  const folderLevelScripts = folderData.map((data) => data.preReqScript).filter(Boolean);
   const requestPreRequestScript = context.requestItem.request.script.req ?? '';
-  const preRequestScript = collectionPreRequestScript + os.EOL + requestPreRequestScript;
+  const preRequestScript = [collectionPreRequestScript, ...folderLevelScripts, requestPreRequestScript].join(os.EOL);
 
   context.debug.log('Pre request script', {
-    collectionPreRequestScript,
-    requestPreRequestScript,
     preRequestScript
   });
   context.timings.startMeasure('preScript');
@@ -37,7 +37,7 @@ export async function preRequestScript(context: RequestContext) {
 
   context.callback.updateScriptEnvironment(context, scriptResult.envVariables, scriptResult.collectionVariables);
 
-  context.debug.log('Pre request script error', scriptResult);
+  context.debug.log('Pre request script finished', scriptResult);
 
   context.nextRequestName = scriptResult.nextRequestName;
   // The script will use `cleanJson` to remove any weird things before sending to the mainWindow

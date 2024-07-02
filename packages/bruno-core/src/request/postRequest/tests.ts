@@ -1,15 +1,17 @@
 import { RequestContext } from '../types';
 import { EOL } from 'node:os';
 import { runScript } from '../runtime/script-runner';
+import { FolderData } from '../preRequest/collectFolderData';
 
-export async function tests(context: RequestContext, responseBody: any) {
+export async function tests(context: RequestContext, folderData: FolderData[], responseBody: any) {
   const collectionPostRequestScript = context.collection.root?.request?.tests ?? '';
+  const folderLevelTests = folderData.map((data) => data.testScript).filter(Boolean);
   const requestPostRequestScript = context.requestItem.request.tests ?? '';
-  const postRequestScript = collectionPostRequestScript + EOL + requestPostRequestScript;
+  const postRequestScript = [requestPostRequestScript, ...folderLevelTests.reverse(), collectionPostRequestScript].join(
+    EOL
+  );
 
   context.debug.log('Test script', {
-    collectionPostRequestScript,
-    requestPostRequestScript,
     postRequestScript
   });
   context.timings.startMeasure('test');

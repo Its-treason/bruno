@@ -302,7 +302,6 @@ const prepareRequest = (item, collection) => {
   });
 
   const requestTreePath = getTreePathFromCollectionToItem(collection, item);
-  console.log('TREEE', requestTreePath);
   if (requestTreePath && requestTreePath.length > 0) {
     mergeFolderLevelHeaders(request, requestTreePath);
     mergeFolderLevelScripts(request, requestTreePath);

@@ -2,7 +2,14 @@ const _ = require('lodash');
 const fs = require('fs');
 const path = require('path');
 const { ipcMain, shell, dialog, app } = require('electron');
-const { envJsonToBru, bruToEnvJson, bruToJson, jsonToBru, jsonToCollectionBru } = require('../bru');
+const {
+  envJsonToBru,
+  bruToEnvJson,
+  bruToJson,
+  jsonToBru,
+  jsonToCollectionBru,
+  collectionBruToJson
+} = require('../bru');
 
 const {
   isValidPathname,
@@ -156,7 +163,8 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
       const folderBruFilePath = path.join(folderPathname, 'folder.bru');
 
       folderRoot.meta = {
-        name: folderName
+        name: folderName,
+        seq: folderRoot.meta.seq ?? undefined
       };
 
       const content = jsonToCollectionBru(folderRoot);
@@ -582,18 +590,18 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
             await writeFile(item.pathname, content);
           }
         } else {
-          const metadataPath = path.join(item.pathname, 'folder.json');
+          const metadataPath = path.join(item.pathname, 'folder.bru');
 
-          // folder.json is only created when needed, so it might not exist
-          let contents = { seq: -1, root: {} };
+          let jsonData = { meta: { seq: -1, name: item.name } };
           if (fs.existsSync(metadataPath)) {
-            const raw = fs.readFileSync(metadataPath, 'utf8');
-            contents = JSON.parse(raw);
+            const bruContent = fs.readFileSync(metadataPath, 'utf8');
+            jsonData = collectionBruToJson(bruContent);
           }
 
-          if (contents.seq !== item.seq) {
-            contents.seq = item.seq;
-            await writeFile(metadataPath, JSON.stringify(contents));
+          if (jsonData.meta.seq != item.seq) {
+            jsonData.meta.seq = item.seq;
+            const content = jsonToCollectionBru(jsonData);
+            await writeFile(metadataPath, content);
           }
         }
       }

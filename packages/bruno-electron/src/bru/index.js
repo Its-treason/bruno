@@ -30,7 +30,7 @@ const collectionBruToJson = (bru) => {
     if (json.meta) {
       transformedJson.meta = {
         name: json.meta.name,
-        seq: json.meta.seq
+        seq: json.meta.seq === 'undefined' ? undefined : json.meta.seq
       };
     }
 
