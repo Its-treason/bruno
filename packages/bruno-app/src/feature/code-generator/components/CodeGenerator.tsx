@@ -4,7 +4,7 @@
  */
 import React from 'react';
 import { useGenerateCode } from '../hooks/useGenerateCode';
-import { Alert, Button, CopyButton, rem } from '@mantine/core';
+import { Alert, Box, Button, CopyButton, Group, Loader, LoadingOverlay, rem } from '@mantine/core';
 import CodeEditor from 'components/CodeEditor';
 import { useDebouncedValue } from '@mantine/hooks';
 import { IconClipboard, IconClipboardCheck, IconClipboardCopy } from '@tabler/icons-react';
@@ -21,18 +21,20 @@ export const CodeGenerator: React.FC<CodeGeneratorProps> = ({ clientId, collecti
   const [debounced] = useDebouncedValue({ clientId, targetId }, 50);
   const generateCodeResult = useGenerateCode(collectionUid, requestUid, debounced.targetId, debounced.clientId);
 
-  if (generateCodeResult.success === false) {
+  if (generateCodeResult.error) {
     return (
       <Alert title="Error" color="red">
-        {generateCodeResult.error}
+        {String(generateCodeResult.error)}
       </Alert>
     );
   }
 
   return (
-    <>
-      <CodeEditor value={generateCodeResult.code} mode={targetId} height={'50vh'} readOnly hideMinimap />
-      <CopyButton value={generateCodeResult.code} timeout={2000}>
+    <Box pos="relative">
+      <LoadingOverlay visible={generateCodeResult.isLoading} transitionProps={{ transition: 'fade', duration: 0.5 }} />
+
+      <CodeEditor value={generateCodeResult.data ?? ''} mode={targetId} height={'50vh'} readOnly hideMinimap />
+      <CopyButton value={generateCodeResult.data ?? ''} timeout={2000}>
         {({ copied, copy }) => (
           <Button
             color={copied ? 'teal' : undefined}
@@ -45,6 +47,6 @@ export const CodeGenerator: React.FC<CodeGeneratorProps> = ({ clientId, collecti
           </Button>
         )}
       </CopyButton>
-    </>
+    </Box>
   );
 };

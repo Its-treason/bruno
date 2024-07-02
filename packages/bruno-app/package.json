@@ -21,7 +21,6 @@
     "@mantine/form": "^7.10",
     "@mantine/hooks": "^7.10",
     "@monaco-editor/react": "^4.6.0",
-    "@readme/httpsnippet": "^10.0.5",
     "@reduxjs/toolkit": "^1.8.0",
     "@tabler/icons-react": "^3.6",
     "@tanstack/react-query": "^5.45",

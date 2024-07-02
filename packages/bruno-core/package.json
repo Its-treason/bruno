@@ -19,6 +19,7 @@
   "dependencies": {
     "@usebruno/common": "workspace:*",
     "@usebruno/query": "workspace:*",
+    "@readme/httpsnippet": "^10.0.5",
     "chai": "^4.3.7",
     "chai-string": "^1.5.0",
     "decomment": "^0.9.5",

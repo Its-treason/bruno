@@ -12,6 +12,7 @@ export type FormUrlEncodedBodySchema = z.infer<typeof formUrlEncodedBodySchema>;
 export const multipartFormBodySchema = z.discriminatedUnion('type', [
   z.object({
     uid: z.string(),
+    name: z.string(),
     type: z.literal('text'),
     value: z.string(),
     description: z.string().default(''),
@@ -19,6 +20,7 @@ export const multipartFormBodySchema = z.discriminatedUnion('type', [
   }),
   z.object({
     uid: z.string(),
+    name: z.string(),
     type: z.literal('file'),
     value: z.array(z.string()),
     description: z.string().default(''),
@@ -60,13 +62,13 @@ export const requestBodySchema = z.discriminatedUnion('mode', [
   z
     .object({
       mode: z.literal('formUrlEncoded'),
-      formUrlEncoded: z.array(formUrlEncodedBodySchema)
+      formUrlEncoded: z.array(formUrlEncodedBodySchema).default([])
     })
     .passthrough(),
   z
     .object({
       mode: z.literal('multipartForm'),
-      multipartForm: z.array(multipartFormBodySchema)
+      multipartForm: z.array(multipartFormBodySchema).default([])
     })
     .passthrough(),
   z

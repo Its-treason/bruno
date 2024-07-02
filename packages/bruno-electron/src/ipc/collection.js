@@ -10,6 +10,7 @@ const {
   jsonToCollectionBru,
   collectionBruToJson
 } = require('../bru');
+const { generateCode } = require('@usebruno/core');
 
 const {
   isValidPathname,
@@ -27,8 +28,9 @@ const {
 const { openCollectionDialog } = require('../app/collections');
 const { generateUidBasedOnHash, stringifyJson, safeParseJSON, safeStringifyJSON } = require('../utils/common');
 const { moveRequestUid, deleteRequestUid } = require('../cache/requestUids');
-const { deleteCookiesForDomain, getDomainsWithCookies } = require('../utils/cookies');
+const { deleteCookiesForDomain, getDomainsWithCookies, cookieJar } = require('../utils/cookies');
 const EnvironmentSecretsStore = require('../store/env-secrets');
+const { preferencesUtil, getPreferences } = require('../store/preferences');
 
 const environmentSecretsStore = new EnvironmentSecretsStore();
 
@@ -705,6 +707,10 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
     } catch (error) {
       return Promise.reject(error);
     }
+  });
+
+  ipcMain.handle('renderer:generate-code', async (event, item, collection, environment, options) => {
+    return await generateCode(item, collection, getPreferences(), cookieJar, options, environment);
   });
 };
 

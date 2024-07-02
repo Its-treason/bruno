@@ -42,7 +42,7 @@ export const assertionSchema = z.object({
 export type AssertionSchema = z.infer<typeof assertionSchema>;
 
 export const httpRequestSchema = z.object({
-  url: z.string().min(1),
+  url: z.string(),
   method: z
     .string()
     .min(1)

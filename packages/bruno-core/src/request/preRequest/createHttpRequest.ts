@@ -12,7 +12,7 @@ import { ProxyAgent } from 'proxy-agent';
 import { DebugLogger } from '../DebugLogger';
 import { TlsOptions, rootCertificates } from 'node:tls';
 
-function createAuthHeader(requestItem: RequestItem): Record<string, string> {
+export function createAuthHeader(requestItem: RequestItem): Record<string, string> {
   const auth = requestItem.request.auth;
 
   switch (auth.mode) {
