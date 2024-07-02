@@ -176,6 +176,7 @@ function createCustomRequire(scriptingConfig: BrunoConfig['scripts'], collection
     for (const contextRoot of additionalContextRootsAbsolute) {
       const fullScriptPath = path.join(contextRoot, moduleName);
       try {
+        delete require.cache[require.resolve(fullScriptPath)];
         return dynamicRequire(fullScriptPath);
       } catch (error) {
         triedPaths.push({ fullScriptPath, error });
