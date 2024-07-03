@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import GraphQLRequestPane from 'components/RequestPane/GraphQLRequestPane';
 import HttpRequestPane from 'components/RequestPane/HttpRequestPane';
 import ResponsePane from 'components/ResponsePane';
-import Welcome from 'components/Welcome';
 import { findItemInCollection } from 'utils/collections';
 import { updateRequestPaneTabWidth } from 'providers/ReduxStore/slices/tabs';
 import { sendRequest } from 'providers/ReduxStore/slices/collections/actions';
@@ -18,6 +17,7 @@ import { DocExplorer } from '@usebruno/graphql-docs';
 import StyledWrapper from './StyledWrapper';
 import { RequestUrlBar } from 'src/feature/request-url-bar';
 import FolderSettings from 'components/FolderSettings';
+import { Homepage } from 'src/feature/homepage';
 
 const MIN_LEFT_PANE_WIDTH = 300;
 const MIN_RIGHT_PANE_WIDTH = 350;
@@ -105,7 +105,7 @@ const RequestTabPanel = () => {
   }, [dragging, asideWidth]);
 
   if (!activeTabUid) {
-    return <Welcome />;
+    return <Homepage />;
   }
 
   if (!focusedTab || !focusedTab.uid || !focusedTab.collectionUid) {

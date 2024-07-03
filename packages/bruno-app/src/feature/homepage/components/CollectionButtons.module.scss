@@ -1,0 +1,24 @@
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
+.button {
+  height: 7rem;
+}
+
+.inner {
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section {
+  margin-inline-end: 0;
+  & svg {
+    height: 2rem;
+    width: auto;
+  }
+}
+
+.label {
+  height: auto;
+}

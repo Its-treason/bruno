@@ -1,5 +1,4 @@
 import React from 'react';
-import Welcome from 'components/Welcome';
 import RequestTabs from 'components/RequestTabs';
 import RequestTabPanel from 'components/RequestTabPanel';
 import { useSelector } from 'react-redux';
@@ -8,6 +7,7 @@ import 'codemirror/theme/monokai.css';
 import 'codemirror/addon/scroll/simplescrollbars.css';
 import { Sidebar } from 'src/feature/sidebar';
 import classes from './Bruno.module.scss';
+import { Homepage } from 'src/feature/homepage';
 
 const SERVER_RENDERED = typeof navigator === 'undefined' || global['PREVENT_CODEMIRROR_RENDER'] === true;
 if (!SERVER_RENDERED) {
@@ -52,7 +52,7 @@ export default function Main() {
       <Sidebar />
       <section>
         {showHomePage ? (
-          <Welcome />
+          <Homepage />
         ) : (
           <>
             <RequestTabs />
