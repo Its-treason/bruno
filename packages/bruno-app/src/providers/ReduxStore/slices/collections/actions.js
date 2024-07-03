@@ -608,6 +608,11 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
     // file item dragged onto another file item and both are in different folders
     if ((isItemARequest(draggedItem) || isItemAFolder(draggedItem)) && isItemARequest(targetItem) && !sameParent) {
       const draggedItemPathname = draggedItem.pathname;
+      // Folder dragged into child folder. This will cause an error
+      if (isItemAFolder(draggedItem) && targetItem.pathname.startsWith(draggedItemPathname)) {
+        return;
+      }
+
       moveCollectionItem(collectionCopy, draggedItem, targetItem);
       const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
       const itemsToResequence2 = getItemsToResequence(targetItemParent, collectionCopy);
@@ -619,11 +624,6 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
         .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence2))
         .then(resolve)
         .catch((error) => reject(error));
-    }
-
-    // file item dragged into its own folder
-    if (isItemARequest(draggedItem) && isItemAFolder(targetItem) && draggedItemParent === targetItem) {
-      return resolve();
     }
 
     // file item dragged into another folder
@@ -642,25 +642,6 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
         .catch((error) => reject(error));
     }
 
-    // end of the file drags, now let's handle folder drags
-    // folder drags are simpler since we don't allow ordering of folders
-
-    // folder dragged into its own folder
-    if (isItemAFolder(draggedItem) && isItemAFolder(targetItem) && draggedItemParent === targetItem) {
-      return resolve();
-    }
-
-    // folder dragged into a file which is at the same level
-    // this is also true when both items are at the root level
-    if (isItemAFolder(draggedItem) && isItemARequest(targetItem) && sameParent) {
-      return resolve();
-    }
-
-    // folder dragged into a file which is a child of the folder
-    if (isItemAFolder(draggedItem) && isItemARequest(targetItem) && draggedItem === targetItemParent) {
-      return resolve();
-    }
-
     // folder dragged into a file which is at the root level
     if (isItemAFolder(draggedItem) && isItemARequest(targetItem) && !targetItemParent) {
       const draggedItemPathname = draggedItem.pathname;
@@ -675,6 +656,7 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
     if (isItemAFolder(draggedItem) && isItemAFolder(targetItem) && draggedItemParent !== targetItem) {
       const draggedItemPathname = draggedItem.pathname;
 
+      // Folder dragged into child folder.
       if (targetItem.pathname.startsWith(draggedItemPathname)) {
         return;
       }
