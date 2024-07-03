@@ -548,7 +548,15 @@ export const filterCollections = (payload) => (dispatch) => {
   dispatch(_filterCollections(payload));
 };
 
-export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispatch, getState) => {
+/**
+ *
+ * @param {string} collectionUid
+ * @param {string} draggedItemUid
+ * @param {string} targetItemUid
+ * @param {"insert" | "below" | "above"} operation
+ * @returns any
+ */
+export const moveItem = (collectionUid, draggedItemUid, targetItemUid, operation) => (dispatch, getState) => {
   const state = getState();
   const collection = findCollectionByUid(state.collections.collections, collectionUid);
 
@@ -575,8 +583,8 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
 
     // file item dragged onto another file item and both are in the same folder
     // this is also true when both items are at the root level
-    if ((isItemARequest(draggedItem) || isItemAFolder(draggedItem)) && isItemARequest(targetItem) && sameParent) {
-      moveCollectionItem(collectionCopy, draggedItem, targetItem);
+    if ((isItemARequest(targetItem) || operation !== 'insert') && sameParent) {
+      moveCollectionItem(collectionCopy, draggedItem, targetItem, operation);
       const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
 
       return ipcRenderer
@@ -586,13 +594,9 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
     }
 
     // file item dragged onto another file item which is at the root level
-    if (
-      (isItemARequest(draggedItem) || isItemAFolder(draggedItem)) &&
-      isItemARequest(targetItem) &&
-      !targetItemParent
-    ) {
+    if ((isItemARequest(targetItem) || operation !== 'insert') && !targetItemParent) {
       const draggedItemPathname = draggedItem.pathname;
-      moveCollectionItem(collectionCopy, draggedItem, targetItem);
+      moveCollectionItem(collectionCopy, draggedItem, targetItem, operation);
       const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
       const itemsToResequence2 = getItemsToResequence(targetItemParent, collectionCopy);
 
@@ -606,14 +610,14 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
     }
 
     // file item dragged onto another file item and both are in different folders
-    if ((isItemARequest(draggedItem) || isItemAFolder(draggedItem)) && isItemARequest(targetItem) && !sameParent) {
+    if ((isItemARequest(targetItem) || operation !== 'insert') && !sameParent) {
       const draggedItemPathname = draggedItem.pathname;
       // Folder dragged into child folder. This will cause an error
       if (isItemAFolder(draggedItem) && targetItem.pathname.startsWith(draggedItemPathname)) {
         return;
       }
 
-      moveCollectionItem(collectionCopy, draggedItem, targetItem);
+      moveCollectionItem(collectionCopy, draggedItem, targetItem, operation);
       const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
       const itemsToResequence2 = getItemsToResequence(targetItemParent, collectionCopy);
 
@@ -629,7 +633,7 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid) => (dispa
     // file item dragged into another folder
     if (isItemARequest(draggedItem) && isItemAFolder(targetItem) && draggedItemParent !== targetItem) {
       const draggedItemPathname = draggedItem.pathname;
-      moveCollectionItem(collectionCopy, draggedItem, targetItem);
+      moveCollectionItem(collectionCopy, draggedItem, targetItem, operation);
       const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
       const itemsToResequence2 = getItemsToResequence(targetItem, collectionCopy);
 

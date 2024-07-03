@@ -131,7 +131,7 @@ export const findEnvironmentInCollection = (collection, envUid) => {
   return find(collection.environments, (e) => e.uid === envUid);
 };
 
-export const moveCollectionItem = (collection, draggedItem, targetItem) => {
+export const moveCollectionItem = (collection, draggedItem, targetItem, operation) => {
   let draggedItemParent = findParentItemInCollection(collection, draggedItem.uid);
 
   if (draggedItemParent) {
@@ -144,7 +144,7 @@ export const moveCollectionItem = (collection, draggedItem, targetItem) => {
     collection.items = filter(collection.items, (i) => i.uid !== draggedItem.uid);
   }
 
-  if (targetItem.type === 'folder') {
+  if (targetItem.type === 'folder' && operation === 'insert') {
     targetItem.items = sortBy(targetItem.items || [], (item) => item.seq);
     targetItem.items.push(draggedItem);
     const filename = draggedItem.type === 'folder' ? draggedItem.name : draggedItem.filename;
@@ -155,13 +155,15 @@ export const moveCollectionItem = (collection, draggedItem, targetItem) => {
     if (targetItemParent) {
       targetItemParent.items = sortBy(targetItemParent.items, (item) => item.seq);
       let targetItemIndex = findIndex(targetItemParent.items, (i) => i.uid === targetItem.uid);
-      targetItemParent.items.splice(targetItemIndex + 1, 0, draggedItem);
+      const newItemIndex = operation === 'above' ? targetItemIndex : targetItemIndex + 1;
+      targetItemParent.items.splice(newItemIndex, 0, draggedItem);
       const filename = draggedItem.type === 'folder' ? draggedItem.name : draggedItem.filename;
       draggedItem.pathname = path.join(targetItemParent.pathname, filename);
     } else {
       collection.items = sortBy(collection.items, (item) => item.seq);
       let targetItemIndex = findIndex(collection.items, (i) => i.uid === targetItem.uid);
-      collection.items.splice(targetItemIndex + 1, 0, draggedItem);
+      const newItemIndex = operation === 'above' ? targetItemIndex : targetItemIndex + 1;
+      collection.items.splice(newItemIndex, 0, draggedItem);
       const filename = draggedItem.type === 'folder' ? draggedItem.name : draggedItem.filename;
       draggedItem.pathname = path.join(collection.pathname, filename);
     }

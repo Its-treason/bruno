@@ -8,6 +8,8 @@
   grid-template-columns: auto 1fr;
   align-items: center;
   gap: var(--mantine-spacing-xs);
+  // --indent is defined inside the RequestItemWrapper.tsx
+  padding-left: var(--indent);
 }
 
 .text {

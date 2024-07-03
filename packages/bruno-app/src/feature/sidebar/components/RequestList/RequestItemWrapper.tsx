@@ -9,6 +9,7 @@ import { useSidebarActions } from 'src/feature/sidebar-menu/hooks/useSidebarActi
 import { useDrag, useDrop } from 'react-dnd';
 import { useDispatch } from 'react-redux';
 import { moveItem, moveItemToRootOfCollection } from 'providers/ReduxStore/slices/collections/actions';
+import { DropIndicatorPositions, getDropIndicator } from '../../util/dragAndDropUtils';
 
 type RequestItemWrapperProps = {
   uid?: string;
@@ -37,6 +38,7 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
   const { itemClicked } = useSidebarActions();
   const [hover, setHover] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
+  const wrapperRef = useRef<HTMLDivElement>(null);
 
   const menu = useMemo(() => {
     const onOpen = () => setMenuOpened(true);
@@ -53,10 +55,7 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
 
   const [, drag] = useDrag({
     type: `COLLECTION_ITEM_${collectionUid}`,
-    item: { uid: uid ?? collectionUid },
-    collect: (monitor) => ({
-      isDragging: monitor.isDragging()
-    })
+    item: { uid: uid ?? collectionUid }
   });
 
   const [{ isOverCurrent }, drop] = useDrop({
@@ -65,7 +64,8 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
     drop: (draggedItem: { uid: string }) => {
       if (draggedItem.uid !== uid && draggedItem.uid !== collectionUid) {
         if (uid) {
-          dispatch(moveItem(collectionUid, draggedItem.uid, uid));
+          const operation = wrapperRef.current.dataset.dropIndicator as DropIndicatorPositions;
+          dispatch(moveItem(collectionUid, draggedItem.uid, uid, operation));
         } else {
           dispatch(moveItemToRootOfCollection(collectionUid, draggedItem.uid));
         }
@@ -77,13 +77,28 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
   });
 
   useEffect(() => {
+    if (!isOverCurrent || !wrapperRef.current) {
+      return;
+    }
+
+    const listener = (evt: MouseEvent) => {
+      wrapperRef.current.dataset.dropIndicator = getDropIndicator(wrapperRef.current, evt, type);
+    };
+    document.addEventListener('dragover', listener);
+    return () => {
+      wrapperRef.current.dataset.dropIndicator = 'none';
+      document.removeEventListener('dragover', listener);
+    };
+  }, [isOverCurrent]);
+
+  useEffect(() => {
     // Open a folder that is hovered while dragging
     if (!isOverCurrent || type !== 'folder' || !collapsed) {
       return;
     }
     const timeoutRef = setTimeout(() => {
       itemClicked(collectionUid, uid);
-    }, 700);
+    }, 1000);
     return () => {
       clearTimeout(timeoutRef);
     };
@@ -97,13 +112,15 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
       onMouseLeave={() => setHover(false)}
       onClick={() => itemClicked(collectionUid, uid)}
       data-active={active}
-      data-drop-hovered={isOverCurrent && type === 'request'}
-      ref={(ref) => drag(drop(ref))}
-      style={style}
+      data-drop-indicator={'none'}
+      data-indent={indent * 24}
+      ref={(ref) => {
+        drag(drop(ref));
+        wrapperRef.current = ref;
+      }}
+      style={{ ...style, '--indent': `${indent * 24}px` } as CSSProperties}
     >
-      <div style={{ paddingLeft: indent * 24 }} className={className}>
-        {children}
-      </div>
+      <div className={className}>{children}</div>
       <div onClick={(evt) => evt.stopPropagation()}>{hover || menuOpened ? menu : null}</div>
     </div>
   );
