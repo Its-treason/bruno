@@ -42,7 +42,7 @@ export const RenameItemModal: React.FC<RenameItemModalProps> = ({ opened, onClos
     mutationFn: async (values: RenameItemFormSchema) => {
       // if there is unsaved changes in the request,
       // save them before renaming the request
-      if ((item.type === 'http-request' || item.type === 'folder') && item.draft) {
+      if ((item.type === 'http-request' || item.type === 'graphql-request') && item.draft) {
         await dispatch(saveRequest(item.uid, collectionUid, true));
       }
       await dispatch(renameItem(values.name, item.uid, collectionUid));
