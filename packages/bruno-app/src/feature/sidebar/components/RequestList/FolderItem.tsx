@@ -26,6 +26,7 @@ export const FolderItem: React.FC<FolderItemProps> = ({ collapsed, name, type, u
       indent={indent}
       className={classes.wrapper}
       style={style}
+      collapsed={collapsed}
     >
       <IconChevronDown className={classes.icon} data-collapsed={collapsed} />
       <div className={classes.text}>{name}</div>

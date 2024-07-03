@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import React, { CSSProperties, ReactNode, useMemo, useState } from 'react';
+import React, { CSSProperties, ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import classes from './RequestItemWrapper.module.scss';
 import { CollectionMenu, FolderMenu, RequestMenu } from 'src/feature/sidebar-menu';
 import { useSidebarActions } from 'src/feature/sidebar-menu/hooks/useSidebarActions';
@@ -18,6 +18,7 @@ type RequestItemWrapperProps = {
   indent: number;
   className?: string;
   active?: boolean;
+  collapsed?: boolean;
   style?: CSSProperties;
 };
 
@@ -29,6 +30,7 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
   indent,
   className,
   active = false,
+  collapsed = true,
   style
 }) => {
   const dispatch = useDispatch();
@@ -73,6 +75,19 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
       isOverCurrent: monitor.isOver({ shallow: true })
     })
   });
+
+  useEffect(() => {
+    // Open a folder that is hovered while dragging
+    if (!isOverCurrent || type !== 'folder' || !collapsed) {
+      return;
+    }
+    const timeoutRef = setTimeout(() => {
+      itemClicked(collectionUid, uid);
+    }, 700);
+    return () => {
+      clearTimeout(timeoutRef);
+    };
+  }, [isOverCurrent]);
 
   return (
     <div
