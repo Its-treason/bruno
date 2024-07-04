@@ -164,7 +164,7 @@ export const saveFolderRoot = (collectionUid, folderUid) => (dispatch, getState)
     const folderData = {
       name: folder.name,
       pathname: folder.pathname,
-      root: folder.root
+      root: folder.root ?? {}
     };
 
     ipcRenderer

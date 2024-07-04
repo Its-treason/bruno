@@ -166,7 +166,7 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
 
       folderRoot.meta = {
         name: folderName,
-        seq: folderRoot.meta.seq ?? undefined
+        seq: folderRoot.meta?.seq
       };
 
       const content = jsonToCollectionBru(folderRoot);
