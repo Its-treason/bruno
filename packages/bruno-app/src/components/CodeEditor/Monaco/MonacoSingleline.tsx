@@ -16,22 +16,20 @@ import { useTheme } from 'providers/Theme';
 import { editor } from 'monaco-editor';
 import { Paper } from '@mantine/core';
 import classes from './MonacoSingleline.module.scss';
+import { CollectionSchema } from '@usebruno/schema';
 
 type MonacoSinglelineProps = {
-  collection: {
-    collectionVariables: unknown;
-    activeEnvironmentUid: string | undefined;
-  };
-  readOnly: boolean;
+  collection?: CollectionSchema;
+  readOnly?: boolean;
   value?: string;
   defaultValue?: string;
-  withVariables: boolean;
-  allowLinebreaks: boolean;
-  asInput: boolean;
+  withVariables?: boolean;
+  allowLinebreaks?: boolean;
+  asInput?: boolean;
 
-  onChange: (newValue: string) => void;
-  onRun: () => void;
-  onSave: () => void;
+  onChange?: (newValue: string) => void;
+  onRun?: () => void;
+  onSave?: () => void;
 };
 
 export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({

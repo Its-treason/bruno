@@ -223,23 +223,6 @@ const darkTheme = {
     }
   },
 
-  codemirror: {
-    bg: '#1e1e1e',
-    border: '#373737',
-    gutter: {
-      bg: '#262626'
-    },
-    variable: {
-      valid: 'rgb(11 178 126)',
-      invalid: '#f06f57',
-      info: {
-        color: '#ce9178',
-        bg: 'rgb(48,48,49)',
-        boxShadow: 'rgb(0 0 0 / 36%) 0px 2px 8px'
-      }
-    }
-  },
-
   table: {
     border: '#333',
     thead: {

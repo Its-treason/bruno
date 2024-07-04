@@ -36,9 +36,6 @@ const defaultPreferences = {
       password: ''
     },
     bypassProxy: ''
-  },
-  editor: {
-    monaco: true
   }
 };
 

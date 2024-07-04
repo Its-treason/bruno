@@ -3,6 +3,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "module": "CommonJS",
+    "lib": ["dom"],
     "jsx": "react"
   },
   "include": ["src/**/*"]

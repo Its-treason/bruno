@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { updateRequestTests } from 'providers/ReduxStore/slices/collections';
 import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import { useTheme } from 'providers/Theme';
-import StyledWrapper from './StyledWrapper';
 import CodeEditor from 'components/CodeEditor';
 
 const Tests = ({ item, collection }) => {
@@ -28,7 +27,7 @@ const Tests = ({ item, collection }) => {
   const onSave = () => dispatch(saveRequest(item.uid, collection.uid));
 
   return (
-    <StyledWrapper className="w-full h-full">
+    <div className="w-full h-full">
       <CodeEditor
         collection={collection}
         value={tests || ''}
@@ -39,7 +38,7 @@ const Tests = ({ item, collection }) => {
         onRun={onRun}
         onSave={onSave}
       />
-    </StyledWrapper>
+    </div>
   );
 };
 

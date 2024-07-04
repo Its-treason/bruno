@@ -10,7 +10,7 @@ Libraries we use
 
 - Component library: @mantine/\*
 - CSS: Tailwind, Styled components (Deprecated), CSSModules
-- Code Editors: Monaco, Codemirror (Deprecated)
+- Code Editors: Monaco
 - State Management: Redux
 - Icons: Tabler Icons
 - Forms: formik, @mantine/forms

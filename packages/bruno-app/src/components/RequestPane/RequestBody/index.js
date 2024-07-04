@@ -6,7 +6,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTheme } from 'providers/Theme';
 import { updateRequestBody } from 'providers/ReduxStore/slices/collections';
 import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
-import StyledWrapper from './StyledWrapper';
 import CodeEditor from 'components/CodeEditor';
 
 const RequestBody = ({ item, collection }) => {
@@ -45,7 +44,7 @@ const RequestBody = ({ item, collection }) => {
     };
 
     return (
-      <StyledWrapper className="w-full">
+      <div className="w-full">
         <CodeEditor
           collection={collection}
           theme={displayedTheme}
@@ -57,7 +56,7 @@ const RequestBody = ({ item, collection }) => {
           mode={mode[bodyMode]}
           withVariables
         />
-      </StyledWrapper>
+      </div>
     );
   }
 
@@ -69,6 +68,6 @@ const RequestBody = ({ item, collection }) => {
     return <MultipartFormParams item={item} collection={collection} />;
   }
 
-  return <StyledWrapper className="w-full">No Body</StyledWrapper>;
+  return <div className="w-full">No Body</div>;
 };
 export default RequestBody;

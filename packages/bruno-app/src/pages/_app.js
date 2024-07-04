@@ -11,7 +11,6 @@ import ThemeProvider from 'providers/Theme/index';
 import ErrorBoundary from './ErrorBoundary';
 
 import '../styles/globals.css';
-import 'codemirror/lib/codemirror.css';
 import 'graphiql/graphiql.min.css';
 import 'react-tooltip/dist/react-tooltip.css';
 import '@usebruno/graphql-docs/dist/style.css';

@@ -9,6 +9,7 @@ import { BrunoEditorCallbacks, addMonacoCommands, setMonacoVariables } from 'uti
 import { getAllVariables } from 'utils/collections';
 import { useTheme } from 'providers/Theme';
 import { editor } from 'monaco-editor';
+import { CollectionSchema } from '@usebruno/schema';
 
 const languages: Record<string, string> = {
   text: 'plaintext',
@@ -42,26 +43,21 @@ const languages: Record<string, string> = {
 };
 
 type MonacoProps = {
-  collection?: {
-    collectionVariables: unknown;
-    activeEnvironmentUid: string | undefined;
-  };
-  fontSize: number;
-  readOnly: boolean;
-  value: string;
-  withVariables: boolean;
-  mode: string;
-  height: string | number;
-  hideMinimap: boolean;
+  collection?: CollectionSchema;
+  readOnly?: boolean;
+  value?: string;
+  withVariables?: boolean;
+  mode?: string;
+  height?: string | number;
+  hideMinimap?: boolean;
 
-  onChange: (newValue: string) => void;
-  onRun: () => void;
-  onSave: () => void;
+  onChange?: (newValue: string) => void;
+  onRun?: () => void;
+  onSave?: () => void;
 };
 
 export const MonacoEditor: React.FC<MonacoProps> = ({
   collection,
-  fontSize,
   mode = 'plaintext',
   onChange,
   onRun,
@@ -105,7 +101,6 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
   return (
     <Editor
       options={{
-        fontSize,
         readOnly: readOnly,
         wordWrap: 'off',
         wrappingIndent: 'indent',

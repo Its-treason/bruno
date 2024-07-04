@@ -1,11 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyle = createGlobalStyle`
-  .CodeMirror-gutters {
-    background-color: ${(props) => props.theme.codemirror.gutter.bg} !important;
-    border-right: solid 1px ${(props) => props.theme.codemirror.border};
-  }
-
   .text-link {
     color: ${(props) => props.theme.textLink};
   }
@@ -186,46 +181,6 @@ const GlobalStyle = createGlobalStyle`
       border-radius: 14px;
       border: 3px solid ${(props) => props.theme.scrollbar.color};
     }
-  }
-
-
-  // codemirror
-  .CodeMirror {
-    .cm-variable-valid {
-      color: ${(props) => props.theme.codemirror.variable.valid};
-    }
-    .cm-variable-invalid {
-      color: ${(props) => props.theme.codemirror.variable.invalid};
-    }
-  }
-  .CodeMirror-brunoVarInfo {
-    color: ${(props) => props.theme.codemirror.variable.info.color};
-    background: ${(props) => props.theme.codemirror.variable.info.bg};
-    border-radius: 2px;
-    box-shadow: ${(props) => props.theme.codemirror.variable.info.boxShadow};
-    box-sizing: border-box;
-    font-size: 13px;
-    line-height: 16px;
-    margin: 8px -8px;
-    max-width: 800px;
-    opacity: 0;
-    overflow: hidden;
-    padding: 8px 8px;
-    position: fixed;
-    transition: opacity 0.15s;
-    z-index: 50;
-  }
-
-  .CodeMirror-brunoVarInfo :first-child {
-    margin-top: 0;
-  }
-
-  .CodeMirror-brunoVarInfo :last-child {
-    margin-bottom: 0;
-  }
-
-  .CodeMirror-brunoVarInfo p {
-    margin: 1em 0;
   }
 `;
 
