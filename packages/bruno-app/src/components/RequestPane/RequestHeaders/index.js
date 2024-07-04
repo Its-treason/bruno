@@ -9,6 +9,7 @@ import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collection
 import CodeEditor from 'src/components/CodeEditor';
 import StyledWrapper from './StyledWrapper';
 import { headers as StandardHTTPHeaders } from 'know-your-http-well';
+import { MimeTypes } from 'utils/codemirror/autocompleteConstants';
 const headerAutoCompleteList = StandardHTTPHeaders.map((e) => e.header);
 
 const RequestHeaders = ({ item, collection }) => {
@@ -117,6 +118,7 @@ const RequestHeaders = ({ item, collection }) => {
                           )
                         }
                         onRun={handleRun}
+                        autocomplete={MimeTypes}
                         allowNewlines={true}
                         allowLinebreaks={true}
                         collection={collection}

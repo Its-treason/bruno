@@ -1,6 +1,6 @@
 import MarkdownIt from 'markdown-it';
 import StyledWrapper from './StyledWrapper';
-import * as React from 'react';
+import React from 'react';
 
 const md = new MarkdownIt();
 
@@ -16,6 +16,7 @@ const Markdown = ({ onDoubleClick, content }) => {
       onDoubleClick();
     }
   };
+
   const htmlFromMarkdown = md.render(content || '');
 
   return (

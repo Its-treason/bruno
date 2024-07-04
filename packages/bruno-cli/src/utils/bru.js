@@ -7,7 +7,6 @@ const collectionBruToJson = (bru) => {
 
     const transformedJson = {
       request: {
-        params: _.get(json, 'params', []),
         headers: _.get(json, 'headers', []),
         auth: _.get(json, 'auth', {}),
         script: _.get(json, 'script', {}),

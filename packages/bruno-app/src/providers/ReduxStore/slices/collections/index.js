@@ -1194,7 +1194,6 @@ export const collectionsSlice = createSlice({
             uid: uuid(),
             name: '',
             value: '',
-            type: 'request',
             enabled: true
           });
           set(folder, 'root.request.vars.req', vars);
@@ -1204,7 +1203,6 @@ export const collectionsSlice = createSlice({
             uid: uuid(),
             name: '',
             value: '',
-            type: 'response',
             enabled: true
           });
           set(folder, 'root.request.vars.res', vars);

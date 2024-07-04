@@ -169,7 +169,10 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
         seq: folderRoot.meta?.seq
       };
 
-      const content = jsonToCollectionBru(folderRoot);
+      const content = jsonToCollectionBru(
+        folderRoot,
+        true // isFolder
+      );
       await writeFile(folderBruFilePath, content);
     } catch (error) {
       return Promise.reject(error);
@@ -483,6 +486,15 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
             const folderPath = path.join(currentPath, sanitizedFolderName);
             fs.mkdirSync(folderPath);
 
+            if (item?.root?.meta?.name) {
+              const folderBruFilePath = path.join(folderPath, 'folder.bru');
+              const folderContent = jsonToCollectionBru(
+                item.root,
+                true // isFolder
+              );
+              fs.writeFileSync(folderBruFilePath, folderContent);
+            }
+
             if (item.items && item.items.length) {
               parseCollectionItems(item.items, folderPath);
             }
@@ -531,6 +543,9 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
 
       // Write the Bruno configuration to a file
       await writeFile(path.join(collectionPath, 'bruno.json'), stringifiedBrunoConfig);
+
+      const collectionContent = jsonToCollectionBru(collection.root);
+      await writeFile(path.join(collectionPath, 'collection.bru'), collectionContent);
 
       mainWindow.webContents.send('main:collection-opened', collectionPath, uid, brunoConfig);
       ipcMain.emit('main:collection-opened', mainWindow, collectionPath, uid, brunoConfig);
