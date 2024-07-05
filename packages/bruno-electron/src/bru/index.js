@@ -60,7 +60,8 @@ const jsonToCollectionBru = (json, isFolder) => {
     // in the future, all of this will be replaced by standard bru lang
     if (json?.meta) {
       collectionBruJson.meta = {
-        name: json.meta.name
+        name: json.meta.name,
+        seq: json.meta.seq
       };
     }
 
@@ -169,7 +170,7 @@ const jsonToBru = (json) => {
     type = 'http';
   }
 
-  const sequence = _.get(json, 'meta.seq');
+  const sequence = _.get(json, 'seq');
   const bruJson = {
     meta: {
       name: _.get(json, 'name'),

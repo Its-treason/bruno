@@ -612,8 +612,9 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid, operation
     // file item dragged onto another file item and both are in different folders
     if ((isItemARequest(targetItem) || operation !== 'insert') && !sameParent) {
       const draggedItemPathname = draggedItem.pathname;
-      // Folder dragged into child folder. This will cause an error
+      // Folder dragged into its own child folder. This will cause an error
       if (isItemAFolder(draggedItem) && targetItem.pathname.startsWith(draggedItemPathname)) {
+        toast.error('Cannot move folder into a child of its own');
         return;
       }
 

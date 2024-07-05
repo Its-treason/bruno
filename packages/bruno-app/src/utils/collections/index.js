@@ -131,18 +131,33 @@ export const findEnvironmentInCollection = (collection, envUid) => {
   return find(collection.environments, (e) => e.uid === envUid);
 };
 
+/**
+ * @param {{ seq?: number, name: string }} items
+ */
+function sortItemBySeq(items) {
+  items.sort((a, b) => {
+    if (a.seq !== undefined && b.seq !== undefined) {
+      return a.seq - b.seq;
+    }
+    // XOR -> Exactly one of them does not have seq
+    if ((a.seq !== undefined) ^ (b.seq !== undefined)) {
+      return a.seq === undefined ? -1 : 1;
+    }
+    // Both do not have seq so lets compare by name
+    return a.name.localeCompare(b.name);
+  });
+}
+
 export const moveCollectionItem = (collection, draggedItem, targetItem, operation) => {
   let draggedItemParent = findParentItemInCollection(collection, draggedItem.uid);
 
-  // "item.seq ?? 0" is used because folders do not have a seq by default
-
   if (draggedItemParent) {
-    draggedItemParent.items = sortBy(draggedItemParent.items, (item) => item.seq ?? 0);
+    sortItemBySeq(draggedItemParent.items);
     draggedItemParent.items = filter(draggedItemParent.items, (i) => i.uid !== draggedItem.uid);
     const filename = draggedItem.type === 'folder' ? draggedItem.name : draggedItem.filename;
     draggedItem.pathname = path.join(draggedItemParent.pathname, filename);
   } else {
-    collection.items = sortBy(collection.items, (item) => item.seq ?? 0);
+    sortItemBySeq(collection.items);
     collection.items = filter(collection.items, (i) => i.uid !== draggedItem.uid);
   }
 
@@ -155,14 +170,14 @@ export const moveCollectionItem = (collection, draggedItem, targetItem, operatio
     let targetItemParent = findParentItemInCollection(collection, targetItem.uid);
 
     if (targetItemParent) {
-      targetItemParent.items = sortBy(targetItemParent.items, (item) => item.seq ?? 0);
+      sortItemBySeq(targetItemParent.items);
       let targetItemIndex = findIndex(targetItemParent.items, (i) => i.uid === targetItem.uid);
       const newItemIndex = operation === 'above' ? targetItemIndex : targetItemIndex + 1;
       targetItemParent.items.splice(newItemIndex, 0, draggedItem);
       const filename = draggedItem.type === 'folder' ? draggedItem.name : draggedItem.filename;
       draggedItem.pathname = path.join(targetItemParent.pathname, filename);
     } else {
-      collection.items = sortBy(collection.items, (item) => item.seq ?? 0);
+      sortItemBySeq(collection.items);
       let targetItemIndex = findIndex(collection.items, (i) => i.uid === targetItem.uid);
       const newItemIndex = operation === 'above' ? targetItemIndex : targetItemIndex + 1;
       collection.items.splice(newItemIndex, 0, draggedItem);
