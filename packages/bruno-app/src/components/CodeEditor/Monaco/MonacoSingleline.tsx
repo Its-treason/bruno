@@ -67,6 +67,13 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
 
   const onMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
     editor.onDidFocusEditorText(() => {
+      // @ts-expect-error editor._contextKeyService is an internal state from the Monaco editor
+      // But i did not find a better way to do this, because "tabFocusMode" in options does work
+      // TabFocusMode itself is a global options, so it effects ALL monaco editor instances
+      // And its only possible to toggle the TabFocusMode, with the "normal" API
+      if (editor._contextKeyService.getContextKeyValue('editorTabMovesFocus') === false) {
+        editor.trigger('ActiveTabFocusMode', 'editor.action.toggleTabFocusMode', true);
+      }
       setFocused(true);
     });
     editor.onDidBlurEditorText(() => {
