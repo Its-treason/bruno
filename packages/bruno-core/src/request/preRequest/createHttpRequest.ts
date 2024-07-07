@@ -69,7 +69,7 @@ function getRequestHeaders(context: RequestContext, extraHeaders: Record<string,
   // Go through user header and merge them together with default header
   const headers = context.requestItem.request.headers.reduce<Record<string, string>>(
     (acc, header) => {
-      if (header.enabled) {
+      if (header.enabled && header.name.trim().length > 0) {
         acc[header.name.toLowerCase()] = header.value;
       }
       return acc;
