@@ -31,6 +31,7 @@ const { moveRequestUid, deleteRequestUid } = require('../cache/requestUids');
 const { deleteCookiesForDomain, getDomainsWithCookies, cookieJar } = require('../utils/cookies');
 const EnvironmentSecretsStore = require('../store/env-secrets');
 const { preferencesUtil, getPreferences } = require('../store/preferences');
+const { getRequestFromCurlCommand } = require('../utils/curl');
 
 const environmentSecretsStore = new EnvironmentSecretsStore();
 
@@ -726,6 +727,10 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
 
   ipcMain.handle('renderer:generate-code', async (event, item, collection, environment, options) => {
     return await generateCode(item, collection, getPreferences(), cookieJar, options, environment);
+  });
+
+  ipcMain.handle('renderer:curl-to-request', async (event, curlString) => {
+    return getRequestFromCurlCommand(curlString);
   });
 };
 

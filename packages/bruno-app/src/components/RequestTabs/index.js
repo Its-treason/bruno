@@ -5,7 +5,6 @@ import classnames from 'classnames';
 import { IconChevronRight, IconChevronLeft } from '@tabler/icons-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { focusTab, closeTabs } from 'providers/ReduxStore/slices/tabs';
-import NewRequest from 'components/Sidebar/NewRequest';
 import CollectionToolBar from './CollectionToolBar';
 import RequestTab from './RequestTab';
 import StyledWrapper from './StyledWrapper';
@@ -14,6 +13,7 @@ import { deleteRequestDraft } from 'providers/ReduxStore/slices/collections';
 import { saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import { findItemInCollection } from 'utils/collections';
 import get from 'lodash/get';
+import { NewRequestModal } from 'src/feature/sidebar-menu/components/modals/NewRequestModal';
 
 const RequestTabs = () => {
   const dispatch = useDispatch();
@@ -137,9 +137,12 @@ const RequestTabs = () => {
           }}
         />
       )}
-      {newRequestModalOpen && (
-        <NewRequest collection={activeCollection} onClose={() => setNewRequestModalOpen(false)} />
-      )}
+      <NewRequestModal
+        brunoConfig={activeCollection.brunoConfig}
+        collectionUid={activeCollection.uid}
+        onClose={() => setNewRequestModalOpen(false)}
+        opened={newRequestModalOpen}
+      />
       <CollectionToolBar collection={activeCollection} activeTabUid={activeTabUid} />
       {collectionRequestTabs?.length && !hideTabs ? (
         <div className="flex items-center pl-4">

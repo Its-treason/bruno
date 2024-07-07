@@ -5,11 +5,11 @@ import Mousetrap from 'mousetrap';
 import { useSelector, useDispatch } from 'react-redux';
 import SaveRequest from 'components/RequestPane/SaveRequest';
 import NetworkError from 'components/ResponsePane/NetworkError';
-import NewRequest from 'components/Sidebar/NewRequest';
 import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import { findCollectionByUid, findItemInCollection } from 'utils/collections';
 import { closeTabs } from 'providers/ReduxStore/slices/tabs';
 import { EnvironmentDrawer } from 'src/feature/environment-editor';
+import { NewRequestModal } from 'src/feature/sidebar-menu/components/modals/NewRequestModal';
 
 export const HotkeysContext = React.createContext();
 
@@ -166,9 +166,12 @@ export const HotkeysProvider = (props) => {
           onClose={() => setShowEnvSettingsModal(false)}
         />
       ) : null}
-      {showNewRequestModal && (
-        <NewRequest collection={getCurrentCollection()} onClose={() => setShowNewRequestModal(false)} />
-      )}
+      <NewRequestModal
+        brunoConfig={getCurrentCollection()?.brunoConfig}
+        collectionUid={getCurrentCollection()?.uid}
+        onClose={() => setShowNewRequestModal(false)}
+        opened={showNewRequestModal}
+      />
       <div>{props.children}</div>
     </HotkeysContext.Provider>
   );

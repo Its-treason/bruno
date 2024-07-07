@@ -9,7 +9,7 @@ import { useDispatch } from 'react-redux';
 import { newHttpRequest } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
-import { getRequestFromCurlCommand } from 'utils/curl';
+// import { getRequestFromCurlCommand } from 'utils/curl';
 import { BrunoConfigSchema } from '@usebruno/schema';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { MethodSelector } from 'src/feature/request-url-bar';
@@ -51,7 +51,8 @@ export const NewRequestModal: React.FC<NewRequestModalProps> = ({
     mutationFn: async (values: NewFolderFormSchema) => {
       switch (values.type) {
         case 'from-curl':
-          const request = getRequestFromCurlCommand(values.curlCommand);
+          // @ts-expect-error ipcRenderer is not in type
+          const request = await window.ipcRenderer.invoke('renderer:curl-to-request', values.curlCommand);
           if (!request) {
             throw new Error('Could not generate request from cURL');
           }
