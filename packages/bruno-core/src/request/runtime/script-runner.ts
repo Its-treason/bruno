@@ -41,7 +41,7 @@ export async function runScript(
     try {
       await vm.runInThisContext(`
         // Only overwrite require and console in this context, so it doesn't break other packages
-        (async ({ require, console, ...brunoContext }) => {
+        (async ({ require, console, brunoTestResults: __internal__brunoTestResults, ...brunoContext }) => {
           // Assign all bruno variables to the global context, so they can be accessed in external scripts
           // See: https://github.com/Its-treason/bruno/issues/6
           // This will pollute the global context. But i don't a better solution
@@ -51,6 +51,16 @@ export async function runScript(
       `)(scriptContext);
     } catch (error) {
       throw new UserScriptError(error, script);
+    } finally {
+      // Cleanup global namespace
+      Object.assign(global, {
+        req: undefined,
+        res: undefined,
+        bru: undefined,
+        test: undefined,
+        expect: undefined,
+        assert: undefined
+      });
     }
   }
 
