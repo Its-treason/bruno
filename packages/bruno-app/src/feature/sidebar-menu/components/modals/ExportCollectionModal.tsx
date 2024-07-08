@@ -2,13 +2,8 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Alert, Button, Group, Modal, Radio, Stack, Text, rem } from '@mantine/core';
-import { useMutation } from '@tanstack/react-query';
-import { useDispatch } from 'react-redux';
-import toast from 'react-hot-toast';
-import { IconAlertCircle } from '@tabler/icons-react';
+import { Button, Group, Modal, Radio, Stack } from '@mantine/core';
 import { CollectionSchema } from '@usebruno/schema';
-import { removeCollection } from 'providers/ReduxStore/slices/collections/actions';
 import exportBrunoCollection from 'utils/collections/export';
 import exportPostmanCollection from 'utils/exporters/postman-collection';
 import cloneDeep from 'lodash/cloneDeep';

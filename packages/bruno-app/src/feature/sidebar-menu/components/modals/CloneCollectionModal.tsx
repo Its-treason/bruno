@@ -10,18 +10,17 @@ import { cloneCollection } from 'providers/ReduxStore/slices/collections/actions
 import toast from 'react-hot-toast';
 import { IconAlertCircle, IconHelp } from '@tabler/icons-react';
 import { DirectoryPicker } from 'components/inputs/DirectoryPicker';
-import { CollectionSchema } from '@usebruno/schema';
 import { z } from 'zod';
 import { useEffect } from 'react';
 
 const cloneCollectionFormSchema = z.object({
-  name: z.string().min(1),
+  name: z.string().trim().min(1, 'Name is required').max(255),
   folder: z
     .string()
-    .min(1)
-    .max(50)
+    .min(1, 'Folder is required')
+    .max(255)
     .regex(/^[\w\-. ]+$/),
-  location: z.string().min(1)
+  location: z.string().trim().min(1, 'Location is required')
 });
 type CloneCollectionFormSchema = z.infer<typeof cloneCollectionFormSchema>;
 
@@ -42,7 +41,7 @@ export const CloneCollectionModal: React.FC<CloneCollectionModalProps> = ({
 
   const cloneMutation = useMutation({
     mutationFn: async (values: CloneCollectionFormSchema) => {
-      await dispatch(cloneCollection(values.name, values.folder, values.location, collectionPath));
+      await dispatch(cloneCollection(values.name.trim(), values.folder, values.location.trim(), collectionPath));
     },
     onSuccess: () => {
       toast.success('Cloned collection');

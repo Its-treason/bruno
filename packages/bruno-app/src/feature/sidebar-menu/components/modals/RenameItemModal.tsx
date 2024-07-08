@@ -14,7 +14,7 @@ import { z } from 'zod';
 import { useEffect } from 'react';
 
 const renameItemFormSchema = z.object({
-  name: z.string().min(1)
+  name: z.string().trim().min(1, 'Name is required').max(255)
 });
 type RenameItemFormSchema = z.infer<typeof renameItemFormSchema>;
 
@@ -45,7 +45,7 @@ export const RenameItemModal: React.FC<RenameItemModalProps> = ({ opened, onClos
       if ((item.type === 'http-request' || item.type === 'graphql-request') && item.draft) {
         await dispatch(saveRequest(item.uid, collectionUid, true));
       }
-      await dispatch(renameItem(values.name, item.uid, collectionUid));
+      await dispatch(renameItem(values.name.trim(), item.uid, collectionUid));
       onClose();
     },
     onSuccess: (_, values) => {

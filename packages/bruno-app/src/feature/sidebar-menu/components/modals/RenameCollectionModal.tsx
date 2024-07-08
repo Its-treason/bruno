@@ -14,7 +14,7 @@ import { z } from 'zod';
 import { useEffect } from 'react';
 
 const renameCollectionFormSchema = z.object({
-  name: z.string().min(1)
+  name: z.string().trim().min(1, 'Name is required').max(255)
 });
 type RenameCollectionFormSchema = z.infer<typeof renameCollectionFormSchema>;
 
@@ -29,7 +29,7 @@ export const RenameCollectionModal: React.FC<RenameCollectionModalProps> = ({ op
 
   const renameMutation = useMutation({
     mutationFn: async (values: RenameCollectionFormSchema) => {
-      await dispatch(renameCollection(values.name, collection.pathname));
+      await dispatch(renameCollection(values.name.trim(), collection.pathname));
     },
     onSuccess: () => {
       toast.success('Renamed collection');

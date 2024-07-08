@@ -14,7 +14,7 @@ import { z } from 'zod';
 import { useEffect } from 'react';
 
 const cloneItemCollectionSchema = z.object({
-  name: z.string().min(1)
+  name: z.string().trim().min(1, 'Name is required').max(255)
 });
 type CloneCollectionFormSchema = z.infer<typeof cloneItemCollectionSchema>;
 
@@ -40,7 +40,7 @@ export const CloneItemModal: React.FC<CloneItemModalProps> = ({ opened, onClose,
 
   const cloneMutation = useMutation({
     mutationFn: async (values: CloneCollectionFormSchema) => {
-      await dispatch(cloneItem(values.name, item.uid, collectionUid));
+      await dispatch(cloneItem(values.name.trim(), item.uid, collectionUid));
     },
     onSuccess: () => {
       toast.success('Cloned request');

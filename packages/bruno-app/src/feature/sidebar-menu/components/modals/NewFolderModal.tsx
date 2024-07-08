@@ -12,7 +12,7 @@ import { IconAlertCircle } from '@tabler/icons-react';
 import { z } from 'zod';
 
 const newFolderFormSchema = z.object({
-  name: z.string().min(1)
+  name: z.string().trim().min(1, 'Name is required').max(255)
 });
 type NewFolderFormSchema = z.infer<typeof newFolderFormSchema>;
 
@@ -35,7 +35,7 @@ export const NewFolderModal: React.FC<NewFolderModalProps> = ({ opened, onClose,
 
   const newFolderMutation = useMutation({
     mutationFn: async (values: NewFolderFormSchema) => {
-      await dispatch(newFolder(values.name, collectionUid, null));
+      await dispatch(newFolder(values.name.trim(), collectionUid, itemUid));
     },
     onSuccess: () => {
       toast.success('Folder created');

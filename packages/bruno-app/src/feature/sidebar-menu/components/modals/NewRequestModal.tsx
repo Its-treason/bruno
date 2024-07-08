@@ -18,13 +18,13 @@ import { useEffect } from 'react';
 const newRequestFormSchema = z.discriminatedUnion('type', [
   z.object({
     type: z.enum(['http-request', 'graphql-request']),
-    name: z.string().min(1).max(255),
+    name: z.string().trim().min(1, 'Name is required').max(255),
     method: z.string().min(1),
     url: z.string()
   }),
   z.object({
     type: z.literal('from-curl'),
-    name: z.string().min(1, 'Name is required'),
+    name: z.string().trim().min(1, 'Name is required').max(255),
     curlCommand: z.string().min(1, 'Curl command is required')
   })
 ]);
@@ -58,7 +58,7 @@ export const NewRequestModal: React.FC<NewRequestModalProps> = ({
           }
           dispatch(
             newHttpRequest({
-              requestName: values.name,
+              requestName: values.name.trim(),
               requestType: 'http-request',
               requestUrl: request.url,
               requestMethod: request.method,
@@ -73,7 +73,7 @@ export const NewRequestModal: React.FC<NewRequestModalProps> = ({
         case 'graphql-request':
           await dispatch(
             newHttpRequest({
-              requestName: values.name,
+              requestName: values.name.trim(),
               requestType: values.type,
               requestUrl: values.url,
               requestMethod: values.method,
