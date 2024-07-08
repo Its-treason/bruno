@@ -1,20 +1,27 @@
-import Head from 'next/head';
-import Bruno from './Bruno';
-import GlobalStyle from '../globalStyles';
+import RequestTabs from 'components/RequestTabs';
+import RequestTabPanel from 'components/RequestTabPanel';
+import { useSelector } from 'react-redux';
+import { Sidebar } from 'src/feature/sidebar';
+import classes from './Main.module.scss';
+import { Homepage } from 'src/feature/homepage';
 
-export default function Home() {
+export function Main() {
+  const activeTabUid = useSelector((state) => state.tabs.activeTabUid);
+  const showHomePage = useSelector((state) => state.app.showHomePage);
+
   return (
-    <div>
-      <Head>
-        <title>Bruno</title>
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
-
-      <GlobalStyle />
-
-      <main>
-        <Bruno />
-      </main>
+    <div className={classes.wrapper}>
+      <Sidebar />
+      <section>
+        {showHomePage ? (
+          <Homepage />
+        ) : (
+          <>
+            <RequestTabs />
+            <RequestTabPanel key={activeTabUid} />
+          </>
+        )}
+      </section>
     </div>
   );
 }

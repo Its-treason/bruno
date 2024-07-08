@@ -1,13 +1,12 @@
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import StyledWrapper from './StyledWrapper';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faTimes } from '@fortawesome/free-solid-svg-icons';
+import { IconX } from '@tabler/icons-react';
 
 const ToastContent = ({ type, text, handleClose }) => (
   <div className={`alert alert-${type}`} role="alert">
     <div> {text} </div>
     <div onClick={handleClose} className="closeToast">
-      <FontAwesomeIcon size="xs" icon={faTimes} />
+      <IconX />
     </div>
   </div>
 );

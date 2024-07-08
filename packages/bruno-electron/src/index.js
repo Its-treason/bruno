@@ -1,4 +1,6 @@
 const path = require('path');
+const http = require('http');
+const fs = require('fs');
 const { format } = require('url');
 const { BrowserWindow, app, Menu, ipcMain, shell } = require('electron');
 const { setContentSecurityPolicy } = require('electron-util');
@@ -72,16 +74,40 @@ app.on('ready', async () => {
   }
 
   if (app.isPackaged) {
-    const url = path.join(__dirname, '../../web/index.html');
-    mainWindow.loadFile(url).catch((reason) => {
-      console.error(`Error: Failed to load URL: "${url}" (Electron shows a blank screen because of this).`);
-      console.error('Original message:', reason);
-      console.error(
-        'If you are using an official production build: the above error is most likely a bug! ' +
-          ' Please report this under: https://github.com/usebruno/bruno/issues'
-      );
-      mainWindow.loadURL(`data:text/html;charset=utf,Failed to load: ${reason}`);
-      launchFailed = true;
+    const staticPath = path.join(__dirname, '../../web/');
+    const server = http.createServer((req, res) => {
+      const filePath = path.join(staticPath, req.url === '/' ? 'index.html' : req.url);
+
+      const stream = fs.createReadStream(filePath);
+
+      stream.on('open', () => {
+        res.writeHead(200);
+        stream.pipe(res);
+      });
+
+      stream.on('error', (err) => {
+        if (err.code === 'ENOENT') {
+          res.writeHead(404);
+          res.end('File not found');
+        } else {
+          res.writeHead(500);
+          res.end('Internal server error');
+        }
+      });
+    });
+    server.listen(0, '127.0.0.1', () => {
+      const url = `http://localhost:${server.address().port}`;
+      console.log('the-url', url);
+      mainWindow.loadURL(url).catch((reason) => {
+        console.error(`Error: Failed to load URL: "${url}" (Electron shows a blank screen because of this).`);
+        console.error('Original message:', reason);
+        console.error(
+          'If you are using an official production build: the above error is most likely a bug! ' +
+            ' Please report this under: https://github.com/usebruno/bruno/issues'
+        );
+        mainWindow.loadURL(`data:text/html;charset=utf,Failed to load: ${reason}`);
+        launchFailed = true;
+      });
     });
   } else {
     mainWindow.loadURL('http://localhost:3000').catch((reason) => {

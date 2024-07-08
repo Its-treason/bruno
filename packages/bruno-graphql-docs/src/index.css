@@ -281,6 +281,7 @@
   outline: none;
   padding: 6px 24px 8px 20px;
   width: 100%;
+  background: white;
 }
 
 .graphql-docs-container .error-container {

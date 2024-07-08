@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { Provider } from 'react-redux';
 import { AppProvider } from 'providers/App';
 import { ToastProvider } from 'providers/Toaster';
@@ -57,35 +56,14 @@ const theme = createTheme({
   }
 });
 
-function SafeHydrate({ children }) {
-  return <div suppressHydrationWarning>{typeof window === 'undefined' ? null : children}</div>;
-}
-
-function NoSsr({ children }) {
-  const SERVER_RENDERED = typeof navigator === 'undefined';
-
-  if (SERVER_RENDERED) {
-    return null;
-  }
-
-  return <>{children}</>;
-}
-
-function MyApp({ Component, pageProps }) {
-  const [domLoaded, setDomLoaded] = useState(false);
-
-  useEffect(() => {
-    setDomLoaded(true);
-  }, []);
-
-  if (!domLoaded) {
-    return null;
-  }
-
+export function App({ children }) {
   if (!window.ipcRenderer) {
     return (
-      <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mx-10 my-10 rounded relative" role="alert">
-        <strong class="font-bold">ERROR:</strong>
+      <div
+        className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 mx-10 my-10 rounded relative"
+        role="alert"
+      >
+        <strong className="font-bold">ERROR:</strong>
         <span className="block inline ml-1">"ipcRenderer" not found in window object.</span>
         <div>
           You most likely opened Bruno inside your web browser. Bruno only works within Electron, you can start Electron
@@ -98,26 +76,18 @@ function MyApp({ Component, pageProps }) {
   return (
     <ErrorBoundary>
       <MantineProvider theme={theme} defaultColorScheme={'dark'}>
-        <SafeHydrate>
-          <NoSsr>
-            <QueryClientProvider client={queryClient}>
-              <Provider store={ReduxStore}>
-                <ThemeProvider>
-                  <ToastProvider>
-                    <AppProvider>
-                      <HotkeysProvider>
-                        <Component {...pageProps} />
-                      </HotkeysProvider>
-                    </AppProvider>
-                  </ToastProvider>
-                </ThemeProvider>
-              </Provider>
-            </QueryClientProvider>
-          </NoSsr>
-        </SafeHydrate>
+        <QueryClientProvider client={queryClient}>
+          <Provider store={ReduxStore}>
+            <ThemeProvider>
+              <ToastProvider>
+                <AppProvider>
+                  <HotkeysProvider>{children}</HotkeysProvider>
+                </AppProvider>
+              </ToastProvider>
+            </ThemeProvider>
+          </Provider>
+        </QueryClientProvider>
       </MantineProvider>
     </ErrorBoundary>
   );
 }
-
-export default MyApp;

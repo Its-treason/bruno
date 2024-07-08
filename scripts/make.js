@@ -106,7 +106,7 @@ async function main(args) {
   await execCommandWithOutput('pnpm', ['run', 'build']);
   // Copy the output of bruno-app into electron
   await fs.ensureDir('packages/bruno-electron/web');
-  await copyFolderIfExists('packages/bruno-app/out', 'packages/bruno-electron/web');
+  await copyFolderIfExists('packages/bruno-app/dist', 'packages/bruno-electron/web');
 
   // Change paths in next
   const files = await fs.readdir('packages/bruno-electron/web');

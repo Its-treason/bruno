@@ -12,3 +12,8 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     };
   }
 });
+contextBridge.exposeInMainWorld('process', {
+  platform: process.platform,
+  env: process.env,
+  cwd: () => process.cwd()
+});
