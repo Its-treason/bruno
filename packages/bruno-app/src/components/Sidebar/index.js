@@ -106,7 +106,7 @@ const Sidebar = () => {
                 </Tooltip>
               </ActionIcon.Group>
 
-              <div className="text-xs">v1.20.1-lazer</div>
+              <div className="text-xs">v1.20.2-lazer</div>
             </Group>
           </div>
         </div>
