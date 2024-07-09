@@ -51,7 +51,6 @@ export const NewRequestModal: React.FC<NewRequestModalProps> = ({
     mutationFn: async (values: NewFolderFormSchema) => {
       switch (values.type) {
         case 'from-curl':
-          // @ts-expect-error ipcRenderer is not in type
           const request = await window.ipcRenderer.invoke('renderer:curl-to-request', values.curlCommand);
           if (!request) {
             throw new Error('Could not generate request from cURL');

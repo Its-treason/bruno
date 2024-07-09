@@ -359,6 +359,7 @@ export type RequestContext = {
   nextRequestName?: string;
   abortController?: AbortController;
   cancelToken: string;
+  brunoVersion: string;
 
   requestItem: RequestItem;
   collection: Collection;

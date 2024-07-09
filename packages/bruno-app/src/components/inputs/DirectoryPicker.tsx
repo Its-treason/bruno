@@ -11,7 +11,6 @@ export const DirectoryPicker: React.FC<DirectoryPickerProps> = (props) => {
 
   const onBrowse = useCallback(() => {
     // This will block any user input until the dialog os closes
-    // @ts-expect-error
     window.ipcRenderer
       .invoke('renderer:browse-directory')
       .then((selectedPath: unknown) => {

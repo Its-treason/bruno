@@ -29,7 +29,6 @@ export function useGenerateCode(collectionId: string, requestId: string, targetI
         clientId
       };
 
-      // @ts-expect-error
       return await window.ipcRenderer.invoke('renderer:generate-code', item, collection, environment, options);
     }
   });

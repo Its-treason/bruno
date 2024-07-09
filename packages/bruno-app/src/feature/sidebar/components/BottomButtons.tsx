@@ -36,7 +36,9 @@ export const BottomButtons: React.FC = () => {
         {cookiesOpen && <Cookies onClose={() => setCookiesOpen(false)} />}
       </ActionIcon.Group>
 
-      <Text size="sm">v1.20.0-lazer</Text>
+      <Tooltip label={`Commit: ${window.BRUNO_COMMIT}`}>
+        <Text size="sm">{window.BRUNO_VERSION}-lazer</Text>
+      </Tooltip>
     </Group>
   );
 };

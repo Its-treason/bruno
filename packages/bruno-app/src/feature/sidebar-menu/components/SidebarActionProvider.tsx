@@ -87,7 +87,6 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
       // if collection doesn't have any active environment
       // try to load last selected environment
       if (!collection.activeEnvironmentUid) {
-        // @ts-expect-error
         window.ipcRenderer
           .invoke('renderer:get-last-selected-environment', collection.uid)
           .then((lastSelectedEnvName: string) => {

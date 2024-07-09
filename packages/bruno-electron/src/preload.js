@@ -12,8 +12,13 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     };
   }
 });
+// This is used by the 'path' package
 contextBridge.exposeInMainWorld('process', {
   platform: process.platform,
   env: process.env,
   cwd: () => process.cwd()
 });
+
+// Defined in vite.base.config.ts
+contextBridge.exposeInMainWorld('BRUNO_VERSION', BRUNO_VERSION);
+contextBridge.exposeInMainWorld('BRUNO_COMMIT', BRUNO_COMMIT);

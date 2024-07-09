@@ -25,7 +25,6 @@ const Row: React.FC<ListChildComponentProps<RequestListItem[]>> = ({ index, styl
     case 'request':
       return <RequestItem {...item} style={style} key={item.uid + item.parentUid} />;
     default:
-      // @ts-expect-error
       return <div>Unknown type {item.type}</div>;
   }
 };

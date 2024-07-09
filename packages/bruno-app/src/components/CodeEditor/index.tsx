@@ -12,7 +12,7 @@ type CodeEditorProps = {
   onSave?: () => void;
   readOnly?: boolean;
   theme?: string;
-  value: string;
+  value?: string;
   defaultValue?: string;
   singleLine?: boolean;
   asInput?: boolean;

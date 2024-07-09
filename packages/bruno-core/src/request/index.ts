@@ -27,6 +27,7 @@ export async function request(
   dataDir: string,
   cancelToken: string,
   abortController: AbortController,
+  brunoVersion: string,
   environment?: CollectionEnvironment,
   rawCallbacks: Partial<RawCallbacks> = {}
 ) {
@@ -43,6 +44,7 @@ export async function request(
     dataDir,
     cancelToken,
     abortController,
+    brunoVersion,
 
     requestItem,
     collection,

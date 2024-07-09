@@ -25,5 +25,5 @@
     },
     "baseUrl": "./"
   },
-  "include": ["src"]
+  "include": ["src", "./src/env.d.ts"]
 }
