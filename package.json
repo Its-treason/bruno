@@ -26,10 +26,5 @@
     "test:prettier:web": "npm run test:prettier --workspace=packages/bruno-app",
     "clean": "pnpm run --parallel --recursive --if-present clean",
     "prepare": "husky install"
-  },
-  "dependencies": {
-    "fast-xml-parser": "^4.3.5",
-    "json-bigint": "^1.0.0",
-    "lossless-json": "^4.0.1"
   }
 }
