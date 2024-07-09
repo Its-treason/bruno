@@ -214,8 +214,8 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
       <NewFolderModal
         opened={activeAction?.type === 'new-folder'}
         onClose={() => setActiveActionState(null)}
-        collectionUid={activeAction?.collection.uid ?? ''}
-        itemUid={activeAction?.item.uid}
+        collectionUid={activeAction?.collection?.uid ?? ''}
+        itemUid={activeAction?.item?.uid}
       />
       <NewRequestModal
         opened={activeAction?.type === 'new-request'}
