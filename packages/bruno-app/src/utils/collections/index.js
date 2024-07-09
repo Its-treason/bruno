@@ -409,7 +409,8 @@ export const transformCollectionToSaveToExportAsFile = (collection, options = {}
           },
           docs: si?.root?.request?.docs,
           meta: {
-            name: si?.root?.meta?.name
+            name: si?.root?.meta?.name,
+            seq: si?.root?.meta?.seq
           }
         };
       }
