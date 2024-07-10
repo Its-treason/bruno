@@ -493,6 +493,7 @@ const registerNetworkIpc = (mainWindow) => {
         dataDir,
         cancelToken,
         abortController,
+        BRUNO_VERSION,
         environment,
         {
           runFolderEvent: (payload) => {
@@ -587,6 +588,7 @@ const registerNetworkIpc = (mainWindow) => {
       dataDir,
       cancelToken,
       abortController,
+      BRUNO_VERSION,
       environment,
       {
         updateScriptEnvironment: (payload) => {
