@@ -583,8 +583,8 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
             if (item.root) {
               const folderContent = jsonToCollectionBru(item.root, true);
               if (folderContent) {
-                const folderBruPath = path.join(folderPath, `folder.bru`);
-                fs.writeFileSync(folderBruPath, folderContent);
+                const bruFolderPath = path.join(folderPath, `folder.bru`);
+                fs.writeFileSync(bruFolderPath, folderContent);
               }
             }
 
@@ -601,8 +601,8 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
       if (itemFolder.root) {
         const folderContent = jsonToCollectionBru(itemFolder.root, true);
         if (folderContent) {
-          const folderBruPath = path.join(collectionPath, `folder.bru`);
-          fs.writeFileSync(folderBruPath, folderContent);
+          const bruFolderPath = path.join(collectionPath, `folder.bru`);
+          fs.writeFileSync(bruFolderPath, folderContent);
         }
       }
 
