@@ -1,14 +1,14 @@
 import React, { useEffect, useRef } from 'react';
 
-function formatStopwatchTimestamp(timestamp) {
-  if (timestamp < 200) {
+function formatStopwatchTimestamp(timestamp: number) {
+  if (timestamp < 200 || isNaN(timestamp)) {
     return 'Loading...';
   }
   return `${(timestamp / 1000).toFixed(1)}s`;
 }
 
 type StopWatchProps = {
-  requestTimestamp: number;
+  requestTimestamp?: number;
 };
 
 export const StopWatch: React.FC<StopWatchProps> = ({ requestTimestamp }) => {

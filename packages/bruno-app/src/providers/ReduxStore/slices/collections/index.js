@@ -1522,6 +1522,7 @@ export const collectionsSlice = createSlice({
             item.requestUid = requestUid;
             item.requestState = 'queued';
             item.cancelTokenUid = cancelTokenUid;
+            item.requestSentTimestamp = Date.now();
           }
 
           if (type === 'request-sent') {

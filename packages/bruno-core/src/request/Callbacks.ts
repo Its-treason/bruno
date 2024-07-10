@@ -41,8 +41,7 @@ export class Callbacks {
         url: context.requestItem.request.url,
         method: context.requestItem.request.method,
         headers: context.requestItem.request.headers,
-        data: parse(stringify('{}')!),
-        timestamp: Date.now()
+        data: parse(stringify('{}')!)
       },
       collectionUid: context.collection.uid,
       itemUid: context.requestItem.uid,
@@ -148,8 +147,7 @@ export class Callbacks {
         url: context.requestItem.request.url,
         method: context.httpRequest!.options.method,
         headers: context.httpRequest!.options.headers,
-        data: context.httpRequest!.body ?? undefined,
-        timestamp: Date.now()
+        data: context.httpRequest!.body ?? undefined
       },
       isNew: true,
       itemUid: context.requestItem.uid,

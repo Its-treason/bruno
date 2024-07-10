@@ -16,7 +16,7 @@ const ResponseLoadingOverlay = ({ item, collection }) => {
       <div className="overlay">
         <div style={{ marginBottom: 15, fontSize: 26 }}>
           <div style={{ display: 'inline-block', fontSize: 20, marginLeft: 5, marginRight: 5 }}>
-            <StopWatch requestTimestamp={item?.requestSent?.timestamp} />
+            <StopWatch requestTimestamp={item?.requestSentTimestamp} />
           </div>
         </div>
         <IconRefresh size={24} className="loading-icon" />
