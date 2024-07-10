@@ -11,6 +11,10 @@ const Timeline = ({ request, response }) => {
   response = response || {};
 
   forOwn(request.headers, (value, key) => {
+    if (typeof value !== 'string') {
+      requestHeaders.push(value);
+      return;
+    }
     requestHeaders.push({
       name: key,
       value
