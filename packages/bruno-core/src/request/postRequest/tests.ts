@@ -37,6 +37,10 @@ export async function tests(context: RequestContext, folderData: FolderData[], r
     context.timings.stopMeasure('test');
   }
 
+  if (scriptResult.nextRequestName) {
+    context.nextRequestName = scriptResult.nextRequestName;
+  }
+
   context.callback.testResults(context, scriptResult.results);
   context.callback.folderTestResults(context, scriptResult.results);
   context.callback.updateScriptEnvironment(context, scriptResult.envVariables, scriptResult.collectionVariables);

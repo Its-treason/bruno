@@ -340,6 +340,10 @@ const runSingleRequest = async function (
     );
     const testResults = get(testScriptResult, 'results', []);
 
+    if (result?.nextRequestName !== undefined) {
+      nextRequestName = result.nextRequestName;
+    }
+
     if (testResults?.length) {
       each(testResults, (testResult) => {
         if (testResult.status === 'pass') {

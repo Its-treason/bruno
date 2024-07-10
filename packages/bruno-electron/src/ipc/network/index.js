@@ -1238,8 +1238,8 @@ const registerNetworkIpc = (mainWindow) => {
 
             // run tests
             const testFile = compact([
-              item.draft ? get(item.draft, 'request.tests') : get(item, 'request.tests'),
-              get(collectionRoot, 'request.tests')
+              get(collectionRoot, 'request.tests'),
+              item.draft ? get(item.draft, 'request.tests') : get(item, 'request.tests')
             ]).join(os.EOL);
             const testResults = await runScript(
               decomment(testFile),
@@ -1260,12 +1260,16 @@ const registerNetworkIpc = (mainWindow) => {
               testResults: testResults.results,
               ...eventData
             });
+            if (testResults?.nextRequestName !== undefined) {
+              nextRequestName = postRequestScriptResult.nextRequestName;
+            }
 
             mainWindow.webContents.send('main:script-environment-update', {
               envVariables: testResults.envVariables,
               collectionVariables: testResults.collectionVariables,
               collectionUid
             });
+            re / NextRequestOnTestScript;
           } catch (error) {
             mainWindow.webContents.send('main:run-folder-event', {
               type: 'error',
