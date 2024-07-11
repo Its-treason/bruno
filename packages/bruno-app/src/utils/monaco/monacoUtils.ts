@@ -10,6 +10,7 @@ import colors from 'tailwindcss/colors';
 type MonacoEditor = editor.IStandaloneCodeEditor;
 
 const buildSuggestions = (monaco: Monaco) => [
+  // Res
   {
     label: 'res',
     kind: monaco.languages.CompletionItemKind.Variable,
@@ -82,6 +83,7 @@ const buildSuggestions = (monaco: Monaco) => [
     insertText: 'res.getResponseTime()',
     documentation: 'Returns the response time.'
   },
+  // Req
   {
     label: 'req',
     kind: monaco.languages.CompletionItemKind.Variable,
@@ -196,11 +198,36 @@ const buildSuggestions = (monaco: Monaco) => [
     insertText: 'req.setTimeout()',
     documentation: 'Sets the request timeout.'
   },
+  // Bru
+  {
+    label: 'bru.interpolate()',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'bru.interpolate()',
+    documentation: 'Interpolates a string with placeholders.'
+  },
+  {
+    label: 'bru.cwd()',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'bru.cwd()',
+    documentation: 'Returns the current working directory.'
+  },
+  {
+    label: 'bru.getEnvName()',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'bru.getEnvName()',
+    documentation: 'Returns the name of the current environment or undefined if none is selected.'
+  },
   {
     label: 'bru.getProcessEnv()',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.getProcessEnv()',
-    documentation: 'Returns the current process environment variables.'
+    documentation: 'Returns a process environment variable.'
+  },
+  {
+    label: 'bru.hasEnvVar()',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'bru.hasEnvVar()',
+    documentation: 'Returns a true if an environment variable exists.'
   },
   {
     label: 'bru.getEnvVar()',
@@ -215,10 +242,10 @@ const buildSuggestions = (monaco: Monaco) => [
     documentation: 'Sets the value of the environment variable with the given key.'
   },
   {
-    label: 'bru.getVar()',
+    label: 'bru.hasVar()',
     kind: monaco.languages.CompletionItemKind.Function,
-    insertText: 'bru.getVar()',
-    documentation: 'Returns the value of the variable with the given key.'
+    insertText: 'bru.hasVar()',
+    documentation: 'Returns true if an collection variable exists.'
   },
   {
     label: 'bru.setVar()',
@@ -227,10 +254,28 @@ const buildSuggestions = (monaco: Monaco) => [
     documentation: 'Sets the value of the variable with the given key.'
   },
   {
-    label: 'bru.cwd()',
+    label: 'bru.deleteVar()',
     kind: monaco.languages.CompletionItemKind.Function,
-    insertText: 'bru.cwd()',
-    documentation: 'Returns the current working directory.'
+    insertText: 'bru.deleteVar()',
+    documentation: 'Removes an collection variable.'
+  },
+  {
+    label: 'bru.getVar()',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'bru.getVar()',
+    documentation: 'Returns the value of the variable with the given key.'
+  },
+  {
+    label: 'bru.getRequestVar()',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'bru.getRequestVar()',
+    documentation: 'Returns the value of the request variable for the given key.'
+  },
+  {
+    label: 'bru.setNextRequest()',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'bru.setNextRequest()',
+    documentation: 'Sets the name for the next request in the collection runner.'
   }
 ];
 
@@ -470,15 +515,19 @@ export const initMonaco = (monaco: Monaco) => {
     setTimeout(timeout: number): void;
   };
   declare const bru: {
+    interpolate(target: unknown): string | unknown;
+    cwd(): string;
+    getEnvName(): ?string;
+    getProcessEnv(key: string): unknown;
     hasEnvVar(key: string): boolean;
     getEnvVar(key: string): any;
     setEnvVar(key: string, value: any): void;
     hasVar(key: string): boolean;
-    getVar(key: string): any;
     setVar(key: string, value: any): void;
     deleteVar(key: string): void;
-    getProcessEnv(): any;
-    cwd(): string;
+    getVar(key: string): any;
+    getRequestVar(key: string): unknown;
+    setNextRequest(nextRequest: string): void;
   };
 `);
   monaco.languages.registerCompletionItemProvider('typescript', {
