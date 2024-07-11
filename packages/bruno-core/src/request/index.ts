@@ -45,6 +45,7 @@ export async function request(
     cancelToken,
     abortController,
     brunoVersion,
+    environmentName: environment?.name,
 
     requestItem,
     collection,

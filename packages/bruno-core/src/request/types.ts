@@ -354,18 +354,20 @@ export type BrunoRequestOptions = Omit<RequestOptions, 'host'> & {
 } & TlsOptions;
 
 export type RequestContext = {
-  uid: string;
-  dataDir: string;
+  readonly uid: string;
+  readonly dataDir: string;
   nextRequestName?: string;
-  abortController?: AbortController;
-  cancelToken: string;
-  brunoVersion: string;
+  readonly abortController?: AbortController;
+  readonly cancelToken: string;
+  readonly brunoVersion: string;
+  readonly environmentName?: string;
 
   requestItem: RequestItem;
   collection: Collection;
-  preferences: Preferences;
+  readonly preferences: Preferences;
   cookieJar: CookieJar;
   variables: {
+    request: Record<string, unknown>;
     collection: Record<string, unknown>;
     environment: Record<string, unknown>;
     process: {
@@ -375,9 +377,9 @@ export type RequestContext = {
     };
   };
 
-  callback: Callbacks;
-  timings: Timings;
-  debug: DebugLogger;
+  readonly callback: Callbacks;
+  readonly timings: Timings;
+  readonly debug: DebugLogger;
   timeline?: Timeline;
 
   httpRequest?: {

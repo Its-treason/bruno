@@ -24,6 +24,7 @@ export async function tests(context: RequestContext, folderData: FolderData[], r
       context.response!,
       responseBody,
       context.variables,
+      context.environmentName,
       true,
       context.collection.pathname,
       context.collection.brunoConfig.scripts,

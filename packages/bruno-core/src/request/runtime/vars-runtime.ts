@@ -10,32 +10,33 @@ export class VarsRuntime {
     request: RequestItem,
     envVariables: Record<string, unknown>,
     collectionVariables: Record<string, unknown>,
+    processEnvVars: Record<string, unknown>,
     collectionPath: string,
-    processEnvVars: Record<string, unknown>
+    environmentName?: string
   ) {
     const enabledVars = _.filter(vars, (v) => v.enabled);
     if (!enabledVars.length) {
-      return;
+      return {};
     }
 
-    const bru = new Bru(envVariables, collectionVariables, processEnvVars, collectionPath, 'the-env');
+    const bru = new Bru(envVariables, collectionVariables, {}, processEnvVars, collectionPath, environmentName);
     const req = new BrunoRequest(request, true);
 
     const combinedVariables = {
       ...envVariables,
       ...collectionVariables,
+      ...processEnvVars,
       bru,
       req
     };
 
-    _.each(enabledVars, (v) => {
-      const value = evaluateJsTemplateLiteral(v.value, combinedVariables);
-      bru.setVar(v.name, value);
+    const requestVariables: Record<string, unknown> = {};
+    _.each(enabledVars, (preReqVar) => {
+      const value = evaluateJsTemplateLiteral(preReqVar.value, combinedVariables);
+      requestVariables[preReqVar.name] = value;
     });
 
-    return {
-      collectionVariables
-    };
+    return requestVariables;
   }
 
   runPostResponseVars(
@@ -45,21 +46,31 @@ export class VarsRuntime {
     responseBody: any,
     envVariables: Record<string, unknown>,
     collectionVariables: Record<string, unknown>,
+    requestVariables: Record<string, unknown>,
+    processEnvVars: Record<string, unknown>,
     collectionPath: string,
-    processEnvVars: Record<string, unknown>
+    environmentName?: string
   ) {
     const enabledVars = _.filter(vars, (v) => v.enabled);
     if (!enabledVars.length) {
       return;
     }
 
-    const bru = new Bru(envVariables, collectionVariables, processEnvVars, collectionPath, 'the-env');
+    const bru = new Bru(
+      envVariables,
+      collectionVariables,
+      requestVariables,
+      processEnvVars,
+      collectionPath,
+      environmentName
+    );
     const req = new BrunoRequest(request, true);
     const res = createResponseParser(response, responseBody);
 
     const context = {
       ...envVariables,
       ...collectionVariables,
+      ...requestVariables,
       ...processEnvVars,
       bru,
       req,

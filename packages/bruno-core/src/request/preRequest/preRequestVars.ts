@@ -10,26 +10,20 @@ export function preRequestVars(context: RequestContext, folderData: FolderData[]
   }
 
   if (preRequestVars.length === 0) {
-    context.debug.log('Pre request variables skipped');
+    context.debug.log('No request variables');
     return;
   }
 
-  const before = structuredClone(context.variables.collection);
-
   const varsRuntime = new VarsRuntime();
-  // This will update context.variables.collection by reference inside the 'Bru' class
-  const varsResult = varsRuntime.runPreRequestVars(
+  context.variables.request = varsRuntime.runPreRequestVars(
     preRequestVars,
     context.requestItem,
     context.variables.environment,
     context.variables.collection,
+    context.variables.process,
     context.collection.pathname,
-    context.variables.process
+    context.environmentName
   );
 
-  if (varsResult) {
-    context.callback.updateScriptEnvironment(context, undefined, varsResult.collectionVariables);
-  }
-
-  context.debug.log('Pre request variables evaluated', { before, after: context.variables.collection });
+  context.debug.log('Request variables', context.variables.request);
 }

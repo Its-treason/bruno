@@ -150,6 +150,7 @@ export function interpolateRequest(context: RequestContext) {
   const combinedVars: Record<string, unknown> = {
     ...context.variables.environment,
     ...context.variables.collection,
+    ...context.variables.request,
     ...context.variables.process
   };
 

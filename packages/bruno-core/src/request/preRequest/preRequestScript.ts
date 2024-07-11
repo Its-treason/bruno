@@ -22,6 +22,7 @@ export async function preRequestScript(context: RequestContext, folderData: Fold
       null,
       null,
       context.variables,
+      context.environmentName,
       false,
       context.collection.pathname,
       context.collection.brunoConfig.scripts,

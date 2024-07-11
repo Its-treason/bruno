@@ -26,6 +26,7 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
       context.response!,
       responseBody,
       context.variables,
+      context.environmentName,
       false,
       context.collection.pathname,
       context.collection.brunoConfig.scripts,

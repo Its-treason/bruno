@@ -8,10 +8,20 @@ export class Bru {
   constructor(
     public envVariables: any,
     public collectionVariables: any,
+    public requestVariables: Record<string, unknown>,
     public processEnvVars: any,
     private collectionPath: string,
-    private environmentName: string
+    private environmentName?: string
   ) {}
+
+  interpolate(target: unknown): string | unknown {
+    return interpolate(target, {
+      ...this.envVariables,
+      ...this.collectionVariables,
+      ...this.requestVariables,
+      ...this.processEnvVars
+    });
+  }
 
   cwd() {
     return this.collectionPath;
@@ -73,6 +83,10 @@ export class Bru {
     }
 
     return this.collectionVariables[key];
+  }
+
+  getRequestVar(key: string): unknown {
+    return this.interpolate(this.requestVariables[key] as string);
   }
 
   setNextRequest(nextRequest: string) {

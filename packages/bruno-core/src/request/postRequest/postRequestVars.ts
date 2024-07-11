@@ -24,8 +24,10 @@ export function postRequestVars(context: RequestContext, folderData: FolderData[
     responseBody,
     context.variables.environment,
     context.variables.collection,
+    context.variables.request,
+    context.variables.process,
     context.collection.pathname,
-    context.variables.process
+    context.environmentName
   );
 
   if (varsResult) {
