@@ -39,6 +39,10 @@ export async function request(
     return acc;
   }, {});
 
+  if (requestItem.draft) {
+    requestItem.request = requestItem.draft.request;
+  }
+
   const context: RequestContext = {
     uid: nanoid(),
     dataDir,
