@@ -1,3 +1,4 @@
+import { Text } from '@mantine/core';
 import React, { useEffect, useRef } from 'react';
 
 function formatStopwatchTimestamp(timestamp: number) {
@@ -12,7 +13,7 @@ type StopWatchProps = {
 };
 
 export const StopWatch: React.FC<StopWatchProps> = ({ requestTimestamp }) => {
-  const ref = useRef<HTMLSpanElement>(null);
+  const ref = useRef<HTMLParagraphElement>(null);
 
   useEffect(() => {
     if (!ref.current) {
@@ -28,5 +29,5 @@ export const StopWatch: React.FC<StopWatchProps> = ({ requestTimestamp }) => {
     };
   }, [requestTimestamp]);
 
-  return <span ref={ref} />;
+  return <Text size="lg" ref={ref} />;
 };

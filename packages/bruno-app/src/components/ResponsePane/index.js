@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateResponsePaneTab } from 'providers/ReduxStore/slices/tabs';
 import QueryResult from './QueryResult';
-import Overlay from './Overlay';
+import { ResponseLoadingOverlay as Overlay } from './Overlay';
 import Placeholder from './Placeholder';
 import ResponseHeaders from './ResponseHeaders';
 import StatusCode from './StatusCode';
@@ -139,9 +139,9 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
       <section
         className={`flex flex-grow relative pl-3 pr-4 ${focusedTab.responsePaneTab === 'response' ? '' : 'mt-4'}`}
       >
-        {isLoading ? <Overlay item={item} collection={collection} /> : null}
         {getTabPanel(focusedTab.responsePaneTab)}
       </section>
+      {isLoading ? <Overlay item={item} collection={collection} /> : null}
     </StyledWrapper>
   );
 };

@@ -4,8 +4,8 @@
  */
 import { RequestItemWrapper } from './RequestItemWrapper';
 import classes from './Item.module.scss';
-import { RequestItemMethodIcon } from './RequestItemMethodIcon';
 import { CSSProperties } from 'react';
+import { RequestItemMethodIcon } from 'components/RequestItemMethodIcon';
 
 type RequestItemProps = {
   type: 'request';
