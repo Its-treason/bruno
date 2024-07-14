@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import classes from './RequestItemMethodIcon.module.css';
+import classes from './RequestMethodIcon.module.css';
 import {
   IconHttpDelete,
   IconHttpGet,
@@ -14,11 +14,11 @@ import {
   IconSend
 } from '@tabler/icons-react';
 
-type RequestItemMethodIconProps = {
+type RequestMethodIconProps = {
   method: string;
 };
 
-export const RequestItemMethodIcon: React.FC<RequestItemMethodIconProps> = ({ method }) => {
+export const RequestMethodIcon: React.FC<RequestMethodIconProps> = ({ method }) => {
   switch (method) {
     case 'GET':
       return <IconHttpGet className={classes.icon} color="var(--mantine-color-lime-7)" />;

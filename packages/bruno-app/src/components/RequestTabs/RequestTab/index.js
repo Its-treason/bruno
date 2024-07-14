@@ -1,21 +1,19 @@
-import React, { useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import get from 'lodash/get';
 import { closeTabs } from 'providers/ReduxStore/slices/tabs';
 import { saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import { deleteRequestDraft } from 'providers/ReduxStore/slices/collections';
 import { useTheme } from 'providers/Theme';
 import { useDispatch } from 'react-redux';
-import darkTheme from 'themes/dark';
-import lightTheme from 'themes/light';
 import { findItemInCollection } from 'utils/collections';
 import ConfirmRequestClose from './ConfirmRequestClose';
 import RequestTabNotFound from './RequestTabNotFound';
 import SpecialTab from './SpecialTab';
 import StyledWrapper from './StyledWrapper';
+import { RequestMethodIcon } from 'components/RequestMethodIcon';
 
 const RequestTab = ({ tab, collection, folderUid }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
   const [showConfirmClose, setShowConfirmClose] = useState(false);
 
   const handleCloseClick = (event) => {
@@ -67,42 +65,6 @@ const RequestTab = ({ tab, collection, folderUid }) => {
   }
 
   const method = item.draft ? get(item, 'draft.request.method') : get(item, 'request.method');
-  const getMethodColor = (method = '') => {
-    const theme = storedTheme === 'dark' ? darkTheme : lightTheme;
-    let color = '';
-    method = method.toLocaleLowerCase();
-    switch (method) {
-      case 'get': {
-        color = theme.request.methods.get;
-        break;
-      }
-      case 'post': {
-        color = theme.request.methods.post;
-        break;
-      }
-      case 'put': {
-        color = theme.request.methods.put;
-        break;
-      }
-      case 'delete': {
-        color = theme.request.methods.delete;
-        break;
-      }
-      case 'patch': {
-        color = theme.request.methods.patch;
-        break;
-      }
-      case 'options': {
-        color = theme.request.methods.options;
-        break;
-      }
-      case 'head': {
-        color = theme.request.methods.head;
-        break;
-      }
-    }
-    return color;
-  };
 
   return (
     <StyledWrapper className="flex items-center justify-between tab-container px-1">
@@ -141,7 +103,7 @@ const RequestTab = ({ tab, collection, folderUid }) => {
         />
       )}
       <div
-        className="flex items-baseline tab-label pl-2"
+        className="flex items-center tab-label pl-2"
         onMouseUp={(e) => {
           if (!item.draft) return handleMouseUp(e);
 
@@ -152,9 +114,7 @@ const RequestTab = ({ tab, collection, folderUid }) => {
           }
         }}
       >
-        <span className="tab-method uppercase" style={{ color: getMethodColor(method), fontSize: 12 }}>
-          {method}
-        </span>
+        <RequestMethodIcon method={method} />
         <span className="ml-1 tab-name" title={item.name}>
           {item.name}
         </span>
