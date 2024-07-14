@@ -208,31 +208,12 @@ export const moveCollectionItemToRootOfCollection = (collection, draggedItem) =>
 };
 
 export const getItemsToResequence = (parent, collection) => {
-  let itemsToResequence = [];
+  const target = parent ? parent : collection;
 
-  if (!parent) {
-    let index = 1;
-    each(collection.items, (item) => {
-      itemsToResequence.push({
-        pathname: item.pathname,
-        seq: index++
-      });
-    });
-    return itemsToResequence;
-  }
-
-  if (parent.items && parent.items.length) {
-    let index = 1;
-    each(parent.items, (item) => {
-      itemsToResequence.push({
-        pathname: item.pathname,
-        seq: index++
-      });
-    });
-    return itemsToResequence;
-  }
-
-  return itemsToResequence;
+  return target.items.map((item, index) => ({
+    pathname: item.pathname,
+    seq: index + 1
+  }));
 };
 
 export const transformCollectionToSaveToExportAsFile = (collection, options = {}) => {

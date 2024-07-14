@@ -577,13 +577,13 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid, operation
       return reject(new Error('Target item not found'));
     }
 
+    // dragged/targetItemParent can be undefined, if the parent is the collection root
     const draggedItemParent = findParentItemInCollection(collectionCopy, draggedItemUid);
     const targetItemParent = findParentItemInCollection(collectionCopy, targetItemUid);
     const sameParent = draggedItemParent === targetItemParent;
 
-    // file item dragged onto another file item and both are in the same folder
-    // this is also true when both items are at the root level
-    if ((isItemARequest(targetItem) || operation !== 'insert') && sameParent) {
+    // Item was moved next to an item in the same folder
+    if (operation !== 'insert' && sameParent) {
       moveCollectionItem(collectionCopy, draggedItem, targetItem, operation);
       const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
 
@@ -593,24 +593,8 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid, operation
         .catch((error) => reject(error));
     }
 
-    // file item dragged onto another file item which is at the root level
-    if ((isItemARequest(targetItem) || operation !== 'insert') && !targetItemParent) {
-      const draggedItemPathname = draggedItem.pathname;
-      moveCollectionItem(collectionCopy, draggedItem, targetItem, operation);
-      const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
-      const itemsToResequence2 = getItemsToResequence(targetItemParent, collectionCopy);
-
-      const type = isItemARequest(draggedItem) ? 'file' : 'folder';
-      return ipcRenderer
-        .invoke(`renderer:move-${type}-item`, draggedItemPathname, collectionCopy.pathname)
-        .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence))
-        .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence2))
-        .then(resolve)
-        .catch((error) => reject(error));
-    }
-
-    // file item dragged onto another file item and both are in different folders
-    if ((isItemARequest(targetItem) || operation !== 'insert') && !sameParent) {
+    // Item was moved next to an item in a different folder
+    if (operation !== 'insert') {
       const draggedItemPathname = draggedItem.pathname;
       // Folder dragged into its own child folder. This will cause an error
       if (isItemAFolder(draggedItem) && targetItem.pathname.startsWith(draggedItemPathname)) {
@@ -623,54 +607,50 @@ export const moveItem = (collectionUid, draggedItemUid, targetItemUid, operation
       const itemsToResequence2 = getItemsToResequence(targetItemParent, collectionCopy);
 
       const type = isItemARequest(draggedItem) ? 'file' : 'folder';
+      const targetPathname = targetItemParent ? targetItemParent.pathname : collectionCopy.pathname;
       return ipcRenderer
-        .invoke(`renderer:move-${type}-item`, draggedItemPathname, targetItemParent.pathname)
-        .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence))
-        .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence2))
+        .invoke(`renderer:move-${type}-item`, draggedItemPathname, targetPathname)
+        .then(() =>
+          Promise.all([
+            ipcRenderer.invoke('renderer:resequence-items', itemsToResequence),
+            ipcRenderer.invoke('renderer:resequence-items', itemsToResequence2)
+          ])
+        )
         .then(resolve)
         .catch((error) => reject(error));
     }
 
-    // file item dragged into another folder
-    if (isItemARequest(draggedItem) && isItemAFolder(targetItem) && draggedItemParent !== targetItem) {
-      const draggedItemPathname = draggedItem.pathname;
-      moveCollectionItem(collectionCopy, draggedItem, targetItem, operation);
-      const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
-      const itemsToResequence2 = getItemsToResequence(targetItem, collectionCopy);
+    // Operation is now always "insert". So an Item was dragged into a folder
 
-      const type = isItemARequest(draggedItem) ? 'file' : 'folder';
-      return ipcRenderer
-        .invoke(`renderer:move-${type}-item`, draggedItemPathname, targetItem.pathname)
-        .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence))
-        .then(() => ipcRenderer.invoke('renderer:resequence-items', itemsToResequence2))
-        .then(resolve)
-        .catch((error) => reject(error));
+    const draggedItemPathname = draggedItem.pathname;
+    // Check if folder dragged into its own child folder
+    if (isItemAFolder(draggedItem) && targetItem.pathname.startsWith(draggedItemPathname)) {
+      toast.error('Cannot move folder into a child of its own');
+      return;
     }
 
-    // folder dragged into a file which is at the root level
-    if (isItemAFolder(draggedItem) && isItemARequest(targetItem) && !targetItemParent) {
-      const draggedItemPathname = draggedItem.pathname;
-
-      return ipcRenderer
-        .invoke('renderer:move-folder-item', draggedItemPathname, collectionCopy.pathname)
-        .then(resolve)
-        .catch((error) => reject(error));
+    // Check if Item was dragged into its now parent.
+    if (draggedItemParent === targetItem) {
+      toast.error('Item is already in the folder');
+      return;
     }
 
-    // folder dragged into another folder
-    if (isItemAFolder(draggedItem) && isItemAFolder(targetItem) && draggedItemParent !== targetItem) {
-      const draggedItemPathname = draggedItem.pathname;
+    moveCollectionItem(collectionCopy, draggedItem, targetItem, operation);
+    const itemsToResequence = getItemsToResequence(draggedItemParent, collectionCopy);
+    const itemsToResequence2 = getItemsToResequence(targetItem, collectionCopy);
 
-      // Folder dragged into child folder.
-      if (targetItem.pathname.startsWith(draggedItemPathname)) {
-        return;
-      }
-
-      return ipcRenderer
-        .invoke('renderer:move-folder-item', draggedItemPathname, targetItem.pathname)
-        .then(resolve)
-        .catch((error) => reject(error));
-    }
+    const type = isItemARequest(draggedItem) ? 'file' : 'folder';
+    const targetPathname = targetItem ? targetItem.pathname : collectionCopy.pathname;
+    return ipcRenderer
+      .invoke(`renderer:move-${type}-item`, draggedItemPathname, targetPathname)
+      .then(() =>
+        Promise.all([
+          ipcRenderer.invoke('renderer:resequence-items', itemsToResequence),
+          ipcRenderer.invoke('renderer:resequence-items', itemsToResequence2)
+        ])
+      )
+      .then(resolve)
+      .catch((error) => reject(error));
   });
 };
 
