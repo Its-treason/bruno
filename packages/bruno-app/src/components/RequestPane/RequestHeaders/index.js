@@ -122,6 +122,7 @@ const RequestHeaders = ({ item, collection }) => {
                         allowNewlines={true}
                         allowLinebreaks={true}
                         collection={collection}
+                        item={item}
                       />
                     </td>
                     <td>

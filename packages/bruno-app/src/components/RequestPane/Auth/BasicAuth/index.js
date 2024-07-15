@@ -56,6 +56,7 @@ const BasicAuth = ({ item, collection }) => {
           onChange={(val) => handleUsernameChange(val)}
           onRun={handleRun}
           collection={collection}
+          item={item}
         />
       </div>
 
@@ -69,6 +70,7 @@ const BasicAuth = ({ item, collection }) => {
           onChange={(val) => handlePasswordChange(val)}
           onRun={handleRun}
           collection={collection}
+          item={item}
         />
       </div>
     </StyledWrapper>

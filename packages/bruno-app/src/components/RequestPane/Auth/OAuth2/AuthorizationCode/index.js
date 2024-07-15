@@ -93,6 +93,7 @@ const OAuth2AuthorizationCode = ({ item, collection }) => {
                 onRun={handleRun}
                 collection={collection}
                 singleLine
+                item={item}
               />
             </div>
           </div>

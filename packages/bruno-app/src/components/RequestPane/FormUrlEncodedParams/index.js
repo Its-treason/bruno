@@ -112,6 +112,7 @@ const FormUrlEncodedParams = ({ item, collection }) => {
                         allowLinebreaks={true}
                         onRun={handleRun}
                         collection={collection}
+                        item={item}
                       />
                     </td>
                     <td>
