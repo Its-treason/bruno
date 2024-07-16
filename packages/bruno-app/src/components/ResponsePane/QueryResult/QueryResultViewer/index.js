@@ -2,8 +2,6 @@ import CodeEditor from 'components/CodeEditor';
 import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendRequest } from 'providers/ReduxStore/slices/collections/actions';
-import { Document, Page } from 'react-pdf';
-import React, { useState } from 'react';
 import 'pdfjs-dist/build/pdf.worker';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
