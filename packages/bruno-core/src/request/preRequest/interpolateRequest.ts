@@ -44,17 +44,17 @@ function interpolateRequestItem(context: RequestContext, i: InterpolationShortha
   }
   const urlPathname = urlParsed.pathname
     .split('/')
-    .filter((path) => path !== '')
     .map((path) => {
       // Doesn't start with a ":" so its not a path parameter
       if (path[0] !== ':') {
-        return '/' + path;
+        return path;
       }
+      // Remove ":"
       const name = path.slice(1);
       const existingPathParam = request.params.find((param) => param.type === 'path' && param.name === name);
-      return existingPathParam ? '/' + i(existingPathParam.value, `Path param "${existingPathParam.name}"`) : '';
+      return existingPathParam ? i(existingPathParam.value, `Path param "${existingPathParam.name}"`) : '';
     })
-    .join('');
+    .join('/');
   urlParsed.pathname = urlPathname;
   request.url = urlParsed.href;
 
