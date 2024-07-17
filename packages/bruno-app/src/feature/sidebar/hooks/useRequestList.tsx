@@ -31,7 +31,7 @@ export const useRequestList = (): RequestListItem[] => {
       indent: number,
       parentUid: string | null,
       filter: string | null
-    ) => {
+    ): RequestListItem[] => {
       const sorted = [...requestItems].sort((a, b) => {
         if (a.seq === undefined && b.seq !== undefined) {
           return -1;
@@ -42,14 +42,16 @@ export const useRequestList = (): RequestListItem[] => {
         }
         return a.seq < b.seq ? -1 : 1;
       });
+
+      const newItems = [];
       for (const requestItem of sorted) {
         switch (requestItem.type) {
           case 'http-request':
           case 'graphql-request':
-            if (collectionFilter && !requestItem.name.includes(collectionFilter)) {
+            if (filter && !requestItem.name.toLowerCase().includes(filter)) {
               continue;
             }
-            items.push({
+            newItems.push({
               type: 'request',
               collectionUid,
               indent,
@@ -62,21 +64,30 @@ export const useRequestList = (): RequestListItem[] => {
             break;
           case 'folder':
             const collapsed = filter === null ? requestItem.collapsed : false;
-            items.push({
-              type: 'folder',
-              collectionUid,
-              indent,
-              name: requestItem.name,
-              uid: requestItem.uid,
-              parentUid,
-              collapsed
-            });
+
+            let folderItems = [];
             if (!collapsed) {
-              insertItemsRecursive(requestItem.items, collectionUid, indent + 1, requestItem.uid, filter);
+              folderItems = insertItemsRecursive(requestItem.items, collectionUid, indent + 1, requestItem.uid, filter);
             }
+
+            if (!filter || folderItems.length > 0) {
+              newItems.push({
+                type: 'folder',
+                collectionUid,
+                indent,
+                name: requestItem.name,
+                uid: requestItem.uid,
+                parentUid,
+                collapsed
+              });
+              newItems.push(...folderItems);
+            }
+
             break;
         }
       }
+
+      return newItems;
     };
 
     for (const collection of collections) {
@@ -87,9 +98,9 @@ export const useRequestList = (): RequestListItem[] => {
         uid: collection.uid
       });
 
-      const filter = collectionFilter.trim().length > 0 ? collectionFilter : null;
+      const filter = collectionFilter.trim().length > 0 ? collectionFilter.toLowerCase() : null;
       if (!collection.collapsed || filter !== null) {
-        insertItemsRecursive(collection.items, collection.uid, 1, null, filter);
+        items.push(...insertItemsRecursive(collection.items, collection.uid, 1, null, filter));
       }
     }
 
