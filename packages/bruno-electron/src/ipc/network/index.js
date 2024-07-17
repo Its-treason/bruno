@@ -83,7 +83,7 @@ const configureRequest = async (
   collectionUid,
   request,
   envVars,
-  collectionVariables,
+  runtimeVariables,
   processEnvVars,
   collectionPath
 ) => {
@@ -114,7 +114,7 @@ const configureRequest = async (
   const brunoConfig = getBrunoConfig(collectionUid);
   const interpolationOptions = {
     envVars,
-    collectionVariables,
+    runtimeVariables,
     processEnvVars
   };
 
@@ -207,7 +207,7 @@ const configureRequest = async (
     let requestCopy = cloneDeep(request);
     switch (request?.oauth2?.grantType) {
       case 'authorization_code':
-        interpolateVars(requestCopy, envVars, collectionVariables, processEnvVars);
+        interpolateVars(requestCopy, envVars, runtimeVariables, processEnvVars);
         const { data: authorizationCodeData, url: authorizationCodeAccessTokenUrl } =
           await resolveOAuth2AuthorizationCodeAccessToken(requestCopy, collectionUid);
         request.method = 'POST';
@@ -216,7 +216,7 @@ const configureRequest = async (
         request.url = authorizationCodeAccessTokenUrl;
         break;
       case 'client_credentials':
-        interpolateVars(requestCopy, envVars, collectionVariables, processEnvVars);
+        interpolateVars(requestCopy, envVars, runtimeVariables, processEnvVars);
         const { data: clientCredentialsData, url: clientCredentialsAccessTokenUrl } =
           await transformClientCredentialsRequest(requestCopy);
         request.method = 'POST';
@@ -225,7 +225,7 @@ const configureRequest = async (
         request.url = clientCredentialsAccessTokenUrl;
         break;
       case 'password':
-        interpolateVars(requestCopy, envVars, collectionVariables, processEnvVars);
+        interpolateVars(requestCopy, envVars, runtimeVariables, processEnvVars);
         const { data: passwordData, url: passwordAccessTokenUrl } = await transformPasswordCredentialsRequest(
           requestCopy
         );
@@ -305,7 +305,7 @@ const registerNetworkIpc = (mainWindow) => {
     collectionPath,
     collectionRoot,
     collectionUid,
-    collectionVariables,
+    runtimeVariables,
     processEnvVars,
     scriptingConfig
   ) => {
@@ -317,7 +317,7 @@ const registerNetworkIpc = (mainWindow) => {
         preRequestVars,
         request,
         envVars,
-        collectionVariables,
+        runtimeVariables,
         collectionPath,
         processEnvVars
       );
@@ -331,7 +331,7 @@ const registerNetworkIpc = (mainWindow) => {
       null,
       {
         envVariables: envVars,
-        collectionVariables,
+        runtimeVariables,
         processEnvVars
       },
       false,
@@ -342,13 +342,13 @@ const registerNetworkIpc = (mainWindow) => {
 
     mainWindow.webContents.send('main:script-environment-update', {
       envVariables: scriptResult.envVariables,
-      collectionVariables: scriptResult.collectionVariables,
+      runtimeVariables: scriptResult.runtimeVariables,
       requestUid,
       collectionUid
     });
 
     // interpolate variables inside request
-    interpolateVars(request, envVars, collectionVariables, processEnvVars);
+    interpolateVars(request, envVars, runtimeVariables, processEnvVars);
 
     // if this is a graphql request, parse the variables, only after interpolation
     // https://github.com/usebruno/bruno/issues/884
@@ -372,7 +372,7 @@ const registerNetworkIpc = (mainWindow) => {
     collectionPath,
     collectionRoot,
     collectionUid,
-    collectionVariables,
+    runtimeVariables,
     processEnvVars,
     scriptingConfig
   ) => {
@@ -385,7 +385,7 @@ const registerNetworkIpc = (mainWindow) => {
         request,
         response,
         envVars,
-        collectionVariables,
+        runtimeVariables,
         collectionPath,
         processEnvVars
       );
@@ -393,7 +393,7 @@ const registerNetworkIpc = (mainWindow) => {
       if (result) {
         mainWindow.webContents.send('main:script-environment-update', {
           envVariables: result.envVariables,
-          collectionVariables: result.collectionVariables,
+          runtimeVariables: result.runtimeVariables,
           requestUid,
           collectionUid
         });
@@ -415,7 +415,7 @@ const registerNetworkIpc = (mainWindow) => {
       response,
       {
         envVariables: envVars,
-        collectionVariables,
+        runtimeVariables,
         processEnvVars
       },
       false,
@@ -426,7 +426,7 @@ const registerNetworkIpc = (mainWindow) => {
 
     mainWindow.webContents.send('main:script-environment-update', {
       envVariables: scriptResult.envVariables,
-      collectionVariables: scriptResult.collectionVariables,
+      runtimeVariables: scriptResult.runtimeVariables,
       requestUid,
       collectionUid
     });
@@ -631,7 +631,7 @@ const registerNetworkIpc = (mainWindow) => {
   // handler for sending http request
   ipcMain.handle(
     'send-http-request',
-    async (event, item, collection, environment, collectionVariables, useNewRequest) => {
+    async (event, item, collection, environment, runtimeVariables, useNewRequest) => {
       if (useNewRequest) {
         return await executeNewRequest(event, item, collection, environment);
       }
@@ -668,7 +668,7 @@ const registerNetworkIpc = (mainWindow) => {
           collectionPath,
           collectionRoot,
           collectionUid,
-          collectionVariables,
+          runtimeVariables,
           processEnvVars,
           scriptingConfig
         );
@@ -692,7 +692,7 @@ const registerNetworkIpc = (mainWindow) => {
           collectionUid,
           request,
           envVars,
-          collectionVariables,
+          runtimeVariables,
           processEnvVars,
           collectionPath
         );
@@ -765,7 +765,7 @@ const registerNetworkIpc = (mainWindow) => {
           collectionPath,
           collectionRoot,
           collectionUid,
-          collectionVariables,
+          runtimeVariables,
           processEnvVars
         );
 
@@ -778,7 +778,7 @@ const registerNetworkIpc = (mainWindow) => {
             request,
             response,
             envVars,
-            collectionVariables,
+            runtimeVariables,
             collectionPath
           );
 
@@ -802,7 +802,7 @@ const registerNetworkIpc = (mainWindow) => {
           response,
           {
             envVariables: envVars,
-            collectionVariables,
+            runtimeVariables,
             processEnvVars
           },
           true,
@@ -821,7 +821,7 @@ const registerNetworkIpc = (mainWindow) => {
 
         mainWindow.webContents.send('main:script-environment-update', {
           envVariables: testResults.envVariables,
-          collectionVariables: testResults.collectionVariables,
+          runtimeVariables: testResults.runtimeVariables,
           requestUid,
           collectionUid
         });
@@ -841,7 +841,7 @@ const registerNetworkIpc = (mainWindow) => {
     }
   );
 
-  ipcMain.handle('send-collection-oauth2-request', async (event, collection, environment, collectionVariables) => {
+  ipcMain.handle('send-collection-oauth2-request', async (event, collection, environment, runtimeVariables) => {
     try {
       const collectionUid = collection.uid;
       const collectionPath = collection.pathname;
@@ -862,17 +862,17 @@ const registerNetworkIpc = (mainWindow) => {
         collectionPath,
         collectionRoot,
         collectionUid,
-        collectionVariables,
+        runtimeVariables,
         processEnvVars,
         scriptingConfig
       );
 
-      interpolateVars(request, envVars, collection.collectionVariables, processEnvVars);
+      interpolateVars(request, envVars, collection.runtimeVariables, processEnvVars);
       const axiosInstance = await configureRequest(
         collection.uid,
         request,
         envVars,
-        collection.collectionVariables,
+        collection.runtimeVariables,
         processEnvVars,
         collectionPath
       );
@@ -898,7 +898,7 @@ const registerNetworkIpc = (mainWindow) => {
         collectionPath,
         collectionRoot,
         collectionUid,
-        collectionVariables,
+        runtimeVariables,
         processEnvVars,
         scriptingConfig
       );
@@ -955,7 +955,7 @@ const registerNetworkIpc = (mainWindow) => {
       const requestUid = uuid();
       const collectionPath = collection.pathname;
       const collectionUid = collection.uid;
-      const collectionVariables = collection.collectionVariables;
+      const runtimeVariables = collection.runtimeVariables;
       const processEnvVars = getProcessEnvVars(collectionUid);
       const brunoConfig = getBrunoConfig(collection.uid);
       const scriptingConfig = get(brunoConfig, 'scripts', {});
@@ -967,17 +967,17 @@ const registerNetworkIpc = (mainWindow) => {
         collectionPath,
         collectionRoot,
         collectionUid,
-        collectionVariables,
+        runtimeVariables,
         processEnvVars,
         scriptingConfig
       );
 
-      interpolateVars(request, envVars, collection.collectionVariables, processEnvVars);
+      interpolateVars(request, envVars, collection.runtimeVariables, processEnvVars);
       const axiosInstance = await configureRequest(
         collection.uid,
         request,
         envVars,
-        collection.collectionVariables,
+        collection.runtimeVariables,
         processEnvVars,
         collectionPath
       );
@@ -991,7 +991,7 @@ const registerNetworkIpc = (mainWindow) => {
         collectionPath,
         collectionRoot,
         collectionUid,
-        collectionVariables,
+        runtimeVariables,
         processEnvVars,
         scriptingConfig
       );
@@ -1018,7 +1018,7 @@ const registerNetworkIpc = (mainWindow) => {
 
   ipcMain.handle(
     'renderer:run-collection-folder',
-    async (event, folder, collection, environment, collectionVariables, recursive, newRequestMethod) => {
+    async (event, folder, collection, environment, runtimeVariables, recursive, newRequestMethod) => {
       if (newRequestMethod) {
         return await executeNewFolder(folder, collection, environment, recursive);
       }
@@ -1105,7 +1105,7 @@ const registerNetworkIpc = (mainWindow) => {
               collectionPath,
               collectionRoot,
               collectionUid,
-              collectionVariables,
+              runtimeVariables,
               processEnvVars,
               scriptingConfig
             );
@@ -1133,7 +1133,7 @@ const registerNetworkIpc = (mainWindow) => {
               collectionUid,
               request,
               envVars,
-              collectionVariables,
+              runtimeVariables,
               processEnvVars,
               collectionPath
             );
@@ -1206,7 +1206,7 @@ const registerNetworkIpc = (mainWindow) => {
               collectionPath,
               collectionRoot,
               collectionUid,
-              collectionVariables,
+              runtimeVariables,
               processEnvVars,
               scriptingConfig
             );
@@ -1224,7 +1224,7 @@ const registerNetworkIpc = (mainWindow) => {
                 request,
                 response,
                 envVars,
-                collectionVariables,
+                runtimeVariables,
                 processEnvVars
               );
 
@@ -1247,7 +1247,7 @@ const registerNetworkIpc = (mainWindow) => {
               response,
               {
                 envVariables: envVars,
-                collectionVariables,
+                runtimeVariables,
                 processEnvVars
               },
               true,
@@ -1266,7 +1266,7 @@ const registerNetworkIpc = (mainWindow) => {
 
             mainWindow.webContents.send('main:script-environment-update', {
               envVariables: testResults.envVariables,
-              collectionVariables: testResults.collectionVariables,
+              runtimeVariables: testResults.runtimeVariables,
               collectionUid
             });
             re / NextRequestOnTestScript;

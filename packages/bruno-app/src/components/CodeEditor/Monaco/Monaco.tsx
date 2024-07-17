@@ -106,7 +106,7 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
       const allVariables = getAllVariables(collection);
       setMonacoVariables(monaco, allVariables, languages[mode] ?? 'plaintext');
     }
-  }, [collection?.collectionVariables, collection?.activeEnvironmentUid, withVariables, mode]);
+  }, [collection?.runtimeVariables, collection?.activeEnvironmentUid, withVariables, mode]);
 
   return (
     <Editor

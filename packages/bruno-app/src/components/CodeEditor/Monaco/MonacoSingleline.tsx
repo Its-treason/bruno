@@ -89,7 +89,7 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
     if (allVariables && withVariables && monaco) {
       setMonacoVariables(monaco, allVariables, 'plaintext');
     }
-  }, [collection.collectionVariables, collection.activeEnvironmentUid, withVariables, monaco]);
+  }, [collection.runtimeVariables, collection.activeEnvironmentUid, withVariables, monaco]);
 
   return (
     <Paper className={asInput ? classes.paper : classes.paperHidden} data-focused={focused}>

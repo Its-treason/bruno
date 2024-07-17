@@ -9,7 +9,7 @@ export class VarsRuntime {
     vars: RequestVariable[],
     request: RequestItem,
     envVariables: Record<string, unknown>,
-    collectionVariables: Record<string, unknown>,
+    runtimeVariables: Record<string, unknown>,
     processEnvVars: Record<string, unknown>,
     collectionPath: string,
     environmentName?: string
@@ -19,12 +19,12 @@ export class VarsRuntime {
       return {};
     }
 
-    const bru = new Bru(envVariables, collectionVariables, {}, processEnvVars, collectionPath, environmentName);
+    const bru = new Bru(envVariables, runtimeVariables, {}, processEnvVars, collectionPath, environmentName);
     const req = new BrunoRequest(request, true);
 
     const combinedVariables = {
       ...envVariables,
-      ...collectionVariables,
+      ...runtimeVariables,
       ...processEnvVars,
       bru,
       req
@@ -45,7 +45,7 @@ export class VarsRuntime {
     response: Response,
     responseBody: any,
     envVariables: Record<string, unknown>,
-    collectionVariables: Record<string, unknown>,
+    runtimeVariables: Record<string, unknown>,
     requestVariables: Record<string, unknown>,
     processEnvVars: Record<string, unknown>,
     collectionPath: string,
@@ -58,7 +58,7 @@ export class VarsRuntime {
 
     const bru = new Bru(
       envVariables,
-      collectionVariables,
+      runtimeVariables,
       requestVariables,
       processEnvVars,
       collectionPath,
@@ -69,7 +69,7 @@ export class VarsRuntime {
 
     const context = {
       ...envVariables,
-      ...collectionVariables,
+      ...runtimeVariables,
       ...requestVariables,
       ...processEnvVars,
       bru,
@@ -83,7 +83,7 @@ export class VarsRuntime {
     });
 
     return {
-      collectionVariables
+      runtimeVariables
     };
   }
 }

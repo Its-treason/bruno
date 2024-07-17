@@ -7,7 +7,7 @@ import { isItemARequest } from 'utils/collections';
 import { collectionSchema } from '@usebruno/schema';
 import { BrunoError } from 'utils/common/error';
 
-const importCollectionSchema = collectionSchema.omit({ pathname: true, collectionVariables: true });
+const importCollectionSchema = collectionSchema.omit({ pathname: true, runtimeVariables: true });
 export const validateSchema = (collection = {}) => {
   const parseResult = importCollectionSchema.safeParse(collection);
   if (parseResult.success) {

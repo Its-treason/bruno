@@ -20,7 +20,7 @@ const dynamicRequire = require;
  * @param {object|null} response
  * @param {{
  *   envVariables: Record<string, unknown>,
- *   collectionVariables: Record<string, unknown>,
+ *   runtimeVariables: Record<string, unknown>,
  *   processEnvVars: Record<string, unknown>,
  * }} variables
  * @param {boolean} useTests
@@ -29,7 +29,7 @@ const dynamicRequire = require;
  * @param {(type: string, context: any) => void} onConsoleLog
  *
  * @returns {Promise<{
- *   collectionVariables: Record<string, unknown>,
+ *   runtimeVariables: Record<string, unknown>,
  *   envVariables: Record<string, unknown>,
  *   nextRequestName: string,
  *   results: array|null,
@@ -65,7 +65,7 @@ async function runScript(
 
   return {
     envVariables: cleanJson(scriptContext.bru.envVariables),
-    collectionVariables: cleanJson(scriptContext.bru.collectionVariables),
+    runtimeVariables: cleanJson(scriptContext.bru.runtimeVariables),
     nextRequestName: scriptContext.bru.nextRequest,
     results: scriptContext.__brunoTestResults ? cleanJson(scriptContext.__brunoTestResults.getResults()) : null
   };
@@ -88,7 +88,7 @@ async function runScript(
  * @param {object|null} response
  * @param {{
  *   envVariables: Record<string, unknown>,
- *   collectionVariables: Record<string, unknown>,
+ *   runtimeVariables: Record<string, unknown>,
  *   processEnvVars: Record<string, unknown>,
  * }} variables
  * @param {boolean} useTests
@@ -104,7 +104,7 @@ function buildScriptContext(request, response, variables, useTests, collectionPa
     console: createCustomConsole(onConsoleLog),
     req: new BrunoRequest(request),
     res: null,
-    bru: new Bru(variables.envVariables, variables.collectionVariables, variables.processEnvVars, collectionPath),
+    bru: new Bru(variables.envVariables, variables.runtimeVariables, variables.processEnvVars, collectionPath),
     expect: null,
     assert: null,
     __brunoTestResults: null,

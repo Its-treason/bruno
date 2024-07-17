@@ -170,7 +170,7 @@ const evaluateRhsOperand = (rhsOperand: string, operator: string, context: any) 
   }
 
   const combinedVariables = {
-    ...context.bru.collectionVariables,
+    ...context.bru.runtimeVariables,
     ...context.bru.envVariables,
     ...context.bru.processEnvVars
   };
@@ -212,7 +212,7 @@ export class AssertRuntime {
     response: any,
     responseBody: any,
     envVariables: Record<string, unknown>,
-    collectionVariables: Record<string, unknown>,
+    runtimeVariables: Record<string, unknown>,
     collectionPath: string
   ) {
     const enabledAssertions = _.filter(assertions, (a) => a.enabled);
@@ -220,7 +220,7 @@ export class AssertRuntime {
       return [];
     }
 
-    const bru = new Bru(envVariables, collectionVariables, {}, collectionPath, 'the-env');
+    const bru = new Bru(envVariables, runtimeVariables, {}, collectionPath, 'the-env');
     const req = new BrunoRequest(request, true);
     const res = createResponseParser(response, responseBody);
 
@@ -232,7 +232,7 @@ export class AssertRuntime {
 
     const context = {
       ...envVariables,
-      ...collectionVariables,
+      ...runtimeVariables,
       ...bruContext
     };
 

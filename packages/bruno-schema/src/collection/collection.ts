@@ -59,7 +59,7 @@ export const collectionSchema = z.object({
   activeEnvironmentUid: z.string().uuid().nullable(),
   environments: z.array(environmentSchema),
   pathname: z.string(),
-  collectionVariables: z.record(z.unknown()),
+  runtimeVariables: z.record(z.unknown()),
   processEnvVariables: z.record(z.unknown()).optional(),
   root: z
     .object({

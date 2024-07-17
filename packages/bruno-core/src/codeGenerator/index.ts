@@ -48,7 +48,7 @@ export async function generateCode(
         }
       },
       environment: environmentVariableRecord,
-      collection: collection.collectionVariables
+      collection: collection.runtimeVariables
     },
 
     callback: new Callbacks({}),

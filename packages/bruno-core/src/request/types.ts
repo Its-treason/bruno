@@ -225,7 +225,7 @@ export type FolderItem = {
   };
 };
 
-export type CollectionVariables = Record<string, unknown>;
+export type RuntimeVariables = Record<string, unknown>;
 
 export type EnvironmentVariable = {
   name: string;
@@ -251,7 +251,7 @@ export type Collection = {
   // Full path to collection folder
   pathname: string;
   items: (RequestItem | FolderItem)[];
-  collectionVariables: CollectionVariables;
+  runtimeVariables: RuntimeVariables;
   // Config json
   brunoConfig: BrunoConfig;
   settingsSelectedTab: string;

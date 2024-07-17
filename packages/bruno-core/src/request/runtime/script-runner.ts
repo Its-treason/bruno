@@ -68,7 +68,7 @@ export async function runScript(
 
   return {
     envVariables: cleanJson(scriptContext.bru.envVariables),
-    collectionVariables: cleanJson(scriptContext.bru.collectionVariables),
+    runtimeVariables: cleanJson(scriptContext.bru.runtimeVariables),
     nextRequestName: scriptContext.bru._nextRequest,
     results: scriptContext.brunoTestResults ? cleanJson(scriptContext.brunoTestResults.getResults()) : null
   };

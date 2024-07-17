@@ -70,10 +70,10 @@ export class Callbacks {
     });
   }
 
-  updateScriptEnvironment(context: RequestContext, envVariables: any, collectionVariables: any) {
+  updateScriptEnvironment(context: RequestContext, envVariables: any, runtimeVariables: any) {
     this.send('updateScriptEnvironment', context, {
       envVariables,
-      collectionVariables,
+      runtimeVariables,
       requestUid: context.requestItem.uid,
       collectionUid: context.collection.uid
     });

@@ -31,7 +31,7 @@ export function postRequestVars(context: RequestContext, folderData: FolderData[
   );
 
   if (varsResult) {
-    context.callback.updateScriptEnvironment(context, undefined, varsResult.collectionVariables);
+    context.callback.updateScriptEnvironment(context, undefined, varsResult.runtimeVariables);
   }
 
   context.debug.log('Post request variables evaluated', { before, after: context.variables.collection });

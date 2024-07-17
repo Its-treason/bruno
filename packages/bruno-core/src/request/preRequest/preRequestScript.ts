@@ -36,13 +36,13 @@ export async function preRequestScript(context: RequestContext, folderData: Fold
     context.timings.stopMeasure('preScript');
   }
 
-  context.callback.updateScriptEnvironment(context, scriptResult.envVariables, scriptResult.collectionVariables);
+  context.callback.updateScriptEnvironment(context, scriptResult.envVariables, scriptResult.runtimeVariables);
 
   context.debug.log('Pre request script finished', scriptResult);
 
   context.nextRequestName = scriptResult.nextRequestName;
   // The script will use `cleanJson` to remove any weird things before sending to the mainWindow
   // This destroys the references, so we update variables here manually
-  context.variables.collection = scriptResult.collectionVariables;
+  context.variables.collection = scriptResult.runtimeVariables;
   context.variables.environment = scriptResult.envVariables;
 }

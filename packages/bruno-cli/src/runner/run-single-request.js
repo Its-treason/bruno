@@ -25,7 +25,7 @@ const runSingleRequest = async function (
   filename,
   bruJson,
   collectionPath,
-  collectionVariables,
+  runtimeVariables,
   envVariables,
   processEnvVars,
   brunoConfig,
@@ -47,7 +47,7 @@ const runSingleRequest = async function (
         preRequestVars,
         request,
         envVariables,
-        collectionVariables,
+        runtimeVariables,
         collectionPath,
         processEnvVars
       );
@@ -60,7 +60,7 @@ const runSingleRequest = async function (
     ]).join(os.EOL);
     const variables = {
       envVariables,
-      collectionVariables,
+      runtimeVariables,
       processEnvVars
     };
     const requestScriptResult = await runScript(
@@ -78,7 +78,7 @@ const runSingleRequest = async function (
     }
 
     // interpolate variables inside request
-    interpolateVars(request, envVariables, collectionVariables, processEnvVars);
+    interpolateVars(request, envVariables, runtimeVariables, processEnvVars);
 
     if (!protocolRegex.test(request.url)) {
       request.url = `http://${request.url}`;
@@ -107,7 +107,7 @@ const runSingleRequest = async function (
 
     const interpolationOptions = {
       envVars: envVariables,
-      collectionVariables,
+      runtimeVariables,
       processEnvVars
     };
 
@@ -269,7 +269,7 @@ const runSingleRequest = async function (
         request,
         response,
         envVariables,
-        collectionVariables,
+        runtimeVariables,
         collectionPath,
         processEnvVars
       );
@@ -286,7 +286,7 @@ const runSingleRequest = async function (
       response,
       {
         envVariables,
-        collectionVariables,
+        runtimeVariables,
         processEnvVars
       },
       false,
@@ -308,7 +308,7 @@ const runSingleRequest = async function (
         request,
         response,
         envVariables,
-        collectionVariables,
+        runtimeVariables,
         processEnvVars
       );
 
@@ -330,7 +330,7 @@ const runSingleRequest = async function (
       null,
       {
         envVariables,
-        collectionVariables,
+        runtimeVariables,
         processEnvVars
       },
       true,

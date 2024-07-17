@@ -7,7 +7,7 @@ export class Bru {
 
   constructor(
     public envVariables: any,
-    public collectionVariables: any,
+    public runtimeVariables: any,
     public requestVariables: Record<string, unknown>,
     public processEnvVars: any,
     private collectionPath: string,
@@ -17,7 +17,7 @@ export class Bru {
   interpolate(target: unknown): string | unknown {
     return interpolate(target, {
       ...this.envVariables,
-      ...this.collectionVariables,
+      ...this.runtimeVariables,
       ...this.requestVariables,
       ...this.processEnvVars
     });
@@ -52,7 +52,7 @@ export class Bru {
   }
 
   hasVar(key: string) {
-    return Object.hasOwn(this.collectionVariables, key);
+    return Object.hasOwn(this.runtimeVariables, key);
   }
 
   setVar(key: string, value: unknown) {
@@ -67,11 +67,11 @@ export class Bru {
       );
     }
 
-    this.collectionVariables[key] = value;
+    this.runtimeVariables[key] = value;
   }
 
   deleteVar(key: string) {
-    delete this.collectionVariables[key];
+    delete this.runtimeVariables[key];
   }
 
   getVar(key: string): unknown {
@@ -82,7 +82,7 @@ export class Bru {
       );
     }
 
-    return this.collectionVariables[key];
+    return this.runtimeVariables[key];
   }
 
   getRequestVar(key: string): unknown {

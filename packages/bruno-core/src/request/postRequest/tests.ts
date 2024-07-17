@@ -44,7 +44,7 @@ export async function tests(context: RequestContext, folderData: FolderData[], r
 
   context.callback.testResults(context, scriptResult.results);
   context.callback.folderTestResults(context, scriptResult.results);
-  context.callback.updateScriptEnvironment(context, scriptResult.envVariables, scriptResult.collectionVariables);
+  context.callback.updateScriptEnvironment(context, scriptResult.envVariables, scriptResult.runtimeVariables);
 
   context.debug.log('Test script finished', scriptResult);
 }

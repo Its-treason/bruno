@@ -63,7 +63,7 @@ export async function request(
         }
       },
       environment: environmentVariableRecord,
-      collection: collection.collectionVariables
+      collection: collection.runtimeVariables
     },
 
     callback: new Callbacks(rawCallbacks),

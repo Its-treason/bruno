@@ -40,13 +40,13 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
     context.timings.stopMeasure('postScript');
   }
 
-  context.callback.updateScriptEnvironment(context, scriptResult.envVariables, scriptResult.collectionVariables);
+  context.callback.updateScriptEnvironment(context, scriptResult.envVariables, scriptResult.runtimeVariables);
 
   context.debug.log('Post request script finished', scriptResult);
 
   context.nextRequestName = scriptResult.nextRequestName;
   // The script will use `cleanJson` to remove any weird things before sending to the mainWindow
   // This destroys the references, so we update variables here manually
-  context.variables.collection = scriptResult.collectionVariables;
+  context.variables.collection = scriptResult.runtimeVariables;
   context.variables.environment = scriptResult.envVariables;
 }
