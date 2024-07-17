@@ -29,7 +29,10 @@ export const CloneItemModal: React.FC<CloneItemModalProps> = ({ opened, onClose,
   const dispatch = useDispatch();
 
   const cloneForm = useForm<CloneCollectionFormSchema>({
-    validate: zodResolver(cloneItemCollectionSchema)
+    validate: zodResolver(cloneItemCollectionSchema),
+    initialValues: {
+      name: ''
+    }
   });
   useEffect(() => {
     cloneForm.setInitialValues({

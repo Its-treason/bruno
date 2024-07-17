@@ -40,10 +40,10 @@ const LogList: React.FC<{ logs: Logs }> = ({ logs }) => {
   return logs.map(({ title, date, data }, index) => (
     <div key={`${title}-${index}`}>
       <Title order={4}>{title}</Title>
-      <Text size={'xs'} c={'dimmed'} mb={'xs'}>
+      <Text size={'xs'} c={'dimmed'} mb={data ? 'xs' : 0}>
         Occurred on {new Date(date).toLocaleTimeString()}
       </Text>
-      <Inspector data={data} table={false} theme={reactInspectorTheme} />
+      {data ? <Inspector data={data} table={false} theme={reactInspectorTheme} /> : null}
     </div>
   ));
 };

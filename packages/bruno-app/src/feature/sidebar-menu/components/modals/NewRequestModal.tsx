@@ -93,14 +93,20 @@ export const NewRequestModal: React.FC<NewRequestModalProps> = ({
   });
 
   const newRequestForm = useForm<NewFolderFormSchema>({
-    validate: zodResolver(newRequestFormSchema)
+    validate: zodResolver(newRequestFormSchema),
+    initialValues: {
+      name: '',
+      method: 'GET',
+      type: brunoConfig?.presets?.requestType === 'graphql' ? 'graphql-request' : 'http-request',
+      url: brunoConfig?.presets?.requestUrl ?? ''
+    }
   });
   useEffect(() => {
     newRequestForm.setInitialValues({
       name: '',
       method: 'GET',
       type: brunoConfig?.presets?.requestType === 'graphql' ? 'graphql-request' : 'http-request',
-      url: brunoConfig?.presets?.requestUrl
+      url: brunoConfig?.presets?.requestUrl ?? ''
     });
     newRequestForm.reset();
   }, [collectionUid]);

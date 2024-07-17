@@ -11,14 +11,14 @@ type MethodSelectorProps = Omit<SelectProps, 'data' | 'styles'> & {
   withBorder?: boolean;
 };
 
-export const MethodSelector: React.FC<MethodSelectorProps> = (props) => {
+export const MethodSelector: React.FC<MethodSelectorProps> = ({ withBorder, ...props }) => {
   return (
     <Select
       {...props}
       data={defaultMethod}
       styles={{
         input: {
-          border: props.withBorder ? undefined : 'none'
+          border: withBorder ? undefined : 'none'
         }
       }}
       allowDeselect={false}

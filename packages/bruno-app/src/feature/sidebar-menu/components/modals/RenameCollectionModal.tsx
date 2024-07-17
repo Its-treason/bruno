@@ -38,7 +38,10 @@ export const RenameCollectionModal: React.FC<RenameCollectionModalProps> = ({ op
   });
 
   const renameForm = useForm<RenameCollectionFormSchema>({
-    validate: zodResolver(renameCollectionFormSchema)
+    validate: zodResolver(renameCollectionFormSchema),
+    initialValues: {
+      name: ''
+    }
   });
   useEffect(() => {
     renameForm.setInitialValues({

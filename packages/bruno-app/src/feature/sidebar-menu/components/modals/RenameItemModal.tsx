@@ -29,7 +29,10 @@ export const RenameItemModal: React.FC<RenameItemModalProps> = ({ opened, onClos
   const dispatch = useDispatch();
 
   const renameForm = useForm<RenameItemFormSchema>({
-    validate: zodResolver(renameItemFormSchema)
+    validate: zodResolver(renameItemFormSchema),
+    initialValues: {
+      name: ''
+    }
   });
   useEffect(() => {
     renameForm.setInitialValues({

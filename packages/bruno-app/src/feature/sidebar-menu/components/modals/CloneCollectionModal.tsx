@@ -50,7 +50,12 @@ export const CloneCollectionModal: React.FC<CloneCollectionModalProps> = ({
   });
 
   const cloneForm = useForm<CloneCollectionFormSchema>({
-    validate: zodResolver(cloneCollectionFormSchema)
+    validate: zodResolver(cloneCollectionFormSchema),
+    initialValues: {
+      name: '',
+      location: '',
+      folder: ''
+    }
   });
   useEffect(() => {
     cloneForm.setInitialValues({
