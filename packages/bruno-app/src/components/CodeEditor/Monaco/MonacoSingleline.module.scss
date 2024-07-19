@@ -6,6 +6,10 @@
   height: fit-content; /* Monaco will auto set the height */
   width: 100%;
   min-width: 0;
+  // This ensures corrent shrinking / expanding https://github.com/microsoft/monaco-editor/issues/3393
+  display: grid;
+  grid-template-columns: minmax(0px, auto);
+  grid-template-rows: 100%;
 
   padding: calc(var(--mantine-spacing-xs) - 2px);
   border: 1px solid var(--mantine-color-gray-4);
@@ -16,11 +20,6 @@
     background-color: var(--mantine-color-dark-6) !important;
     border: 1px solid var(--mantine-color-dark-4);
   }
-
-  // This ensures corrent shrinking / expanding https://github.com/microsoft/monaco-editor/issues/3393
-  display: grid;
-  grid-template-columns: minmax(0px, auto);
-  grid-template-rows: 100%;
 }
 .paper[data-focused='true'] {
   border-color: var(--mantine-primary-color-filled);
