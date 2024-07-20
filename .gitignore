@@ -4,7 +4,6 @@
 bun.lockb
 node_modules
 yarn.lock
-pnpm-lock.yaml
 .pnp
 .pnp.js
 bun.lockb
