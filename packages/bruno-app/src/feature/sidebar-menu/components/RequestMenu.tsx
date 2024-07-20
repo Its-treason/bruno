@@ -21,15 +21,15 @@ const ICON_STYLE = { width: rem(16), height: rem(16) };
 type RequestMenuProps = {
   collectionUid: string;
   itemUid: string;
-  onOpen: () => void;
-  onClose: () => void;
+  onChange: () => void;
+  opened: boolean,
 };
 
-export const RequestMenu: React.FC<RequestMenuProps> = ({ collectionUid, itemUid, onClose, onOpen }) => {
+export const RequestMenu: React.FC<RequestMenuProps> = ({ collectionUid, itemUid, ...menuProps }) => {
   const { setActiveAction, runRequest, openInEditor, openInExplorer } = useSidebarActions();
 
   return (
-    <Menu offset={2} onClose={onClose} onOpen={onOpen}>
+    <Menu offset={2} {...menuProps}>
       <Menu.Target>
         <ActionIcon variant={'transparent'} color={'gray'}>
           <IconDots style={{ width: 22, height: 22 }} />

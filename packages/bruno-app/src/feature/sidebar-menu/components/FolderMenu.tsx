@@ -22,15 +22,15 @@ const ICON_STYLE = { width: rem(18), height: rem(18) };
 type FolderMenuProps = {
   collectionUid: string;
   itemUid: string;
-  onOpen: () => void;
-  onClose: () => void;
+  onChange: () => void;
+  opened: boolean,
 };
 
-export const FolderMenu: React.FC<FolderMenuProps> = ({ collectionUid, itemUid, onClose, onOpen }) => {
+export const FolderMenu: React.FC<FolderMenuProps> = ({ collectionUid, itemUid, ...menuProps }) => {
   const { setActiveAction, openRunner, openInExplorer, openFolderSettings } = useSidebarActions();
 
   return (
-    <Menu offset={2} onOpen={onOpen} onClose={onClose}>
+    <Menu offset={2} {...menuProps}>
       <Menu.Target>
         <ActionIcon variant={'transparent'} color={'gray'}>
           <IconDots style={{ width: 22, height: 22 }} />

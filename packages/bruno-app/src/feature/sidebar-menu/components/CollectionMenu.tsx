@@ -23,15 +23,15 @@ const ICON_STYLE = { width: rem(16), height: rem(16) };
 
 type CollectionMenuProps = {
   collectionUid: string;
-  onOpen: () => void;
-  onClose: () => void;
+  onChange: () => void;
+  opened: boolean,
 };
 
-export const CollectionMenu: React.FC<CollectionMenuProps> = ({ collectionUid, onClose, onOpen }) => {
+export const CollectionMenu: React.FC<CollectionMenuProps> = ({ collectionUid, ...menuProps }) => {
   const { setActiveAction, openRunner, openInExplorer, editBrunoJson, openCollectionSettings } = useSidebarActions();
 
   return (
-    <Menu offset={2} onOpen={onOpen} onClose={onClose}>
+    <Menu offset={2} {...menuProps}>
       <Menu.Target>
         <ActionIcon variant={'transparent'} color={'gray'}>
           <IconDots style={{ width: 22, height: 22 }} />

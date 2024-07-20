@@ -35,23 +35,25 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
   style
 }) => {
   const dispatch = useDispatch();
-  const { itemClicked } = useSidebarActions();
+  const { itemClicked, setActiveAction } = useSidebarActions();
   const [hover, setHover] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
   const wrapperRef = useRef<HTMLDivElement>(null);
 
   const menu = useMemo(() => {
-    const onOpen = () => setMenuOpened(true);
-    const onClose = () => setMenuOpened(false);
+    const menuProps = {
+      onChange: () => setMenuOpened(!menuOpened),
+      opened: menuOpened,
+    }  as const;
     switch (type) {
       case 'collection':
-        return <CollectionMenu collectionUid={collectionUid} onClose={onClose} onOpen={onOpen} />;
+        return <CollectionMenu collectionUid={collectionUid} {...menuProps} />;
       case 'request':
-        return <RequestMenu collectionUid={collectionUid} itemUid={uid!} onClose={onClose} onOpen={onOpen} />;
+        return <RequestMenu collectionUid={collectionUid} itemUid={uid} {...menuProps} />;
       case 'folder':
-        return <FolderMenu collectionUid={collectionUid} itemUid={uid!} onClose={onClose} onOpen={onOpen} />;
+        return <FolderMenu collectionUid={collectionUid} itemUid={uid} {...menuProps} />;
     }
-  }, [type]);
+  }, [type, menuOpened]);
 
   const [, drag] = useDrag({
     type: `COLLECTION_ITEM_${collectionUid}`,
@@ -111,9 +113,14 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
       onClick={() => itemClicked(collectionUid, uid)}
+      onContextMenu={() => setMenuOpened(!menuOpened)}
+      onDoubleClick={() => {
+        if (uid) {
+          setActiveAction('rename', collectionUid, uid);
+        }
+      }}
       data-active={active}
       data-drop-indicator={'none'}
-      data-indent={indent * 24}
       ref={(ref) => {
         drag(drop(ref));
         wrapperRef.current = ref;
