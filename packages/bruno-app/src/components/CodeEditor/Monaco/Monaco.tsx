@@ -10,6 +10,7 @@ import { getAllVariables } from 'utils/collections';
 import { useTheme } from 'providers/Theme';
 import { editor } from 'monaco-editor';
 import { CollectionSchema } from '@usebruno/schema';
+import classes from "./Monaco.module.scss";
 
 const languages: Record<string, string> = {
   text: 'plaintext',
@@ -130,6 +131,7 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
       }}
       height={height}
       theme={displayedTheme === 'dark' ? 'bruno-dark' : 'bruno-light'}
+      className={classes.editor}
       language={languages[mode] ?? 'plaintext'}
       value={value}
       onMount={onMount}
