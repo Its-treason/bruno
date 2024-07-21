@@ -7,6 +7,7 @@ type CodeEditorProps = {
   font?: string;
   fontSize?: number;
   mode?: string;
+  label?: string;
   onChange?: (value: any) => void;
   onRun?: () => void;
   onSave?: () => void;

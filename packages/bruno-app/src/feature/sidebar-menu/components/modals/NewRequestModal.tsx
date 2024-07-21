@@ -9,7 +9,6 @@ import { useDispatch } from 'react-redux';
 import { newHttpRequest } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { z } from 'zod';
-// import { getRequestFromCurlCommand } from 'utils/curl';
 import { BrunoConfigSchema } from '@usebruno/schema';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { MethodSelector } from 'src/feature/request-url-bar';
@@ -104,7 +103,7 @@ export const NewRequestModal: React.FC<NewRequestModalProps> = ({
   useEffect(() => {
     newRequestForm.setInitialValues({
       name: '',
-      method: 'GET',
+      method: brunoConfig?.presets?.requestMethod ?? 'GET',
       type: brunoConfig?.presets?.requestType === 'graphql' ? 'graphql-request' : 'http-request',
       url: brunoConfig?.presets?.requestUrl ?? ''
     });

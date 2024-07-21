@@ -44,9 +44,15 @@ export const brunoConfigSchema = z
     presets: z
       .object({
         requestType: z.enum(['graphql', 'http']).default('http'),
+        requestMethod: z
+          .string()
+          .min(1)
+          .regex(/^[a-zA-Z]+$/)
+          .transform((base) => base.toUpperCase())
+          .default('GET'),
         requestUrl: z.string().default('')
       })
-      .default({ requestType: 'http', requestUrl: '' })
+      .default({ requestType: 'http', requestMethod: 'GET', requestUrl: '' })
   })
   .passthrough();
 export type BrunoConfigSchema = z.infer<typeof brunoConfigSchema>;

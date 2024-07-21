@@ -16,6 +16,7 @@ import Docs from './Docs';
 import Presets from './Presets';
 import Info from './Info';
 import StyledWrapper from './StyledWrapper';
+import { RequestPreset } from './RequestPreset';
 
 const CollectionSettings = ({ collection }) => {
   const dispatch = useDispatch();
@@ -87,7 +88,7 @@ const CollectionSettings = ({ collection }) => {
         return <Test collection={collection} />;
       }
       case 'presets': {
-        return <Presets collection={collection} />;
+        return <RequestPreset collection={collection} />;
       }
       case 'proxy': {
         return <ProxySettings proxyConfig={proxyConfig} onUpdate={onProxySettingsUpdate} />;

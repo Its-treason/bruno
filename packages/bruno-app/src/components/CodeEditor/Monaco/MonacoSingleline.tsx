@@ -3,7 +3,7 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { Editor, Monaco, useMonaco } from '@monaco-editor/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { debounce } from 'lodash';
 import {
   BrunoEditorCallbacks,
@@ -14,7 +14,7 @@ import {
 import { getAllVariables } from 'utils/collections';
 import { useTheme } from 'providers/Theme';
 import { editor } from 'monaco-editor';
-import { Paper } from '@mantine/core';
+import { Paper, Text } from '@mantine/core';
 import classes from './MonacoSingleline.module.scss';
 import { CollectionSchema } from '@usebruno/schema';
 
@@ -26,6 +26,7 @@ type MonacoSinglelineProps = {
   withVariables?: boolean;
   allowLinebreaks?: boolean;
   asInput?: boolean;
+  label?: string;
 
   onChange?: (newValue: string) => void;
   onRun?: () => void;
@@ -42,7 +43,8 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
   defaultValue,
   withVariables = false,
   allowLinebreaks = false,
-  asInput = false
+  asInput = false,
+  label
 }) => {
   const monaco = useMonaco();
   const { displayedTheme } = useTheme();
@@ -92,50 +94,53 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
   }, [collection.runtimeVariables, collection.activeEnvironmentUid, withVariables, monaco]);
 
   return (
-    <Paper className={asInput ? classes.paper : classes.paperHidden} data-focused={focused}>
-      <Editor
-        options={{
-          readOnly: readOnly,
-          wordWrap: 'off',
-          wrappingIndent: 'indent',
-          autoIndent: 'keep',
-          formatOnType: true,
-          formatOnPaste: true,
-          scrollBeyondLastLine: false,
-          automaticLayout: true,
-          scrollbar: {
-            vertical: allowLinebreaks ? 'auto' : 'hidden',
-            horizontal: 'hidden'
-          },
-          folding: false,
-          renderLineHighlight: 'none',
-          lineNumbers: 'off',
-          lineDecorationsWidth: 0,
-          lineNumbersMinChars: 0,
-          glyphMargin: false,
-          links: false,
-          overviewRulerLanes: 0,
-          overviewRulerBorder: false,
-          hideCursorInOverviewRuler: true,
-          scrollBeyondLastColumn: 0,
-          showFoldingControls: 'never',
-          selectionHighlight: false,
-          occurrencesHighlight: 'off',
-          find: { addExtraSpaceOnTop: false, autoFindInSelection: 'never', seedSearchStringFromSelection: 'never' },
-          minimap: { enabled: false },
-          fontSize: asInput ? 13 : undefined,
-          fontFamily: 'var(--mantine-font-family)'
-        }}
-        className={classes.editor}
-        theme={displayedTheme === 'dark' ? 'bruno-dark' : 'bruno-light'}
-        loading={null} // Loading looks weird with singeline editor
-        language={'plaintext'}
-        value={value}
-        defaultValue={defaultValue}
-        onMount={onMount}
-        onChange={!readOnly ? handleEditorChange : () => {}}
-        height={height}
-      />
-    </Paper>
+    <div>
+      {label ? <Text size='sm'>{label}</Text>: null}
+      <Paper className={asInput ? classes.paper : classes.paperHidden} data-focused={focused}>
+        <Editor
+          options={{
+            readOnly: readOnly,
+            wordWrap: 'off',
+            wrappingIndent: 'indent',
+            autoIndent: 'keep',
+            formatOnType: true,
+            formatOnPaste: true,
+            scrollBeyondLastLine: false,
+            automaticLayout: true,
+            scrollbar: {
+              vertical: allowLinebreaks ? 'auto' : 'hidden',
+              horizontal: 'hidden'
+            },
+            folding: false,
+            renderLineHighlight: 'none',
+            lineNumbers: 'off',
+            lineDecorationsWidth: 0,
+            lineNumbersMinChars: 0,
+            glyphMargin: false,
+            links: false,
+            overviewRulerLanes: 0,
+            overviewRulerBorder: false,
+            hideCursorInOverviewRuler: true,
+            scrollBeyondLastColumn: 0,
+            showFoldingControls: 'never',
+            selectionHighlight: false,
+            occurrencesHighlight: 'off',
+            find: { addExtraSpaceOnTop: false, autoFindInSelection: 'never', seedSearchStringFromSelection: 'never' },
+            minimap: { enabled: false },
+            fontSize: asInput ? 13 : undefined,
+            fontFamily: 'var(--mantine-font-family)'
+          }}
+          className={classes.editor}
+          theme={displayedTheme === 'dark' ? 'bruno-dark' : 'bruno-light'}
+          loading={null} // Loading looks weird with singeline editor
+          language={'plaintext'}
+          value={value}
+          defaultValue={defaultValue}
+          onMount={onMount}
+          onChange={!readOnly ? handleEditorChange : () => {}}
+          height={height}
+        />
+      </Paper>
+    </div>
   );
 };
