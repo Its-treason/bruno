@@ -120,7 +120,10 @@ async function main(args) {
 
   // Run npm dist command
   log(`Building the Electron app for: ${os}/${arch}`);
-  await execCommandWithOutput('pnpm', ['run', '--filter', 'bruno-lazer', 'dist', '--', `--${arch}`, `--${os}`]);
+  // This is a workaround for this error that started happening between: "ab9bcbe" & "7194998"
+  // https://github.com/Its-treason/bruno/actions/runs/10049766698/job/27776430031#step:4:221
+  process.chdir('./packages/bruno-electron');
+  await execCommandWithOutput('npm', ['run', 'dist', '--', `--${arch}`, `--${os}`]);
   log('Build complete');
 
   return 0;
