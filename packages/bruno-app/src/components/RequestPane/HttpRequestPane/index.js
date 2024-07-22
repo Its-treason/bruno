@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import { useSelector, useDispatch } from 'react-redux';
 import { updateRequestPaneTab } from 'providers/ReduxStore/slices/tabs';
 import QueryParams from 'components/RequestPane/QueryParams';
-import RequestHeaders from 'components/RequestPane/RequestHeaders';
+import { RequestHeaders } from 'components/RequestPane/RequestHeaders';
 import RequestBody from 'components/RequestPane/RequestBody';
 import RequestBodyMode from 'components/RequestPane/RequestBody/RequestBodyMode';
 import Auth from 'components/RequestPane/Auth';
@@ -121,7 +121,7 @@ const HttpRequestPane = ({ item, collection, leftPaneWidth }) => {
         ) : null}
       </div>
       <section
-        className={classnames('flex w-full', {
+        className={classnames('flex w-full flex-grow', {
           'mt-5': !isMultipleContentTab
         })}
       >

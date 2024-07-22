@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { updateRequestPaneTab } from 'providers/ReduxStore/slices/tabs';
 import Auth from 'components/RequestPane/Auth';
 import GraphQLVariables from 'components/RequestPane/GraphQLVariables';
-import RequestHeaders from 'components/RequestPane/RequestHeaders';
+import { RequestHeaders } from 'components/RequestPane/RequestHeaders';
 import Vars from 'components/RequestPane/Vars';
 import Assertions from 'components/RequestPane/Assertions';
 import Script from 'components/RequestPane/Script';
