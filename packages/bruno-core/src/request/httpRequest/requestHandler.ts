@@ -7,6 +7,7 @@ import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { CookieJar } from 'tough-cookie';
 import { URL } from 'node:url';
+import { decodeServerResponse } from './decodeResponseBody';
 
 export async function makeHttpRequest(context: RequestContext) {
   if (context.timeline === undefined) {
@@ -74,6 +75,16 @@ async function handleServerResponse(
   // We did not get a response / an error occurred
   if (response.statusCode === undefined) {
     return false;
+  }
+
+  try {
+    // Decode a body that is encoded with gzip, brotl etc. if the "content-encoding" header is set
+    const encodingResult = await decodeServerResponse(response);
+    if (encodingResult) {
+      context.debug.log('Decoded response body', { encoding: encodingResult });
+    }
+  } catch (error) {
+    context.debug.log('Error decoding response body', { error });
   }
 
   if (context.preferences.request.storeCookies) {
