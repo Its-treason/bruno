@@ -2,6 +2,9 @@ import { request as requestHttp } from 'node:http';
 import { request as requestHttps } from 'node:https';
 import { Buffer } from 'node:buffer';
 import { BrunoRequestOptions } from '../types';
+import { DetailedPeerCertificate, PeerCertificate, TLSSocket } from 'node:tls';
+import { Performance } from 'node:perf_hooks';
+import { collectSslInfo } from './collectSslInfo';
 
 export type HttpRequestInfo = {
   // RequestInfo
@@ -13,6 +16,7 @@ export type HttpRequestInfo = {
   statusMessage?: String;
   headers?: Record<string, string[]>;
   httpVersion?: string;
+  sslInfo?: any;
   responseBody?: Buffer;
   error?: string;
   info?: string;
@@ -69,6 +73,11 @@ async function doExecHttpRequest(info: HttpRequestInfo, options: BrunoRequestOpt
       return acc;
     }, {});
     info.httpVersion = response.httpVersion;
+    info.sslInfo = false;
+
+    if (response.socket instanceof TLSSocket) {
+      info.sslInfo = collectSslInfo(response.socket, options.hostname);
+    }
 
     response.on('data', (chunk) => {
       if (!Buffer.isBuffer(chunk)) {

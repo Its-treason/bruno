@@ -6,6 +6,7 @@ import { useMemo } from 'react';
 import { Stack, Group, Text, Space, ThemeIcon, Alert, Spoiler } from '@mantine/core';
 import { IconAlertTriangle, IconInfoCircle } from '@tabler/icons-react';
 import classes from './TimelinewNew.module.css';
+import { RequestSslInfo, SslInfoModal } from './SslInfoModal';
 
 type RequestTimeline = {
   // RequestInfo
@@ -27,6 +28,7 @@ type RequestTimeline = {
   responseBody?: string;
   error?: string;
   info?: string;
+  sslInfo?: RequestSslInfo;
 };
 
 const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
@@ -125,14 +127,17 @@ const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
           {item.error}
         </Alert>
       ) : null}
-      {item.info !== undefined ? (
-        <Group pt={'xs'} gap={'xs'}>
-          <ThemeIcon size={'xs'} color={'gray'}>
-            <IconInfoCircle />
-          </ThemeIcon>
-          <Text c={'dimmed'}>{item.info}</Text>
-        </Group>
-      ) : null}
+      <Group pt={'xs'} gap={'xs'}>
+        {item.info !== undefined ? (
+          <>
+            <ThemeIcon size={'xs'} color={'gray'}>
+              <IconInfoCircle />
+            </ThemeIcon>
+            <Text c={'dimmed'}>{item.info}</Text>
+          </>
+        ) : null}
+        {item.sslInfo !== undefined ? <SslInfoModal sslInfo={item.sslInfo} /> : null}
+      </Group>
     </div>
   );
 };
