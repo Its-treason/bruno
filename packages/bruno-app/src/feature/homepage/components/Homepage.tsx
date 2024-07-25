@@ -7,6 +7,7 @@ import { IconCopyleft } from '@tabler/icons-react';
 import Bruno from 'components/Bruno';
 import { CollectionButtons } from './CollectionButtons';
 import { ProjectLinks } from './ProjectLinks';
+import { CollectionStats } from './CollectionStats';
 
 export const Homepage: React.FC = () => {
   return (
@@ -28,6 +29,8 @@ export const Homepage: React.FC = () => {
       <Space h={rem(50)} />
 
       <ProjectLinks />
+
+      <CollectionStats />
 
       <Space h={rem(50)} />
 
