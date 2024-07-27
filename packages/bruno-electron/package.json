@@ -16,6 +16,11 @@
     "clean": "rimraf out web .vite",
     "test": "jest"
   },
+  "jest": {
+    "modulePaths": [
+      "node_modules"
+    ]
+  },
   "dependencies": {
     "@aws-sdk/credential-providers": "3.525.0",
     "@usebruno/common": "workspace:*",

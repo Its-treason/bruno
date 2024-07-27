@@ -327,7 +327,7 @@ const runSingleRequest = async function (
     const testScriptResult = await runScript(
       decomment(testFile),
       request,
-      null,
+      response,
       {
         envVariables,
         runtimeVariables,
@@ -340,8 +340,8 @@ const runSingleRequest = async function (
     );
     const testResults = get(testScriptResult, 'results', []);
 
-    if (result?.nextRequestName !== undefined) {
-      nextRequestName = result.nextRequestName;
+    if (testScriptResult?.nextRequestName !== undefined) {
+      nextRequestName = testScriptResult.nextRequestName;
     }
 
     if (testResults?.length) {

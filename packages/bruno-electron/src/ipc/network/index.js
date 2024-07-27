@@ -79,14 +79,7 @@ const getEnvVars = (environment = {}) => {
 
 const protocolRegex = /^([-+\w]{1,25})(:?\/\/|:)/;
 
-const configureRequest = async (
-  collectionUid,
-  request,
-  envVars,
-  runtimeVariables,
-  processEnvVars,
-  collectionPath
-) => {
+const configureRequest = async (collectionUid, request, envVars, runtimeVariables, processEnvVars, collectionPath) => {
   if (!protocolRegex.test(request.url)) {
     request.url = `http://${request.url}`;
   }
@@ -313,14 +306,7 @@ const registerNetworkIpc = (mainWindow) => {
     const preRequestVars = get(request, 'vars.req', []);
     if (preRequestVars?.length) {
       const varsRuntime = new VarsRuntime();
-      varsRuntime.runPreRequestVars(
-        preRequestVars,
-        request,
-        envVars,
-        runtimeVariables,
-        collectionPath,
-        processEnvVars
-      );
+      varsRuntime.runPreRequestVars(preRequestVars, request, envVars, runtimeVariables, collectionPath, processEnvVars);
     }
 
     // run pre-request script
@@ -405,9 +391,11 @@ const registerNetworkIpc = (mainWindow) => {
     }
 
     // run post-response script
-    const responseScript = compact([get(request, 'script.res'), get(collectionRoot, 'request.script.res')]).join(
-      os.EOL
-    );
+    const responseScript = compact(
+      scriptingConfig.flow === 'natural'
+        ? [get(collectionRoot, 'request.script.res'), get(request, 'script.res')]
+        : [get(request, 'script.res'), get(collectionRoot, 'request.script.res')]
+    ).join(os.EOL);
 
     const scriptResult = await runScript(
       decomment(responseScript),
@@ -629,173 +617,176 @@ const registerNetworkIpc = (mainWindow) => {
   }
 
   // handler for sending http request
-  ipcMain.handle(
-    'send-http-request',
-    async (event, item, collection, environment, runtimeVariables, useNewRequest) => {
-      if (useNewRequest) {
-        return await executeNewRequest(event, item, collection, environment);
-      }
+  ipcMain.handle('send-http-request', async (event, item, collection, environment, runtimeVariables, useNewRequest) => {
+    if (useNewRequest) {
+      return await executeNewRequest(event, item, collection, environment);
+    }
 
-      const collectionUid = collection.uid;
-      const collectionPath = collection.pathname;
-      const cancelTokenUid = uuid();
-      const requestUid = uuid();
+    const collectionUid = collection.uid;
+    const collectionPath = collection.pathname;
+    const cancelTokenUid = uuid();
+    const requestUid = uuid();
+
+    mainWindow.webContents.send('main:run-request-event', {
+      type: 'request-queued',
+      requestUid,
+      collectionUid,
+      itemUid: item.uid,
+      cancelTokenUid
+    });
+
+    const collectionRoot = get(collection, 'root', {});
+    const request = prepareRequest(item, collection);
+    const envVars = getEnvVars(environment);
+    const processEnvVars = getProcessEnvVars(collectionUid);
+    const brunoConfig = getBrunoConfig(collectionUid);
+    const scriptingConfig = get(brunoConfig, 'scripts', {});
+
+    try {
+      const controller = new AbortController();
+      request.signal = controller.signal;
+      saveCancelToken(cancelTokenUid, controller);
+
+      await runPreRequest(
+        request,
+        requestUid,
+        envVars,
+        collectionPath,
+        collectionRoot,
+        collectionUid,
+        runtimeVariables,
+        processEnvVars,
+        scriptingConfig
+      );
 
       mainWindow.webContents.send('main:run-request-event', {
-        type: 'request-queued',
-        requestUid,
+        type: 'request-sent',
+        requestSent: {
+          url: request.url,
+          method: request.method,
+          headers: request.headers,
+          data: safeParseJSON(safeStringifyJSON(request.data)),
+          timestamp: Date.now()
+        },
         collectionUid,
         itemUid: item.uid,
+        requestUid,
         cancelTokenUid
       });
 
-      const collectionRoot = get(collection, 'root', {});
-      const request = prepareRequest(item, collection);
-      const envVars = getEnvVars(environment);
-      const processEnvVars = getProcessEnvVars(collectionUid);
-      const brunoConfig = getBrunoConfig(collectionUid);
-      const scriptingConfig = get(brunoConfig, 'scripts', {});
+      const axiosInstance = await configureRequest(
+        collectionUid,
+        request,
+        envVars,
+        runtimeVariables,
+        processEnvVars,
+        collectionPath
+      );
 
+      let response, responseTime;
       try {
-        const controller = new AbortController();
-        request.signal = controller.signal;
-        saveCancelToken(cancelTokenUid, controller);
+        /** @type {import('axios').AxiosResponse} */
+        response = await axiosInstance(request);
 
-        await runPreRequest(
-          request,
-          requestUid,
-          envVars,
-          collectionPath,
-          collectionRoot,
-          collectionUid,
-          runtimeVariables,
-          processEnvVars,
-          scriptingConfig
-        );
+        // Prevents the duration on leaking to the actual result
+        responseTime = response.headers.get('request-duration');
+        response.headers.delete('request-duration');
+      } catch (error) {
+        deleteCancelToken(cancelTokenUid);
 
-        mainWindow.webContents.send('main:run-request-event', {
-          type: 'request-sent',
-          requestSent: {
-            url: request.url,
-            method: request.method,
-            headers: request.headers,
-            data: safeParseJSON(safeStringifyJSON(request.data)),
-            timestamp: Date.now()
-          },
-          collectionUid,
-          itemUid: item.uid,
-          requestUid,
-          cancelTokenUid
-        });
+        // if it's a cancel request, don't continue
+        if (axios.isCancel(error)) {
+          let error = new Error('Request cancelled');
+          error.isCancel = true;
+          return Promise.reject(error);
+        }
 
-        const axiosInstance = await configureRequest(
-          collectionUid,
-          request,
-          envVars,
-          runtimeVariables,
-          processEnvVars,
-          collectionPath
-        );
-
-        let response, responseTime;
-        try {
-          /** @type {import('axios').AxiosResponse} */
-          response = await axiosInstance(request);
+        if (error?.response) {
+          response = error.response;
 
           // Prevents the duration on leaking to the actual result
           responseTime = response.headers.get('request-duration');
           response.headers.delete('request-duration');
-        } catch (error) {
-          deleteCancelToken(cancelTokenUid);
-
-          // if it's a cancel request, don't continue
-          if (axios.isCancel(error)) {
-            let error = new Error('Request cancelled');
-            error.isCancel = true;
-            return Promise.reject(error);
-          }
-
-          if (error?.response) {
-            response = error.response;
-
-            // Prevents the duration on leaking to the actual result
-            responseTime = response.headers.get('request-duration');
-            response.headers.delete('request-duration');
-          } else {
-            // if it's not a network error, don't continue
-            return Promise.reject(error);
-          }
+        } else {
+          // if it's not a network error, don't continue
+          return Promise.reject(error);
         }
+      }
 
-        // Continue with the rest of the request lifecycle - post response vars, script, assertions, tests
+      // Continue with the rest of the request lifecycle - post response vars, script, assertions, tests
 
-        const { data, dataBuffer } = parseDataFromResponse(response);
-        response.data = data;
+      const { data, dataBuffer } = parseDataFromResponse(response);
+      response.data = data;
 
-        const responsePath = path.join(app.getPath('userData'), 'responseCache', item.uid);
-        await fsPromise.writeFile(responsePath, dataBuffer);
+      const responsePath = path.join(app.getPath('userData'), 'responseCache', item.uid);
+      await fsPromise.writeFile(responsePath, dataBuffer);
 
-        response.responseTime = responseTime;
+      response.responseTime = responseTime;
 
-        // save cookies
-        if (preferencesUtil.shouldStoreCookies()) {
-          let setCookieHeaders = [];
-          if (response.headers['set-cookie']) {
-            setCookieHeaders = Array.isArray(response.headers['set-cookie'])
-              ? response.headers['set-cookie']
-              : [response.headers['set-cookie']];
-            for (let setCookieHeader of setCookieHeaders) {
-              if (typeof setCookieHeader === 'string' && setCookieHeader.length) {
-                addCookieToJar(setCookieHeader, request.url);
-              }
+      // save cookies
+      if (preferencesUtil.shouldStoreCookies()) {
+        let setCookieHeaders = [];
+        if (response.headers['set-cookie']) {
+          setCookieHeaders = Array.isArray(response.headers['set-cookie'])
+            ? response.headers['set-cookie']
+            : [response.headers['set-cookie']];
+          for (let setCookieHeader of setCookieHeaders) {
+            if (typeof setCookieHeader === 'string' && setCookieHeader.length) {
+              addCookieToJar(setCookieHeader, request.url);
             }
           }
         }
+      }
 
-        // send domain cookies to renderer
-        const domainsWithCookies = await getDomainsWithCookies();
+      // send domain cookies to renderer
+      const domainsWithCookies = await getDomainsWithCookies();
 
-        mainWindow.webContents.send('main:cookies-update', safeParseJSON(safeStringifyJSON(domainsWithCookies)));
+      mainWindow.webContents.send('main:cookies-update', safeParseJSON(safeStringifyJSON(domainsWithCookies)));
 
-        await runPostResponse(
+      await runPostResponse(
+        request,
+        response,
+        requestUid,
+        envVars,
+        collectionPath,
+        collectionRoot,
+        collectionUid,
+        runtimeVariables,
+        processEnvVars,
+        scriptingConfig
+      );
+
+      // run assertions
+      const assertions = get(request, 'assertions');
+      if (assertions) {
+        const assertRuntime = new AssertRuntime();
+        const results = assertRuntime.runAssertions(
+          assertions,
           request,
           response,
-          requestUid,
           envVars,
-          collectionPath,
-          collectionRoot,
-          collectionUid,
           runtimeVariables,
-          processEnvVars
+          collectionPath
         );
 
-        // run assertions
-        const assertions = get(request, 'assertions');
-        if (assertions) {
-          const assertRuntime = new AssertRuntime();
-          const results = assertRuntime.runAssertions(
-            assertions,
-            request,
-            response,
-            envVars,
-            runtimeVariables,
-            collectionPath
-          );
+        mainWindow.webContents.send('main:run-request-event', {
+          type: 'assertion-results',
+          results: results,
+          itemUid: item.uid,
+          requestUid,
+          collectionUid
+        });
+      }
 
-          mainWindow.webContents.send('main:run-request-event', {
-            type: 'assertion-results',
-            results: results,
-            itemUid: item.uid,
-            requestUid,
-            collectionUid
-          });
-        }
+      // run tests
+      const testScript = item.draft ? get(item.draft, 'request.tests') : get(item, 'request.tests');
+      const testFile = compact(
+        scriptingConfig.flow === 'natural'
+          ? [get(collectionRoot, 'request.tests'), testScript]
+          : [testScript, get(collectionRoot, 'request.tests')]
+      ).join(os.EOL);
 
-        // run tests
-        const testFile = compact([
-          get(collectionRoot, 'request.tests'),
-          item.draft ? get(item.draft, 'request.tests') : get(item, 'request.tests')
-        ]).join(os.EOL);
+      if (typeof testFile === 'string') {
         const testResults = await runScript(
           decomment(testFile),
           request,
@@ -825,21 +816,21 @@ const registerNetworkIpc = (mainWindow) => {
           requestUid,
           collectionUid
         });
-
-        return {
-          status: response.status,
-          statusText: response.statusText,
-          headers: response.headers,
-          size: Buffer.byteLength(dataBuffer),
-          duration: responseTime ?? 0
-        };
-      } catch (error) {
-        deleteCancelToken(cancelTokenUid);
-
-        return Promise.reject(error);
       }
+
+      return {
+        status: response.status,
+        statusText: response.statusText,
+        headers: response.headers,
+        size: Buffer.byteLength(dataBuffer),
+        duration: responseTime ?? 0
+      };
+    } catch (error) {
+      deleteCancelToken(cancelTokenUid);
+
+      return Promise.reject(error);
     }
-  );
+  });
 
   ipcMain.handle('send-collection-oauth2-request', async (event, collection, environment, runtimeVariables) => {
     try {
@@ -1237,10 +1228,12 @@ const registerNetworkIpc = (mainWindow) => {
             }
 
             // run tests
-            const testFile = compact([
-              get(collectionRoot, 'request.tests'),
-              item.draft ? get(item.draft, 'request.tests') : get(item, 'request.tests')
-            ]).join(os.EOL);
+            const testScript = item.draft ? get(item.draft, 'request.tests') : get(item, 'request.tests');
+            const testFile = compact(
+              scriptingConfig.flow === 'natural'
+                ? [get(collectionRoot, 'request.tests'), testScript]
+                : [testScript, get(collectionRoot, 'request.tests')]
+            ).join(os.EOL);
             const testResults = await runScript(
               decomment(testFile),
               request,
