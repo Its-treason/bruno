@@ -8,7 +8,6 @@ export const CollectionStats: React.FC = () => {
   const collections = useSelector((state: any) => state.collections.collections as CollectionSchema[]);
 
   const { requestCount, collectionCount, environmentCount } = useMemo(() => {
-    console.log(collections);
     const requestCount = collections.reduce((acc, collection) => {
       return acc + flattenItems(collection.items).length;
     }, 0);
