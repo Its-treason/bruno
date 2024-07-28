@@ -1,4 +1,4 @@
-import { BrunoRequestOptions, RequestContext } from '../types';
+import { BrunoRequestOptions, RequestContext, RequestItem } from '../types';
 import { handleDigestAuth } from './digestAuth';
 import { addAwsAuthHeader } from './awsSig4vAuth';
 import { HttpRequestInfo, execHttpRequest } from './httpRequest';
@@ -8,6 +8,7 @@ import { join } from 'node:path';
 import { CookieJar } from 'tough-cookie';
 import { URL } from 'node:url';
 import { decodeServerResponse } from './decodeResponseBody';
+import { DebugLogger } from '../DebugLogger';
 
 export async function makeHttpRequest(context: RequestContext) {
   if (context.timeline === undefined) {
@@ -20,7 +21,7 @@ export async function makeHttpRequest(context: RequestContext) {
   while (true) {
     addMandatoryHeader(requestOptions, body);
     if (context.preferences.request.sendCookies) {
-      await addCookieHeader(requestOptions, context.cookieJar);
+      await addCookieHeader(requestOptions, context.requestItem, context.cookieJar);
     }
     if (context.requestItem.request.auth.mode === 'awsv4') {
       addAwsAuthHeader(context.requestItem.request.auth, requestOptions, body);
@@ -59,11 +60,23 @@ function addMandatoryHeader(requestOptions: BrunoRequestOptions, body?: string |
   }
 }
 
-async function addCookieHeader(requestOptions: BrunoRequestOptions, cookieJar: CookieJar) {
+async function addCookieHeader(
+  requestOptions: BrunoRequestOptions,
+  originalRequest: RequestItem,
+  cookieJar: CookieJar
+) {
   const currentUrl = urlFromRequestOptions(requestOptions);
   const cookieHeader = await cookieJar.getCookieString(currentUrl.href);
   if (cookieHeader) {
-    requestOptions.headers!['cookie'] = cookieHeader;
+    requestOptions.headers!['cookie'] = [cookieHeader];
+
+    // Append all user defined cookie headers: https://github.com/usebruno/bruno/issues/2102
+    const originalCookieHeaders = originalRequest.request.headers.filter(
+      (header) => header.name.toLowerCase() === 'cookie' && header.enabled
+    );
+    for (const originalCookieHeader of originalCookieHeaders) {
+      requestOptions.headers!['cookie'].push(originalCookieHeader.value);
+    }
   }
 }
 
@@ -88,7 +101,7 @@ async function handleServerResponse(
   }
 
   if (context.preferences.request.storeCookies) {
-    await storeCookies(context.cookieJar, request, response);
+    await storeCookies(context.cookieJar, request, response, context.debug);
   }
 
   const mustRedirect = handleRedirect(request, response);
@@ -137,7 +150,6 @@ function handleRedirect(request: BrunoRequestOptions, response: HttpRequestInfo)
   // e.g. https://my-new-site.net
   let newLocationUrl;
   try {
-    const oldBaseUrl = urlFromRequestOptions(request);
     newLocationUrl = new URL(newLocation, new URL(request.path, `${request.protocol}//${request.hostname}`));
   } catch (error) {
     throw new Error(
@@ -155,11 +167,21 @@ function handleRedirect(request: BrunoRequestOptions, response: HttpRequestInfo)
   return true;
 }
 
-async function storeCookies(cookieJar: CookieJar, request: BrunoRequestOptions, response: HttpRequestInfo) {
+async function storeCookies(
+  cookieJar: CookieJar,
+  request: BrunoRequestOptions,
+  response: HttpRequestInfo,
+  debug: DebugLogger
+) {
   const currentUrl = urlFromRequestOptions(request);
 
   for (const cookieString of response.headers!['set-cookie'] ?? []) {
-    await cookieJar.setCookie(cookieString, currentUrl.href);
+    try {
+      await cookieJar.setCookie(cookieString, currentUrl.href);
+    } catch (error) {
+      // tough-cookie does the same checks a browser does before saving a cookie and will error if something is wrong
+      debug.log('Could not store cookie', { error, cookieString, url: currentUrl.href });
+    }
   }
 }
 
