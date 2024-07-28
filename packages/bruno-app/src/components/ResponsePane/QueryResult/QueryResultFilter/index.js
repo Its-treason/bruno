@@ -51,7 +51,7 @@ const QueryResultFilter = ({ onChange, mode }) => {
   return (
     <div
       className={
-        'response-filter absolute bottom-2 w-full justify-end right-0 flex flex-row items-center gap-2 py-4 px-2'
+        'response-filter absolute bottom-2 w-full justify-end right-0 flex flex-row items-center gap-2 py-4 px-2 pointer-events-none'
       }
     >
       {tooltipText && !isExpanded && <ReactTooltip anchorId={'request-filter-icon'} html={tooltipText} />}
@@ -67,10 +67,10 @@ const QueryResultFilter = ({ onChange, mode }) => {
         spellCheck="false"
         onChange={debouncedOnChange}
         className={`block ml-14 p-2 py-1 sm:text-sm transition-all duration-200 ease-in-out border border-gray-300 rounded-md ${
-          isExpanded ? 'w-full opacity-100' : 'w-[0] opacity-0'
+          isExpanded ? 'w-full opacity-100 pointer-events-auto' : 'w-[0] opacity-0'
         }`}
       />
-      <div className="text-gray-500 sm:text-sm cursor-pointer" id="request-filter-icon" onClick={handleFilterClick}>
+      <div className="text-gray-500 sm:text-sm cursor-pointer pointer-events-auto" id="request-filter-icon" onClick={handleFilterClick}>
         {isExpanded ? <IconX size={20} strokeWidth={1.5} /> : <IconFilter size={20} strokeWidth={1.5} />}
       </div>
     </div>
