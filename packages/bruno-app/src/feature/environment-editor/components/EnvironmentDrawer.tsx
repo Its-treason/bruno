@@ -32,7 +32,7 @@ export const EnvironmentDrawer: React.FC<EnvironmentDrawerProps> = ({ opened, on
       opened={opened}
       onClose={providerData.onClose}
       title="Environment editor"
-      size={'75%'}
+      size={1500}
       position={'right'}
       closeOnEscape={providerData.activeModal === null}
       styles={{
