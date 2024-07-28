@@ -7,9 +7,11 @@ export async function tests(context: RequestContext, folderData: FolderData[], r
   const collectionPostRequestScript = context.collection.root?.request?.tests ?? '';
   const folderLevelTests = folderData.map((data) => data.testScript).filter(Boolean);
   const requestPostRequestScript = context.requestItem.request.tests ?? '';
-  const postRequestScript = [requestPostRequestScript, ...folderLevelTests.reverse(), collectionPostRequestScript].join(
-    EOL
-  );
+
+  const postRequestScript =
+    context.collection.brunoConfig.scripts.flow === 'natural'
+      ? [collectionPostRequestScript, ...folderLevelTests, requestPostRequestScript].join(EOL)
+      : [requestPostRequestScript, ...folderLevelTests.reverse(), collectionPostRequestScript].join(EOL);
 
   context.debug.log('Test script', {
     postRequestScript

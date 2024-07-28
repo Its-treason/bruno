@@ -7,11 +7,11 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
   const collectionPostRequestScript = context.collection.root?.request?.script?.res ?? '';
   const folderLevelScripts = folderData.map((data) => data.postReqScript).filter(Boolean);
   const requestPostRequestScript = context.requestItem.request.script.res ?? '';
-  const postRequestScript = [
-    requestPostRequestScript,
-    ...folderLevelScripts.reverse(),
-    collectionPostRequestScript
-  ].join(EOL);
+
+  const postRequestScript =
+    context.collection.brunoConfig.scripts.flow === 'natural'
+      ? [collectionPostRequestScript, ...folderLevelScripts, requestPostRequestScript].join(EOL)
+      : [requestPostRequestScript, ...folderLevelScripts.reverse(), collectionPostRequestScript].join(EOL);
 
   context.debug.log('Post request script', {
     postRequestScript
