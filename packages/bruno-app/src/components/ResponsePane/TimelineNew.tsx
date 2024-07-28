@@ -6,7 +6,8 @@ import { useMemo } from 'react';
 import { Stack, Group, Text, Space, ThemeIcon, Alert, Spoiler } from '@mantine/core';
 import { IconAlertTriangle, IconInfoCircle } from '@tabler/icons-react';
 import classes from './TimelinewNew.module.css';
-import { RequestSslInfo, SslInfoModal } from './SslInfoModal';
+import { RequestSslInfo } from './SslInfo/types';
+import { SslInfoButton } from './SslInfo/SslInfoButton';
 
 type RequestTimeline = {
   // RequestInfo
@@ -58,7 +59,7 @@ const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
 
   const responseHeader: string[] = useMemo(() => {
     if (!item.statusCode) {
-      return ['N/A'];
+      return [];
     }
 
     const data = [`HTTP/${item.httpVersion} ${item.statusCode} ${item.statusMessage}`];
@@ -136,7 +137,7 @@ const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
             <Text c={'dimmed'}>{item.info}</Text>
           </>
         ) : null}
-        {item.sslInfo !== undefined ? <SslInfoModal sslInfo={item.sslInfo} /> : null}
+        {item.sslInfo !== undefined ? <SslInfoButton sslInfo={item.sslInfo} /> : null}
       </Group>
     </div>
   );

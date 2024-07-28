@@ -4,7 +4,7 @@ import { Buffer } from 'node:buffer';
 import { BrunoRequestOptions } from '../types';
 import { DetailedPeerCertificate, PeerCertificate, TLSSocket } from 'node:tls';
 import { Performance } from 'node:perf_hooks';
-import { collectSslInfo } from './collectSslInfo';
+import { collectSslInfo, RequestSslInfo } from './collectSslInfo';
 
 export type HttpRequestInfo = {
   // RequestInfo
@@ -16,7 +16,7 @@ export type HttpRequestInfo = {
   statusMessage?: String;
   headers?: Record<string, string[]>;
   httpVersion?: string;
-  sslInfo?: any;
+  sslInfo?: RequestSslInfo | false;
   responseBody?: Buffer;
   error?: string;
   info?: string;
@@ -64,6 +64,20 @@ async function doExecHttpRequest(info: HttpRequestInfo, options: BrunoRequestOpt
 
   let responseBuffers: Buffer[] = [];
 
+  req.on('socket', (socket: TLSSocket) => {
+    info.sslInfo = false;
+    socket.on('secureConnect', () => {
+      info.sslInfo = collectSslInfo(socket, options.hostname);
+      if (!info.sslInfo.authorized && options.abortOnInvalidSsl) {
+        req.destroy(
+          new Error(
+            `${info.sslInfo.authorizationError} (This can be ignore in app preferences: "SSL/TLS Certificate Verification")`
+          )
+        );
+      }
+    });
+  });
+
   req.on('response', (response) => {
     info.statusCode = response.statusCode;
     info.statusMessage = response.statusMessage;
@@ -73,11 +87,6 @@ async function doExecHttpRequest(info: HttpRequestInfo, options: BrunoRequestOpt
       return acc;
     }, {});
     info.httpVersion = response.httpVersion;
-    info.sslInfo = false;
-
-    if (response.socket instanceof TLSSocket) {
-      info.sslInfo = collectSslInfo(response.socket, options.hostname);
-    }
 
     response.on('data', (chunk) => {
       if (!Buffer.isBuffer(chunk)) {

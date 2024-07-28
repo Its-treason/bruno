@@ -351,6 +351,7 @@ export type BrunoRequestOptions = Omit<RequestOptions, 'host'> & {
   protocol: string;
   hostname: string;
   path: string;
+  abortOnInvalidSsl: boolean;
 } & TlsOptions;
 
 export type RequestContext = {
