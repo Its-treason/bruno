@@ -52,17 +52,26 @@ const findItemInCollection = (collection, itemId) => {
   return item;
 };
 
-const getAllRequestsInFolderRecursively = (folder = {}) => {
-  let requests = [];
+const getAllRequestsInFolderRecursively = (items = []) => {
+  // This is the sort function from useRequestList.tsx
+  items.sort((a, b) => {
+    if (a.seq === undefined && b.seq !== undefined) {
+      return -1;
+    } else if (a.seq !== undefined && b.seq === undefined) {
+      return 1;
+    } else if (a.seq === undefined && b.seq === undefined) {
+      return 0;
+    }
+    return a.seq < b.seq ? -1 : 1;
+  });
 
-  if (folder.items && folder.items.length) {
-    folder.items.forEach((item) => {
-      if (item.type !== 'folder') {
-        requests.push(item);
-      } else {
-        requests = requests.concat(getAllRequestsInFolderRecursively(item));
-      }
-    });
+  const requests = [];
+  for (const item of items) {
+    if (item.type !== 'folder') {
+      requests.push(item);
+    } else {
+      requests.push(...getAllRequestsInFolderRecursively(item.items));
+    }
   }
 
   return requests;

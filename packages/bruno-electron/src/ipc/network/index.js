@@ -443,8 +443,9 @@ const registerNetworkIpc = (mainWindow) => {
 
     const folderRequests = [];
     if (recursive) {
-      folderRequests.push(...getAllRequestsInFolderRecursively(sortFolder(folder)));
+      folderRequests.push(...getAllRequestsInFolderRecursively(folder.items));
     } else {
+      // Filter out folder from current folder
       each(folder.items, (item) => {
         if (item.request) {
           folderRequests.push(item);
@@ -1042,8 +1043,7 @@ const registerNetworkIpc = (mainWindow) => {
         let folderRequests = [];
 
         if (recursive) {
-          let sortedFolder = sortFolder(folder);
-          folderRequests = getAllRequestsInFolderRecursively(sortedFolder);
+          folderRequests = getAllRequestsInFolderRecursively(folder.items);
         } else {
           each(folder.items, (item) => {
             if (item.request) {
