@@ -17,6 +17,7 @@ import { RenameCollectionModal } from './modals/RenameCollectionModal';
 import { RenameItemModal } from './modals/RenameItemModal';
 import { getDefaultRequestPaneTab, isItemARequest } from 'utils/collections';
 import {
+  runCollectionFolder,
   selectEnvironment,
   sendRequest,
   shellOpenCollectionPath
@@ -149,8 +150,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
       })
     );
   }, []);
-  const openRunner = useCallback((collectionUid: string) => {
-    // TODO: This needs to handle folder stuff
+  const openRunner = useCallback((collectionUid: string, itemUid?: string) => {
     dispatch(
       addTab({
         uid: uuid(),
@@ -158,6 +158,9 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
         type: 'collection-runner'
       })
     );
+    if (itemUid) {
+      dispatch(runCollectionFolder(collectionUid, itemUid, true));
+    }
   }, []);
   const runRequest = useCallback((collectionUid: string, itemUid: string) => {
     const [_, item] = getCollectionAndItem(collectionsRef.current, collectionUid, itemUid);

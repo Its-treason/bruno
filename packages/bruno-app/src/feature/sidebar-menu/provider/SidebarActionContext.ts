@@ -27,7 +27,7 @@ export type SidebarActionContextData = {
   itemClicked: (collectionUid: string, itemUid?: string) => void;
   openCollectionSettings: (collectionUid: string) => void;
   openFolderSettings: (collectionUid: string, folderUid: string) => void;
-  openRunner: (collectionUid: string) => void;
+  openRunner: (collectionUid: string, itemUid?: string) => void;
   runRequest: (collectionUid: string, itemUid: string) => void;
 };
 

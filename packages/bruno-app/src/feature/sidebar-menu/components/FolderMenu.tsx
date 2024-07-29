@@ -23,7 +23,7 @@ type FolderMenuProps = {
   collectionUid: string;
   itemUid: string;
   onChange: () => void;
-  opened: boolean,
+  opened: boolean;
 };
 
 export const FolderMenu: React.FC<FolderMenuProps> = ({ collectionUid, itemUid, ...menuProps }) => {
@@ -76,7 +76,7 @@ export const FolderMenu: React.FC<FolderMenuProps> = ({ collectionUid, itemUid, 
 
         <Menu.Divider />
 
-        <Menu.Item leftSection={<IconRun style={ICON_STYLE} />} onClick={() => openRunner(collectionUid)}>
+        <Menu.Item leftSection={<IconRun style={ICON_STYLE} />} onClick={() => openRunner(collectionUid, itemUid)}>
           Run
         </Menu.Item>
 
