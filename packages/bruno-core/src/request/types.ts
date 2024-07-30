@@ -342,7 +342,7 @@ export type BrunoConfig = {
     filesystemAccess: {
       allow: boolean;
     };
-    flow?: 'sandwich' | 'natural';
+    flow?: 'sandwich' | 'sequential';
   };
 };
 

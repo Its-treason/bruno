@@ -392,7 +392,7 @@ const registerNetworkIpc = (mainWindow) => {
 
     // run post-response script
     const responseScript = compact(
-      scriptingConfig.flow === 'natural'
+      scriptingConfig.flow === 'sequential'
         ? [get(collectionRoot, 'request.script.res'), get(request, 'script.res')]
         : [get(request, 'script.res'), get(collectionRoot, 'request.script.res')]
     ).join(os.EOL);
@@ -782,7 +782,7 @@ const registerNetworkIpc = (mainWindow) => {
       // run tests
       const testScript = item.draft ? get(item.draft, 'request.tests') : get(item, 'request.tests');
       const testFile = compact(
-        scriptingConfig.flow === 'natural'
+        scriptingConfig.flow === 'sequential'
           ? [get(collectionRoot, 'request.tests'), testScript]
           : [testScript, get(collectionRoot, 'request.tests')]
       ).join(os.EOL);
@@ -1230,7 +1230,7 @@ const registerNetworkIpc = (mainWindow) => {
             // run tests
             const testScript = item.draft ? get(item.draft, 'request.tests') : get(item, 'request.tests');
             const testFile = compact(
-              scriptingConfig.flow === 'natural'
+              scriptingConfig.flow === 'sequential'
                 ? [get(collectionRoot, 'request.tests'), testScript]
                 : [testScript, get(collectionRoot, 'request.tests')]
             ).join(os.EOL);
