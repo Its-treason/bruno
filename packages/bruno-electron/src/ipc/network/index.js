@@ -39,6 +39,7 @@ const {
 const Oauth2Store = require('../../store/oauth2');
 const { request: newRequest } = require('@usebruno/core');
 const iconv = require('iconv-lite');
+const { parse, LosslessNumber } = require('lossless-json');
 
 const safeStringifyJSON = (data) => {
   try {
@@ -1337,9 +1338,12 @@ const registerNetworkIpc = (mainWindow) => {
 
     let data = null;
     try {
-      // TODO: Load encoding conditionally
-      data = JSON.parse(rawData.toString('utf-8'));
-    } catch {
+      data = parse(rawData.toString('utf-8'), null, (value) => {
+        // By default, this will return the LosslessNumber object, but because it's passed into ipc we
+        // need to convert it into a number because LosslessNumber is converted into a weird object
+        return new LosslessNumber(value).valueOf();
+      });
+    } catch (e) {
       data = rawData.toString('utf-8');
     }
 
