@@ -9,7 +9,7 @@ export const CollectionStats: React.FC = () => {
 
   const { requestCount, collectionCount, environmentCount } = useMemo(() => {
     const requestCount = collections.reduce((acc, collection) => {
-      return acc + flattenItems(collection.items).length;
+      return acc + flattenItems(collection.items).filter((i) => i.type !== 'folder').length;
     }, 0);
     const environmentCount = collections.reduce((acc, collection) => {
       return acc + collection.environments.length;
