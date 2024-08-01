@@ -3,7 +3,7 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { Editor, Monaco, useMonaco } from '@monaco-editor/react';
-import { useEffect, useId, useRef, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import { debounce } from 'lodash';
 import {
   BrunoEditorCallbacks,
@@ -11,12 +11,12 @@ import {
   addMonacoSingleLineActions,
   setMonacoVariables
 } from 'utils/monaco/monacoUtils';
-import { getAllVariables } from 'utils/collections';
 import { useTheme } from 'providers/Theme';
 import { editor } from 'monaco-editor';
 import { Paper, Text } from '@mantine/core';
 import classes from './MonacoSingleline.module.scss';
 import { CollectionSchema } from '@usebruno/schema';
+import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
 
 type MonacoSinglelineProps = {
   collection?: CollectionSchema;
@@ -86,16 +86,16 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
     addMonacoSingleLineActions(editor, monaco, allowLinebreaks, setHeight);
   };
 
+  const { variables } = useContext(CodeEditorVariableContext);
   useEffect(() => {
-    const allVariables = getAllVariables(collection);
-    if (allVariables && withVariables && monaco) {
-      setMonacoVariables(monaco, allVariables, 'plaintext');
+    if (withVariables && monaco && variables) {
+      setMonacoVariables(monaco, variables, 'plaintext');
     }
-  }, [collection.runtimeVariables, collection.activeEnvironmentUid, withVariables, monaco]);
+  }, [variables, withVariables, monaco]);
 
   return (
     <div>
-      {label ? <Text size='sm'>{label}</Text>: null}
+      {label ? <Text size="sm">{label}</Text> : null}
       <Paper className={asInput ? classes.paper : classes.paperHidden} data-focused={focused}>
         <Editor
           options={{

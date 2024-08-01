@@ -796,16 +796,18 @@ export const getAllVariables = (collection, item) => {
   const pathParams = getPathParams(item);
 
   return {
-    ...environmentVariables,
-    ...requestVariables,
-    ...collection.runtimeVariables,
+    variables: {
+      ...environmentVariables,
+      ...requestVariables,
+      ...collection.runtimeVariables,
+      process: {
+        env: {
+          ...collection?.processEnvVariables
+        }
+      }
+    },
     pathParams: {
       ...pathParams
-    },
-    process: {
-      env: {
-        ...collection?.processEnvVariables
-      }
     }
   };
 };

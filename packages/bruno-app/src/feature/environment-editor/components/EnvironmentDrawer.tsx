@@ -17,6 +17,7 @@ import { RenameEnvironmentModal } from './modals/RenameEnvironmentModal';
 import { ImportEnvironmentModal } from './modals/ImportEnvironmentModal';
 import { ManageSecretModals } from './modals/ManageSecretsModal';
 import { CollectionSchema } from '@usebruno/schema';
+import { CodeEditorVariableProvider } from 'components/CodeEditor/CodeEditorVariableProvider';
 
 type EnvironmentDrawerProps = {
   opened: boolean;
@@ -72,8 +73,10 @@ export const EnvironmentDrawer: React.FC<EnvironmentDrawerProps> = ({ opened, on
         <ManageSecretModals />
 
         <Box className={classes.content}>
-          <EnvironmentList />
-          <EnvironmentForm />
+          <CodeEditorVariableProvider ignoreRequestVariables>
+            <EnvironmentList />
+            <EnvironmentForm />
+          </CodeEditorVariableProvider>
         </Box>
       </EnvironmentEditorProvider.Provider>
     </Drawer>

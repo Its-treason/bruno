@@ -3,14 +3,14 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { Editor, Monaco, useMonaco } from '@monaco-editor/react';
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
 import { BrunoEditorCallbacks, addMonacoCommands, setMonacoVariables } from 'utils/monaco/monacoUtils';
-import { getAllVariables } from 'utils/collections';
 import { useTheme } from 'providers/Theme';
 import { editor } from 'monaco-editor';
 import { CollectionSchema } from '@usebruno/schema';
-import classes from "./Monaco.module.scss";
+import classes from './Monaco.module.scss';
+import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
 
 const languages: Record<string, string> = {
   text: 'plaintext',
@@ -102,12 +102,12 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
     addMonacoCommands(monaco, editor, callbackRefs.current);
   };
 
+  const { variables } = useContext(CodeEditorVariableContext);
   useEffect(() => {
-    if (withVariables && monaco && collection) {
-      const allVariables = getAllVariables(collection);
-      setMonacoVariables(monaco, allVariables, languages[mode] ?? 'plaintext');
+    if (withVariables && monaco && variables) {
+      setMonacoVariables(monaco, variables, languages[mode] ?? 'plaintext');
     }
-  }, [collection?.runtimeVariables, collection?.activeEnvironmentUid, withVariables, mode]);
+  }, [variables, withVariables, mode, monaco]);
 
   return (
     <Editor

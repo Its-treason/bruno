@@ -4,6 +4,7 @@ import { useSelector } from 'react-redux';
 import { Sidebar } from 'src/feature/sidebar';
 import classes from './Main.module.scss';
 import { Homepage } from 'src/feature/homepage';
+import { CodeEditorVariableProvider } from 'components/CodeEditor/CodeEditorVariableProvider';
 
 export function Main() {
   const activeTabUid = useSelector((state) => state.tabs.activeTabUid);
@@ -18,7 +19,9 @@ export function Main() {
         ) : (
           <>
             <RequestTabs />
-            <RequestTabPanel key={activeTabUid} />
+            <CodeEditorVariableProvider>
+              <RequestTabPanel key={activeTabUid} />
+            </CodeEditorVariableProvider>
           </>
         )}
       </section>
