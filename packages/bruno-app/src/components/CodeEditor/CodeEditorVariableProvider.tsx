@@ -1,8 +1,9 @@
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { CodeEditorVariableContext } from './CodeEditorVariableContext';
 import { useSelector } from 'react-redux';
 import { find } from 'lodash';
 import { findCollectionByUid, findItemInCollection, getAllVariables } from 'utils/collections';
+import { shallowEqual } from 'utils/common';
 
 type CodeEditorVariableProviderProps = {
   children: ReactNode;
@@ -14,11 +15,12 @@ export const CodeEditorVariableProvider: React.FC<CodeEditorVariableProviderProp
   children,
   ignoreRequestVariables = false
 }) => {
+  const [variables, setVariables] = useState({ variables: {}, pathParams: {} });
   const tabs = useSelector<any>((state) => state.tabs.tabs) as any[];
   const collections = useSelector<any>((state) => state.collections.collections);
   const activeTabUid = useSelector<any>((state) => state.tabs.activeTabUid);
 
-  const variables = useMemo(() => {
+  useEffect(() => {
     const activeTab = find(tabs, (t) => t.uid === activeTabUid);
     if (!activeTab) {
       return;
@@ -29,7 +31,12 @@ export const CodeEditorVariableProvider: React.FC<CodeEditorVariableProviderProp
     }
     const item = !ignoreRequestVariables ? findItemInCollection(collection, activeTabUid) : null;
 
-    return getAllVariables(collection, item);
+    const newVariables = getAllVariables(collection, item);
+
+    if (shallowEqual(newVariables, variables) === false) {
+      console.log(newVariables.variables);
+      setVariables(newVariables);
+    }
   }, [activeTabUid, collections]);
 
   return <CodeEditorVariableContext.Provider value={variables}>{children}</CodeEditorVariableContext.Provider>;

@@ -1,17 +1,11 @@
-import React from 'react';
-import get from 'lodash/get';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { updateRequestGraphqlVariables } from 'providers/ReduxStore/slices/collections';
 import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
-import { useTheme } from 'providers/Theme';
 import StyledWrapper from './StyledWrapper';
 import CodeEditor from 'components/CodeEditor';
 
 const GraphQLVariables = ({ variables, item, collection }) => {
   const dispatch = useDispatch();
-
-  const { displayedTheme } = useTheme();
-  const preferences = useSelector((state) => state.app.preferences);
 
   const onEdit = (value) => {
     dispatch(
@@ -28,16 +22,7 @@ const GraphQLVariables = ({ variables, item, collection }) => {
 
   return (
     <StyledWrapper className="w-full">
-      <CodeEditor
-        collection={collection}
-        value={variables || ''}
-        theme={displayedTheme}
-        font={get(preferences, 'font.codeFont', 'default')}
-        onChange={onEdit}
-        mode="javascript"
-        onRun={onRun}
-        onSave={onSave}
-      />
+      <CodeEditor value={variables || ''} onChange={onEdit} mode="javascript" onRun={onRun} onSave={onSave} />
     </StyledWrapper>
   );
 };

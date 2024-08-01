@@ -3,7 +3,6 @@ import get from 'lodash/get';
 import cloneDeep from 'lodash/cloneDeep';
 import { IconTrash } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
-import { useTheme } from 'providers/Theme';
 import {
   addMultipartFormParam,
   updateMultipartFormParam,
@@ -16,7 +15,6 @@ import FilePickerEditor from 'components/FilePickerEditor';
 
 const MultipartFormParams = ({ item, collection }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
   const params = item.draft ? get(item, 'draft.request.body.multipartForm') : get(item, 'request.body.multipartForm');
 
   const addParam = () => {
@@ -126,7 +124,6 @@ const MultipartFormParams = ({ item, collection }) => {
                         <CodeEditor
                           singleLine
                           onSave={onSave}
-                          theme={storedTheme}
                           value={param.value}
                           onChange={(newValue) =>
                             handleParamChange(
@@ -140,10 +137,8 @@ const MultipartFormParams = ({ item, collection }) => {
                             )
                           }
                           onRun={handleRun}
-                          allowNewlines={true}
-                          allowLinebreaks={true}
-                          collection={collection}
-                          item={item}
+                          allowNewlines
+                          allowLinebreaks
                         />
                       )}
                     </td>

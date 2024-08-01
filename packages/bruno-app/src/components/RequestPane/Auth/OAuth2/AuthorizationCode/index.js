@@ -12,7 +12,6 @@ import CodeEditor from 'components/CodeEditor';
 
 const OAuth2AuthorizationCode = ({ item, collection }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
 
   const oAuth = item.draft ? get(item, 'draft.request.auth.oauth2', {}) : get(item, 'request.auth.oauth2', {});
 
@@ -87,13 +86,10 @@ const OAuth2AuthorizationCode = ({ item, collection }) => {
             <div className="single-line-editor-wrapper">
               <CodeEditor
                 value={oAuth[key] || ''}
-                theme={storedTheme}
                 onSave={handleSave}
                 onChange={(val) => handleChange(key, val)}
                 onRun={handleRun}
-                collection={collection}
                 singleLine
-                item={item}
               />
             </div>
           </div>

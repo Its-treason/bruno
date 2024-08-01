@@ -1,6 +1,4 @@
-import React from 'react';
 import get from 'lodash/get';
-import { useTheme } from 'providers/Theme';
 import { useDispatch } from 'react-redux';
 import CodeEditor from 'src/components/CodeEditor';
 import { updateCollectionAuth } from 'providers/ReduxStore/slices/collections';
@@ -9,7 +7,6 @@ import StyledWrapper from './StyledWrapper';
 
 const AwsV4Auth = ({ collection }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
 
   const awsv4Auth = get(collection, 'root.request.auth.awsv4', {});
 
@@ -123,11 +120,10 @@ const AwsV4Auth = ({ collection }) => {
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
           singleLine
+          withVariables
           value={awsv4Auth.accessKeyId || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleAccessKeyIdChange(val)}
-          collection={collection}
         />
       </div>
 
@@ -135,11 +131,10 @@ const AwsV4Auth = ({ collection }) => {
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
           singleLine
+          withVariables
           value={awsv4Auth.secretAccessKey || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleSecretAccessKeyChange(val)}
-          collection={collection}
         />
       </div>
 
@@ -147,11 +142,10 @@ const AwsV4Auth = ({ collection }) => {
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
           singleLine
+          withVariables
           value={awsv4Auth.sessionToken || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleSessionTokenChange(val)}
-          collection={collection}
         />
       </div>
 
@@ -159,11 +153,10 @@ const AwsV4Auth = ({ collection }) => {
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
           singleLine
+          withVariables
           value={awsv4Auth.service || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleServiceChange(val)}
-          collection={collection}
         />
       </div>
 
@@ -172,10 +165,8 @@ const AwsV4Auth = ({ collection }) => {
         <CodeEditor
           singleLine
           value={awsv4Auth.region || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleRegionChange(val)}
-          collection={collection}
         />
       </div>
 
@@ -184,10 +175,8 @@ const AwsV4Auth = ({ collection }) => {
         <CodeEditor
           singleLine
           value={awsv4Auth.profileName || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleProfileNameChange(val)}
-          collection={collection}
         />
       </div>
     </StyledWrapper>

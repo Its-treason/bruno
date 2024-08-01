@@ -47,13 +47,10 @@ const Script = ({ collection, folder }) => {
       <div className="flex-1 mt-2">
         <div className="mb-1 title text-xs">Pre Request</div>
         <CodeEditor
-          collection={collection}
           value={requestScript || ''}
-          theme={displayedTheme}
           onChange={onRequestScriptEdit}
           mode="javascript"
           onSave={handleSave}
-          font={get(preferences, 'font.codeFont', 'default')}
           height="30vh"
         />
       </div>

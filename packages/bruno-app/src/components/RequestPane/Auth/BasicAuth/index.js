@@ -1,6 +1,5 @@
 import React from 'react';
 import get from 'lodash/get';
-import { useTheme } from 'providers/Theme';
 import { useDispatch } from 'react-redux';
 import CodeEditor from 'src/components/CodeEditor';
 import { updateAuth } from 'providers/ReduxStore/slices/collections';
@@ -9,7 +8,6 @@ import StyledWrapper from './StyledWrapper';
 
 const BasicAuth = ({ item, collection }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
 
   const basicAuth = item.draft ? get(item, 'draft.request.auth.basic', {}) : get(item, 'request.auth.basic', {});
 
@@ -51,12 +49,9 @@ const BasicAuth = ({ item, collection }) => {
         <CodeEditor
           singleLine
           value={basicAuth.username || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleUsernameChange(val)}
           onRun={handleRun}
-          collection={collection}
-          item={item}
         />
       </div>
 
@@ -65,7 +60,6 @@ const BasicAuth = ({ item, collection }) => {
         <CodeEditor
           singleLine
           value={basicAuth.password || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handlePasswordChange(val)}
           onRun={handleRun}

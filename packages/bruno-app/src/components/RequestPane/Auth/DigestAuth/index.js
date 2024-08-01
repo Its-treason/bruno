@@ -69,8 +69,6 @@ const DigestAuth = ({ item, collection }) => {
           onSave={handleSave}
           onChange={(val) => handlePasswordChange(val)}
           onRun={handleRun}
-          collection={collection}
-          item={item}
         />
       </div>
     </StyledWrapper>

@@ -62,8 +62,6 @@ const GraphQLRequestPane = ({ item, collection, leftPaneWidth, onSchemaLoad, tog
       case 'query': {
         return (
           <CodeEditor
-            collection={collection}
-            theme={displayedTheme}
             schema={schema}
             width={leftPaneWidth}
             onSave={onSave}

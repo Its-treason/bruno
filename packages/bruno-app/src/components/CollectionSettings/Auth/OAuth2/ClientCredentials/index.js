@@ -1,6 +1,5 @@
 import React from 'react';
 import get from 'lodash/get';
-import { useTheme } from 'providers/Theme';
 import { useDispatch } from 'react-redux';
 import { saveCollectionRoot, sendCollectionOauth2Request } from 'providers/ReduxStore/slices/collections/actions';
 import StyledWrapper from './StyledWrapper';
@@ -10,7 +9,6 @@ import CodeEditor from 'components/CodeEditor';
 
 const OAuth2ClientCredentials = ({ collection }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
 
   const oAuth = get(collection, 'root.request.auth.oauth2', {});
 
@@ -49,11 +47,9 @@ const OAuth2ClientCredentials = ({ collection }) => {
             <div className="single-line-editor-wrapper">
               <CodeEditor
                 value={oAuth[key] || ''}
-                theme={storedTheme}
                 onSave={handleSave}
                 onChange={(val) => handleChange(key, val)}
                 onRun={handleRun}
-                collection={collection}
                 singleLine
               />
             </div>

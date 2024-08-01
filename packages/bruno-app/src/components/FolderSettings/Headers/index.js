@@ -3,7 +3,6 @@ import get from 'lodash/get';
 import cloneDeep from 'lodash/cloneDeep';
 import { IconTrash } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
-import { useTheme } from 'providers/Theme';
 import { addFolderHeader, updateFolderHeader, deleteFolderHeader } from 'providers/ReduxStore/slices/collections';
 import { saveFolderRoot } from 'providers/ReduxStore/slices/collections/actions';
 import StyledWrapper from './StyledWrapper';
@@ -13,7 +12,6 @@ const headerAutoCompleteList = StandardHTTPHeaders.map((e) => e.header);
 
 const Headers = ({ collection, folder }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
   const headers = get(folder, 'root.request.headers', []);
 
   const addHeader = () => {
@@ -82,7 +80,6 @@ const Headers = ({ collection, folder }) => {
                     <td>
                       <CodeEditor
                         value={header.name}
-                        theme={storedTheme}
                         onSave={handleSave}
                         onChange={(newValue) =>
                           handleHeaderValueChange(
@@ -96,7 +93,6 @@ const Headers = ({ collection, folder }) => {
                           )
                         }
                         autocomplete={headerAutoCompleteList}
-                        collection={collection}
                         singleLine
                         withVariables
                       />
@@ -104,7 +100,6 @@ const Headers = ({ collection, folder }) => {
                     <td>
                       <CodeEditor
                         value={header.value}
-                        theme={storedTheme}
                         onSave={handleSave}
                         onChange={(newValue) =>
                           handleHeaderValueChange(
@@ -117,7 +112,6 @@ const Headers = ({ collection, folder }) => {
                             'value'
                           )
                         }
-                        collection={collection}
                         singleLine
                         withVariables
                       />

@@ -38,7 +38,6 @@ const BearerAuth = ({ item, collection }) => {
         <CodeEditor
           singleLine
           value={bearerToken}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleTokenChange(val)}
           onRun={handleRun}

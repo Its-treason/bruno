@@ -3,7 +3,6 @@ import get from 'lodash/get';
 import cloneDeep from 'lodash/cloneDeep';
 import { IconTrash } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
-import { useTheme } from 'providers/Theme';
 import {
   addCollectionHeader,
   updateCollectionHeader,
@@ -18,7 +17,6 @@ const headerAutoCompleteList = StandardHTTPHeaders.map((e) => e.header);
 
 const Headers = ({ collection }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
   const headers = get(collection, 'root.request.headers', []);
 
   const addHeader = () => {
@@ -85,7 +83,6 @@ const Headers = ({ collection }) => {
                       <CodeEditor
                         singleLine
                         value={header.name}
-                        theme={storedTheme}
                         onSave={handleSave}
                         onChange={(newValue) =>
                           handleHeaderValueChange(
@@ -99,14 +96,12 @@ const Headers = ({ collection }) => {
                           )
                         }
                         autocomplete={headerAutoCompleteList}
-                        collection={collection}
                       />
                     </td>
                     <td>
                       <CodeEditor
                         singleLine
                         value={header.value}
-                        theme={storedTheme}
                         onSave={handleSave}
                         onChange={(newValue) =>
                           handleHeaderValueChange(
@@ -119,7 +114,6 @@ const Headers = ({ collection }) => {
                             'value'
                           )
                         }
-                        collection={collection}
                         autocomplete={MimeTypes}
                       />
                     </td>

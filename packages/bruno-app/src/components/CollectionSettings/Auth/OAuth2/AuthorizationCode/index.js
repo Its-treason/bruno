@@ -85,11 +85,9 @@ const OAuth2AuthorizationCode = ({ collection }) => {
             <div className="single-line-editor-wrapper">
               <CodeEditor
                 value={oAuth[key] || ''}
-                theme={storedTheme}
                 onSave={handleSave}
                 onChange={(val) => handleChange(key, val)}
                 onRun={handleRun}
-                collection={collection}
                 singleLine
               />
             </div>

@@ -31,8 +31,6 @@ const Tests = ({ item, collection }) => {
       <CodeEditor
         collection={collection}
         value={tests || ''}
-        theme={displayedTheme}
-        font={get(preferences, 'font.codeFont', 'default')}
         onChange={onEdit}
         mode="javascript"
         onRun={onRun}

@@ -28,7 +28,7 @@ export const HeaderTableRow: React.FC<EnvironmentTableRowProps> = ({
       <Table.Td w={0}>
         <Checkbox
           checked={header.enabled}
-          aria-label='Header enabled'
+          aria-label="Header enabled"
           onChange={(evt) => {
             onUpdateHeader({
               ...header,
@@ -46,7 +46,6 @@ export const HeaderTableRow: React.FC<EnvironmentTableRowProps> = ({
               name
             });
           }}
-          collection={collection}
           withVariables
           singleLine
           asInput
@@ -61,7 +60,6 @@ export const HeaderTableRow: React.FC<EnvironmentTableRowProps> = ({
               value
             });
           }}
-          collection={collection}
           withVariables
           singleLine
           asInput

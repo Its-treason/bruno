@@ -56,18 +56,7 @@ const QueryResultPreview = ({
       return <PdfResultViewer dataBuffer={dataBuffer} />;
     }
     case 'pretty': {
-      return (
-        <CodeEditor
-          collection={collection}
-          font={get(preferences, 'font.codeFont', 'default')}
-          theme={displayedTheme}
-          onRun={onRun}
-          value={formattedData}
-          mode={mode}
-          height={'100%'}
-          readOnly
-        />
-      );
+      return <CodeEditor onRun={onRun} value={formattedData} mode={mode} height={'100%'} readOnly />;
     }
     case 'preview-audio': {
       return (
@@ -84,18 +73,7 @@ const QueryResultPreview = ({
     }
     default:
     case 'raw': {
-      return (
-        <CodeEditor
-          collection={collection}
-          font={get(preferences, 'font.codeFont', 'default')}
-          theme={displayedTheme}
-          onRun={onRun}
-          value={atob(dataBuffer)}
-          mode={mode}
-          height={'100%'}
-          readOnly
-        />
-      );
+      return <CodeEditor onRun={onRun} value={atob(dataBuffer)} mode={mode} height={'100%'} readOnly />;
     }
   }
 };

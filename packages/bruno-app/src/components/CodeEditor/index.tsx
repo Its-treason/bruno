@@ -1,30 +1,17 @@
 import { MonacoSingleline } from './Monaco/MonacoSingleline';
 import { MonacoEditor } from './Monaco/Monaco';
-import { CollectionSchema } from '@usebruno/schema';
+import { ComponentProps } from 'react';
 
-type CodeEditorProps = {
-  collection?: CollectionSchema;
-  font?: string;
-  fontSize?: number;
-  mode?: string;
-  label?: string;
-  onChange?: (value: any) => void;
-  onRun?: () => void;
-  onSave?: () => void;
-  readOnly?: boolean;
-  theme?: string;
-  value?: string;
-  defaultValue?: string;
-  singleLine?: boolean;
-  asInput?: boolean;
-  withVariables?: boolean;
-  allowLinebreaks?: boolean;
-  hideMinimap?: boolean;
-  height?: string;
-};
+type CodeEditorProps =
+  | ({
+      singleLine: true;
+    } & ComponentProps<typeof MonacoSingleline>)
+  | ({
+      singleLine?: false;
+    } & ComponentProps<typeof MonacoEditor>);
 
-const CodeEditor: React.FC<CodeEditorProps> = ({ singleLine, ...forwardProps }) => {
-  if (singleLine) {
+const CodeEditor: React.FC<CodeEditorProps> = ({ singleLine = false, ...forwardProps }) => {
+  if (singleLine === true) {
     return <MonacoSingleline {...forwardProps} />;
   }
   return <MonacoEditor {...forwardProps} />;

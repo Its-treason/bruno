@@ -79,13 +79,12 @@ export const BulkEditEditor: React.FC<BulkEditEditorProps> = ({ item, collection
       >
         Close bulk editor
       </Button>
-      <Flex flex='1'>
+      <Flex flex="1">
         <CodeEditor
           value={bulkText}
           onChange={(value) => handleBulkEdit(value)}
           onRun={onRun}
           onSave={onSave}
-          collection={collection}
           hideMinimap
           height="100%"
         />

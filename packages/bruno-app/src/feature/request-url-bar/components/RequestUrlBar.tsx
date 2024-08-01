@@ -55,15 +55,7 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item, 
     <Paper className={classes.bar} m={'xs'}>
       <MethodSelector value={method} onChange={onMethodSelect} />
 
-      <CodeEditor
-        singleLine
-        withVariables
-        value={url}
-        onSave={onSave}
-        onChange={onUrlChange}
-        onRun={handleRun}
-        collection={collection}
-      />
+      <CodeEditor singleLine withVariables value={url} onSave={onSave} onChange={onUrlChange} onRun={handleRun} />
 
       <Tooltip label={'Save request'}>
         <Indicator position="top-start" disabled={!item.draft} offset={8}>

@@ -118,7 +118,6 @@ const VarsTable = ({ item, collection, vars, varType }) => {
                       <CodeEditor
                         singleLine
                         value={_var.value}
-                        theme={storedTheme}
                         onSave={onSave}
                         onChange={(newValue) =>
                           handleVarChange(
@@ -132,7 +131,6 @@ const VarsTable = ({ item, collection, vars, varType }) => {
                           )
                         }
                         onRun={handleRun}
-                        collection={collection}
                       />
                     </td>
                     <td>

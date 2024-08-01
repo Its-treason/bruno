@@ -14,7 +14,7 @@ type EnvironmentTableRowProps = {
 };
 
 export const EnvironmentTableRow: React.FC<EnvironmentTableRowProps> = ({ pos }) => {
-  const { form, collection } = useEnvironmentEditor();
+  const { form } = useEnvironmentEditor();
 
   return (
     <Table.Tr className={classes.tableRow}>
@@ -31,8 +31,6 @@ export const EnvironmentTableRow: React.FC<EnvironmentTableRowProps> = ({ pos })
         <CodeEditor
           {...form.getInputProps(`variables.${pos}.value`)}
           key={form.key(`variables.${pos}.value`)}
-          theme={'dark'}
-          collection={collection}
           withVariables
           singleLine
           asInput

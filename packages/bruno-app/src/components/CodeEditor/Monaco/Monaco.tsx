@@ -44,7 +44,6 @@ const languages: Record<string, string> = {
 };
 
 type MonacoProps = {
-  collection?: CollectionSchema;
   readOnly?: boolean;
   value?: string;
   withVariables?: boolean;
@@ -58,7 +57,6 @@ type MonacoProps = {
 };
 
 export const MonacoEditor: React.FC<MonacoProps> = ({
-  collection,
   mode = 'plaintext',
   onChange,
   onRun,

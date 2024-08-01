@@ -1,16 +1,13 @@
 import React, { useState } from 'react';
 import get from 'lodash/get';
-import { useTheme } from 'providers/Theme';
 import { useDispatch } from 'react-redux';
 import CodeEditor from 'src/components/CodeEditor';
 import { updateAuth } from 'providers/ReduxStore/slices/collections';
 import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import StyledWrapper from './StyledWrapper';
-import { update } from 'lodash';
 
-const AwsV4Auth = ({ onTokenChange, item, collection }) => {
+const AwsV4Auth = ({ item, collection }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
 
   const awsv4Auth = item.draft ? get(item, 'draft.request.auth.awsv4', {}) : get(item, 'request.auth.awsv4', {});
 
@@ -132,12 +129,9 @@ const AwsV4Auth = ({ onTokenChange, item, collection }) => {
         <CodeEditor
           singleLine
           value={awsv4Auth.accessKeyId || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleAccessKeyIdChange(val)}
           onRun={handleRun}
-          collection={collection}
-          item={item}
         />
       </div>
 
@@ -146,12 +140,9 @@ const AwsV4Auth = ({ onTokenChange, item, collection }) => {
         <CodeEditor
           singleLine
           value={awsv4Auth.secretAccessKey || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleSecretAccessKeyChange(val)}
           onRun={handleRun}
-          collection={collection}
-          item={item}
         />
       </div>
 
@@ -160,12 +151,9 @@ const AwsV4Auth = ({ onTokenChange, item, collection }) => {
         <CodeEditor
           singleLine
           value={awsv4Auth.sessionToken || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleSessionTokenChange(val)}
           onRun={handleRun}
-          collection={collection}
-          item={item}
         />
       </div>
 
@@ -174,12 +162,9 @@ const AwsV4Auth = ({ onTokenChange, item, collection }) => {
         <CodeEditor
           singleLine
           value={awsv4Auth.service || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleServiceChange(val)}
           onRun={handleRun}
-          collection={collection}
-          item={item}
         />
       </div>
 
@@ -188,12 +173,9 @@ const AwsV4Auth = ({ onTokenChange, item, collection }) => {
         <CodeEditor
           singleLine
           value={awsv4Auth.region || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleRegionChange(val)}
           onRun={handleRun}
-          collection={collection}
-          item={item}
         />
       </div>
 
@@ -202,12 +184,9 @@ const AwsV4Auth = ({ onTokenChange, item, collection }) => {
         <CodeEditor
           singleLine
           value={awsv4Auth.profileName || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleProfileNameChange(val)}
           onRun={handleRun}
-          collection={collection}
-          item={item}
         />
       </div>
     </StyledWrapper>

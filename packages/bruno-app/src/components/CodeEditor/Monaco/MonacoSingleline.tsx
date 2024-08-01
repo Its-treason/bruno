@@ -19,7 +19,6 @@ import { CollectionSchema } from '@usebruno/schema';
 import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
 
 type MonacoSinglelineProps = {
-  collection?: CollectionSchema;
   readOnly?: boolean;
   value?: string;
   defaultValue?: string;
@@ -34,7 +33,6 @@ type MonacoSinglelineProps = {
 };
 
 export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
-  collection,
   onChange,
   onRun,
   onSave,

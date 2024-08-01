@@ -1,6 +1,4 @@
-import React from 'react';
 import get from 'lodash/get';
-import { useTheme } from 'providers/Theme';
 import { useDispatch } from 'react-redux';
 import SingleLineEditor from 'src/components/CodeEditor';
 import { updateCollectionAuth } from 'providers/ReduxStore/slices/collections';
@@ -9,7 +7,6 @@ import StyledWrapper from './StyledWrapper';
 
 const BasicAuth = ({ collection }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
 
   const basicAuth = get(collection, 'root.request.auth.basic', {});
 
@@ -47,10 +44,8 @@ const BasicAuth = ({ collection }) => {
       <div className="single-line-editor-wrapper mb-2">
         <SingleLineEditor
           value={basicAuth.username || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleUsernameChange(val)}
-          collection={collection}
           singleLine
         />
       </div>
@@ -59,10 +54,8 @@ const BasicAuth = ({ collection }) => {
       <div className="single-line-editor-wrapper">
         <SingleLineEditor
           value={basicAuth.password || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handlePasswordChange(val)}
-          collection={collection}
           singleLine
         />
       </div>

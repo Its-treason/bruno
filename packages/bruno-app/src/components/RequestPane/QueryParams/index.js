@@ -145,9 +145,7 @@ const QueryParams = ({ item, collection }) => {
                             )
                           }
                           onRun={handleRun}
-                          collection={collection}
                           singleLine
-                          item={item}
                         />
                       </td>
                       <td>

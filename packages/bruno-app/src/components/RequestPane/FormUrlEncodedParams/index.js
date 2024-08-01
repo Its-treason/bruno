@@ -95,7 +95,6 @@ const FormUrlEncodedParams = ({ item, collection }) => {
                       <CodeEditor
                         singleLine
                         value={param.value}
-                        theme={storedTheme}
                         onSave={onSave}
                         onChange={(newValue) =>
                           handleParamChange(
@@ -108,11 +107,9 @@ const FormUrlEncodedParams = ({ item, collection }) => {
                             'value'
                           )
                         }
-                        allowNewlines={true}
-                        allowLinebreaks={true}
+                        allowNewlines
+                        allowLinebreaks
                         onRun={handleRun}
-                        collection={collection}
-                        item={item}
                       />
                     </td>
                     <td>

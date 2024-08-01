@@ -176,7 +176,6 @@ const AssertionRow = ({
           <CodeEditor
             singleLine
             value={value}
-            theme={storedTheme}
             onSave={onSave}
             onChange={(newValue) =>
               handleAssertionChange(
@@ -190,7 +189,6 @@ const AssertionRow = ({
               )
             }
             onRun={handleRun}
-            collection={collection}
           />
         ) : (
           <input type="text" className="cursor-default" disabled />

@@ -129,7 +129,6 @@ const VarsTable = ({ folder, collection, vars, varType }) => {
                             'value'
                           )
                         }
-                        collection={collection}
                         singleLine
                       />
                     </td>
