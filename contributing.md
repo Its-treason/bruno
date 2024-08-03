@@ -15,7 +15,7 @@ Libraries we use
 - Icons: Tabler Icons
 - Forms: formik, @mantine/forms
 - Schema Validation: Yup, zod
-- Request Client: axios (Depricated), node:http (New request method)
+- Request Client: axios (Deprecated), node:http (New request method)
 - Filesystem Watcher: chokidar
 
 ### Dependencies
