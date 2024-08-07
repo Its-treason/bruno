@@ -2,21 +2,16 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Editor, Monaco, useMonaco } from '@monaco-editor/react';
+import { Editor, Monaco } from '@monaco-editor/react';
 import { useContext, useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
-import { BrunoEditorCallbacks, addMonacoCommands, setMonacoVariables } from 'utils/monaco/monacoUtils';
+import { BrunoEditorCallbacks, addMonacoCommands } from 'utils/monaco/monacoUtils';
 import { useTheme } from 'providers/Theme';
 import { editor } from 'monaco-editor';
-import { CollectionSchema } from '@usebruno/schema';
 import classes from './Monaco.module.scss';
 import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
 
 const languages: Record<string, string> = {
-  text: 'plaintext',
-  plaintext: 'plaintext',
-  graphql: 'graphql',
-  sparql: 'sparql',
   'graphql-query': 'graphql',
   'application/sparql-query': 'sparql',
   'application/ld+json': 'json',
@@ -25,22 +20,8 @@ const languages: Record<string, string> = {
   'application/javascript': 'typescript',
   javascript: 'typescript',
 
-  c: 'c',
-  clojure: 'clojure',
-  csharp: 'csharp',
-  go: 'go',
-  java: 'java',
-  kotlin: 'kotlin',
   node: 'typescript',
-  objc: 'objective-c',
-  ocaml: 'ocaml',
-  php: 'php',
-  powershell: 'powershell',
-  python: 'python',
-  r: 'r',
-  ruby: 'ruby',
-  shell: 'shell',
-  swift: 'swift'
+  objc: 'objective-c'
 };
 
 type MonacoProps = {
@@ -67,7 +48,6 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
   hideMinimap = false,
   height = '60vh'
 }) => {
-  const monaco = useMonaco();
   const { displayedTheme } = useTheme();
   const callbackRefs = useRef<BrunoEditorCallbacks>({});
 
@@ -86,7 +66,8 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
     debounceChanges(value);
   };
 
-  const onMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
+  const registerEditorVariables = useContext(CodeEditorVariableContext);
+  const onMount = (editor: editor.IStandaloneCodeEditor, mountMonaco: Monaco) => {
     editor.onDidFocusEditorText(() => {
       // @ts-expect-error editor._contextKeyService is an internal state from the Monaco editor
       // But i did not find a better way to do this, because "tabFocusMode" in options does work
@@ -97,15 +78,12 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
       }
     });
 
-    addMonacoCommands(monaco, editor, callbackRefs.current);
-  };
-
-  const { variables } = useContext(CodeEditorVariableContext);
-  useEffect(() => {
-    if (withVariables && monaco && variables) {
-      setMonacoVariables(monaco, variables, languages[mode] ?? 'plaintext');
+    if (withVariables) {
+      registerEditorVariables(editor);
     }
-  }, [variables, withVariables, mode, monaco]);
+
+    addMonacoCommands(mountMonaco, editor, callbackRefs.current);
+  };
 
   return (
     <Editor
@@ -130,7 +108,7 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
       height={height}
       theme={displayedTheme === 'dark' ? 'bruno-dark' : 'bruno-light'}
       className={classes.editor}
-      language={languages[mode] ?? 'plaintext'}
+      language={languages[mode] ?? mode}
       value={value}
       onMount={onMount}
       onChange={!readOnly ? handleEditorChange : null}

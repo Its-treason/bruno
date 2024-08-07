@@ -2,20 +2,14 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Editor, Monaco, useMonaco } from '@monaco-editor/react';
+import { Editor, Monaco } from '@monaco-editor/react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { debounce } from 'lodash';
-import {
-  BrunoEditorCallbacks,
-  addMonacoCommands,
-  addMonacoSingleLineActions,
-  setMonacoVariables
-} from 'utils/monaco/monacoUtils';
+import { BrunoEditorCallbacks, addMonacoCommands, addMonacoSingleLineActions } from 'utils/monaco/monacoUtils';
 import { useTheme } from 'providers/Theme';
 import { editor } from 'monaco-editor';
 import { Paper, Text } from '@mantine/core';
 import classes from './MonacoSingleline.module.scss';
-import { CollectionSchema } from '@usebruno/schema';
 import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
 
 type MonacoSinglelineProps = {
@@ -44,7 +38,6 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
   asInput = false,
   label
 }) => {
-  const monaco = useMonaco();
   const { displayedTheme } = useTheme();
   const callbackRefs = useRef<BrunoEditorCallbacks>({});
   const [height, setHeight] = useState(22);
@@ -65,6 +58,7 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
     debounceChanges(value);
   };
 
+  const registerEditorVariables = useContext(CodeEditorVariableContext);
   const onMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
     editor.onDidFocusEditorText(() => {
       // @ts-expect-error editor._contextKeyService is an internal state from the Monaco editor
@@ -80,16 +74,13 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
       setFocused(false);
     });
 
+    if (withVariables) {
+      registerEditorVariables(editor);
+    }
+
     addMonacoCommands(monaco, editor, callbackRefs.current);
     addMonacoSingleLineActions(editor, monaco, allowLinebreaks, setHeight);
   };
-
-  const { variables } = useContext(CodeEditorVariableContext);
-  useEffect(() => {
-    if (withVariables && monaco && variables) {
-      setMonacoVariables(monaco, variables, 'plaintext');
-    }
-  }, [variables, withVariables, monaco]);
 
   return (
     <div>

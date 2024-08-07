@@ -54,7 +54,9 @@ const QueryResultFilter = ({ onChange, mode }) => {
         'response-filter absolute bottom-2 w-full justify-end right-0 flex flex-row items-center gap-2 py-4 px-2 pointer-events-none'
       }
     >
-      {tooltipText && !isExpanded && <ReactTooltip anchorId={'request-filter-icon'} html={tooltipText} />}
+      {tooltipText && !isExpanded && (
+        <ReactTooltip anchorId={'request-filter-icon'} html={tooltipText} className="z-50" />
+      )}
       <input
         ref={inputRef}
         type="text"
@@ -66,11 +68,15 @@ const QueryResultFilter = ({ onChange, mode }) => {
         autoCapitalize="off"
         spellCheck="false"
         onChange={debouncedOnChange}
-        className={`block ml-14 p-2 py-1 sm:text-sm transition-all duration-200 ease-in-out border border-gray-300 rounded-md ${
+        className={`block ml-14 p-2 py-1 sm:text-sm transition-all duration-200 ease-in-out border border-gray-300 rounded-md z-50 ${
           isExpanded ? 'w-full opacity-100 pointer-events-auto' : 'w-[0] opacity-0'
         }`}
       />
-      <div className="text-gray-500 sm:text-sm cursor-pointer pointer-events-auto" id="request-filter-icon" onClick={handleFilterClick}>
+      <div
+        className="text-gray-500 sm:text-sm cursor-pointer pointer-events-auto z-50"
+        id="request-filter-icon"
+        onClick={handleFilterClick}
+      >
         {isExpanded ? <IconX size={20} strokeWidth={1.5} /> : <IconFilter size={20} strokeWidth={1.5} />}
       </div>
     </div>

@@ -53,3 +53,15 @@ body::-webkit-scrollbar-thumb {
   background-color: #cdcdcd;
   border-radius: 5rem;
 }
+
+/* Monaco Editor highlight styling */
+
+.brunoPlaceholderHighlightValid {
+  color: var(--mantine-color-green-7) !important;
+}
+
+.brunoPlaceholderHighlightInvalid {
+  color: var(--mantine-color-red-7) !important;
+  font-weight: bolder !important;
+  text-decoration: underline !important;
+}

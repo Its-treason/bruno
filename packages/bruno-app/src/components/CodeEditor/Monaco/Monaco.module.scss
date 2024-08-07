@@ -1,17 +1,28 @@
 .editor {
-    background-color: var(--mantine-color-body);
-    border: 1px solid var(--mantine-color-gray-4);
-    border-radius: var(--mantine-radius-xs);
+  background-color: var(--mantine-color-body);
+  border: 1px solid var(--mantine-color-gray-4);
+  border-radius: var(--mantine-radius-xs);
 
-    [data-mantine-color-scheme='dark'] & {
-        border: 1px solid var(--mantine-color-dark-4);
+  [data-mantine-color-scheme='dark'] & {
+    border: 1px solid var(--mantine-color-dark-4);
+  }
+
+  & :global {
+    .monaco-editor {
+      outline: none !important;
     }
 
-    & :global .margin-view-overlays {
-        background-color: var(--mantine-color-body);
-        border-right: 1px solid var(--mantine-color-gray-4);
-        [data-mantine-color-scheme='dark'] & {
-            border-right: 1px solid var(--mantine-color-dark-4);
-        }
+    .margin-view-overlays {
+      background-color: var(--mantine-color-body);
+      border-right: 1px solid var(--mantine-color-gray-4);
+      [data-mantine-color-scheme='dark'] & {
+        border-right: 1px solid var(--mantine-color-dark-4);
+      }
     }
+
+    .minimap,
+    .decorationsOverviewRuler {
+      background-color: var(--mantine-color-body);
+    }
+  }
 }

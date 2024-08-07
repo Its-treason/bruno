@@ -43,6 +43,8 @@
 
   :global {
     .monaco-editor {
+      outline: none !important;
+
       .lines-content {
         padding-left: 0;
       }

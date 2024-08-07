@@ -3,9 +3,7 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { Monaco } from '@monaco-editor/react';
-import { stringify } from 'lossless-json';
-import { IDisposable, Position, editor, IRange } from 'monaco-editor';
-import colors from 'tailwindcss/colors';
+import { editor } from 'monaco-editor';
 
 type MonacoEditor = editor.IStandaloneCodeEditor;
 
@@ -279,205 +277,25 @@ const buildSuggestions = (monaco: Monaco) => [
   }
 ];
 
-// This function will check if we hover over a variable by first going the left and then to right to find the
-// opening and closing curly brackets
-export const getWordAtPosition = (
-  model: editor.ITextModel,
-  monaco: Monaco,
-  position: Position
-): null | [string, IRange] => {
-  const range = {
-    startColumn: position.column,
-    endColumn: position.column,
-    startLineNumber: position.lineNumber,
-    endLineNumber: position.lineNumber
-  };
-
-  // Check for the beginning {{ of a variable
-  for (let i = 0; true; i++) {
-    // Reached left char limit, just break here
-    if (i > 32) {
-      return null;
-    }
-
-    range.startColumn--;
-    // Reached the end of the line
-    if (range.startColumn === 0) {
-      return null;
-    }
-
-    const foundWord = model.getValueInRange(range);
-
-    // If we hover over the start of the variable go to the right and check if anything is there
-    if (foundWord === '{') {
-      range.startColumn++;
-      range.endColumn++;
-      continue;
-    }
-
-    // We reached the beginning of another variable
-    // e.g. example {{test}} here {{test}}
-    //                       ^^^^ cursor hovers here
-    //                     ^ This will be caught
-    if (foundWord.charAt(0) === '}') {
-      return null;
-    }
-
-    // Check if we reached the end of the
-    if (foundWord.charAt(0) === '{' && foundWord.charAt(1) === '{') {
-      break;
-    }
-  }
-
-  // Check for the ending }} of a variable
-  for (let i = 0; true; i++) {
-    // Reached left char limit, just break here
-    if (i > 32) {
-      return null;
-    }
-
-    range.endColumn++;
-    const foundWord = model.getValueInRange(range);
-
-    // Check if we found the end of the variable
-    const wordLength = foundWord.length;
-    if (foundWord.charAt(wordLength - 1) === '}' && foundWord.charAt(wordLength - 2) === '}') {
-      break;
-    }
-  }
-
-  const foundWord = model.getValueInRange(range);
-  // Trim {{, }} and any other spaces, then return the variable
-  return [
-    foundWord.substring(2, foundWord.length - 2).trim(),
-    new monaco.Range(range.startLineNumber, range.startColumn, range.endLineNumber, range.endColumn)
-  ];
-};
-
-let hoverProvider: IDisposable | null;
-export const setMonacoVariables = (monaco: Monaco, variables: Record<string, unknown>, mode = '*') => {
-  const allVariables = Object.entries(variables ?? {});
-  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    diagnosticCodesToIgnore: [1109, 2580, 2451, 80005, 1375, 1378]
-  });
-  monaco.languages.setLanguageConfiguration(mode, {
-    autoClosingPairs: [{ open: '{{', close: '}}' }]
-  });
-  monaco.languages.setMonarchTokensProvider(mode, {
-    EnvVariables: Object.keys(variables ?? {}).map((key) => `{{${key}}}`),
-    tokenizer: {
-      root: [
-        [/[^{\/]+/, ''],
-        [
-          /\{{[^{}]+}}/,
-          {
-            cases: {
-              '@EnvVariables': 'EnvVariables',
-              '@default': 'UndefinedVariables'
-            }
-          }
-        ],
-        [
-          /(https?:\/\/)?\{{[^{}]+}}[^\s/]*\/?/,
-          {
-            cases: {
-              '@EnvVariables': 'EnvVariables',
-              '@default': 'UndefinedVariables'
-            }
-          }
-        ]
-      ]
-    }
-  });
-  const newHoverProvider = monaco.languages.registerHoverProvider(mode, {
-    provideHover: (model, position) => {
-      // Rebuild the hoverProvider to avoid memory leaks
-      const wordPos = getWordAtPosition(model, monaco, position);
-      if (wordPos === null) {
-        return null;
-      }
-      const [word, range] = wordPos;
-
-      const variable = allVariables.find(([key, _]) => key === word);
-      if (variable) {
-        // Ensure variables value is string
-        let value = '';
-        if (typeof variable[1] === 'object') {
-          try {
-            value = stringify(variable[1], null, 2) || 'Unknown object';
-          } catch (e) {
-            value = `Failed to stringify object: ${e}`;
-          }
-        } else {
-          value = String(variable[1]);
-        }
-
-        // Truncate value
-        if (value.length > 255) {
-          value = value.substring(0, 255) + '... (Truncated)';
-        }
-
-        return {
-          range,
-          contents: [{ value: `**${variable[0]}**` }, { value }]
-        };
-      } else {
-        return {
-          range,
-          contents: [{ value: `**${word}**` }, { value: 'Variable not found in environment.' }]
-        };
-      }
-    }
-  });
-  hoverProvider?.dispose();
-  hoverProvider = newHoverProvider;
-
-  const typedVariables = Object.entries(variables ?? {}).map(([key, value]) => `declare const ${key}: string`);
-  monaco.languages.typescript.javascriptDefaults.setExtraLibs([{ content: typedVariables.join('\n') }]);
-};
-
 export const initMonaco = (monaco: Monaco) => {
   monaco.editor.defineTheme('bruno-dark', {
     base: 'vs-dark',
     inherit: true,
-    rules: [
-      {
-        token: 'UndefinedVariables',
-        foreground: '#f87171',
-        fontStyle: 'medium underline'
-      },
-      {
-        token: 'EnvVariables',
-        foreground: '#4ade80',
-        fontStyle: 'medium'
-      },
-      { background: colors.zinc[800], token: '' }
-    ],
+    rules: [{ background: '#00000000', token: '' }],
     colors: {
       'editor.background': '#00000000',
-      'editor.foreground': '#ffffff',
-      'editorGutter.background': colors.zinc[800]
+      'minimap.background': '#00000000',
+      'editorOverviewRuler.background': '#00000000'
     }
   });
   monaco.editor.defineTheme('bruno-light', {
     base: 'vs',
     inherit: true,
-    rules: [
-      {
-        token: 'UndefinedVariables',
-        foreground: '#dc2626',
-        fontStyle: 'medium underline'
-      },
-      {
-        token: 'EnvVariables',
-        foreground: '#15803d',
-        fontStyle: 'medium'
-      },
-      { background: colors.zinc[50], token: '' }
-    ],
+    rules: [{ background: '#00000000', token: '' }],
     colors: {
       'editor.background': '#00000000',
-      'editorGutter.background': colors.zinc[50]
+      'minimap.background': '#00000000',
+      'editorOverviewRuler.background': '#00000000'
     }
   });
   monaco.languages.typescript.typescriptDefaults.addExtraLib(`
@@ -536,11 +354,9 @@ export const initMonaco = (monaco: Monaco) => {
       suggestions: buildSuggestions(monaco)
     })
   });
+
   // javascript is solely used for the query editor
   monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-    diagnosticCodesToIgnore: [1109, 2580, 2451, 80005, 1375, 1378]
-  });
-  monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
     diagnosticCodesToIgnore: [1109, 2580, 2451, 80005, 1375, 1378]
   });
   monaco.languages.json.jsonDefaults.setDiagnosticsOptions({

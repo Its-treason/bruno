@@ -13,7 +13,6 @@ import { variableNameRegex } from 'utils/common/regex';
 
 const VarsTable = ({ item, collection, vars, varType }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
 
   const handleAddVar = () => {
     dispatch(
