@@ -3,11 +3,30 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { useMemo } from 'react';
-import { Stack, Group, Text, Space, ThemeIcon, Alert, Spoiler } from '@mantine/core';
-import { IconAlertTriangle, IconInfoCircle } from '@tabler/icons-react';
+import { Stack, Group, Text, Space, ThemeIcon, Alert, Spoiler, rem } from '@mantine/core';
+import { IconAlertTriangle, IconHome, IconInfoCircle, IconNetwork, IconWorld, IconWorldWww } from '@tabler/icons-react';
 import classes from './TimelinewNew.module.css';
 import { RequestSslInfo } from './SslInfo/types';
 import { SslInfoButton } from './SslInfo/SslInfoButton';
+
+type RemoteAddressIconProps = {
+  ip: string;
+};
+
+const IconStyles = { height: rem(14), width: rem(14), display: 'inline', marginBottom: 4 };
+
+const RemoteAddressIcon: React.FC<RemoteAddressIconProps> = ({ ip }) => {
+  if (ip === '127.0.0.1') {
+    return <IconHome style={IconStyles} />;
+  }
+
+  // Check if IP is inside the privat address range
+  if (/^(10\.|172\.(1[6-9]|2\d|3[01])\.|192\.168\.)/.test(ip)) {
+    return <IconNetwork style={IconStyles} />;
+  }
+
+  return <IconWorld style={IconStyles} />;
+};
 
 type RequestTimeline = {
   // RequestInfo
@@ -30,6 +49,8 @@ type RequestTimeline = {
   error?: string;
   info?: string;
   sslInfo?: RequestSslInfo;
+  remoteAddress?: string;
+  remotePort?: number;
 };
 
 const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
@@ -54,7 +75,7 @@ const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
   let requestData;
   if (item.requestBody !== undefined) {
     const truncated = item.requestBody.length >= 2048 ? '... (Truncated)' : '';
-    requestData = `data ${item.requestBody}${truncated}`;
+    requestData = `${item.requestBody}${truncated}`;
   }
 
   const responseHeader: string[] = useMemo(() => {
@@ -76,14 +97,19 @@ const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
     return data;
   }, [item.headers]);
 
-  let responseData;
+  let responseData = null;
   if (item.responseBody !== undefined) {
     const truncated = item.responseBody.length >= 2048 ? '... (Truncated)' : '';
-    responseData = `data ${item.responseBody}${truncated}`;
+    responseData = `${item.responseBody}${truncated}`;
   }
 
   return (
     <div>
+      {item.remoteAddress ? (
+        <Text c={'dimmed'} size="sm" className={classes.wordWrap}>
+          Connected to {item.remoteAddress} <RemoteAddressIcon ip={item.remoteAddress} /> port {item.remotePort}
+        </Text>
+      ) : null}
       {requestHeader.map((item, i) => (
         <Text key={item + i} c={'green'} className={classes.wordWrap}>
           <span className={classes.noUserselect}>&gt; </span>
@@ -96,6 +122,8 @@ const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
           showLabel={'Show full request data'}
           hideLabel={'Show less'}
           c={'green'}
+          fz={'md'}
+          fw={'md'}
           className={classes.wordWrap}
         >
           <span className={classes.noUserselect}>&gt; </span>
@@ -116,6 +144,8 @@ const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
           showLabel={'Show full response data'}
           hideLabel={'Show less'}
           c={'grape'}
+          fz={'md'}
+          fw={'md'}
           className={classes.wordWrap}
         >
           <span className={classes.noUserselect}>&lt; </span>

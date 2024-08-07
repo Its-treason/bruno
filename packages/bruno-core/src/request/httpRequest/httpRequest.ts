@@ -17,6 +17,8 @@ export type HttpRequestInfo = {
   headers?: Record<string, string[]>;
   httpVersion?: string;
   sslInfo?: RequestSslInfo | false;
+  remoteAddress?: string;
+  remotePort?: number;
   responseBody?: Buffer;
   error?: string;
   info?: string;
@@ -66,6 +68,10 @@ async function doExecHttpRequest(info: HttpRequestInfo, options: BrunoRequestOpt
 
   req.on('socket', (socket: TLSSocket) => {
     info.sslInfo = false;
+    socket.on('ready', () => {
+      info.remoteAddress = socket.remoteAddress;
+      info.remotePort = socket.remotePort;
+    });
     socket.on('secureConnect', () => {
       info.sslInfo = collectSslInfo(socket, options.hostname);
       if (!info.sslInfo.authorized && options.abortOnInvalidSsl) {
@@ -119,4 +125,8 @@ async function doExecHttpRequest(info: HttpRequestInfo, options: BrunoRequestOpt
   req.end();
 
   await reqPromise;
+
+  // Explicitly destroy the socket here, because node will sometimes keep the connection open.
+  // Then then causes the socket.on("ready") and socket.on("secureConnect") events not to be triggered
+  req.socket?.destroy();
 }
