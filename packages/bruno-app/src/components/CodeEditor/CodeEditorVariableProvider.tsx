@@ -87,7 +87,6 @@ export const CodeEditorVariableProvider: React.FC<CodeEditorVariableProviderProp
 
     // Don't update if both are still equal
     if (shallowEqual(flattened, currentVariables.current) === true) {
-      console.log('Prevented updates!');
       return;
     }
     currentVariables.current = flattened;

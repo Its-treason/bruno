@@ -46,7 +46,7 @@ export const SslInfoModal: React.FC<SslInfoModalProps> = ({ opened, sslInfo, onC
       </List>
 
       {sslInfo.certs.map((cert) => (
-        <SslCertInfo cert={cert} />
+        <SslCertInfo key={cert.fingerprint} cert={cert} />
       ))}
     </Modal>
   );
