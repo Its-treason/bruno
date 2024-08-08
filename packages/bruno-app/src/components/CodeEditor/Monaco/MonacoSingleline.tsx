@@ -5,12 +5,12 @@
 import { Editor, Monaco } from '@monaco-editor/react';
 import { useContext, useEffect, useRef, useState } from 'react';
 import { debounce } from 'lodash';
-import { BrunoEditorCallbacks, addMonacoCommands, addMonacoSingleLineActions } from 'utils/monaco/monacoUtils';
 import { useTheme } from 'providers/Theme';
 import { editor } from 'monaco-editor';
 import { Paper, Text } from '@mantine/core';
 import classes from './MonacoSingleline.module.scss';
 import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
+import { addMonacoCommands, addMonacoSingleLineActions, BrunoEditorCallbacks } from '../utils/monocoInit';
 
 type MonacoSinglelineProps = {
   readOnly?: boolean;

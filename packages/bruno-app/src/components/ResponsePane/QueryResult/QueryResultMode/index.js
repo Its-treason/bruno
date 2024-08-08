@@ -4,8 +4,34 @@ import classnames from 'classnames';
 import StyledWrapper from 'components/ResponsePane/QueryResult/QueryResultMode/StyledWrapper';
 import QueryResultPreview from 'components/ResponsePane/QueryResult/QueryResultViewer';
 import QueryResultFilter from 'components/ResponsePane/QueryResult/QueryResultFilter';
-import { getMonacoModeFromContent } from 'utils/monaco/monacoUtils.ts';
 import { JSONPath } from 'jsonpath-plus';
+
+export const getMonacoModeFromContent = (contentType, body) => {
+  if (typeof body === 'object') {
+    return 'application/ld+json';
+  }
+  if (!contentType || typeof contentType !== 'string') {
+    return 'application/text';
+  }
+
+  if (contentType.includes('json')) {
+    return 'application/ld+json';
+  } else if (contentType.includes('xml')) {
+    return 'application/xml';
+  } else if (contentType.includes('html')) {
+    return 'application/html';
+  } else if (contentType.includes('text')) {
+    return 'application/text';
+  } else if (contentType.includes('application/edn')) {
+    return 'application/xml';
+  } else if (contentType.includes('yaml')) {
+    return 'application/yaml';
+  } else if (contentType.includes('image')) {
+    return 'application/image';
+  } else {
+    return 'application/text';
+  }
+};
 
 /**
  * @param {string|object|undefined} data

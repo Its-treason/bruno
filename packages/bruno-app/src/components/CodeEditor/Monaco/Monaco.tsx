@@ -5,11 +5,11 @@
 import { Editor, Monaco } from '@monaco-editor/react';
 import { useContext, useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
-import { BrunoEditorCallbacks, addMonacoCommands } from 'utils/monaco/monacoUtils';
 import { useTheme } from 'providers/Theme';
 import { editor } from 'monaco-editor';
 import classes from './Monaco.module.scss';
 import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
+import { addMonacoCommands, BrunoEditorCallbacks } from '../utils/monocoInit';
 
 const languages: Record<string, string> = {
   'graphql-query': 'graphql',

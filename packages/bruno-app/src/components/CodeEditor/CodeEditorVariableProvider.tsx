@@ -4,40 +4,9 @@ import { useSelector } from 'react-redux';
 import { find } from 'lodash';
 import { findCollectionByUid, findItemInCollection, getAllVariables } from 'utils/collections';
 import { useMonaco } from '@monaco-editor/react';
-import { editor, Range } from 'monaco-editor';
+import { editor } from 'monaco-editor';
 import { shallowEqual } from '@mantine/hooks';
-
-function highlightSpecificWords(editor: editor.IStandaloneCodeEditor, wordsToHighlight: Record<string, string>) {
-  const model = editor.getModel();
-  const text = model.getValue();
-  const decorations: { range: Range; options: editor.IModelDecorationOptions }[] = [];
-
-  const regex = /{{[\w-\.]+}}/g;
-  let match;
-  while ((match = regex.exec(text)) !== null) {
-    const startPosition = model.getPositionAt(match.index);
-    const endPosition = model.getPositionAt(match.index + match[0].length);
-
-    let inlineClassName = 'brunoPlaceholderHighlightInvalid';
-    let hoverMessage = { value: '**Variable not found**', trusted: true };
-
-    const value = wordsToHighlight[match[0].slice(2, -2)];
-    if (value) {
-      inlineClassName = 'brunoPlaceholderHighlightValid';
-      hoverMessage = { value, trusted: false };
-    }
-
-    decorations.push({
-      range: new Range(startPosition.lineNumber, startPosition.column, endPosition.lineNumber, endPosition.column),
-      options: {
-        inlineClassName,
-        hoverMessage
-      }
-    });
-  }
-
-  return editor.createDecorationsCollection(decorations);
-}
+import { flattenVariables, highlightSpecificWords } from './utils/placeholderDecorator';
 
 type CodeEditorVariableProviderProps = {
   children: ReactNode;
@@ -69,18 +38,6 @@ export const CodeEditorVariableProvider: React.FC<CodeEditorVariableProviderProp
       return;
     }
     const item = !ignoreRequestVariables ? findItemInCollection(collection, activeTabUid) : null;
-
-    function flattenVariables(obj: any, prefix: string = '') {
-      return Object.keys(obj).reduce((acc, key) => {
-        const newKey = prefix ? `${prefix}.${key}` : key;
-
-        if (typeof obj[key] === 'object' && obj[key] !== null && !Array.isArray(obj[key])) {
-          return [...acc, ...flattenVariables(obj[key], newKey)];
-        } else {
-          return [...acc, [newKey, obj[key]]];
-        }
-      }, []);
-    }
 
     const newVariables = getAllVariables(collection, item);
     const flattened = Object.fromEntries(flattenVariables(newVariables.variables));

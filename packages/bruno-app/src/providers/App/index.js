@@ -5,8 +5,8 @@ import { refreshScreenWidth } from 'providers/ReduxStore/slices/app';
 import ConfirmAppClose from './ConfirmAppClose';
 import useIpcEvents from './useIpcEvents';
 import StyledWrapper from './StyledWrapper';
-import { initMonaco } from 'utils/monaco/monacoUtils';
 import { useMonaco } from '@monaco-editor/react';
+import { initMonaco } from 'components/CodeEditor/utils/monocoInit';
 
 export const AppContext = React.createContext();
 
