@@ -1011,7 +1011,7 @@ const registerNetworkIpc = (mainWindow) => {
 
   ipcMain.handle(
     'renderer:run-collection-folder',
-    async (event, folder, collection, environment, runtimeVariables, recursive, newRequestMethod) => {
+    async (event, folder, collection, environment, runtimeVariables, recursive, delay, newRequestMethod) => {
       if (newRequestMethod) {
         return await executeNewFolder(folder, collection, environment, recursive);
       }
@@ -1133,6 +1133,18 @@ const registerNetworkIpc = (mainWindow) => {
             timeStart = Date.now();
             let response, responseTime;
             try {
+              if (delay && !Number.isNaN(delay) && delay > 0) {
+                const delayPromise = new Promise((resolve) => setTimeout(resolve, delay));
+
+                const cancellationPromise = new Promise((_, reject) => {
+                  abortController.signal.addEventListener('abort', () => {
+                    reject(new Error('Cancelled'));
+                  });
+                });
+
+                await Promise.race([delayPromise, cancellationPromise]);
+              }
+
               /** @type {import('axios').AxiosResponse} */
               response = await axiosInstance(request);
               timeEnd = Date.now();

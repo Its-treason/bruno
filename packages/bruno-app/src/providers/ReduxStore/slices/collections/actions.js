@@ -309,7 +309,7 @@ export const cancelRunnerExecution = (cancelTokenUid) => (dispatch) => {
   cancelNetworkRequest(cancelTokenUid).catch((err) => console.log(err));
 };
 
-export const runCollectionFolder = (collectionUid, folderUid, recursive) => (dispatch, getState) => {
+export const runCollectionFolder = (collectionUid, folderUid, recursive, delay) => (dispatch, getState) => {
   const state = getState();
   const collection = findCollectionByUid(state.collections.collections, collectionUid);
 
@@ -341,6 +341,7 @@ export const runCollectionFolder = (collectionUid, folderUid, recursive) => (dis
         environment,
         collectionCopy.runtimeVariables,
         recursive,
+        delay,
         localStorage.getItem('new-request') === '"true"'
       )
       .then(resolve)

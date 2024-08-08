@@ -11,6 +11,8 @@ const Wrapper = styled.div`
     overflow-x: scroll;
     scrollbar-width: none;
 
+    scrollbar-width: none;
+
     li {
       display: inline-flex;
       max-width: 150px;

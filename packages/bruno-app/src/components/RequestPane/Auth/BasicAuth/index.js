@@ -65,6 +65,7 @@ const BasicAuth = ({ item, collection }) => {
           onRun={handleRun}
           collection={collection}
           item={item}
+          isSecret={true}
         />
       </div>
     </StyledWrapper>
