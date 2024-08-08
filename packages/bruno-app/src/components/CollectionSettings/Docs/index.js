@@ -35,7 +35,7 @@ const Docs = ({ collection }) => {
       </div>
 
       {isEditing ? (
-        <CodeEditor value={docs || ''} onChange={onEdit} onSave={onSave} mode="application/text" />
+        <CodeEditor value={docs || ''} onChange={onEdit} onSave={onSave} mode="markdown" />
       ) : (
         <Markdown onDoubleClick={toggleViewMode} content={docs} />
       )}

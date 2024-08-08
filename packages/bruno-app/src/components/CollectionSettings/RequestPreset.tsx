@@ -42,7 +42,7 @@ export const RequestPreset: React.FC<RequestPrefixProps> = ({ collection }) => {
 
       <Group gap={'xs'} grow preventGrowOverflow={false} maw={450}>
         <MethodSelector {...presetForm.getInputProps('requestMethod')} label={'Method'} withBorder maw={rem(125)} />
-        <CodeEditor label={'Url'} singleLine asInput {...presetForm.getInputProps('requestUrl')} />
+        <CodeEditor label={'Url'} singleLine withVariables asInput {...presetForm.getInputProps('requestUrl')} />
       </Group>
 
       <Button variant="filled" type="submit" leftSection={<IconDeviceFloppy />} mt={'md'}>

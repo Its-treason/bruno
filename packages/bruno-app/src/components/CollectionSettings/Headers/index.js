@@ -81,7 +81,6 @@ const Headers = ({ collection }) => {
                   <tr key={header.uid}>
                     <td>
                       <CodeEditor
-                        singleLine
                         value={header.name}
                         onSave={handleSave}
                         onChange={(newValue) =>
@@ -96,11 +95,12 @@ const Headers = ({ collection }) => {
                           )
                         }
                         autocomplete={headerAutoCompleteList}
+                        singleLine
+                        withVariables
                       />
                     </td>
                     <td>
                       <CodeEditor
-                        singleLine
                         value={header.value}
                         onSave={handleSave}
                         onChange={(newValue) =>
@@ -115,6 +115,8 @@ const Headers = ({ collection }) => {
                           )
                         }
                         autocomplete={MimeTypes}
+                        singleLine
+                        withVariables
                       />
                     </td>
                     <td>

@@ -1,6 +1,5 @@
 import React from 'react';
 import get from 'lodash/get';
-import { useTheme } from 'providers/Theme';
 import { useDispatch } from 'react-redux';
 import CodeEditor from 'src/components/CodeEditor';
 import { updateAuth } from 'providers/ReduxStore/slices/collections';
@@ -9,7 +8,6 @@ import StyledWrapper from './StyledWrapper';
 
 const DigestAuth = ({ item, collection }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
 
   const digestAuth = item.draft ? get(item, 'draft.request.auth.digest', {}) : get(item, 'request.auth.digest', {});
 
@@ -49,26 +47,24 @@ const DigestAuth = ({ item, collection }) => {
       <label className="block font-medium mb-2">Username</label>
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
-          singleLine
           value={digestAuth.username || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handleUsernameChange(val)}
           onRun={handleRun}
-          collection={collection}
-          item={item}
+          singleLine
+          withVariables
         />
       </div>
 
       <label className="block font-medium mb-2">Password</label>
       <div className="single-line-editor-wrapper">
         <CodeEditor
-          singleLine
           value={digestAuth.password || ''}
-          theme={storedTheme}
           onSave={handleSave}
           onChange={(val) => handlePasswordChange(val)}
           onRun={handleRun}
+          singleLine
+          withVariables
         />
       </div>
     </StyledWrapper>

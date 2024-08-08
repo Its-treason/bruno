@@ -164,6 +164,7 @@ const AwsV4Auth = ({ collection }) => {
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
           singleLine
+          withVariables
           value={awsv4Auth.region || ''}
           onSave={handleSave}
           onChange={(val) => handleRegionChange(val)}
@@ -174,6 +175,7 @@ const AwsV4Auth = ({ collection }) => {
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
           singleLine
+          withVariables
           value={awsv4Auth.profileName || ''}
           onSave={handleSave}
           onChange={(val) => handleProfileNameChange(val)}

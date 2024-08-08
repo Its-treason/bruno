@@ -127,66 +127,72 @@ const AwsV4Auth = ({ item, collection }) => {
       <label className="block font-medium mb-2">Access Key ID</label>
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
-          singleLine
           value={awsv4Auth.accessKeyId || ''}
           onSave={handleSave}
           onChange={(val) => handleAccessKeyIdChange(val)}
           onRun={handleRun}
+          singleLine
+          withVariables
         />
       </div>
 
       <label className="block font-medium mb-2">Secret Access Key</label>
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
-          singleLine
           value={awsv4Auth.secretAccessKey || ''}
           onSave={handleSave}
           onChange={(val) => handleSecretAccessKeyChange(val)}
           onRun={handleRun}
+          singleLine
+          withVariables
         />
       </div>
 
       <label className="block font-medium mb-2">Session Token</label>
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
-          singleLine
           value={awsv4Auth.sessionToken || ''}
           onSave={handleSave}
           onChange={(val) => handleSessionTokenChange(val)}
           onRun={handleRun}
+          singleLine
+          withVariables
         />
       </div>
 
       <label className="block font-medium mb-2">Service</label>
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
-          singleLine
           value={awsv4Auth.service || ''}
           onSave={handleSave}
           onChange={(val) => handleServiceChange(val)}
           onRun={handleRun}
+          singleLine
+          withVariables
         />
       </div>
 
       <label className="block font-medium mb-2">Region</label>
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
-          singleLine
           value={awsv4Auth.region || ''}
           onSave={handleSave}
           onChange={(val) => handleRegionChange(val)}
           onRun={handleRun}
+          singleLine
+          withVariables
         />
       </div>
 
       <label className="block font-medium mb-2">Profile Name</label>
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
-          singleLine
           value={awsv4Auth.profileName || ''}
           onSave={handleSave}
           onChange={(val) => handleProfileNameChange(val)}
           onRun={handleRun}
+          singleLine
+          withVariables
         />
       </div>
     </StyledWrapper>

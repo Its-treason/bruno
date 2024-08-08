@@ -51,6 +51,7 @@ const OAuth2ClientCredentials = ({ collection }) => {
                 onChange={(val) => handleChange(key, val)}
                 onRun={handleRun}
                 singleLine
+                withVariables
               />
             </div>
           </div>

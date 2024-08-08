@@ -23,14 +23,7 @@ const Tests = ({ item, collection }) => {
 
   return (
     <div className="w-full h-full">
-      <CodeEditor
-        collection={collection}
-        value={tests || ''}
-        onChange={onEdit}
-        mode="javascript"
-        onRun={onRun}
-        onSave={onSave}
-      />
+      <CodeEditor value={tests || ''} onChange={onEdit} mode="javascript" onRun={onRun} onSave={onSave} />
     </div>
   );
 };

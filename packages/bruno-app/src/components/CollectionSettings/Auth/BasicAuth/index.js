@@ -47,6 +47,7 @@ const BasicAuth = ({ collection }) => {
           onSave={handleSave}
           onChange={(val) => handleUsernameChange(val)}
           singleLine
+          withVariables
         />
       </div>
 
@@ -57,6 +58,7 @@ const BasicAuth = ({ collection }) => {
           onSave={handleSave}
           onChange={(val) => handlePasswordChange(val)}
           singleLine
+          withVariables
         />
       </div>
     </StyledWrapper>

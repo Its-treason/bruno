@@ -44,7 +44,7 @@ const Script = ({ collection }) => {
           value={requestScript || ''}
           onChange={onRequestScriptEdit}
           mode="javascript"
-          height={'25vh'}
+          height={'30vh'}
           onSave={handleSave}
         />
       </div>
@@ -53,7 +53,7 @@ const Script = ({ collection }) => {
         <CodeEditor
           value={responseScript || ''}
           onChange={onResponseScriptEdit}
-          height={'25vh'}
+          height={'30vh'}
           mode="javascript"
           onSave={handleSave}
         />

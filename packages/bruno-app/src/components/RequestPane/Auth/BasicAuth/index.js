@@ -47,25 +47,27 @@ const BasicAuth = ({ item, collection }) => {
       <label className="block font-medium mb-2">Username</label>
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
-          singleLine
           value={basicAuth.username || ''}
           onSave={handleSave}
           onChange={(val) => handleUsernameChange(val)}
           onRun={handleRun}
+          singleLine
+          withVariables
         />
       </div>
 
       <label className="block font-medium mb-2">Password</label>
       <div className="single-line-editor-wrapper">
         <CodeEditor
-          singleLine
           value={basicAuth.password || ''}
           onSave={handleSave}
           onChange={(val) => handlePasswordChange(val)}
           onRun={handleRun}
           collection={collection}
           item={item}
-          isSecret={true}
+          isSecret
+          singleLine
+          withVariables
         />
       </div>
     </StyledWrapper>

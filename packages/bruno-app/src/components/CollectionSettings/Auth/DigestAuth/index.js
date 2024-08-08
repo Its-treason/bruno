@@ -45,6 +45,7 @@ const DigestAuth = ({ collection }) => {
       <div className="single-line-editor-wrapper mb-2">
         <CodeEditor
           singleLine
+          withVariables
           value={digestAuth.username || ''}
           onSave={handleSave}
           onChange={(val) => handleUsernameChange(val)}
@@ -55,6 +56,7 @@ const DigestAuth = ({ collection }) => {
       <div className="single-line-editor-wrapper">
         <CodeEditor
           singleLine
+          withVariables
           value={digestAuth.password || ''}
           onSave={handleSave}
           onChange={(val) => handlePasswordChange(val)}

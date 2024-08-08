@@ -3,7 +3,6 @@ import get from 'lodash/get';
 import cloneDeep from 'lodash/cloneDeep';
 import { IconTrash } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
-import { useTheme } from 'providers/Theme';
 import {
   addQueryParam,
   deleteQueryParam,
@@ -17,7 +16,6 @@ import CodeEditor from 'components/CodeEditor';
 
 const QueryParams = ({ item, collection }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
   const params = item.draft ? get(item, 'draft.request.params') : get(item, 'request.params');
   const queryParams = params.filter((param) => param.type === 'query');
   const pathParams = params.filter((param) => param.type === 'path');
@@ -131,7 +129,6 @@ const QueryParams = ({ item, collection }) => {
                       <td>
                         <CodeEditor
                           value={param.value}
-                          theme={storedTheme}
                           onSave={onSave}
                           onChange={(newValue) =>
                             handleQueryParamChange(
@@ -146,6 +143,7 @@ const QueryParams = ({ item, collection }) => {
                           }
                           onRun={handleRun}
                           singleLine
+                          withVariables
                         />
                       </td>
                       <td>
@@ -199,7 +197,6 @@ const QueryParams = ({ item, collection }) => {
                       <td>
                         <CodeEditor
                           value={path.value}
-                          theme={storedTheme}
                           onSave={onSave}
                           onChange={(newValue) =>
                             handlePathParamChange(
@@ -212,9 +209,8 @@ const QueryParams = ({ item, collection }) => {
                             )
                           }
                           onRun={handleRun}
-                          collection={collection}
                           singleLine
-                          item={item}
+                          withVariables
                         />
                       </td>
                     </tr>

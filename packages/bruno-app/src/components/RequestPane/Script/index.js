@@ -39,7 +39,7 @@ const Script = ({ item, collection }) => {
         <div className="title text-xs">Pre Request</div>
         <CodeEditor
           value={requestScript || ''}
-          height={'25vh'}
+          height={'30vh'}
           onChange={onRequestScriptEdit}
           mode="javascript"
           onRun={onRun}
@@ -50,7 +50,7 @@ const Script = ({ item, collection }) => {
         <div className="title text-xs">Post Response</div>
         <CodeEditor
           value={responseScript || ''}
-          height={'25vh'}
+          height={'30vh'}
           onChange={onResponseScriptEdit}
           mode="javascript"
           onRun={onRun}

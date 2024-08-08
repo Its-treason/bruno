@@ -85,8 +85,9 @@ export const BulkEditEditor: React.FC<BulkEditEditorProps> = ({ item, collection
           onChange={(value) => handleBulkEdit(value)}
           onRun={onRun}
           onSave={onSave}
-          hideMinimap
           height="100%"
+          withVariables
+          hideMinimap
         />
       </Flex>
     </Stack>

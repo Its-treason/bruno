@@ -28,7 +28,13 @@ const BearerAuth = ({ collection }) => {
     <StyledWrapper className="mt-2 w-full">
       <label className="block font-medium mb-2">Token</label>
       <div className="single-line-editor-wrapper">
-        <CodeEditor singleLine value={bearerToken} onSave={handleSave} onChange={(val) => handleTokenChange(val)} />
+        <CodeEditor
+          singleLine
+          withVariables
+          value={bearerToken}
+          onSave={handleSave}
+          onChange={(val) => handleTokenChange(val)}
+        />
       </div>
     </StyledWrapper>
   );
