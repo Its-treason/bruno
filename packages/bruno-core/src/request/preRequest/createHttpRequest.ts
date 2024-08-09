@@ -87,6 +87,7 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
   let extraHeaders: Record<string, string> = {};
 
   const body = context.requestItem.request.body;
+  const collectionPath = context.collection.pathname;
   switch (body.mode) {
     case 'multipartForm':
       const formData = new FormData();
@@ -99,7 +100,7 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
             formData.append(item.name, item.value);
             break;
           case 'file':
-            const fileData = await fs.readFile(item.value[0]!);
+            const fileData = await fs.readFile(collectionPath + "/" + item.value[0]!);
             formData.append(item.name, fileData, path.basename(item.value[0]!));
             break;
         }
