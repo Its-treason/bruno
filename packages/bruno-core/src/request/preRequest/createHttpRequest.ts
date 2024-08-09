@@ -86,6 +86,7 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
   let bodyData;
   let extraHeaders: Record<string, string> = {};
 
+  const collectionPath = context.collection.pathname;
   const body = context.requestItem.request.body;
   switch (body.mode) {
     case 'multipartForm':
@@ -99,7 +100,13 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
             formData.append(item.name, item.value);
             break;
           case 'file':
-            const fileData = await fs.readFile(item.value[0]!);
+            let targetPath = item.value[0];
+            // If the Item is inside the collection, the path will be relative
+            if (!path.isAbsolute(targetPath)) {
+              targetPath = path.join(collectionPath, targetPath);
+            }
+
+            const fileData = await fs.readFile(targetPath);
             formData.append(item.name, fileData, path.basename(item.value[0]!));
             break;
         }
