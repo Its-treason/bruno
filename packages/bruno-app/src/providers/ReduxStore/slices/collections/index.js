@@ -1595,11 +1595,23 @@ export const collectionsSlice = createSlice({
           info.status = 'ended';
         }
 
-        if (type === 'request-queued') {
+        if (type === 'request-delayed') {
           collection.runnerResult.items.push({
             uid: request.uid,
-            status: 'queued'
+            status: 'delayed'
           });
+        }
+
+        if (type === 'request-queued') {
+          const item = collection.runnerResult.items.findLast((i) => i.uid === request.uid);
+          if (item?.status === 'delayed') {
+            item.status = 'queued';
+          } else {
+            collection.runnerResult.items.push({
+              uid: request.uid,
+              status: 'queued'
+            });
+          }
         }
 
         if (type === 'request-sent') {

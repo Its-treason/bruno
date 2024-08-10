@@ -422,7 +422,7 @@ const registerNetworkIpc = (mainWindow) => {
     return scriptResult;
   };
 
-  async function executeNewFolder(folder, collection, environment, recursive) {
+  async function executeNewFolder(folder, collection, environment, recursive, delay) {
     const folderUid = folder ? folder.uid : null;
     const dataDir = path.join(app.getPath('userData'), 'responseCache');
     const cancelToken = uuid();
@@ -462,6 +462,23 @@ const registerNetworkIpc = (mainWindow) => {
     let currentRequestIndex = 0;
     let nJumps = 0; // count the number of jumps to avoid infinite loops
     while (currentRequestIndex < folderRequests.length) {
+      const item = folderRequests[currentRequestIndex];
+
+      if (!isNaN(delay) && delay > 0) {
+        // Send the queue event so ui shows its loading
+        mainWindow.webContents.send('main:run-folder-event', {
+          type: 'request-delayed',
+          itemUid: item.uid,
+          collectionUid: collection.uid,
+          folderUid
+        });
+
+        await new Promise((resolve) => {
+          abortController.signal.addEventListener('abort', resolve);
+          setTimeout(() => resolve(), delay);
+        });
+      }
+
       if (abortController.signal.aborted) {
         deleteCancelToken(cancelToken);
         mainWindow.webContents.send('main:run-folder-event', {
@@ -472,8 +489,6 @@ const registerNetworkIpc = (mainWindow) => {
         });
         return;
       }
-
-      const item = folderRequests[currentRequestIndex];
 
       const res = await newRequest(
         item,
@@ -1013,7 +1028,7 @@ const registerNetworkIpc = (mainWindow) => {
     'renderer:run-collection-folder',
     async (event, folder, collection, environment, runtimeVariables, recursive, delay, newRequestMethod) => {
       if (newRequestMethod) {
-        return await executeNewFolder(folder, collection, environment, recursive);
+        return await executeNewFolder(folder, collection, environment, recursive, delay);
       }
 
       const collectionUid = collection.uid;
