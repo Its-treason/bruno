@@ -100,7 +100,7 @@ const RequestTabs = () => {
       'has-chevrons': showChevrons
     });
   };
-  // Todo: Must support ephemeral requests
+
   return (
     <StyledWrapper className={getRootClassname()}>
       {showConfirmClose && (
