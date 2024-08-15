@@ -1,8 +1,67 @@
+import { Divider } from '@mantine/core';
+import { CollectionSchema } from '@usebruno/schema';
+import CollectionSettings from 'components/CollectionSettings';
+import FolderSettings from 'components/FolderSettings';
+import RequestTabs from 'components/RequestTabs';
+import CollectionToolBar from 'components/RequestTabs/CollectionToolBar';
+import RunnerResults from 'components/RunnerResults';
+import VariablesEditor from 'components/VariablesEditor';
+import { get } from 'lodash';
+import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
+import { Homepage } from 'src/feature/homepage';
+import { findItemInCollection } from 'utils/collections';
+import { MainContent } from './MainContent';
 
-const MainView: React.FC = () => {
-  const tabs = useSelector((state) => state.tabs.tabs);
-  const activeTabUid = useSelector((state) => state.tabs.activeTabUid);
+type ReduxStore = {
+  tabs: {
+    tabs: any[];
+    activeTabUid: string;
+  };
+  collections: {
+    collections: CollectionSchema[];
+  };
+  app: {
+    preferences: {
+      hideTabs?: boolean;
+    };
+  };
+};
 
-  return <div></div>;
+export const MainView: React.FC = () => {
+  const tabs = useSelector((state: ReduxStore) => state.tabs.tabs) as any[];
+  const activeTabUid = useSelector((state: ReduxStore) => state.tabs.activeTabUid);
+  const collections = useSelector((state: ReduxStore) => state.collections.collections);
+  const hideTabs = useSelector((state: ReduxStore) => get(state.app.preferences, 'hideTabs', false));
+
+  const focusedTab = useMemo(() => {
+    return tabs.find((tab) => tab.uid === activeTabUid);
+  }, [tabs, activeTabUid]);
+
+  const collection = useMemo(() => {
+    return collections.find((col) => col.uid === focusedTab?.collectionUid);
+  }, [collections, focusedTab?.collectionUid]);
+
+  const item = useMemo(() => {
+    if (!focusedTab) {
+      return null;
+    }
+    return findItemInCollection(collection, focusedTab.uid);
+  }, [collections, focusedTab?.uid]);
+
+  if (!focusedTab || !collection) {
+    return <Homepage />;
+  }
+
+  return (
+    <div>
+      <CollectionToolBar activeTabUid={activeTabUid} collection={collection} />
+
+      {!hideTabs ? <RequestTabs /> : null}
+
+      <Divider />
+
+      <MainContent collection={collection} focusedTab={focusedTab} item={item} />
+    </div>
+  );
 };
