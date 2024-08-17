@@ -5,7 +5,7 @@ const ResponseHeaders = ({ headers }) => {
   const headersArray = typeof headers === 'object' ? Object.entries(headers) : [];
 
   return (
-    <StyledWrapper className="pb-4 w-full">
+    <StyledWrapper className="w-full">
       <table>
         <thead>
           <tr>

@@ -6,7 +6,7 @@ type ReactPaneSplitProps = {
   right: ReactNode;
 };
 
-export const ReactPaneSplit: React.FC<ReactPaneSplitProps> = ({ left, right }) => {
+export const RequestPaneSplit: React.FC<ReactPaneSplitProps> = ({ left, right }) => {
   const [splitting, setSplitting] = useState(false);
   const [splitPosition, setSplitPosition] = useState(50);
   const containerRef = useRef(null);
@@ -28,7 +28,7 @@ export const ReactPaneSplit: React.FC<ReactPaneSplitProps> = ({ left, right }) =
       const newSplitPosition = (mouseX / containerWidth) * 100;
 
       // Ensure each side is at least 300px wide
-      const minSplitPosition = (300 / containerWidth) * 100;
+      const minSplitPosition = (350 / containerWidth) * 100;
       const maxSplitPosition = 100 - minSplitPosition;
 
       setSplitPosition(Math.max(minSplitPosition, Math.min(newSplitPosition, maxSplitPosition)));

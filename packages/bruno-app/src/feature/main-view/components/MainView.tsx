@@ -12,6 +12,8 @@ import { useSelector } from 'react-redux';
 import { Homepage } from 'src/feature/homepage';
 import { findItemInCollection } from 'utils/collections';
 import { MainContent } from './MainContent';
+import { CodeEditorVariableProvider } from 'components/CodeEditor/CodeEditorVariableProvider';
+import classes from './MainContent.module.scss';
 
 type ReduxStore = {
   tabs: {
@@ -54,14 +56,18 @@ export const MainView: React.FC = () => {
   }
 
   return (
-    <div>
+    <div className={classes.main}>
       <CollectionToolBar activeTabUid={activeTabUid} collection={collection} />
 
       {!hideTabs ? <RequestTabs /> : null}
 
       <Divider />
 
-      <MainContent collection={collection} focusedTab={focusedTab} item={item} />
+      <div className={classes.content}>
+        <CodeEditorVariableProvider>
+          <MainContent collection={collection} focusedTab={focusedTab} item={item} />
+        </CodeEditorVariableProvider>
+      </div>
     </div>
   );
 };

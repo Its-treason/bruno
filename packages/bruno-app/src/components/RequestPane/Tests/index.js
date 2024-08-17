@@ -23,7 +23,14 @@ const Tests = ({ item, collection }) => {
 
   return (
     <div className="w-full h-full">
-      <CodeEditor value={tests || ''} onChange={onEdit} mode="javascript" onRun={onRun} onSave={onSave} />
+      <CodeEditor
+        value={tests || ''}
+        onChange={onEdit}
+        mode="javascript"
+        onRun={onRun}
+        onSave={onSave}
+        height={'calc(100% - var(--mantine-spacing-xs))'}
+      />
     </div>
   );
 };

@@ -40,7 +40,13 @@ const Documentation = ({ item, collection }) => {
       </div>
 
       {isEditing ? (
-        <CodeEditor value={docs || ''} onChange={onEdit} onSave={onSave} mode="markdown" />
+        <CodeEditor
+          value={docs || ''}
+          onChange={onEdit}
+          onSave={onSave}
+          mode="markdown"
+          height={'calc(100% - var(--mantine-spacing-xl))'}
+        />
       ) : (
         <Markdown onDoubleClick={toggleViewMode} content={docs} />
       )}
