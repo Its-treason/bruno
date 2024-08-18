@@ -7,10 +7,14 @@ import { saveCollectionRoot } from 'providers/ReduxStore/slices/collections/acti
 import Markdown from 'components/MarkDown';
 import StyledWrapper from './StyledWrapper';
 import CodeEditor from 'components/CodeEditor';
+import { MarkdownEditor } from 'components/MarkdownEditor';
+import useLocalStorage from 'hooks/useLocalStorage';
+import { Group, Switch } from '@mantine/core';
 
 const Docs = ({ collection }) => {
   const dispatch = useDispatch();
-  const [isEditing, setIsEditing] = useState(false);
+  const [isEditing, setIsEditing] = useState(true);
+  const [wysiwyg, setWysiwyg] = useLocalStorage('true');
   const docs = get(collection, 'root.docs', '');
 
   const toggleViewMode = () => {
@@ -29,13 +33,34 @@ const Docs = ({ collection }) => {
   const onSave = () => dispatch(saveCollectionRoot(collection.uid));
 
   return (
-    <StyledWrapper className="mt-1 h-full w-full relative">
-      <div className="editing-mode mb-2" role="tab" onClick={toggleViewMode}>
-        {isEditing ? 'Preview' : 'Edit'}
-      </div>
+    <StyledWrapper className="h-full w-full relative">
+      <Group justify="space-between" align="center">
+        <div className="editing-mode mb-2" role="tab" onClick={toggleViewMode}>
+          {isEditing ? 'Preview' : 'Edit'}
+        </div>
+
+        {isEditing ? (
+          <Switch
+            checked={wysiwyg === 'true'}
+            size="xs"
+            onChange={() => setWysiwyg(wysiwyg === 'true' ? 'false' : 'true')}
+            label="Use WYSIWYG editor"
+          />
+        ) : null}
+      </Group>
 
       {isEditing ? (
-        <CodeEditor value={docs || ''} onChange={onEdit} onSave={onSave} mode="markdown" />
+        wysiwyg === 'true' ? (
+          <MarkdownEditor value={docs ?? ''} onChange={onEdit} />
+        ) : (
+          <CodeEditor
+            value={docs || ''}
+            onChange={onEdit}
+            onSave={onSave}
+            mode="markdown"
+            height={'calc(100% - var(--mantine-spacing-xl))'}
+          />
+        )
       ) : (
         <Markdown onDoubleClick={toggleViewMode} content={docs} />
       )}
