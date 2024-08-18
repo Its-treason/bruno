@@ -3,7 +3,8 @@ import { useDispatch } from 'react-redux';
 import CodeEditor from 'components/CodeEditor';
 import { updateRequestScript, updateResponseScript } from 'providers/ReduxStore/slices/collections';
 import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
-import StyledWrapper from './StyledWrapper';
+import { Text } from '@mantine/core';
+import classes from './Script.module.scss';
 
 const Script = ({ item, collection }) => {
   const dispatch = useDispatch();
@@ -34,30 +35,34 @@ const Script = ({ item, collection }) => {
   const onSave = () => dispatch(saveRequest(item.uid, collection.uid));
 
   return (
-    <StyledWrapper className="w-full flex flex-col">
-      <div className="flex flex-col flex-1 mt-2 gap-y-2">
-        <div className="title text-xs">Pre Request</div>
+    <div className={classes.container}>
+      <div>
+        <Text size="xs" c={'dimmed'}>
+          Pre Request
+        </Text>
         <CodeEditor
           value={requestScript || ''}
-          height={'30vh'}
+          height={'100%'}
           onChange={onRequestScriptEdit}
           mode="javascript"
           onRun={onRun}
           onSave={onSave}
         />
       </div>
-      <div className="flex flex-col flex-1 mt-2 gap-y-2">
-        <div className="title text-xs">Post Response</div>
+      <div>
+        <Text size="xs" c={'dimmed'}>
+          Post Request
+        </Text>
         <CodeEditor
           value={responseScript || ''}
-          height={'30vh'}
+          height={'100%'}
           onChange={onResponseScriptEdit}
           mode="javascript"
           onRun={onRun}
           onSave={onSave}
         />
       </div>
-    </StyledWrapper>
+    </div>
   );
 };
 

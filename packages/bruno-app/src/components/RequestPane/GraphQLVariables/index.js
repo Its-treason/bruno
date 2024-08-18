@@ -22,7 +22,14 @@ const GraphQLVariables = ({ variables, item, collection }) => {
 
   return (
     <StyledWrapper className="w-full">
-      <CodeEditor value={variables || ''} onChange={onEdit} mode="javascript" onRun={onRun} onSave={onSave} />
+      <CodeEditor
+        value={variables || ''}
+        onChange={onEdit}
+        mode="javascript"
+        onRun={onRun}
+        onSave={onSave}
+        height={'calc(100% - var(--mantine-spacing-xs))'}
+      />
     </StyledWrapper>
   );
 };

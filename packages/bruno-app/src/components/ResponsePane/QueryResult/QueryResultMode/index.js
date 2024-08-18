@@ -72,7 +72,7 @@ const formatResponse = (data, mode, filter) => {
   return safeStringifyJSON(data);
 };
 
-const QueryResultMode = ({ item, collection, data, dataBuffer, width, disableRunEventListener, headers, error }) => {
+const QueryResultMode = ({ item, collection, data, dataBuffer, disableRunEventListener, headers, error }) => {
   const contentType = getContentType(headers);
   const mode = getMonacoModeFromContent(contentType, data);
   const [filter, setFilter] = useState('');
@@ -135,7 +135,7 @@ const QueryResultMode = ({ item, collection, data, dataBuffer, width, disableRun
   return (
     <StyledWrapper
       className="w-full h-full relative"
-      style={{ maxWidth: width }}
+      style={{ maxWidth: '100%' }}
       queryFilterEnabled={queryFilterEnabled}
     >
       <div className="flex justify-end gap-2 text-xs" role="tablist">

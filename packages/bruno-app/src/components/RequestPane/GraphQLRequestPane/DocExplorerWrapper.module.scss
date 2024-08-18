@@ -1,0 +1,19 @@
+.container {
+  outline: none;
+  box-shadow: rgb(0 0 0 / 15%) 0px 0px 8px;
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  z-index: 2000;
+  width: 500px;
+  max-width: 95dvw;
+  height: 100%;
+
+  .doc-explorer-title {
+    text-align: left;
+  }
+
+  .doc-explorer-rhs {
+    display: flex;
+  }
+}

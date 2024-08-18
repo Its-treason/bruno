@@ -4,7 +4,7 @@ import QueryResultMode from './QueryResultMode';
 import QueryResultSizeWarning from 'components/ResponsePane/QueryResult/QueryResultSizeWarning';
 import { getResponseBody } from 'utils/network';
 
-const QueryResult = ({ item, collection, width, disableRunEventListener, headers, error }) => {
+const QueryResult = ({ item, collection, disableRunEventListener, headers, error }) => {
   const [dismissedSizeWarning, setDismissedSizeWarning] = useState(false);
   const [{ data, dataBuffer }, setData] = useState({ data: null, dataBuffer: null });
 
@@ -29,14 +29,14 @@ const QueryResult = ({ item, collection, width, disableRunEventListener, headers
   }, [item.response, showSizeWarning]);
 
   if (error && !dataBuffer) {
-    return <QueryResultError error={error} width={width} />;
+    return <QueryResultError error={error} />;
   }
 
   if (showSizeWarning) {
     const dismissWarning = () => {
       setDismissedSizeWarning(true);
     };
-    return <QueryResultSizeWarning size={item.response.size} width={width} dismissWarning={dismissWarning} />;
+    return <QueryResultSizeWarning size={item.response.size} dismissWarning={dismissWarning} />;
   }
 
   if (data === null && dataBuffer === null) {
@@ -49,7 +49,6 @@ const QueryResult = ({ item, collection, width, disableRunEventListener, headers
       collection={collection}
       data={data}
       dataBuffer={dataBuffer}
-      width={width}
       disableRunEventListener={disableRunEventListener}
       headers={headers}
       error={error}

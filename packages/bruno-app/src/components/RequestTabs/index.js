@@ -5,7 +5,6 @@ import classnames from 'classnames';
 import { IconChevronRight, IconChevronLeft } from '@tabler/icons-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { focusTab, closeTabs } from 'providers/ReduxStore/slices/tabs';
-import CollectionToolBar from './CollectionToolBar';
 import RequestTab from './RequestTab';
 import StyledWrapper from './StyledWrapper';
 import ConfirmRequestClose from './RequestTab/ConfirmRequestClose/index';
@@ -143,7 +142,6 @@ const RequestTabs = () => {
         onClose={() => setNewRequestModalOpen(false)}
         opened={newRequestModalOpen}
       />
-      <CollectionToolBar collection={activeCollection} activeTabUid={activeTabUid} />
       {collectionRequestTabs?.length && !hideTabs ? (
         <div className="flex items-center pl-4">
           <ul role="tablist">

@@ -27,16 +27,15 @@ const RequestBody = ({ item, collection }) => {
     const onSave = () => dispatch(saveRequest(item.uid, collection.uid));
 
     return (
-      <div className="w-full">
-        <CodeEditor
-          value={body[bodyMode] || ''}
-          onChange={onEdit}
-          onRun={onRun}
-          onSave={onSave}
-          mode={bodyMode}
-          withVariables
-        />
-      </div>
+      <CodeEditor
+        value={body[bodyMode] || ''}
+        onChange={onEdit}
+        onRun={onRun}
+        onSave={onSave}
+        mode={bodyMode}
+        withVariables
+        height={'calc(100% - var(--mantine-spacing-xs))'}
+      />
     );
   }
 

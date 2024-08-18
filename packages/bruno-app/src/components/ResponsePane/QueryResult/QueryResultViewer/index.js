@@ -1,5 +1,4 @@
 import CodeEditor from 'components/CodeEditor';
-import { get } from 'lodash';
 import { useDispatch, useSelector } from 'react-redux';
 import { sendRequest } from 'providers/ReduxStore/slices/collections/actions';
 import 'pdfjs-dist/build/pdf.worker';
@@ -56,7 +55,15 @@ const QueryResultPreview = ({
       return <PdfResultViewer dataBuffer={dataBuffer} />;
     }
     case 'pretty': {
-      return <CodeEditor onRun={onRun} value={formattedData} mode={mode} height={'100%'} readOnly />;
+      return (
+        <CodeEditor
+          onRun={onRun}
+          value={formattedData}
+          mode={mode}
+          height={'calc(100% - var(--mantine-spacing-xs))'}
+          readOnly
+        />
+      );
     }
     case 'preview-audio': {
       return (
@@ -73,7 +80,15 @@ const QueryResultPreview = ({
     }
     default:
     case 'raw': {
-      return <CodeEditor onRun={onRun} value={atob(dataBuffer)} mode={mode} height={'100%'} readOnly />;
+      return (
+        <CodeEditor
+          onRun={onRun}
+          value={atob(dataBuffer)}
+          mode={mode}
+          height={'calc(100% - var(--mantine-spacing-xs))'}
+          readOnly
+        />
+      );
     }
   }
 };

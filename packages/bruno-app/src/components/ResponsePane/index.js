@@ -19,7 +19,7 @@ import ResponseClear from 'src/components/ResponsePane/ResponseClear';
 import { TimelineNew } from 'components/ResponsePane/TimelineNew';
 import { DebugTab } from 'components/ResponsePane/Debug';
 
-const ResponsePane = ({ rightPaneWidth, item, collection }) => {
+const ResponsePane = ({ item, collection }) => {
   const dispatch = useDispatch();
   const tabs = useSelector((state) => state.tabs.tabs);
   const activeTabUid = useSelector((state) => state.tabs.activeTabUid);
@@ -43,7 +43,6 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
           <QueryResult
             item={item}
             collection={collection}
-            width={rightPaneWidth}
             headers={response.headers}
             error={response.error}
             key={item.filename}
@@ -55,14 +54,14 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
       }
       case 'timeline': {
         return item.response.isNew ? (
-          <TimelineNew timeline={item.response.timeline} maxWidth={rightPaneWidth} />
+          <TimelineNew timeline={item.response.timeline} />
         ) : (
           <Timeline request={item.requestSent} response={item.response} />
         );
       }
       case 'debug': {
         return item.response.isNew ? (
-          <DebugTab debugInfo={item.response.debug} timings={item.response.timings} maxWidth={rightPaneWidth} />
+          <DebugTab debugInfo={item.response.debug} timings={item.response.timings} />
         ) : (
           'Only with new Request method'
         );
@@ -109,7 +108,7 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
 
   return (
     <StyledWrapper className="flex flex-col h-full relative">
-      <div className="flex flex-wrap items-center pl-3 pr-4 tabs" role="tablist">
+      <div className="flex flex-wrap items-center tabs" role="tablist">
         <div className={getTabClassname('response')} role="tab" onClick={() => selectTab('response')}>
           Response
         </div>
@@ -136,9 +135,7 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
           </div>
         ) : null}
       </div>
-      <section
-        className={`flex flex-grow relative pl-3 pr-4 ${focusedTab.responsePaneTab === 'response' ? '' : 'mt-4'}`}
-      >
+      <section className={`flex flex-grow relative ${focusedTab.responsePaneTab === 'response' ? '' : 'mt-4'}`}>
         {getTabPanel(focusedTab.responsePaneTab)}
       </section>
       {isLoading ? <Overlay item={item} collection={collection} /> : null}

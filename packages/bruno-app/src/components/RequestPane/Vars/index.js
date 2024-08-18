@@ -9,14 +9,10 @@ const Vars = ({ item, collection }) => {
 
   return (
     <StyledWrapper className="w-full flex flex-col">
-      <div className="flex-1 mt-2">
-        <h3 className="mb-2 title text-xs">Pre Request</h3>
-        <VarsTable item={item} collection={collection} vars={requestVars} varType="request" />
-      </div>
-      <div className="flex-1">
-        <h3 className="mb-2 title text-xs">Post Response</h3>
-        <VarsTable item={item} collection={collection} vars={responseVars} varType="response" />
-      </div>
+      <h3 className="my-2 title text-xs">Pre Request</h3>
+      <VarsTable item={item} collection={collection} vars={requestVars} varType="request" />
+      <h3 className="my-2 title text-xs">Post Response</h3>
+      <VarsTable item={item} collection={collection} vars={responseVars} varType="response" />
     </StyledWrapper>
   );
 };

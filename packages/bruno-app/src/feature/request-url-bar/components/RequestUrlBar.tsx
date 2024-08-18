@@ -5,22 +5,32 @@
 import { ActionIcon, Button, Indicator, Loader, Paper, Tooltip, rem } from '@mantine/core';
 import classes from './RequestUrlBar.module.css';
 import { useDispatch } from 'react-redux';
-import { saveRequest } from 'providers/ReduxStore/slices/collections/actions';
+import { saveRequest, sendRequest } from 'providers/ReduxStore/slices/collections/actions';
 import { requestUrlChanged, updateRequestMethod } from 'providers/ReduxStore/slices/collections';
 import { MethodSelector } from './MethodSelector';
 import { get } from 'lodash';
 import CodeEditor from 'components/CodeEditor';
 import { IconDeviceFloppy, IconSend2 } from '@tabler/icons-react';
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
+import NetworkError from 'components/ResponsePane/NetworkError';
+import toast from 'react-hot-toast';
 
 type RequestUrlBarProps = {
   item: RequestItemSchema;
   collection: CollectionSchema;
-  handleRun: () => void;
 };
 
-export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item, handleRun }) => {
+export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item }) => {
   const dispatch = useDispatch();
+
+  const handleRun = async () => {
+    // @ts-expect-error TS doesn't get that dispatch returns a promise
+    dispatch(sendRequest(item, collection.uid)).catch((err) =>
+      toast.custom((t) => <NetworkError onClose={() => toast.dismiss(t.id)} />, {
+        duration: 5000
+      })
+    );
+  };
 
   const onSave = () => {
     dispatch(saveRequest(item.uid, collection.uid));
