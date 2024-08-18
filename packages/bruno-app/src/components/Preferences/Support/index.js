@@ -9,7 +9,7 @@ const Support = () => {
         <div className="mt-2">
           <a href="https://github.com/its-treason/bruno/issues" target="_blank" className="flex items-end">
             <IconSpeakerphone size={18} strokeWidth={2} />
-            <span className="label ml-2">Report Issues</span>
+            <span className="label ml-2">Report issue</span>
           </a>
         </div>
         <div className="mt-2">

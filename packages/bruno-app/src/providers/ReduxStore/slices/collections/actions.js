@@ -13,7 +13,6 @@ import {
   getItemsToResequence,
   isItemAFolder,
   refreshUidsInItem,
-  findItemInCollectionByPathname,
   isItemARequest,
   moveCollectionItem,
   moveCollectionItemToRootOfCollection,
@@ -41,8 +40,7 @@ import { closeAllCollectionTabs } from 'providers/ReduxStore/slices/tabs';
 import { resolveRequestFilename } from 'utils/common/platform';
 import { uuid, waitForNextTick } from 'utils/common';
 import { sendCollectionOauth2Request as _sendCollectionOauth2Request } from 'utils/network/index';
-import { parseQueryParams, splitOnFirst } from 'utils/url';
-import { name } from 'file-loader';
+import { parsePathParams, parseQueryParams, splitOnFirst } from 'utils/url';
 
 export const renameCollection = (newName, collectionUid) => (dispatch, getState) => {
   const state = getState();
@@ -706,10 +704,19 @@ export const newHttpRequest = (params) => (dispatch, getState) => {
     }
 
     const parts = splitOnFirst(requestUrl, '?');
-    const params = parseQueryParams(parts[1]);
-    each(params, (urlParam) => {
+    const queryParams = parseQueryParams(parts[1]);
+    each(queryParams, (urlParam) => {
       urlParam.enabled = true;
+      urlParam.type = 'query';
     });
+
+    const pathParams = parsePathParams(requestUrl);
+    each(pathParams, (pathParm) => {
+      pathParams.enabled = true;
+      pathParm.type = 'path';
+    });
+
+    const params = [...queryParams, ...pathParams];
 
     const item = {
       uid: uuid(),
