@@ -175,10 +175,9 @@ const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
 
 type TimelineNewProps = {
   timeline: RequestTimeline[];
-  maxWidth?: number;
 };
 
-export const TimelineNew: React.FC<TimelineNewProps> = ({ timeline, maxWidth }) => {
+export const TimelineNew: React.FC<TimelineNewProps> = ({ timeline }) => {
   if (!timeline) {
     return <div>No timeline data available</div>;
   }
@@ -188,7 +187,7 @@ export const TimelineNew: React.FC<TimelineNewProps> = ({ timeline, maxWidth }) 
   });
 
   return (
-    <Stack gap={'xl'} maw={maxWidth}>
+    <Stack gap={'xl'} maw={'100%'}>
       {items}
     </Stack>
   );

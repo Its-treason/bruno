@@ -27,7 +27,7 @@ const componentMap = (item, collection) => ({
   docs: <Documentation item={item} collection={collection} />
 });
 
-const HttpRequestPane = ({ item, collection, leftPaneWidth }) => {
+const HttpRequestPane = ({ item, collection }) => {
   const dispatch = useDispatch();
   const tabs = useSelector((state) => state.tabs.tabs);
   const activeTabUid = useSelector((state) => state.tabs.activeTabUid);

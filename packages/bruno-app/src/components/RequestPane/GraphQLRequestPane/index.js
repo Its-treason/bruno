@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import find from 'lodash/find';
 import get from 'lodash/get';
 import classnames from 'classnames';
@@ -11,15 +11,15 @@ import Vars from 'components/RequestPane/Vars';
 import Assertions from 'components/RequestPane/Assertions';
 import Script from 'components/RequestPane/Script';
 import Tests from 'components/RequestPane/Tests';
-import { useTheme } from 'providers/Theme';
 import { updateRequestGraphqlQuery } from 'providers/ReduxStore/slices/collections';
 import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import StyledWrapper from './StyledWrapper';
 import Documentation from 'components/Documentation/index';
 import GraphQLSchemaActions from '../GraphQLSchemaActions/index';
 import CodeEditor from 'components/CodeEditor';
+import { DocExplorerWrapper } from './DocExplorerWrapper';
 
-const GraphQLRequestPane = ({ item, collection, leftPaneWidth, onSchemaLoad, toggleDocs, handleGqlClickReference }) => {
+const GraphQLRequestPane = ({ item, collection }) => {
   const dispatch = useDispatch();
   const tabs = useSelector((state) => state.tabs.tabs);
   const activeTabUid = useSelector((state) => state.tabs.activeTabUid);
@@ -30,10 +30,7 @@ const GraphQLRequestPane = ({ item, collection, leftPaneWidth, onSchemaLoad, tog
     ? get(item, 'draft.request.body.graphql.variables')
     : get(item, 'request.body.graphql.variables');
   const [schema, setSchema] = useState(null);
-
-  useEffect(() => {
-    onSchemaLoad(schema);
-  }, [schema]);
+  const [docExplorerOpened, setDocExplorerOpened] = useState(false);
 
   const onQueryChange = (value) => {
     dispatch(
@@ -62,12 +59,12 @@ const GraphQLRequestPane = ({ item, collection, leftPaneWidth, onSchemaLoad, tog
         return (
           <CodeEditor
             schema={schema}
-            width={leftPaneWidth}
             onSave={onSave}
             value={query}
             onRun={onRun}
             mode={'graphql-query'}
             onChange={onQueryChange}
+            height={'calc(100% - var(--mantine-spacing-xs))'}
             withVariables
           />
         );
@@ -147,9 +144,16 @@ const GraphQLRequestPane = ({ item, collection, leftPaneWidth, onSchemaLoad, tog
         <div className={getTabClassname('docs')} role="tab" onClick={() => selectTab('docs')}>
           Docs
         </div>
-        <GraphQLSchemaActions item={item} collection={collection} onSchemaLoad={setSchema} toggleDocs={toggleDocs} />
+        <GraphQLSchemaActions
+          item={item}
+          collection={collection}
+          onSchemaLoad={setSchema}
+          toggleDocs={() => setDocExplorerOpened(!docExplorerOpened)}
+        />
       </div>
       <section className="flex w-full mt-5 flex-1">{getTabPanel(focusedTab.requestPaneTab)}</section>
+
+      <DocExplorerWrapper onClose={() => setDocExplorerOpened(false)} opened={docExplorerOpened} schema={schema} />
     </StyledWrapper>
   );
 };

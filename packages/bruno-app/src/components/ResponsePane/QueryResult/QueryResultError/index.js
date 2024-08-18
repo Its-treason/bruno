@@ -1,6 +1,6 @@
 import React from 'react';
 
-const QueryResultError = ({ error, width }) => {
+const QueryResultError = ({ error }) => {
   return (
     <div className={'mt-4'}>
       <pre className="text-red-500 break-all whitespace-pre-wrap">{error}</pre>

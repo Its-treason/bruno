@@ -1,0 +1,16 @@
+.main {
+  min-width: 100%;
+  max-width: 100%;
+  min-height: 100dvh;
+  max-height: 100dvh;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex-grow: 1;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
