@@ -15,6 +15,8 @@ import { get } from 'lodash';
 import { updateRequestPaneTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch } from 'react-redux';
 
+const CONTENT_INDICATOR = '\u25CF';
+
 type HttpRequestPaneProps = {
   item: RequestItemSchema;
   collection: CollectionSchema;
@@ -57,15 +59,19 @@ export const HttpRequestPane: React.FC<HttpRequestPaneProps> = ({ item, collecti
       request.vars.res?.filter((resVar) => resVar.enabled).length;
     const assertCount = request.assertions.filter((assert) => assert.enabled).length;
 
+    const hasBody = request.body.mode !== 'none';
+    const hasScript = request.script.req || request.script.res;
+    const hasTests = !!request.tests;
+
     return [
       { value: 'params', label: <>Params {paramCount ? <sup>{paramCount}</sup> : null}</> },
-      { value: 'body', label: 'Body' },
+      { value: 'body', label: <>Body {hasBody ? <sup>{CONTENT_INDICATOR}</sup> : null}</> },
       { value: 'headers', label: <>Headers {headerCount ? <sup>{headerCount}</sup> : null}</> },
       { value: 'auth', label: 'Auth' },
       { value: 'vars', label: <>Vars {varCount ? <sup>{varCount}</sup> : null}</> },
       { value: 'assert', label: <>Assert {assertCount ? <sup>{assertCount}</sup> : null}</> },
-      { value: 'script', label: 'Script' },
-      { value: 'tests', label: 'Tests' },
+      { value: 'script', label: <>Script {hasScript ? <sup>{CONTENT_INDICATOR}</sup> : null}</> },
+      { value: 'tests', label: <>Tests {hasTests ? <sup>{CONTENT_INDICATOR}</sup> : null}</> },
       { value: 'docs', label: 'Docs' }
     ];
   }, [item]);
