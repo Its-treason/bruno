@@ -33,12 +33,13 @@ export const RequestList: React.FC = () => {
   const items = useRequestList();
 
   return (
-    <AutoSizer>
-      {({ height, width }) => (
+    <AutoSizer disableWidth>
+      {({ height }) => (
         <FixedSizeList
           overscanCount={10}
           height={height}
-          width={width - 1}
+          // Minus 2 pixel to ensure the scroll is not inside the drag line
+          width={'calc(100% - 2px)'}
           itemCount={items.length}
           itemSize={36}
           itemData={items}
