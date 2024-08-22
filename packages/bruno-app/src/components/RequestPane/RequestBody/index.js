@@ -34,7 +34,7 @@ const RequestBody = ({ item, collection }) => {
         onSave={onSave}
         mode={bodyMode}
         withVariables
-        height={'calc(100% - var(--mantine-spacing-xs))'}
+        height={'100%'}
       />
     );
   }

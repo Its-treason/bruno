@@ -90,7 +90,6 @@ export const HeaderTable: React.FC<HeaderTableProps> = ({ item, collection, onUp
             {headers.map((header) => (
               <HeaderTableRow
                 key={header.uid}
-                collection={collection}
                 header={header}
                 onRemoveHeader={onRemoveHeader}
                 onUpdateHeader={onUpdateHeader}

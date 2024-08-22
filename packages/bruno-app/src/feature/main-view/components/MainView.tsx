@@ -1,11 +1,7 @@
 import { Divider } from '@mantine/core';
 import { CollectionSchema } from '@usebruno/schema';
-import CollectionSettings from 'components/CollectionSettings';
-import FolderSettings from 'components/FolderSettings';
 import RequestTabs from 'components/RequestTabs';
 import CollectionToolBar from 'components/RequestTabs/CollectionToolBar';
-import RunnerResults from 'components/RunnerResults';
-import VariablesEditor from 'components/VariablesEditor';
 import { get } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';

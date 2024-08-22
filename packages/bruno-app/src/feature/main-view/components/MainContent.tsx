@@ -4,14 +4,11 @@ import FolderSettings from 'components/FolderSettings';
 import RunnerResults from 'components/RunnerResults';
 import VariablesEditor from 'components/VariablesEditor';
 import { RequestPaneSplit } from './RequestPaneSplit';
-import HttpRequestPane from 'components/RequestPane/HttpRequestPane';
 import ResponsePane from 'components/ResponsePane';
 import { RequestUrlBar } from 'src/feature/request-url-bar';
 import { useDispatch } from 'react-redux';
-import { sendRequest } from 'providers/ReduxStore/slices/collections/actions';
-import NetworkError from 'components/ResponsePane/NetworkError';
-import toast from 'react-hot-toast';
 import GraphQLRequestPane from 'components/RequestPane/GraphQLRequestPane';
+import { HttpRequestPane } from './panes/HttpRequestPane';
 
 type MainContentProps = {
   collection: CollectionSchema;
@@ -20,8 +17,6 @@ type MainContentProps = {
 };
 
 export const MainContent: React.FC<MainContentProps> = ({ collection, focusedTab, item }) => {
-  const dispatch = useDispatch();
-
   switch (focusedTab.type) {
     case 'collection-runner':
       return <RunnerResults collection={collection} />;
@@ -38,7 +33,7 @@ export const MainContent: React.FC<MainContentProps> = ({ collection, focusedTab
           <RequestPaneSplit
             left={
               item.type === 'http-request' ? (
-                <HttpRequestPane item={item} collection={collection} />
+                <HttpRequestPane item={item} collection={collection} activeTab={focusedTab} />
               ) : (
                 <GraphQLRequestPane item={item} collection={collection} />
               )

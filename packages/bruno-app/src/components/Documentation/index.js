@@ -58,13 +58,7 @@ const Documentation = ({ item, collection }) => {
         wysiwyg === 'true' ? (
           <MarkdownEditor value={docs ?? ''} onChange={onEdit} />
         ) : (
-          <CodeEditor
-            value={docs || ''}
-            onChange={onEdit}
-            onSave={onSave}
-            mode="markdown"
-            height={'calc(100% - var(--mantine-spacing-xl))'}
-          />
+          <CodeEditor value={docs || ''} onChange={onEdit} onSave={onSave} mode="markdown" height={'100%'} />
         )
       ) : (
         <Markdown onDoubleClick={toggleViewMode} content={docs} />

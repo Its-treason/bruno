@@ -9,7 +9,6 @@ import { IconTrash } from '@tabler/icons-react';
 import { CollectionSchema, HeaderSchema } from '@usebruno/schema';
 
 type EnvironmentTableRowProps = {
-  collection: CollectionSchema;
   header: HeaderSchema;
   onUpdateHeader: (newHeader: HeaderSchema) => void;
   onRemoveHeader: (headerUid: string) => void;
@@ -19,9 +18,10 @@ type EnvironmentTableRowProps = {
 
 export const HeaderTableRow: React.FC<EnvironmentTableRowProps> = ({
   header,
-  collection,
   onRemoveHeader,
-  onUpdateHeader
+  onUpdateHeader,
+  onRun,
+  onSave
 }) => {
   return (
     <Table.Tr>
@@ -40,6 +40,8 @@ export const HeaderTableRow: React.FC<EnvironmentTableRowProps> = ({
       <Table.Td>
         <CodeEditor
           value={header.name}
+          onRun={onRun}
+          onSave={onSave}
           onChange={(name) => {
             onUpdateHeader({
               ...header,
@@ -54,6 +56,8 @@ export const HeaderTableRow: React.FC<EnvironmentTableRowProps> = ({
       <Table.Td>
         <CodeEditor
           value={header.value}
+          onRun={onRun}
+          onSave={onSave}
           onChange={(value) => {
             onUpdateHeader({
               ...header,

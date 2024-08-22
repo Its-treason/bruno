@@ -69,7 +69,7 @@ export const BulkEditEditor: React.FC<BulkEditEditorProps> = ({ item, collection
   };
 
   return (
-    <Stack w={'100%'}>
+    <Stack h={'100%'}>
       <Button
         variant="subtle"
         ml={'auto'}

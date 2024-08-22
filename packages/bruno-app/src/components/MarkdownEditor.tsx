@@ -22,7 +22,7 @@ export const MarkdownEditor: React.FC<MarkdownEditorProps> = ({ onChange, value 
 
   return (
     <RichTextEditor editor={editor}>
-      <RichTextEditor.Toolbar sticky stickyOffset={60}>
+      <RichTextEditor.Toolbar sticky>
         <RichTextEditor.ControlsGroup>
           <RichTextEditor.Bold />
           <RichTextEditor.Italic />
