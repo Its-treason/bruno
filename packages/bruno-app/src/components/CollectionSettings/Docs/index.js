@@ -62,7 +62,7 @@ const Docs = ({ collection }) => {
           />
         )
       ) : (
-        <Markdown onDoubleClick={toggleViewMode} content={docs} />
+        <Markdown collectionPath={collection.pathname} onDoubleClick={toggleViewMode} content={docs} />
       )}
     </StyledWrapper>
   );

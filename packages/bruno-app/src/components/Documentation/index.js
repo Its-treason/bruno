@@ -61,7 +61,7 @@ const Documentation = ({ item, collection }) => {
           <CodeEditor value={docs || ''} onChange={onEdit} onSave={onSave} mode="markdown" height={'100%'} />
         )
       ) : (
-        <Markdown onDoubleClick={toggleViewMode} content={docs} />
+        <Markdown collectionPath={collection.pathname} onDoubleClick={toggleViewMode} content={docs} />
       )}
     </StyledWrapper>
   );

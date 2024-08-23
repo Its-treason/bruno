@@ -1,10 +1,21 @@
 import MarkdownIt from 'markdown-it';
+import * as MarkdownItReplaceLink from 'markdown-it-replace-link';
 import StyledWrapper from './StyledWrapper';
-import React from 'react';
+import { useMemo } from 'react';
 
-const md = new MarkdownIt();
+const Markdown = ({ collectionPath, onDoubleClick, content }) => {
+  htmlFromMarkdown = useMemo(() => {
+    const markdownItOptions = {
+      replaceLink: function (link) {
+        return link.replace(/^\./, collectionPath);
+      }
+    };
 
-const Markdown = ({ onDoubleClick, content }) => {
+    const md = new MarkdownIt(markdownItOptions).use(MarkdownItReplaceLink);
+
+    return md.render(content || '');
+  });
+
   const handleClick = (event) => {
     if (event.target.href) {
       event.preventDefault();
@@ -16,8 +27,6 @@ const Markdown = ({ onDoubleClick, content }) => {
       onDoubleClick();
     }
   };
-
-  const htmlFromMarkdown = md.render(content || '');
 
   return (
     <StyledWrapper>
