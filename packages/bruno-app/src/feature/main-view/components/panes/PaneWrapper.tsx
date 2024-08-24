@@ -13,7 +13,7 @@ export const PaneWrapper: React.FC<PaneWrapperProps> = ({ tabs, content, activeT
   return (
     <Stack h={'100%'} gap={0}>
       <Tabs value={activeTab} onChange={onTabChange}>
-        <Tabs.List pl={'xs'} pr={'xs'}>
+        <Tabs.List>
           {tabs.map((tab) => (
             <Tabs.Tab key={tab.value} value={tab.value}>
               {tab.label}
@@ -21,7 +21,7 @@ export const PaneWrapper: React.FC<PaneWrapperProps> = ({ tabs, content, activeT
           ))}
         </Tabs.List>
       </Tabs>
-      <Box p={'xs'} flex={'1'} w={'100%'}>
+      <Box pt={'xs'} pb={'xs'} pl={'sm'} pr={'sm'} flex={'1'} w={'100%'}>
         <AutoSizer disableWidth>
           {({ height }) => <section style={{ height, overflowY: 'auto' }}>{content}</section>}
         </AutoSizer>
