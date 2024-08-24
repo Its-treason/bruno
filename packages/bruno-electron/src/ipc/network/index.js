@@ -1378,7 +1378,7 @@ const registerNetworkIpc = (mainWindow) => {
   });
 
   // save response to file
-  ipcMain.handle('renderer:save-response-to-file', async (event, response, url) => {
+  ipcMain.handle('renderer:save-response-to-file', async (event, itemUid, response, url) => {
     try {
       const getHeaderValue = (headerName) => {
         const headersArray = typeof response.headers === 'object' ? Object.entries(response.headers) : [];
@@ -1412,12 +1412,6 @@ const registerNetworkIpc = (mainWindow) => {
         return `response.${extension}`;
       };
 
-      const getEncodingFormat = () => {
-        const contentType = getHeaderValue('content-type');
-        const extension = mime.extension(contentType) || 'txt';
-        return ['json', 'xml', 'html', 'yml', 'yaml', 'txt'].includes(extension) ? 'utf-8' : 'base64';
-      };
-
       const determineFileName = () => {
         return (
           getFileNameFromContentDispositionHeader() || getFileNameFromUrlPath() || getFileNameBasedOnContentTypeHeader()
@@ -1425,15 +1419,11 @@ const registerNetworkIpc = (mainWindow) => {
       };
 
       const fileName = determineFileName();
-      const filePath = await chooseFileToSave(mainWindow, fileName);
-      if (filePath) {
-        const encoding = getEncodingFormat();
-        const data = Buffer.from(response.dataBuffer, 'base64');
-        if (encoding === 'utf-8') {
-          await writeFile(filePath, data);
-        } else {
-          await writeBinaryFile(filePath, data);
-        }
+      const targetFilePath = await chooseFileToSave(mainWindow, fileName);
+      if (targetFilePath) {
+        const responsePath = path.join(app.getPath('userData'), 'responseCache', itemUid);
+
+        await fsPromise.copyFile(responsePath, targetFilePath);
       }
     } catch (error) {
       return Promise.reject(error);

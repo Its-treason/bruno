@@ -6,12 +6,12 @@ import { IconDownload } from '@tabler/icons-react';
 
 const ResponseSave = ({ item }) => {
   const { ipcRenderer } = window;
-  const response = item.response || {};
+  const size = item.response.size ?? 0;
 
   const saveResponseToFile = () => {
     return new Promise((resolve, reject) => {
       ipcRenderer
-        .invoke('renderer:save-response-to-file', response, item.requestSent.url)
+        .invoke('renderer:save-response-to-file', item.uid, item.response, item.requestSent.url)
         .then(resolve)
         .catch((err) => {
           toast.error(get(err, 'error.message') || 'Something went wrong!');
@@ -22,7 +22,12 @@ const ResponseSave = ({ item }) => {
 
   return (
     <StyledWrapper className="ml-2 flex items-center">
-      <button onClick={saveResponseToFile} disabled={!response.dataBuffer} title="Save response to file">
+      <button
+        onClick={saveResponseToFile}
+        disabled={size === 0}
+        title="Save response to file"
+        className={size === 0 ? 'cursor-not-allowed' : 'curser-pointer'}
+      >
         <IconDownload size={16} strokeWidth={1.5} />
       </button>
     </StyledWrapper>
