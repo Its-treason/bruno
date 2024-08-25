@@ -5,9 +5,9 @@ import RunnerResults from 'components/RunnerResults';
 import VariablesEditor from 'components/VariablesEditor';
 import { RequestPaneSplit } from './RequestPaneSplit';
 import { RequestUrlBar } from 'src/feature/request-url-bar';
-import { HttpRequestPane } from './panes/HttpRequestPane';
-import { GraphqlRequestPane } from './panes/GraphqlRequestPane';
-import { ResponsePane } from './panes/ResponsePane';
+import { HttpRequestPane } from './panes/http/HttpRequestPane';
+import { GraphqlRequestPane } from './panes/graphql/GraphqlRequestPane';
+import { ResponsePane } from './panes/response/ResponsePane';
 
 type MainContentProps = {
   collection: CollectionSchema;

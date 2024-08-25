@@ -1,5 +1,5 @@
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
-import { PaneWrapper } from './PaneWrapper';
+import { PaneWrapper } from '../PaneWrapper';
 import { useMemo } from 'react';
 import { updateResponsePaneTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch } from 'react-redux';

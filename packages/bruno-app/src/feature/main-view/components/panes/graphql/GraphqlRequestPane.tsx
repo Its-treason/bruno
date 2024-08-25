@@ -1,6 +1,6 @@
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
-import { PaneWrapper } from './PaneWrapper';
-import { useMemo } from 'react';
+import { PaneWrapper } from '../PaneWrapper';
+import { useMemo, useState } from 'react';
 import QueryParams from 'components/RequestPane/QueryParams';
 import Documentation from 'components/Documentation';
 import Tests from 'components/RequestPane/Tests';
@@ -12,6 +12,8 @@ import { RequestHeaders } from 'components/RequestPane/RequestHeaders';
 import RequestBody from 'components/RequestPane/RequestBody';
 import { updateRequestPaneTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch } from 'react-redux';
+import { DocExplorerWrapper } from 'src/feature/main-view/components/panes/graphql/DocExplorerWrapper';
+import GraphQLSchemaActions from 'components/RequestPane/GraphQLSchemaActions';
 
 const CONTENT_INDICATOR = '\u25CF';
 
@@ -23,6 +25,9 @@ type GraphqlRequestPaneProps = {
 
 export const GraphqlRequestPane: React.FC<GraphqlRequestPaneProps> = ({ item, collection, activeTab }) => {
   const dispatch = useDispatch();
+
+  const [schema, setSchema] = useState(null);
+  const [docExplorerOpened, setDocExplorerOpened] = useState(false);
 
   const content = useMemo(() => {
     switch (activeTab.requestPaneTab) {
@@ -77,6 +82,17 @@ export const GraphqlRequestPane: React.FC<GraphqlRequestPaneProps> = ({ item, co
     <PaneWrapper
       tabs={tabs}
       activeTab={activeTab.requestPaneTab}
+      aboveTabs={
+        <>
+          <GraphQLSchemaActions
+            item={item}
+            collection={collection}
+            onSchemaLoad={setSchema}
+            toggleDocs={() => setDocExplorerOpened(!docExplorerOpened)}
+          />
+          <DocExplorerWrapper onClose={() => setDocExplorerOpened(false)} opened={docExplorerOpened} schema={schema} />
+        </>
+      }
       onTabChange={(tab) => {
         dispatch(
           updateRequestPaneTab({

@@ -4,6 +4,7 @@ import { IconBook, IconDownload, IconLoader2, IconRefresh } from '@tabler/icons-
 import get from 'lodash/get';
 import { findEnvironmentInCollection } from 'utils/collections';
 import Dropdown from '../../Dropdown';
+import { Group } from '@mantine/core';
 
 const GraphQLSchemaActions = ({ item, collection, onSchemaLoad, toggleDocs }) => {
   const url = item.draft ? get(item, 'draft.request.url', '') : get(item, 'request.url', '');
@@ -38,7 +39,7 @@ const GraphQLSchemaActions = ({ item, collection, onSchemaLoad, toggleDocs }) =>
   });
 
   return (
-    <div className="flex flex-grow justify-end items-center" style={{ fontSize: 13 }}>
+    <Group pl={'sm'}>
       <div className="flex items-center cursor-pointer hover:underline" onClick={toggleDocs}>
         <IconBook size={18} strokeWidth={1.5} />
         <span className="ml-1">Docs</span>
@@ -63,7 +64,7 @@ const GraphQLSchemaActions = ({ item, collection, onSchemaLoad, toggleDocs }) =>
           Load from File
         </div>
       </Dropdown>
-    </div>
+    </Group>
   );
 };
 

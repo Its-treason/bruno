@@ -1,10 +1,9 @@
 import CodeEditor from 'components/CodeEditor';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { sendRequest } from 'providers/ReduxStore/slices/collections/actions';
 import 'pdfjs-dist/build/pdf.worker';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
-import { useTheme } from 'providers/Theme';
 import PdfResultViewer from 'components/ResponsePane/QueryResult/QueryResultViewer/PdfResultViewer';
 import QueryResultError from 'components/ResponsePane/QueryResult/QueryResultError';
 
