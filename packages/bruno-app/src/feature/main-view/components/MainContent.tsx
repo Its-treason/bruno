@@ -4,11 +4,10 @@ import FolderSettings from 'components/FolderSettings';
 import RunnerResults from 'components/RunnerResults';
 import VariablesEditor from 'components/VariablesEditor';
 import { RequestPaneSplit } from './RequestPaneSplit';
-import ResponsePane from 'components/ResponsePane';
 import { RequestUrlBar } from 'src/feature/request-url-bar';
-import { useDispatch } from 'react-redux';
-import GraphQLRequestPane from 'components/RequestPane/GraphQLRequestPane';
 import { HttpRequestPane } from './panes/HttpRequestPane';
+import { GraphqlRequestPane } from './panes/GraphqlRequestPane';
+import { ResponsePane } from './panes/ResponsePane';
 
 type MainContentProps = {
   collection: CollectionSchema;
@@ -35,10 +34,10 @@ export const MainContent: React.FC<MainContentProps> = ({ collection, focusedTab
               item.type === 'http-request' ? (
                 <HttpRequestPane item={item} collection={collection} activeTab={focusedTab} />
               ) : (
-                <GraphQLRequestPane item={item} collection={collection} />
+                <GraphqlRequestPane item={item} collection={collection} activeTab={focusedTab} />
               )
             }
-            right={<ResponsePane item={item} collection={collection} />}
+            right={<ResponsePane item={item} collection={collection} activeTab={focusedTab} />}
           />
         </>
       );

@@ -15,20 +15,20 @@ import { useDispatch } from 'react-redux';
 
 const CONTENT_INDICATOR = '\u25CF';
 
-type HttpRequestPaneProps = {
+type GraphqlRequestPaneProps = {
   item: RequestItemSchema;
   collection: CollectionSchema;
   activeTab: any;
 };
 
-export const HttpRequestPane: React.FC<HttpRequestPaneProps> = ({ item, collection, activeTab }) => {
+export const GraphqlRequestPane: React.FC<GraphqlRequestPaneProps> = ({ item, collection, activeTab }) => {
   const dispatch = useDispatch();
 
   const content = useMemo(() => {
     switch (activeTab.requestPaneTab) {
-      case 'params':
+      case 'query':
         return <QueryParams item={item} collection={collection} />;
-      case 'body':
+      case 'variables':
         return <RequestBody item={item} collection={collection} />;
       case 'headers':
         return <RequestHeaders item={item} collection={collection} />;
@@ -50,21 +50,19 @@ export const HttpRequestPane: React.FC<HttpRequestPaneProps> = ({ item, collecti
   const tabs = useMemo(() => {
     const request = item.draft ? item.draft.request : item.request;
 
-    const paramCount = request.params.filter((param) => param.enabled).length;
     const headerCount = request.headers.filter((header) => header.enabled).length;
     const varCount =
       request.vars.req?.filter((reqVar) => reqVar.enabled).length +
       request.vars.res?.filter((resVar) => resVar.enabled).length;
     const assertCount = request.assertions.filter((assert) => assert.enabled).length;
 
-    const hasBody = request.body.mode !== 'none';
     const hasScript = request.script.req || request.script.res;
     const hasTests = !!request.tests;
     const hasDocs = !!request.docs;
 
     return [
-      { value: 'params', label: <>Params {paramCount ? <sup>{paramCount}</sup> : null}</> },
-      { value: 'body', label: <>Body {hasBody ? <sup>{CONTENT_INDICATOR}</sup> : null}</> },
+      { value: 'query', label: 'Query' },
+      { value: 'variables', label: 'Variables' },
       { value: 'headers', label: <>Headers {headerCount ? <sup>{headerCount}</sup> : null}</> },
       { value: 'auth', label: 'Auth' },
       { value: 'vars', label: <>Vars {varCount ? <sup>{varCount}</sup> : null}</> },

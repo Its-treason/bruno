@@ -21,8 +21,6 @@ const QueryResultPreview = ({
   mode,
   disableRunEventListener
 }) => {
-  const { displayedTheme } = useTheme();
-  const preferences = useSelector((state) => state.app.preferences);
   const dispatch = useDispatch();
 
   // Fail safe, so we don't render anything with an invalid tab
@@ -55,15 +53,7 @@ const QueryResultPreview = ({
       return <PdfResultViewer dataBuffer={dataBuffer} />;
     }
     case 'pretty': {
-      return (
-        <CodeEditor
-          onRun={onRun}
-          value={formattedData}
-          mode={mode}
-          height={'calc(100% - var(--mantine-spacing-xs))'}
-          readOnly
-        />
-      );
+      return <CodeEditor onRun={onRun} value={formattedData} mode={mode} height={'100%'} readOnly />;
     }
     case 'preview-audio': {
       return (
@@ -80,15 +70,7 @@ const QueryResultPreview = ({
     }
     default:
     case 'raw': {
-      return (
-        <CodeEditor
-          onRun={onRun}
-          value={atob(dataBuffer)}
-          mode={mode}
-          height={'calc(100% - var(--mantine-spacing-xs))'}
-          readOnly
-        />
-      );
+      return <CodeEditor onRun={onRun} value={atob(dataBuffer)} mode={mode} height={'100%'} readOnly />;
     }
   }
 };

@@ -17,7 +17,7 @@ const ResponseClear = ({ collection, item }) => {
     );
 
   return (
-    <StyledWrapper className="ml-2 flex items-center">
+    <StyledWrapper className="flex items-center">
       <button onClick={clearResponse} title="Clear response">
         <IconEraser size={16} strokeWidth={1.5} />
       </button>

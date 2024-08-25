@@ -13,6 +13,6 @@ const ResponseTime = ({ duration }) => {
     durationToDisplay = duration + 'ms';
   }
 
-  return <StyledWrapper className="ml-4">{durationToDisplay}</StyledWrapper>;
+  return <StyledWrapper>{durationToDisplay}</StyledWrapper>;
 };
 export default ResponseTime;

@@ -21,7 +21,7 @@ const ResponseSave = ({ item }) => {
   };
 
   return (
-    <StyledWrapper className="ml-2 flex items-center">
+    <StyledWrapper className="flex items-center">
       <button
         onClick={saveResponseToFile}
         disabled={size === 0}

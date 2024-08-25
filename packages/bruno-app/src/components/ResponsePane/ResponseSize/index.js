@@ -1,22 +1,21 @@
 import React from 'react';
 import StyledWrapper from './StyledWrapper';
 
+function formatBytes(bytes, decimals = 2) {
+  if (!+bytes) return '0 Bytes';
+
+  const k = 1024;
+  const dm = decimals < 0 ? 0 : decimals;
+  const sizes = ['Bytes', 'KiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+
+  return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
+}
+
 const ResponseSize = ({ size }) => {
-  let sizeToDisplay = '';
+  const formatted = formatBytes(size);
 
-  if (size > 1024) {
-    // size is greater than 1kb
-    let kb = Math.floor(size / 1024);
-    let decimal = Math.round(((size % 1024) / 1024).toFixed(2) * 100);
-    sizeToDisplay = kb + '.' + decimal + 'KB';
-  } else {
-    sizeToDisplay = size + 'B';
-  }
-
-  return (
-    <StyledWrapper title={size.toLocaleString() + 'B'} className="ml-4">
-      {sizeToDisplay}
-    </StyledWrapper>
-  );
+  return <StyledWrapper title={`${size} bytes`}>{formatted}</StyledWrapper>;
 };
 export default ResponseSize;
