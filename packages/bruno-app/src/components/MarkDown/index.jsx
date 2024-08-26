@@ -4,7 +4,7 @@ import StyledWrapper from './StyledWrapper';
 import { useMemo } from 'react';
 
 const Markdown = ({ collectionPath, onDoubleClick, content }) => {
-  htmlFromMarkdown = useMemo(() => {
+  const htmlFromMarkdown = useMemo(() => {
     const markdownItOptions = {
       replaceLink: function (link) {
         return link.replace(/^\./, collectionPath);
