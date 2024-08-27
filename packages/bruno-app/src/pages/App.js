@@ -22,7 +22,6 @@ import '@mantine/core/styles.css';
 const queryClient = new QueryClient();
 
 const theme = createTheme({
-  focusRing: 'never',
   defaultRadius: 'xs',
   primaryColor: 'orange',
 
