@@ -143,10 +143,15 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
   const openFolderSettings = useCallback((collectionUid: string, folderUid: string) => {
     dispatch(
       addTab({
-        uid: uuid(),
+        uid: folderUid,
         collectionUid,
         folderUid,
         type: 'folder-settings'
+      })
+    );
+    dispatch(
+      focusTab({
+        uid: folderUid
       })
     );
   }, []);
