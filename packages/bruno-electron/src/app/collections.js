@@ -56,7 +56,12 @@ const openCollectionDialog = async (win, watcher) => {
   }
 };
 
-const openCollection = async (win, watcher, collectionPath, options = {}) => {
+const openCollection = async (win, watcher, collectionPath, init = false) => {
+  // Re-Add the watcher on init
+  if (init && watcher.hasWatcher(collectionPath)) {
+    watcher.removeWatcher(collectionPath);
+  }
+
   if (!watcher.hasWatcher(collectionPath)) {
     try {
       const brunoConfig = await getCollectionConfigFile(collectionPath);
@@ -73,7 +78,7 @@ const openCollection = async (win, watcher, collectionPath, options = {}) => {
       win.webContents.send('main:collection-opened', collectionPath, uid, brunoConfig);
       ipcMain.emit('main:collection-opened', win, collectionPath, uid, brunoConfig);
     } catch (err) {
-      if (!options.dontSendDisplayErrors) {
+      if (!init) {
         win.webContents.send('main:display-error', {
           error: err.message || 'An error occurred while opening the local collection'
         });

@@ -61,6 +61,14 @@ const template = [
     label: 'View',
     submenu: [
       { role: 'toggledevtools' },
+      {
+        label: 'Reload',
+        click: (_item, focusedWindow) => {
+          if (focusedWindow) {
+            focusedWindow.reload();
+          }
+        }
+      },
       { type: 'separator' },
       { role: 'resetzoom' },
       { role: 'zoomin' },

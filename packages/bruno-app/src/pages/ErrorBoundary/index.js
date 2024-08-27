@@ -21,9 +21,6 @@ class ErrorBoundary extends React.Component {
   }
 
   returnToApp() {
-    const { ipcRenderer } = window;
-    ipcRenderer.invoke('open-file');
-
     // Go back to the homepage in case the currently opened tab has some kind of error
     this.props.store.dispatch(showHomePage());
     this.setState({ hasError: false, error: null });

@@ -15,9 +15,7 @@ const registerPreferencesIpc = (mainWindow, watcher, lastOpenedCollections) => {
     if (lastOpened && lastOpened.length) {
       for (let collectionPath of lastOpened) {
         if (isDirectory(collectionPath)) {
-          await openCollection(mainWindow, watcher, collectionPath, {
-            dontSendDisplayErrors: true
-          });
+          await openCollection(mainWindow, watcher, collectionPath, true);
         }
       }
     }
