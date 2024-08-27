@@ -1,6 +1,6 @@
 import { configureStore } from '@reduxjs/toolkit';
 import tasksMiddleware from './middlewares/tasks/middleware';
-import appReducer from './slices/app';
+import appReducer, { showHomePage } from './slices/app';
 import collectionsReducer from './slices/collections';
 import tabsReducer from './slices/tabs';
 import notificationsReducer from './slices/notifications';

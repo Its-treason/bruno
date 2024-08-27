@@ -74,8 +74,8 @@ export function App({ children }) {
   }
 
   return (
-    <ErrorBoundary>
-      <MantineProvider theme={theme} defaultColorScheme={'dark'}>
+    <MantineProvider theme={theme} defaultColorScheme={'dark'}>
+      <ErrorBoundary store={ReduxStore}>
         <QueryClientProvider client={queryClient}>
           <Provider store={ReduxStore}>
             <ThemeProvider>
@@ -87,7 +87,7 @@ export function App({ children }) {
             </ThemeProvider>
           </Provider>
         </QueryClientProvider>
-      </MantineProvider>
-    </ErrorBoundary>
+      </ErrorBoundary>
+    </MantineProvider>
   );
 }
