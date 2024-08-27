@@ -9,11 +9,15 @@ import Assertions from 'components/RequestPane/Assertions';
 import Vars from 'components/RequestPane/Vars';
 import Auth from 'components/RequestPane/Auth';
 import { RequestHeaders } from 'components/RequestPane/RequestHeaders';
-import RequestBody from 'components/RequestPane/RequestBody';
 import { updateRequestPaneTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch } from 'react-redux';
 import { DocExplorerWrapper } from 'src/feature/main-view/components/panes/graphql/DocExplorerWrapper';
 import GraphQLSchemaActions from 'components/RequestPane/GraphQLSchemaActions';
+import GraphQLVariables from 'components/RequestPane/GraphQLVariables';
+import { get } from 'lodash';
+import { updateRequestGraphqlQuery } from 'providers/ReduxStore/slices/collections';
+import CodeEditor from 'components/CodeEditor';
+import { saveRequest, sendRequest } from 'providers/ReduxStore/slices/collections/actions';
 
 const CONTENT_INDICATOR = '\u25CF';
 
@@ -32,9 +36,40 @@ export const GraphqlRequestPane: React.FC<GraphqlRequestPaneProps> = ({ item, co
   const content = useMemo(() => {
     switch (activeTab.requestPaneTab) {
       case 'query':
-        return <QueryParams item={item} collection={collection} />;
+        const onQueryChange = (value) => {
+          dispatch(
+            updateRequestGraphqlQuery({
+              query: value,
+              itemUid: item.uid,
+              collectionUid: collection.uid
+            })
+          );
+        };
+        const onRun = () => dispatch(sendRequest(item, collection.uid));
+        const onSave = () => dispatch(saveRequest(item.uid, collection.uid));
+
+        const query = item.draft
+          ? get(item, 'draft.request.body.graphql.query', '')
+          : get(item, 'request.body.graphql.query', '');
+
+        return (
+          <CodeEditor
+            // schema={schema}
+            onSave={onSave}
+            value={query}
+            onRun={onRun}
+            mode={'graphql-query'}
+            onChange={onQueryChange}
+            height={'100%'}
+            withVariables
+          />
+        );
       case 'variables':
-        return <RequestBody item={item} collection={collection} />;
+        const variables = item.draft
+          ? get(item, 'draft.request.body.graphql.variables')
+          : get(item, 'request.body.graphql.variables');
+
+        return <GraphQLVariables variables={variables} item={item} collection={collection} />;
       case 'headers':
         return <RequestHeaders item={item} collection={collection} />;
       case 'auth':

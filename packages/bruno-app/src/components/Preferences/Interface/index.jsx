@@ -11,7 +11,8 @@ import ThemeSelects from 'components/Preferences/Interface/ThemeSelects';
 const interfacePrefsSchema = Yup.object().shape({
   hideTabs: Yup.boolean().default(false),
   font: Yup.object({
-    codeFont: Yup.string().default('default')
+    codeFont: Yup.string().default('default'),
+    codeFontSize: Yup.number().min(4).max(32).default(14)
   }),
   theme: Yup.string().oneOf(['light', 'dark', 'system']).required('Theme is required')
 });
@@ -39,7 +40,8 @@ const Interface = ({ close }) => {
     initialValues: {
       hideTabs: get(preferences, 'hideTabs', false),
       font: {
-        codeFont: get(preferences, 'font.codeFont', 'default')
+        codeFont: get(preferences, 'font.codeFont', 'default'),
+        codeFontSize: get(preferences, 'font.codeFontSize', 14)
       },
       theme: storedTheme
     },
@@ -75,13 +77,25 @@ const Interface = ({ close }) => {
       <label className="block font-medium">Code Editor Font</label>
       <input
         type="text"
-        className="block textbox mt-2 w-full"
+        className="block textbox mt-1 mb-4 w-full"
         autoComplete="off"
         autoCorrect="off"
         autoCapitalize="off"
         spellCheck="false"
         name="font.codeFont"
         value={formik.values.font.codeFont}
+        onChange={formik.handleChange}
+      />
+
+      <label className="block font-medium">Font Size</label>
+      <input
+        type="number"
+        className="block textbox mt-1 w-full"
+        inputMode="numeric"
+        min={4}
+        max={32}
+        name="font.codeFontSize"
+        value={formik.values.font.codeFontSize}
         onChange={formik.handleChange}
       />
 
