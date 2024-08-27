@@ -10,11 +10,7 @@ import { ResponseTimings } from 'components/ResponsePane/ResponseTimings';
 type Logs = { title: string; data: string; date: number }[];
 type DebugInfo = { stage: string; logs: Logs }[];
 
-export const DebugTab: React.FC<{ debugInfo: DebugInfo; timings: unknown; maxWidth?: number }> = ({
-  debugInfo = [],
-  timings,
-  maxWidth
-}) => {
+export const DebugTab: React.FC<{ debugInfo: DebugInfo; timings: unknown }> = ({ debugInfo = [], timings }) => {
   return (
     <Stack w={'100%'} maw={'100%'} gap={'xl'}>
       <ResponseTimings timings={timings} />

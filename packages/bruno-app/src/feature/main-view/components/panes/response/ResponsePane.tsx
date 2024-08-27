@@ -69,7 +69,7 @@ export const ResponsePane: React.FC<ResponsePane> = ({ item, collection, activeT
       { value: 'headers', label: <>Headers {headerCount ? <sup>{headerCount}</sup> : null}</> },
       { value: 'timeline', label: 'Timeline' },
       { value: 'tests', label: 'Tests' },
-      { value: 'Debug', label: 'Debug' }
+      { value: 'debug', label: 'Debug' }
     ];
   }, [item]);
 
