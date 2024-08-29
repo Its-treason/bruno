@@ -7,7 +7,7 @@ import SaveRequest from 'components/RequestPane/SaveRequest';
 import NetworkError from 'components/ResponsePane/NetworkError';
 import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import { findCollectionByUid, findItemInCollection } from 'utils/collections';
-import { closeTabs } from 'providers/ReduxStore/slices/tabs';
+import { closeTabs, switchTab } from 'providers/ReduxStore/slices/tabs';
 import { EnvironmentDrawer } from 'src/feature/environment-editor';
 import { NewRequestModal } from 'src/feature/sidebar-menu/components/modals/NewRequestModal';
 
@@ -154,7 +154,41 @@ export const HotkeysProvider = (props) => {
     };
   }, [activeTabUid]);
 
-  // close all tabs
+  // Switch to the previous tab
+  useEffect(() => {
+    Mousetrap.bind(['command+pageup', 'ctrl+pageup'], (e) => {
+      dispatch(
+        switchTab({
+          direction: 'pageup'
+        })
+      );
+
+      return false; // this stops the event bubbling
+    });
+
+    return () => {
+      Mousetrap.unbind(['command+pageup', 'ctrl+pageup']);
+    };
+  }, [dispatch]);
+
+  // Switch to the next tab
+  useEffect(() => {
+    Mousetrap.bind(['command+pagedown', 'ctrl+pagedown'], (e) => {
+      dispatch(
+        switchTab({
+          direction: 'pagedown'
+        })
+      );
+
+      return false; // this stops the event bubbling
+    });
+
+    return () => {
+      Mousetrap.unbind(['command+pagedown', 'ctrl+pagedown']);
+    };
+  }, [dispatch]);
+
+  // Close all tabs
   useEffect(() => {
     Mousetrap.bind(['command+shift+w', 'ctrl+shift+w'], (e) => {
       const activeTab = find(tabs, (t) => t.uid === activeTabUid);
