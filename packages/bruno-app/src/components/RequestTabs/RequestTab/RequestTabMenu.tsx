@@ -31,7 +31,7 @@ type RequestTabMenuProps = {
   collection: CollectionSchema;
   collectionRequestTabs: any[];
   tabIndex: number;
-  item: RequestItemSchema;
+  item?: RequestItemSchema;
   opened: boolean;
   onClose: () => void;
 };
@@ -39,7 +39,7 @@ type RequestTabMenuProps = {
 export const RequestTabMenu: React.FC<RequestTabMenuProps> = ({
   children,
   collection,
-  item,
+  item = null,
   collectionRequestTabs = [],
   tabIndex,
   opened,
@@ -57,43 +57,51 @@ export const RequestTabMenu: React.FC<RequestTabMenuProps> = ({
   const hasOtherTabs = totalTabs > 1;
 
   const parentUid = useMemo(() => {
+    if (item?.type === 'folder') {
+      return item.uid;
+    }
+
     // Finding the parent is expensive so doing it on every render would be shit
-    if (!newRequestModalOpened) {
+    if (!newRequestModalOpened || !item) {
       return null;
     }
     return findParentItemInCollection(collection, item.uid)?.uid;
-  }, [newRequestModalOpened, item.uid]);
+  }, [newRequestModalOpened, item?.uid]);
 
   return (
     <Menu shadow="md" opened={opened} onClose={onClose} position="bottom-start" offset={4}>
-      <NewRequestModal
-        onClose={() => setNewRequestModalOpened(false)}
-        opened={newRequestModalOpened}
-        brunoConfig={collection?.brunoConfig}
-        collectionUid={collection.uid}
-        itemUid={parentUid}
-      />
+      {item ? (
+        <>
+          <NewRequestModal
+            onClose={() => setNewRequestModalOpened(false)}
+            opened={newRequestModalOpened}
+            brunoConfig={collection?.brunoConfig}
+            collectionUid={collection.uid}
+            itemUid={parentUid}
+          />
 
-      <CloneItemModal
-        onClose={() => setCloneModalOpened(false)}
-        opened={cloneModalOpened}
-        collectionUid={collection.uid}
-        item={item}
-      />
+          <CloneItemModal
+            onClose={() => setCloneModalOpened(false)}
+            opened={cloneModalOpened}
+            collectionUid={collection.uid}
+            item={item}
+          />
 
-      <RenameItemModal
-        onClose={() => setRenameModalOpened(false)}
-        opened={renameModalOpened}
-        collectionUid={collection.uid}
-        item={item}
-      />
+          <RenameItemModal
+            onClose={() => setRenameModalOpened(false)}
+            opened={renameModalOpened}
+            collectionUid={collection.uid}
+            item={item}
+          />
 
-      <DeleteItemModal
-        onClose={() => setDeleteModalOpened(false)}
-        opened={deleteModalOpened}
-        collectionUid={collection.uid}
-        item={item}
-      />
+          <DeleteItemModal
+            onClose={() => setDeleteModalOpened(false)}
+            opened={deleteModalOpened}
+            collectionUid={collection.uid}
+            item={item}
+          />
+        </>
+      ) : null}
 
       <Menu.Target>{children}</Menu.Target>
 
@@ -137,25 +145,33 @@ export const RequestTabMenu: React.FC<RequestTabMenuProps> = ({
           Close all
         </Menu.Item>
 
-        <Menu.Divider />
+        {item ? (
+          <>
+            <Menu.Divider />
 
-        <Menu.Item onClick={() => setRenameModalOpened(true)} leftSection={<IconPencil style={ICON_STYLE} />}>
-          Rename
-        </Menu.Item>
+            <Menu.Item onClick={() => setRenameModalOpened(true)} leftSection={<IconPencil style={ICON_STYLE} />}>
+              Rename
+            </Menu.Item>
 
-        <Menu.Item onClick={() => setCloneModalOpened(true)} leftSection={<IconCopy style={ICON_STYLE} />}>
-          Clone
-        </Menu.Item>
+            <Menu.Item onClick={() => setCloneModalOpened(true)} leftSection={<IconCopy style={ICON_STYLE} />}>
+              Clone
+            </Menu.Item>
 
-        <Menu.Item onClick={() => setDeleteModalOpened(true)} leftSection={<IconTrash style={ICON_STYLE} />} c={'red'}>
-          Delete
-        </Menu.Item>
+            <Menu.Item
+              onClick={() => setDeleteModalOpened(true)}
+              leftSection={<IconTrash style={ICON_STYLE} />}
+              c={'red'}
+            >
+              Delete
+            </Menu.Item>
 
-        <Menu.Divider />
+            <Menu.Divider />
 
-        <Menu.Item onClick={() => setNewRequestModalOpened(true)} leftSection={<IconPlus style={ICON_STYLE} />}>
-          New request
-        </Menu.Item>
+            <Menu.Item onClick={() => setNewRequestModalOpened(true)} leftSection={<IconPlus style={ICON_STYLE} />}>
+              New request
+            </Menu.Item>
+          </>
+        ) : null}
       </Menu.Dropdown>
     </Menu>
   );

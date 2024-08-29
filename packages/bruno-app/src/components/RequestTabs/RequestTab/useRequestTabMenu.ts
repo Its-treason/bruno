@@ -57,7 +57,9 @@ export const useRequestTabMenu = (collection: CollectionSchema, tabIndex: number
 
   function onCloseSaved(evt: MouseEvent) {
     evt.stopPropagation();
-    const savedTabUids = collection.items.filter((item) => !item.draft).map((t) => t.uid);
+    const savedTabUids = flattenItems(collection.items)
+      .filter((item) => !item.draft)
+      .map((t) => t.uid);
     saveAndCloseTabs(savedTabUids);
   }
 

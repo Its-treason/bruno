@@ -49,13 +49,25 @@ const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUi
   }, [folderUid]);
   if (['collection-settings', 'folder-settings', 'variables', 'collection-runner'].includes(tab.type)) {
     return (
-      <StyledWrapper className="flex items-center justify-between tab-container px-1">
-        {tab.type === 'folder-settings' ? (
-          <SpecialTab handleCloseClick={handleCloseClick} type={tab.type} tabName={folder?.name} />
-        ) : (
-          <SpecialTab handleCloseClick={handleCloseClick} type={tab.type} />
-        )}
-      </StyledWrapper>
+      <RequestTabMenu
+        collection={collection}
+        collectionRequestTabs={collectionRequestTabs}
+        tabIndex={tabIndex}
+        item={folder}
+        opened={menuOpened}
+        onClose={() => setMenuOpened(false)}
+      >
+        <StyledWrapper
+          onContextMenu={handleRightClick}
+          className="flex items-center justify-between tab-container px-1"
+        >
+          {tab.type === 'folder-settings' ? (
+            <SpecialTab handleCloseClick={handleCloseClick} type={tab.type} tabName={folder?.name} />
+          ) : (
+            <SpecialTab handleCloseClick={handleCloseClick} type={tab.type} />
+          )}
+        </StyledWrapper>
+      </RequestTabMenu>
     );
   }
 
@@ -65,9 +77,20 @@ const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUi
 
   if (!item) {
     return (
-      <StyledWrapper className="flex items-center justify-between tab-container px-1">
-        <RequestTabNotFound handleCloseClick={handleCloseClick} />
-      </StyledWrapper>
+      <RequestTabMenu
+        collection={collection}
+        collectionRequestTabs={collectionRequestTabs}
+        tabIndex={tabIndex}
+        opened={menuOpened}
+        onClose={() => setMenuOpened(false)}
+      >
+        <StyledWrapper
+          onContextMenu={handleRightClick}
+          className="flex items-center justify-between tab-container px-1"
+        >
+          <RequestTabNotFound handleCloseClick={handleCloseClick} />
+        </StyledWrapper>
+      </RequestTabMenu>
     );
   }
 
