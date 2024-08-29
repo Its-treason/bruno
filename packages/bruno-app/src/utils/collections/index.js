@@ -602,38 +602,6 @@ export const isItemAFolder = (item) => {
   return !item.hasOwnProperty('request') && item.type === 'folder';
 };
 
-export const humanizeRequestBodyMode = (mode) => {
-  let label = 'No Body';
-  switch (mode) {
-    case 'json': {
-      label = 'JSON';
-      break;
-    }
-    case 'text': {
-      label = 'TEXT';
-      break;
-    }
-    case 'xml': {
-      label = 'XML';
-      break;
-    }
-    case 'sparql': {
-      label = 'SPARQL';
-      break;
-    }
-    case 'formUrlEncoded': {
-      label = 'Form URL Encoded';
-      break;
-    }
-    case 'multipartForm': {
-      label = 'Multipart Form';
-      break;
-    }
-  }
-
-  return label;
-};
-
 export const humanizeRequestAuthMode = (mode) => {
   let label = 'No Auth';
   switch (mode) {

@@ -44,19 +44,19 @@ export const requestBodySchema = z.discriminatedUnion('mode', [
   z
     .object({
       mode: z.literal('json'),
-      json: z.string()
+      json: z.string().default('')
     })
     .passthrough(),
   z
     .object({
       mode: z.literal('text'),
-      text: z.string()
+      text: z.string().default('')
     })
     .passthrough(),
   z
     .object({
       mode: z.literal('xml'),
-      xml: z.string()
+      xml: z.string().default('')
     })
     .passthrough(),
   z
@@ -80,7 +80,7 @@ export const requestBodySchema = z.discriminatedUnion('mode', [
   z
     .object({
       mode: z.literal('sparql'),
-      sparql: z.string()
+      sparql: z.string().default('')
     })
     .passthrough()
 ]);

@@ -9,9 +9,9 @@ import Assertions from 'components/RequestPane/Assertions';
 import Vars from 'components/RequestPane/Vars';
 import Auth from 'components/RequestPane/Auth';
 import { RequestHeaders } from 'components/RequestPane/RequestHeaders';
-import RequestBody from 'components/RequestPane/RequestBody';
 import { updateRequestPaneTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch } from 'react-redux';
+import { BodyPane } from 'src/feature/main-view-pane-contents';
 
 const CONTENT_INDICATOR = '\u25CF';
 
@@ -29,7 +29,7 @@ export const HttpRequestPane: React.FC<HttpRequestPaneProps> = ({ item, collecti
       case 'params':
         return <QueryParams item={item} collection={collection} />;
       case 'body':
-        return <RequestBody item={item} collection={collection} />;
+        return <BodyPane item={item} collection={collection} />;
       case 'headers':
         return <RequestHeaders item={item} collection={collection} />;
       case 'auth':
