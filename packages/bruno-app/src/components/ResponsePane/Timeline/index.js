@@ -21,7 +21,7 @@ const Timeline = ({ request, response }) => {
     });
   });
 
-  let requestData = safeStringifyJSON(request.data);
+  let requestData = typeof request?.data === 'string' ? request?.data : safeStringifyJSON(request?.data, true);
 
   return (
     <StyledWrapper className="pb-4 w-full">
