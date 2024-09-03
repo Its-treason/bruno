@@ -312,7 +312,12 @@ const parseDataFromResponse = (response) => {
   }
   // Try to parse response to JSON, this can quietly fail
   try {
-    data = JSON.parse(data);
+    // Filter out ZWNBSP character
+    // https://gist.github.com/antic183/619f42b559b78028d1fe9e7ae8a1352d
+    data = data.replace(/^\uFEFF/, '');
+    if (!disableParsingResponseJson) {
+      data = JSON.parse(data);
+    }
   } catch {}
 
   return { data, dataBuffer };
@@ -343,13 +348,6 @@ const registerNetworkIpc = (mainWindow) => {
     processEnvVars,
     scriptingConfig
   ) => {
-    // run pre-request vars
-    const preRequestVars = get(request, 'vars.req', []);
-    if (preRequestVars?.length) {
-      const varsRuntime = new VarsRuntime();
-      varsRuntime.runPreRequestVars(preRequestVars, request, envVars, runtimeVariables, collectionPath, processEnvVars);
-    }
-
     // run pre-request script
     const requestScript = compact([get(collectionRoot, 'request.script.req'), get(request, 'script.req')]).join(os.EOL);
     const scriptResult = await runScript(

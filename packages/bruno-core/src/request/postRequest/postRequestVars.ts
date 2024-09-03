@@ -8,6 +8,8 @@ export function postRequestVars(context: RequestContext, folderData: FolderData[
     // Execute folder vars before request vars
     postRequestVars.unshift(...(folder.postReqVariables ?? []));
   }
+  postRequestVars.unshift(...(context.collection.root?.request?.vars?.res ?? []));
+
   if (postRequestVars.length === 0) {
     context.debug.log('Post request variables skipped');
     return;

@@ -274,6 +274,10 @@ export type Collection = {
         res?: string;
       };
       tests?: string;
+      vars?: {
+        req?: RequestVariable[];
+        res?: RequestVariable[];
+      };
     };
     docs: string;
   };

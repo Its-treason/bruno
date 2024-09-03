@@ -17,6 +17,7 @@ import Presets from './Presets';
 import Info from './Info';
 import StyledWrapper from './StyledWrapper';
 import { RequestPreset } from './RequestPreset';
+import Vars from './Vars/index';
 
 const CollectionSettings = ({ collection }) => {
   const dispatch = useDispatch();
@@ -78,6 +79,9 @@ const CollectionSettings = ({ collection }) => {
       case 'headers': {
         return <Headers collection={collection} />;
       }
+      case 'vars': {
+        return <Vars collection={collection} />;
+      }
       case 'auth': {
         return <Auth collection={collection} />;
       }
@@ -123,6 +127,9 @@ const CollectionSettings = ({ collection }) => {
       <div className="flex flex-wrap items-center tabs" role="tablist">
         <div className={getTabClassname('headers')} role="tab" onClick={() => setTab('headers')}>
           Headers
+        </div>
+        <div className={getTabClassname('vars')} role="tab" onClick={() => setTab('vars')}>
+          Vars
         </div>
         <div className={getTabClassname('auth')} role="tab" onClick={() => setTab('auth')}>
           Auth

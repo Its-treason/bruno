@@ -39,20 +39,6 @@ const runSingleRequest = async function (
 
     const scriptingConfig = get(brunoConfig, 'scripts', {});
 
-    // run pre-request vars
-    const preRequestVars = get(bruJson, 'request.vars.req');
-    if (preRequestVars?.length) {
-      const varsRuntime = new VarsRuntime();
-      varsRuntime.runPreRequestVars(
-        preRequestVars,
-        request,
-        envVariables,
-        runtimeVariables,
-        collectionPath,
-        processEnvVars
-      );
-    }
-
     // run pre request script
     const requestScriptFile = compact([
       get(collectionRoot, 'request.script.req'),

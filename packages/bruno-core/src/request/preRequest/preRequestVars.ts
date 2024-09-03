@@ -8,6 +8,7 @@ export function preRequestVars(context: RequestContext, folderData: FolderData[]
     // Execute folder vars before request vars
     preRequestVars.unshift(...(folder.preReqVariables ?? []));
   }
+  preRequestVars.unshift(...(context.collection.root?.request?.vars?.req ?? []));
 
   if (preRequestVars.length === 0) {
     context.debug.log('No request variables');
