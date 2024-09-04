@@ -23,22 +23,22 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "graphql": "^16.6.0",
+    "graphql": "^16.9.0",
     "markdown-it": "^13.0.1"
   },
   "peerDependencies": {
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
   },
   "devDependencies": {
     "@types/markdown-it": "^12.2.3",
     "@types/react": "^18.0.25",
-    "graphql": "^16.6.0",
+    "graphql": "^16.9.0",
     "markdown-it": "^13.0.1",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
     "rimraf": "^5.0.5",
-    "vite": "^5.1.5",
+    "vite": "^5.4.3",
     "vite-plugin-dts": "^3.7.3",
     "@vitejs/plugin-react": "^4.2.1"
   }
