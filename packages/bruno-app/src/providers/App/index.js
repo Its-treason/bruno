@@ -8,11 +8,9 @@ import StyledWrapper from './StyledWrapper';
 import { useMonaco } from '@monaco-editor/react';
 import { initMonaco } from 'components/CodeEditor/utils/monocoInit';
 import loader from '@monaco-editor/loader';
-import * as monaco from 'monaco-editor';
 
 // Init the Monaco loader. This ensures that local monaco instance is used and no js is loaded from a cdn
-loader.config({ monaco });
-loader.init();
+loader.config({ paths: { vs: '/vs' } });
 
 export const AppContext = React.createContext();
 
