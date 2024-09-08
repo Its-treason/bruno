@@ -13,9 +13,9 @@ export const external = [
 // Get the latest commit hash
 const getLatestCommitHash = () => {
   try {
-    return execSync('git rev-parse --short HEAD').toString().trim();
+    return process.env.COMMIT_SHORT_SHA || execSync('git rev-parse --short HEAD').toString().trim();
   } catch (error) {
-    console.error('Failed to get git commit hash:', error);
+    console.warn('Failed to get git commit hash', error);
     return 'Unknown';
   }
 };
