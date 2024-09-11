@@ -85,7 +85,7 @@ export const BulkEditEditor: React.FC<BulkEditEditorProps> = ({ item, collection
           onChange={(value) => handleBulkEdit(value)}
           onRun={onRun}
           onSave={onSave}
-          height="calc(100% - var(--mantine-spacing-xs))"
+          height="100%"
           withVariables
           hideMinimap
         />

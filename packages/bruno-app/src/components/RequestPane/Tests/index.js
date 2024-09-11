@@ -29,7 +29,7 @@ const Tests = ({ item, collection }) => {
         mode="javascript"
         onRun={onRun}
         onSave={onSave}
-        height={'calc(100% - var(--mantine-spacing-xs))'}
+        height={'100%'}
       />
     </div>
   );

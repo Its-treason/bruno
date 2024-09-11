@@ -15,7 +15,7 @@ type ResponseSummaryProps = {
 
 export const ResponseSummary: React.FC<ResponseSummaryProps> = ({ response, item, collection }) => {
   return (
-    <Group pl={'sm'} pr={'sm'} pt={'xs'} pb={'xs'} gap={'xs'}>
+    <Group gap={'xs'}>
       <StatusCode status={response.status} />
       <ResponseTime duration={response.duration} />
       <ResponseSize size={response.size} />

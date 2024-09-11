@@ -12,6 +12,7 @@ import { RequestHeaders } from 'components/RequestPane/RequestHeaders';
 import { updateRequestPaneTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch } from 'react-redux';
 import { BodyPane } from 'src/feature/main-view-pane-contents';
+import { Button } from '@mantine/core';
 
 const CONTENT_INDICATOR = '\u25CF';
 
