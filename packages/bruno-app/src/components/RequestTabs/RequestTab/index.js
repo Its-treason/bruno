@@ -33,9 +33,10 @@ const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUi
 
   const handleMouseUp = (e) => {
     if (e.button === 1) {
-      e.stopPropagation();
       e.preventDefault();
+      e.stopPropagation();
 
+      // Close the tab
       dispatch(
         closeTabs({
           tabUids: [tab.uid]
@@ -59,6 +60,7 @@ const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUi
       >
         <StyledWrapper
           onContextMenu={handleRightClick}
+          onMouseUp={handleMouseUp}
           className="flex items-center justify-between tab-container px-1"
         >
           {tab.type === 'folder-settings' ? (
@@ -86,6 +88,7 @@ const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUi
       >
         <StyledWrapper
           onContextMenu={handleRightClick}
+          onMouseUp={handleMouseUp}
           className="flex items-center justify-between tab-container px-1"
         >
           <RequestTabNotFound handleCloseClick={handleCloseClick} />
