@@ -1,10 +1,9 @@
-import React, { useEffect, useRef, forwardRef } from 'react';
+import { useEffect, useMemo } from 'react';
 import useGraphqlSchema from './useGraphqlSchema';
 import { IconBook, IconDownload, IconLoader2, IconRefresh } from '@tabler/icons-react';
 import get from 'lodash/get';
 import { findEnvironmentInCollection } from 'utils/collections';
-import Dropdown from '../../Dropdown';
-import { Group } from '@mantine/core';
+import { Button, Group, Menu, rem } from '@mantine/core';
 
 const GraphQLSchemaActions = ({ item, collection, onSchemaLoad, toggleDocs }) => {
   const url = item.draft ? get(item, 'draft.request.url', '') : get(item, 'request.url', '');
@@ -24,46 +23,40 @@ const GraphQLSchemaActions = ({ item, collection, onSchemaLoad, toggleDocs }) =>
     }
   }, [schema]);
 
-  const schemaDropdownTippyRef = useRef();
-  const onSchemaDropdownCreate = (ref) => (schemaDropdownTippyRef.current = ref);
-
-  const MenuIcon = forwardRef((props, ref) => {
-    return (
-      <div ref={ref} className="dropdown-icon cursor-pointer flex hover:underline ml-2">
-        {isSchemaLoading && <IconLoader2 className="animate-spin" size={18} strokeWidth={1.5} />}
-        {!isSchemaLoading && schema && <IconRefresh size={18} strokeWidth={1.5} />}
-        {!isSchemaLoading && !schema && <IconDownload size={18} strokeWidth={1.5} />}
-        <span className="ml-1">Schema</span>
-      </div>
-    );
-  });
+  const schemaIcon = useMemo(() => {
+    if (isSchemaLoading) {
+      return <IconLoader2 className="animate-spin" style={{ width: rem(16), height: rem(16) }} />;
+    } else if (schema) {
+      return <IconRefresh style={{ width: rem(16), height: rem(16) }} />;
+    }
+    return <IconDownload style={{ width: rem(16), height: rem(16) }} />;
+  }, [isSchemaLoading, schema]);
 
   return (
-    <Group pl={'sm'}>
-      <div className="flex items-center cursor-pointer hover:underline" onClick={toggleDocs}>
-        <IconBook size={18} strokeWidth={1.5} />
-        <span className="ml-1">Docs</span>
-      </div>
-      <Dropdown onCreate={onSchemaDropdownCreate} icon={<MenuIcon />} placement="bottom-start">
-        <div
-          className="dropdown-item"
-          onClick={(e) => {
-            schemaDropdownTippyRef.current.hide();
-            loadSchema('introspection');
-          }}
-        >
-          {schema && schemaSource === 'introspection' ? 'Refresh from Introspection' : 'Load from Introspection'}
-        </div>
-        <div
-          className="dropdown-item"
-          onClick={(e) => {
-            schemaDropdownTippyRef.current.hide();
-            loadSchema('file');
-          }}
-        >
-          Load from File
-        </div>
-      </Dropdown>
+    <Group>
+      <Button
+        size="compact-sm"
+        leftSection={<IconBook style={{ width: rem(16), height: rem(16) }} />}
+        variant="subtle"
+        onClick={toggleDocs}
+      >
+        GraphQL Docs
+      </Button>
+
+      <Menu shadow="md" width={220} position="bottom-start">
+        <Menu.Target>
+          <Button size="compact-sm" leftSection={schemaIcon} variant="subtle">
+            Schema
+          </Button>
+        </Menu.Target>
+
+        <Menu.Dropdown>
+          <Menu.Item onClick={() => loadSchema('introspection')}>
+            {schema ? 'Refresh from Introspection' : 'Load from Introspection'}
+          </Menu.Item>
+          <Menu.Item onClick={() => loadSchema('file')}>Load from File</Menu.Item>
+        </Menu.Dropdown>
+      </Menu>
     </Group>
   );
 };

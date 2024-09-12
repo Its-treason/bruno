@@ -13,7 +13,7 @@ type PaneWrapperProps = {
 export const PaneWrapper: React.FC<PaneWrapperProps> = ({ aboveTabs, tabs, content, activeTab, onTabChange }) => {
   return (
     <Stack h={'100%'} gap={0}>
-      <Box h={rem(38)} px={'sm'} pt={'xs'}>
+      <Box h={rem(40)} px={'sm'} pt={'xs'}>
         {aboveTabs}
       </Box>
       <Tabs value={activeTab} onChange={onTabChange}>
