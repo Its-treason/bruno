@@ -1,6 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import StyledWrapper from './StyledWrapper';
 import { IconAlertTriangle } from '@tabler/icons-react';
+
+const ESC_KEY_CODE = 27;
+const ENTER_KEY_CODE = 13;
 
 const ModalHeader = ({ title, handleCancel, customHeader }) => (
   <div className="bruno-modal-header">
@@ -86,10 +89,17 @@ const Modal = ({
   closeModalFadeTimeout = 500
 }) => {
   const [isClosing, setIsClosing] = useState(false);
-  const escFunction = (event) => {
-    const escKeyCode = 27;
-    if (event.keyCode === escKeyCode) {
-      closeModal({ type: 'esc' });
+
+  const handleKeydown = ({ keyCode }) => {
+    switch (keyCode) {
+      case ESC_KEY_CODE: {
+        return closeModal({ type: 'esc' });
+      }
+      case ENTER_KEY_CODE: {
+        if (handleConfirm) {
+          return handleConfirm();
+        }
+      }
     }
   };
 
@@ -100,10 +110,9 @@ const Modal = ({
 
   useEffect(() => {
     if (disableEscapeKey) return;
-    document.addEventListener('keydown', escFunction, false);
-
+    document.addEventListener('keydown', handleKeydown, false);
     return () => {
-      document.removeEventListener('keydown', escFunction, false);
+      document.removeEventListener('keydown', handleKeydown);
     };
   }, [disableEscapeKey, document]);
 
