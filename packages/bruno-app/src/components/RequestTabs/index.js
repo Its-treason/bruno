@@ -171,6 +171,7 @@ const RequestTabs = () => {
                         folderUid={tab.folderUid}
                         collectionRequestTabs={collectionRequestTabs}
                         tabIndex={index}
+                        active={tab.uid === activeTabUid}
                       />
                     </li>
                   );

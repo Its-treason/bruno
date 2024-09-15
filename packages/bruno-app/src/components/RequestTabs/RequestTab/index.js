@@ -11,8 +11,10 @@ import SpecialTab from './SpecialTab';
 import StyledWrapper from './StyledWrapper';
 import { RequestMethodIcon } from 'components/RequestMethodIcon';
 import { RequestTabMenu } from './RequestTabMenu';
+import { IconX } from '@tabler/icons-react';
+import { Indicator } from '@mantine/core';
 
-const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUid }) => {
+const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUid, active }) => {
   const dispatch = useDispatch();
   const [showConfirmClose, setShowConfirmClose] = useState(false);
   const [menuOpened, setMenuOpened] = useState(false);
@@ -73,9 +75,14 @@ const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUi
     );
   }
 
-  const item = useMemo(() => {
+  let item = useMemo(() => {
     return findItemInCollection(collection, tab.uid);
-  }, [tab.uid]);
+  }, [tab.uid, active]);
+  // This is a workaround to ensure that item.draft is updated and the indicator shows correctly.
+  // But this also ensures to every item is searched on every render
+  if (active) {
+    item = findItemInCollection(collection, tab.uid);
+  }
 
   if (!item) {
     return (
@@ -156,13 +163,15 @@ const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUi
             }
           }}
         >
-          <RequestMethodIcon method={method} />
+          <Indicator position="top-start" disabled={!item.draft} offset={1}>
+            <RequestMethodIcon method={method} />
+          </Indicator>
           <span className="ml-1 tab-name" title={item.name}>
             {item.name}
           </span>
         </div>
         <div
-          className="flex px-2 close-icon-container"
+          className="flex close-icon-container"
           onClick={(e) => {
             if (!item.draft) return handleCloseClick(e);
 
@@ -171,26 +180,7 @@ const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUi
             setShowConfirmClose(true);
           }}
         >
-          {!item.draft ? (
-            <svg focusable="false" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 320 512" className="close-icon">
-              <path
-                fill="currentColor"
-                d="M207.6 256l107.72-107.72c6.23-6.23 6.23-16.34 0-22.58l-25.03-25.03c-6.23-6.23-16.34-6.23-22.58 0L160 208.4 52.28 100.68c-6.23-6.23-16.34-6.23-22.58 0L4.68 125.7c-6.23 6.23-6.23 16.34 0 22.58L112.4 256 4.68 363.72c-6.23 6.23-6.23 16.34 0 22.58l25.03 25.03c6.23 6.23 16.34 6.23 22.58 0L160 303.6l107.72 107.72c6.23 6.23 16.34 6.23 22.58 0l25.03-25.03c6.23-6.23 6.23-16.34 0-22.58L207.6 256z"
-              ></path>
-            </svg>
-          ) : (
-            <svg
-              focusable="false"
-              xmlns="http://www.w3.org/2000/svg"
-              width="8"
-              height="16"
-              fill="#cc7b1b"
-              className="has-changes-icon"
-              viewBox="0 0 8 8"
-            >
-              <circle cx="4" cy="4" r="3" />
-            </svg>
-          )}
+          <IconX className="close-icon" />
         </div>
       </StyledWrapper>
     </RequestTabMenu>

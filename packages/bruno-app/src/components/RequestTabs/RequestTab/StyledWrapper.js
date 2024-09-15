@@ -3,6 +3,7 @@ import styled from 'styled-components';
 const StyledWrapper = styled.div`
   .tab-label {
     overflow: hidden;
+    padding: 8px 0 8px 0.5rem;
   }
 
   .tab-name {
@@ -20,9 +21,8 @@ const StyledWrapper = styled.div`
     .close-icon {
       display: none;
       color: ${(props) => props.theme.requestTabs.icon.color};
-      width: 8px;
-      padding-bottom: 6px;
-      padding-top: 6px;
+      width: 24px;
+      height: 20px;
     }
 
     &:hover,

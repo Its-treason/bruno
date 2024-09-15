@@ -14,8 +14,6 @@ const Wrapper = styled.div`
       max-width: 150px;
       border: 1px solid transparent;
       list-style: none;
-      padding-top: 8px;
-      padding-bottom: 8px;
       padding-left: 0;
       padding-right: 0;
       cursor: pointer;
