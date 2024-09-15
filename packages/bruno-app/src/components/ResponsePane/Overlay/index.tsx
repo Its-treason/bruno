@@ -17,7 +17,7 @@ export const ResponseLoadingOverlay: React.FC<ResponseLoadingOverlayProps> = ({ 
   };
 
   return (
-    <Overlay backgroundOpacity={0.05} blur={0.5} pt={'xl'}>
+    <Overlay backgroundOpacity={0.1} blur={0.5} pt={'xl'}>
       <Stack align="center" mt={'xl'}>
         <StopWatch requestTimestamp={item?.requestSentTimestamp} />
         <Loader />

@@ -1,0 +1,28 @@
+.wrapper {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background-color: var(--mantine-color-dark-filled);
+  z-index: 1;
+}
+
+.aboveTabs {
+  padding-top: var(--mantine-spacing-xs);
+  padding-left: var(--mantine-spacing-sm);
+  padding-right: var(--mantine-spacing-sm);
+  height: 2.75rem;
+}
+
+.pane {
+  padding: var(--mantine-spacing-sm);
+  flex-grow: 1;
+  width: 100%;
+}
