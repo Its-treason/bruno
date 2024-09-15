@@ -23,7 +23,7 @@ const parseGraphQLRequest = (graphqlSource) => {
     };
 
     if (typeof graphqlSource === 'string') {
-      graphqlSource = JSON.parse(text);
+      graphqlSource = JSON.parse(graphqlSource);
     }
 
     if (graphqlSource.hasOwnProperty('variables') && graphqlSource.variables !== '') {
@@ -93,7 +93,6 @@ const importPostmanV2CollectionItem = (brunoParent, item, parentAuth, options) =
           requestName = `${baseRequestName}_${count}`;
           count++;
         }
-
         let url = '';
         if (typeof i.request.url === 'string') {
           url = i.request.url;
