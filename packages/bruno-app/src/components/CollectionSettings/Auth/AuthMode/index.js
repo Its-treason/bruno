@@ -22,6 +22,9 @@ const AuthMode = ({ collection }) => {
   });
 
   const onModeChange = (value) => {
+    if (collection.root.request.auth.mode === value) {
+      return;
+    }
     dispatch(
       updateCollectionAuthMode({
         collectionUid: collection.uid,
