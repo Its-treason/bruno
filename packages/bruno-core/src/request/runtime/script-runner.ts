@@ -19,7 +19,7 @@ export async function runScript(
   script: string,
   request: RequestItem,
   response: Response | null,
-  responseBody: Response | null,
+  responseBody: any | null,
   variables: RequestContext['variables'],
   environmentName: string | undefined,
   useTests: boolean,
@@ -70,6 +70,7 @@ export async function runScript(
     envVariables: cleanJson(scriptContext.bru.envVariables),
     runtimeVariables: cleanJson(scriptContext.bru.runtimeVariables),
     nextRequestName: scriptContext.bru._nextRequest,
+    responseBody: scriptContext.res?.body,
     results: scriptContext.brunoTestResults ? cleanJson(scriptContext.brunoTestResults.getResults()) : null
   };
 }
@@ -102,8 +103,10 @@ function buildScriptContext(
     res: null,
     bru: new Bru(
       variables.environment,
-      variables.collection,
+      variables.runtime,
       variables.request,
+      variables.folder,
+      variables.collection,
       variables.process,
       collectionPath,
       environmentName

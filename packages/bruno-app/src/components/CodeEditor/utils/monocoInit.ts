@@ -81,6 +81,13 @@ const buildSuggestions = (monaco: Monaco) => [
     insertText: 'res.getResponseTime()',
     documentation: 'Returns the response time.'
   },
+  {
+    label: 'res.setBody(newBody: unknown)',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'res.getResponseTime()',
+    documentation:
+      'Overwrites the response Body. Useful if the response is encodes in some other way and must be decoded with a script'
+  },
   // Req
   {
     label: 'req',
@@ -196,18 +203,25 @@ const buildSuggestions = (monaco: Monaco) => [
     insertText: 'req.setTimeout()',
     documentation: 'Sets the request timeout.'
   },
+  {
+    label: 'req.disableParsingResponseJson()',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'req.disableParsingResponseJson()',
+    documentation:
+      'Noop function for Bruno compatibility. This would disable JSON parsing in Bruno, but Lazer not have parsing issues.'
+  },
   // Bru
   {
     label: 'bru.interpolate()',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.interpolate()',
-    documentation: 'Interpolates a string with placeholders.'
+    documentation: 'Interpolates a string with placeholders. Only available in Lazer.'
   },
   {
     label: 'bru.cwd()',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.cwd()',
-    documentation: 'Returns the current working directory.'
+    documentation: 'Returns the path to the collection root.'
   },
   {
     label: 'bru.getEnvName()',
@@ -216,64 +230,82 @@ const buildSuggestions = (monaco: Monaco) => [
     documentation: 'Returns the name of the current environment or undefined if none is selected.'
   },
   {
-    label: 'bru.getProcessEnv()',
+    label: 'bru.getProcessEnv(name: string): ?string',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.getProcessEnv()',
     documentation: 'Returns a process environment variable.'
   },
   {
-    label: 'bru.hasEnvVar()',
+    label: 'bru.hasEnvVar(name: string)',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.hasEnvVar()',
     documentation: 'Returns a true if an environment variable exists.'
   },
   {
-    label: 'bru.getEnvVar()',
+    label: 'bru.getEnvVar(name: string)',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.getEnvVar()',
     documentation: 'Returns the value of the environment variable with the given key.'
   },
   {
-    label: 'bru.setEnvVar()',
+    label: 'bru.setEnvVar(name: string, value: unknown)',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.setEnvVar()',
     documentation: 'Sets the value of the environment variable with the given key.'
   },
   {
-    label: 'bru.hasVar()',
+    label: 'bru.hasVar(name: string): bool',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.hasVar()',
     documentation: 'Returns true if an collection variable exists.'
   },
   {
-    label: 'bru.setVar()',
+    label: 'bru.setVar(name: string, value: unknown)',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.setVar()',
-    documentation: 'Sets the value of the variable with the given key.'
+    documentation: 'Sets a runtime variable.'
   },
   {
-    label: 'bru.deleteVar()',
+    label: 'bru.deleteVar(name: string)',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.deleteVar()',
-    documentation: 'Removes an collection variable.'
+    documentation: 'Removes a runtime variable.'
   },
   {
-    label: 'bru.getVar()',
+    label: 'bru.getVar(name: string)',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.getVar()',
-    documentation: 'Returns the value of the variable with the given key.'
+    documentation: 'Returns the value of a runtime variable'
   },
   {
-    label: 'bru.getRequestVar()',
+    label: 'bru.getRequestVar(name: string)',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.getRequestVar()',
     documentation: 'Returns the value of the request variable for the given key.'
   },
   {
-    label: 'bru.setNextRequest()',
+    label: 'bru.setNextRequest(nextRequest: string)',
     kind: monaco.languages.CompletionItemKind.Function,
     insertText: 'bru.setNextRequest()',
     documentation: 'Sets the name for the next request in the collection runner.'
+  },
+  {
+    label: 'bru.sleep(ms: number): Promise<void>',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'bru.setNextRequest()',
+    documentation: 'Sleep utiltlty function. Note: that the Promise of this function must be awaited'
+  },
+  {
+    label: 'bru.getCollectionVar(name: string)',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'bru.getCollectionVar()',
+    documentation: 'Returns the value of a collection variable'
+  },
+  {
+    label: 'bru.getFolderVar(name: string)',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'bru.getFolderVar()',
+    documentation: 'Returns the value of a folder variable'
   }
 ];
 
@@ -311,6 +343,7 @@ export const initMonaco = (monaco: Monaco) => {
     getHeaders(): any;
     getBody(): any;
     getResponseTime(): number;
+    setBody(newBody: unknown): void;
   };
   declare const req: {
     url: string;
@@ -331,6 +364,7 @@ export const initMonaco = (monaco: Monaco) => {
     setMaxRedirects(maxRedirects: number): void;
     getTimeout(): number;
     setTimeout(timeout: number): void;
+    disableParsingResponseJson(): void;
   };
   declare const bru: {
     interpolate(target: unknown): string | unknown;
@@ -345,7 +379,10 @@ export const initMonaco = (monaco: Monaco) => {
     deleteVar(key: string): void;
     getVar(key: string): any;
     getRequestVar(key: string): unknown;
+    getCollectionVar(key: string): unknown;
+    getFolderVar(key: string): unknown;
     setNextRequest(nextRequest: string): void;
+    sleep(ms: number): Promise<void>;
   };
 `);
   monaco.languages.registerCompletionItemProvider('typescript', {

@@ -3,7 +3,7 @@ import { runScript } from '../runtime/script-runner';
 import { EOL } from 'node:os';
 import { FolderData } from '../preRequest/collectFolderData';
 
-export async function postRequestScript(context: RequestContext, folderData: FolderData[], responseBody: any) {
+export async function postRequestScript(context: RequestContext, folderData: FolderData[]) {
   const collectionPostRequestScript = context.collection.root?.request?.script?.res ?? '';
   const folderLevelScripts = folderData.map((data) => data.postReqScript).filter(Boolean);
   const requestPostRequestScript = context.requestItem.request.script.res ?? '';
@@ -13,9 +13,7 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
       ? [collectionPostRequestScript, ...folderLevelScripts, requestPostRequestScript].join(EOL)
       : [requestPostRequestScript, ...folderLevelScripts.reverse(), collectionPostRequestScript].join(EOL);
 
-  context.debug.log('Post request script', {
-    postRequestScript
-  });
+  context.debug.log('Post request script', postRequestScript);
   context.timings.startMeasure('postScript');
 
   let scriptResult;
@@ -24,7 +22,7 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
       postRequestScript,
       context.requestItem,
       context.response!,
-      responseBody,
+      context.responseBody,
       context.variables,
       context.environmentName,
       false,
@@ -43,6 +41,11 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
   context.callback.updateScriptEnvironment(context, scriptResult.envVariables, scriptResult.runtimeVariables);
 
   context.debug.log('Post request script finished', scriptResult);
+
+  if (context.responseBody !== scriptResult.responseBody) {
+    context.debug.log('Response body was overwritten');
+    context.responseBody = scriptResult.responseBody;
+  }
 
   context.nextRequestName = scriptResult.nextRequestName;
   // The script will use `cleanJson` to remove any weird things before sending to the mainWindow

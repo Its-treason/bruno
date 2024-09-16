@@ -55,5 +55,14 @@ export function collectFolderData(collection: Collection, itemUid: string) {
     });
   }
 
-  return folderData;
+  const folderVariables = folderData.reduce((acc, folderData) => {
+    for (const variable of folderData.preReqVariables ?? []) {
+      if (variable.enabled) {
+        acc[variable.name] = variable.value;
+      }
+    }
+    return acc;
+  }, {} as Record<string, unknown>);
+
+  return [folderData, folderVariables] as const;
 }

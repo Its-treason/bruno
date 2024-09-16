@@ -9,6 +9,8 @@ export class Bru {
     public envVariables: any,
     public runtimeVariables: any,
     public requestVariables: Record<string, unknown>,
+    public folderVariables: Record<string, unknown>,
+    public collectionVariables: Record<string, unknown>,
     public processEnvVars: any,
     private collectionPath: string,
     private environmentName?: string
@@ -16,9 +18,11 @@ export class Bru {
 
   interpolate(target: unknown): string | unknown {
     return interpolate(target, {
+      ...this.collectionVariables,
       ...this.envVariables,
-      ...this.runtimeVariables,
+      ...this.folderVariables,
       ...this.requestVariables,
+      ...this.runtimeVariables,
       ...this.processEnvVars
     });
   }
@@ -70,10 +74,6 @@ export class Bru {
     this.runtimeVariables[key] = value;
   }
 
-  deleteVar(key: string) {
-    delete this.runtimeVariables[key];
-  }
-
   getVar(key: string): unknown {
     if (!variableNameRegex.test(key)) {
       throw new Error(
@@ -82,7 +82,25 @@ export class Bru {
       );
     }
 
-    return this.runtimeVariables[key];
+    return this.interpolate(this.runtimeVariables[key]);
+  }
+
+  deleteVar(key: string) {
+    delete this.runtimeVariables[key];
+  }
+
+  getCollectionVar(key: string) {
+    if (!this.collectionVariables[key]) {
+      return undefined;
+    }
+    return this.interpolate(this.collectionVariables[key]);
+  }
+
+  getFolderVar(key: string) {
+    if (!this.folderVariables[key]) {
+      return undefined;
+    }
+    return this.interpolate(this.folderVariables[key]);
   }
 
   getRequestVar(key: string): unknown {
@@ -91,5 +109,9 @@ export class Bru {
 
   setNextRequest(nextRequest: string) {
     this._nextRequest = nextRequest;
+  }
+
+  sleep(ms: number): Promise<void> {
+    return new Promise((resolve) => setTimeout(() => resolve(), ms));
   }
 }

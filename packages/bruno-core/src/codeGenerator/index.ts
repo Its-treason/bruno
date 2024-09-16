@@ -33,6 +33,20 @@ export async function generateCode(
     return acc;
   }, {});
 
+  const collectionVariables = (collection.root?.request?.vars?.req || []).reduce((acc, variable) => {
+    if (variable.enabled) {
+      acc[variable.name] = variable.value;
+    }
+    return acc;
+  }, {} as Record<string, unknown>);
+
+  const requestVariables = (requestItem.request?.vars?.req || []).reduce((acc, variable) => {
+    if (variable.enabled) {
+      acc[variable.name] = variable.value;
+    }
+    return acc;
+  }, {} as Record<string, unknown>);
+
   const context: RequestContext = {
     uid: nanoid(),
 
@@ -48,7 +62,9 @@ export async function generateCode(
         }
       },
       environment: environmentVariableRecord,
-      collection: collection.runtimeVariables
+      collection: collectionVariables,
+      request: requestVariables,
+      runtime: collection.runtimeVariables
     },
 
     callback: new Callbacks({}),
@@ -62,7 +78,9 @@ export async function generateCode(
 async function doGenerateCode(context: RequestContext, options: GenerateCodeOptions): Promise<string> {
   context.debug.addStage('Generate code');
 
-  const folderData = collectFolderData(context.collection, context.requestItem.uid);
+  const [folderData, folderVariables] = collectFolderData(context.collection, context.requestItem.uid);
+  context.variables.folder = folderVariables;
+
   // Folder Headers are also applied here
   applyCollectionSettings(context, folderData);
   preRequestVars(context, folderData);

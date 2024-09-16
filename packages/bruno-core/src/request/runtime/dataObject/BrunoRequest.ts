@@ -148,4 +148,9 @@ export class BrunoRequest {
     }
     this._req.request.timeout = timeout;
   }
+
+  disableParsingResponseJson() {
+    // This method is only for compatibly purpose with Bruno
+    // Lazer handles Response parsing correctly, so no need to disable it here
+  }
 }

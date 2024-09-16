@@ -16,12 +16,10 @@ export function preRequestVars(context: RequestContext, folderData: FolderData[]
   }
 
   const varsRuntime = new VarsRuntime();
-  context.variables.request = varsRuntime.runPreRequestVars(
+  context.variables.runtime = varsRuntime.runPreRequestVars(
     preRequestVars,
     context.requestItem,
-    context.variables.environment,
-    context.variables.collection,
-    context.variables.process,
+    context.variables,
     context.collection.pathname,
     context.environmentName
   );

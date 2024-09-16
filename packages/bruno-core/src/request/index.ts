@@ -43,6 +43,20 @@ export async function request(
     requestItem.request = requestItem.draft.request;
   }
 
+  const collectionVariables = (collection.root?.request?.vars?.req || []).reduce((acc, variable) => {
+    if (variable.enabled) {
+      acc[variable.name] = variable.value;
+    }
+    return acc;
+  }, {} as Record<string, unknown>);
+
+  const requestVariables = (requestItem.request?.vars?.req || []).reduce((acc, variable) => {
+    if (variable.enabled) {
+      acc[variable.name] = variable.value;
+    }
+    return acc;
+  }, {} as Record<string, unknown>);
+
   const context: RequestContext = {
     uid: nanoid(),
     dataDir,
@@ -63,7 +77,10 @@ export async function request(
         }
       },
       environment: environmentVariableRecord,
-      collection: collection.runtimeVariables
+      collection: collectionVariables,
+      request: requestVariables,
+      // Runtime variables are stored inside the collection.
+      runtime: collection.runtimeVariables
     },
 
     callback: new Callbacks(rawCallbacks),
@@ -92,7 +109,9 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
   context.callback.requestQueued(context);
   context.callback.folderRequestQueued(context);
 
-  const folderData = collectFolderData(context.collection, context.requestItem.uid);
+  const [folderData, folderVariables] = collectFolderData(context.collection, context.requestItem.uid);
+  context.variables.folder = folderVariables;
+
   // Folder Headers are also applied here
   applyCollectionSettings(context, folderData);
   preRequestVars(context, folderData);
@@ -110,12 +129,12 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
   context.debug.addStage('Post-Request');
   context.callback.cookieUpdated(context.cookieJar);
 
-  const body = await readResponseBodyAsync(context.response!.path);
+  context.responseBody = await readResponseBodyAsync(context.response!.path);
 
-  postRequestVars(context, folderData, body);
-  await postRequestScript(context, folderData, body);
-  assertions(context, body);
-  await tests(context, folderData, body);
+  postRequestVars(context, folderData);
+  await postRequestScript(context, folderData);
+  assertions(context);
+  await tests(context, folderData);
 
   context.timings.stopMeasure('total');
 

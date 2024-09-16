@@ -374,7 +374,9 @@ export type RequestContext = {
   cookieJar: CookieJar;
   variables: {
     request: Record<string, unknown>;
+    runtime: Record<string, unknown>;
     collection: Record<string, unknown>;
+    folder: Record<string, unknown>;
     environment: Record<string, unknown>;
     process: {
       process: {
@@ -395,5 +397,6 @@ export type RequestContext = {
   };
 
   response?: Response;
+  responseBody?: unknown;
   error?: Error;
 };

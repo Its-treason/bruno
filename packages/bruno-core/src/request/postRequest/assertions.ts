@@ -1,7 +1,7 @@
 import { AssertRuntime } from '../runtime/assert-runtime';
 import { RequestContext } from '../types';
 
-export function assertions(context: RequestContext, responseBody: any) {
+export function assertions(context: RequestContext) {
   const assertions = context.requestItem.request.assertions;
   if (assertions) {
     const assertRuntime = new AssertRuntime();
@@ -9,10 +9,10 @@ export function assertions(context: RequestContext, responseBody: any) {
       assertions,
       context.requestItem,
       context.response,
-      responseBody,
-      context.variables.environment,
-      context.variables.collection,
-      context.collection.pathname
+      context.responseBody,
+      context.variables,
+      context.collection.pathname,
+      context.environmentName
     );
 
     context.callback.folderAssertionResults(context, results);

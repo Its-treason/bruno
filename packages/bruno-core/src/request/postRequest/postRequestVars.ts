@@ -2,7 +2,7 @@ import { RequestContext } from '../types';
 import { VarsRuntime } from '../runtime/vars-runtime';
 import { FolderData } from '../preRequest/collectFolderData';
 
-export function postRequestVars(context: RequestContext, folderData: FolderData[], responseBody: any) {
+export function postRequestVars(context: RequestContext, folderData: FolderData[]) {
   const postRequestVars = context.requestItem.request.vars.res ?? [];
   for (const folder of folderData) {
     // Execute folder vars before request vars
@@ -23,11 +23,8 @@ export function postRequestVars(context: RequestContext, folderData: FolderData[
     postRequestVars,
     context.requestItem,
     context.response!,
-    responseBody,
-    context.variables.environment,
-    context.variables.collection,
-    context.variables.request,
-    context.variables.process,
+    context.responseBody,
+    context.variables,
     context.collection.pathname,
     context.environmentName
   );

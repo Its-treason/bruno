@@ -2,15 +2,14 @@ import _ from 'lodash';
 import { Bru } from './dataObject/Bru';
 import { BrunoRequest } from './dataObject/BrunoRequest';
 import { evaluateJsTemplateLiteral, evaluateJsExpression, createResponseParser } from './utils';
-import { RequestItem, RequestVariable, Response } from '../types';
+import { RequestContext, RequestItem, RequestVariable, Response } from '../types';
+import { Context } from 'json-query';
 
 export class VarsRuntime {
   runPreRequestVars(
     vars: RequestVariable[],
     request: RequestItem,
-    envVariables: Record<string, unknown>,
-    runtimeVariables: Record<string, unknown>,
-    processEnvVars: Record<string, unknown>,
+    variables: RequestContext['variables'],
     collectionPath: string,
     environmentName?: string
   ) {
@@ -19,24 +18,36 @@ export class VarsRuntime {
       return {};
     }
 
-    const bru = new Bru(envVariables, runtimeVariables, {}, processEnvVars, collectionPath, environmentName);
+    const bru = new Bru(
+      variables.environment,
+      variables.runtime,
+      variables.request,
+      variables.folder,
+      variables.collection,
+      variables.process,
+      collectionPath,
+      environmentName
+    );
     const req = new BrunoRequest(request, true);
 
     const combinedVariables = {
-      ...envVariables,
-      ...runtimeVariables,
-      ...processEnvVars,
+      ...variables.collection,
+      ...variables.environment,
+      ...variables.folder,
+      ...variables.request,
+      ...variables.runtime,
+      ...variables.process,
       bru,
       req
     };
 
-    const requestVariables: Record<string, unknown> = {};
     _.each(enabledVars, (preReqVar) => {
       const value = evaluateJsTemplateLiteral(preReqVar.value, combinedVariables);
-      requestVariables[preReqVar.name] = value;
+      // This will set the runtime variables
+      bru.setVar(preReqVar.name, value);
     });
 
-    return requestVariables;
+    return bru.runtimeVariables;
   }
 
   runPostResponseVars(
@@ -44,10 +55,7 @@ export class VarsRuntime {
     request: RequestItem,
     response: Response,
     responseBody: any,
-    envVariables: Record<string, unknown>,
-    runtimeVariables: Record<string, unknown>,
-    requestVariables: Record<string, unknown>,
-    processEnvVars: Record<string, unknown>,
+    variables: RequestContext['variables'],
     collectionPath: string,
     environmentName?: string
   ) {
@@ -57,10 +65,12 @@ export class VarsRuntime {
     }
 
     const bru = new Bru(
-      envVariables,
-      runtimeVariables,
-      requestVariables,
-      processEnvVars,
+      variables.environment,
+      variables.runtime,
+      variables.request,
+      variables.folder,
+      variables.collection,
+      variables.process,
       collectionPath,
       environmentName
     );
@@ -68,22 +78,25 @@ export class VarsRuntime {
     const res = createResponseParser(response, responseBody);
 
     const context = {
-      ...envVariables,
-      ...runtimeVariables,
-      ...requestVariables,
-      ...processEnvVars,
+      ...variables.collection,
+      ...variables.environment,
+      ...variables.folder,
+      ...variables.request,
+      ...variables.runtime,
+      ...variables.process,
       bru,
       req,
       res
     };
 
-    _.each(enabledVars, (v) => {
-      const value = evaluateJsExpression(v.value, context);
-      bru.setVar(v.name, value);
+    _.each(enabledVars, (postRequestVar) => {
+      const value = evaluateJsExpression(postRequestVar.value, context);
+      // This will update the runtimeVariables
+      bru.setVar(postRequestVar.name, value);
     });
 
     return {
-      runtimeVariables
+      runtimeVariables: bru.runtimeVariables
     };
   }
 }

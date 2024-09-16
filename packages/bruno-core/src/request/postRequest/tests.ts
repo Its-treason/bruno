@@ -3,7 +3,7 @@ import { EOL } from 'node:os';
 import { runScript } from '../runtime/script-runner';
 import { FolderData } from '../preRequest/collectFolderData';
 
-export async function tests(context: RequestContext, folderData: FolderData[], responseBody: any) {
+export async function tests(context: RequestContext, folderData: FolderData[]) {
   const collectionPostRequestScript = context.collection.root?.request?.tests ?? '';
   const folderLevelTests = folderData.map((data) => data.testScript).filter(Boolean);
   const requestPostRequestScript = context.requestItem.request.tests ?? '';
@@ -24,7 +24,7 @@ export async function tests(context: RequestContext, folderData: FolderData[], r
       postRequestScript,
       context.requestItem,
       context.response!,
-      responseBody,
+      context.responseBody,
       context.variables,
       context.environmentName,
       true,

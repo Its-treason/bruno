@@ -1,4 +1,6 @@
+import { writeFileSync } from 'node:fs';
 import { Response } from '../../types';
+import { stringify } from 'lossless-json';
 
 export class BrunoResponse {
   constructor(private _res: Response, public body: any) {}
@@ -32,5 +34,19 @@ export class BrunoResponse {
   }
   getResponseTime() {
     return this._res.responseTime;
+  }
+
+  setBody(newBody: unknown) {
+    this.body = newBody;
+
+    // Write the new Body to disk
+    let stringifiedBody: string;
+    if (typeof newBody !== 'string') {
+      stringifiedBody = stringify(newBody) as string;
+    } else {
+      stringifiedBody = newBody;
+    }
+
+    writeFileSync(this._res.path, stringifiedBody);
   }
 }

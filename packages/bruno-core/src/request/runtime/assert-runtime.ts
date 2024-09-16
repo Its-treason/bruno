@@ -6,7 +6,7 @@ import { Bru } from './dataObject/Bru';
 import { BrunoRequest } from './dataObject/BrunoRequest';
 import { evaluateJsTemplateLiteral, evaluateJsExpression, createResponseParser } from './utils';
 import { interpolate } from '@usebruno/common';
-import { RequestItem } from '../types';
+import { RequestContext, RequestItem } from '../types';
 
 use(chaiString);
 use(function (chai, utils) {
@@ -211,29 +211,38 @@ export class AssertRuntime {
     request: RequestItem,
     response: any,
     responseBody: any,
-    envVariables: Record<string, unknown>,
-    runtimeVariables: Record<string, unknown>,
-    collectionPath: string
+    variables: RequestContext['variables'],
+    collectionPath: string,
+    environmentName?: string
   ) {
     const enabledAssertions = _.filter(assertions, (a) => a.enabled);
     if (!enabledAssertions.length) {
       return [];
     }
 
-    const bru = new Bru(envVariables, runtimeVariables, {}, collectionPath, 'the-env');
+    const bru = new Bru(
+      variables.environment,
+      variables.runtime,
+      variables.request,
+      variables.folder,
+      variables.collection,
+      variables.process,
+      collectionPath,
+      environmentName
+    );
     const req = new BrunoRequest(request, true);
     const res = createResponseParser(response, responseBody);
 
-    const bruContext = {
+    const context = {
+      ...variables.collection,
+      ...variables.environment,
+      ...variables.folder,
+      ...variables.request,
+      ...variables.runtime,
+      ...variables.process,
       bru,
       req,
       res
-    };
-
-    const context = {
-      ...envVariables,
-      ...runtimeVariables,
-      ...bruContext
     };
 
     const assertionResults = [];
