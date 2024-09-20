@@ -1,12 +1,12 @@
-import { AuthMode } from '../types';
 import crypto from 'node:crypto';
 import { Readable } from 'stream';
 import { RequestOptions } from 'node:http';
+import { RequestAuthSchema } from 'packages/bruno-schema/dist';
 
 function createAwsV4AuthHeaders(
   opts: RequestOptions,
   body: string | Buffer = '',
-  authConfig: Extract<AuthMode, { mode: 'awsv4' }>
+  authConfig: Extract<RequestAuthSchema, { mode: 'awsv4' }>
 ): Record<string, string> {
   const method = opts.method!.toUpperCase();
   const headers = opts.headers as Record<string, string | string[]>;
@@ -81,7 +81,7 @@ function createAwsV4AuthHeaders(
 }
 
 export function addAwsAuthHeader(
-  authConfig: Extract<AuthMode, { mode: 'awsv4' }>,
+  authConfig: Extract<RequestAuthSchema, { mode: 'awsv4' }>,
   requestOptions: RequestOptions,
   body?: string | Buffer
 ): void {

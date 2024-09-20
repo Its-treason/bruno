@@ -59,6 +59,13 @@ export const oauth2AuthSchema = z.discriminatedUnion('grantType', [
   })
 ]);
 
+export const apiKeyAuthSchema = z.object({
+  key: z.string(),
+  value: z.string(),
+  placement: z.enum(['header', 'queryparams'])
+});
+export type ApiKeyAuthSchema = z.infer<typeof apiKeyAuthSchema>;
+
 export const requestAuthSchema = z
   .discriminatedUnion('mode', [
     z.object({
@@ -86,6 +93,10 @@ export const requestAuthSchema = z
     z.object({
       mode: z.literal('oauth2'),
       oauth2: oauth2AuthSchema
+    }),
+    z.object({
+      mode: z.literal('apikey'),
+      apikey: apiKeyAuthSchema
     })
   ])
   .default({ mode: 'inherit' });

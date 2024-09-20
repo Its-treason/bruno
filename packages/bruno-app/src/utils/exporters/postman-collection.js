@@ -11,7 +11,7 @@ import { deleteSecretsInEnvs, deleteUidsInEnvs, deleteUidsInItems } from '../col
  */
 export const transformUrl = (url, params) => {
   if (typeof url !== 'string' || !url.trim()) {
-    throw new Error("Invalid URL input");
+    throw new Error('Invalid URL input');
   }
 
   const urlRegexPatterns = {
@@ -69,7 +69,7 @@ export const transformUrl = (url, params) => {
   postmanUrl.query = params
     .filter((param) => param.type === 'query')
     .map(({ name, value, description }) => ({ key: name, value, description }));
-  
+
   // Construct path params.
   postmanUrl.variable = params
     .filter((param) => param.type === 'path')
@@ -80,10 +80,10 @@ export const transformUrl = (url, params) => {
 
 /**
  * Collapses multiple consecutive slashes (`//`) into a single slash, while skipping the protocol (e.g., `http://` or `https://`).
- * 
+ *
  * @param {String} url - A URL string
  * @returns {String} The sanitized URL
- * 
+ *
  */
 const collapseDuplicateSlashes = (url) => {
   return url.replace(/(?<!:)\/{2,}/g, '/');
@@ -91,7 +91,7 @@ const collapseDuplicateSlashes = (url) => {
 
 /**
  * Replaces all `\\` (backslashes) with `//` (forward slashes) and collapses multiple slashes into one.
- * 
+ *
  * @param {string} url - The URL to sanitize.
  * @returns {string} The sanitized URL.
  *
@@ -246,7 +246,7 @@ export const exportCollection = (collection) => {
   };
 
   const generateAuth = (itemAuth) => {
-    switch (itemAuth) {
+    switch (itemAuth?.mode) {
       case 'bearer':
         return {
           type: 'bearer',
@@ -272,6 +272,27 @@ export const exportCollection = (collection) => {
             }
           ]
         };
+      }
+      case 'apikey': {
+        return {
+          type: 'apikey',
+          apikey: [
+            {
+              key: 'key',
+              value: itemAuth.apikey.key,
+              type: 'string'
+            },
+            {
+              key: 'value',
+              value: itemAuth.apikey.value,
+              type: 'string'
+            }
+          ]
+        };
+      }
+      default: {
+        console.error('Unsupported auth mode:', itemAuth.mode);
+        return null;
       }
     }
   };

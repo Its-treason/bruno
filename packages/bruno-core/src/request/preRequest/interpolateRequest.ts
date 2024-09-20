@@ -84,6 +84,10 @@ function interpolateAuth(context: RequestContext, i: InterpolationShorthandFunct
       auth.digest.username = i(auth.digest.username, 'Digest auth usernaem');
       auth.digest.password = i(auth.digest.password, 'Digest auth password');
       break;
+    case 'apikey':
+      auth.apikey.key = i(auth.apikey.key, 'ApiKey auth key');
+      auth.apikey.value = i(auth.apikey.value, 'ApiKey auth value');
+      break;
     case 'awsv4':
       auth.awsv4.accessKeyId = i(auth.awsv4.accessKeyId, 'AWS auth AccessKeyId');
       auth.awsv4.region = i(auth.awsv4.region, 'AWS auth Region');

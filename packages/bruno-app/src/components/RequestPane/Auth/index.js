@@ -5,9 +5,11 @@ import AwsV4Auth from './AwsV4Auth';
 import BearerAuth from './BearerAuth';
 import BasicAuth from './BasicAuth';
 import DigestAuth from './DigestAuth';
+// import ApiKeyAuth from './ApiKeyAuth';
 import StyledWrapper from './StyledWrapper';
 import { humanizeRequestAuthMode } from 'utils/collections/index';
 import OAuth2 from './OAuth2/index';
+import { ApiKeyAuth } from './ApiKeyAuth';
 
 const Auth = ({ item, collection }) => {
   const authMode = item.draft ? get(item, 'draft.request.auth.mode') : get(item, 'request.auth.mode');
@@ -31,6 +33,9 @@ const Auth = ({ item, collection }) => {
       }
       case 'oauth2': {
         return <OAuth2 collection={collection} item={item} />;
+      }
+      case 'apikey': {
+        return <ApiKeyAuth collectionUid={collection.uid} item={item} />;
       }
       case 'inherit': {
         return (

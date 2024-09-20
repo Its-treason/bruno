@@ -1,7 +1,7 @@
 import crypto from 'crypto';
-import { AuthMode } from '../types';
 import { URL } from 'node:url';
 import { RequestOptions } from 'http';
+import { RequestAuthSchema } from 'packages/bruno-schema/dist';
 
 type DigestAuthDetails = {
   algorithm: string;
@@ -17,7 +17,7 @@ export function handleDigestAuth(
   statusCode: number,
   headers: Record<string, string | string[] | undefined>,
   originalRequest: RequestOptions,
-  auth: AuthMode
+  auth: RequestAuthSchema
 ): boolean {
   if (
     auth.mode !== 'digest' || // Only execute if user configured digest as auth mode

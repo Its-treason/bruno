@@ -5,6 +5,7 @@ import { Callbacks } from './Callbacks';
 import { RequestOptions } from 'node:http';
 import { TlsOptions } from 'node:tls';
 import { CookieJar } from 'tough-cookie';
+import { RequestAuthSchema } from '@usebruno/schema';
 
 export type RequestType = 'http-request' | 'graphql-request';
 
@@ -13,72 +14,6 @@ export type RequestVariable = {
   value: string;
   enabled: boolean;
 };
-
-export type AuthMode =
-  | {
-      mode: 'none';
-    }
-  | {
-      mode: 'inherit';
-    }
-  | {
-      mode: 'basic';
-      basic: {
-        username: string;
-        password: string;
-      };
-    }
-  | {
-      mode: 'bearer';
-      bearer: {
-        token: string;
-      };
-    }
-  | {
-      mode: 'digest';
-      digest: {
-        username: string;
-        password: string;
-      };
-    }
-  | {
-      mode: 'awsv4';
-      awsv4: {
-        accessKeyId: string;
-        secretAccessKey: string;
-        sessionToken: string;
-        service: string;
-        region: string;
-        profileName: string;
-      };
-    }
-  | {
-      mode: 'oauth2';
-      grantType: 'authorization_code';
-      callbackUrl: string;
-      authorizationUrl: string;
-      accessTokenUrl: string;
-      clientId: string;
-      clientSecret: string;
-      scope: string;
-      pkce: boolean;
-    }
-  | {
-      mode: 'oauth2';
-      grantType: 'client_credentials';
-      accessTokenUrl: string;
-      clientId: string;
-      clientSecret: string;
-      scope: string;
-    }
-  | {
-      mode: 'oauth2';
-      grantType: 'password';
-      accessTokenUrl: string;
-      username: string;
-      password: string;
-      scope: string;
-    };
 
 export type RequestBody =
   | {
@@ -157,7 +92,7 @@ export type RequestItem = {
       value: string;
       enabled: boolean;
     }[];
-    auth: AuthMode;
+    auth: RequestAuthSchema;
     body: RequestBody;
     script: {
       req?: string;
@@ -263,7 +198,7 @@ export type Collection = {
   environments: CollectionEnvironment[];
   root?: {
     request?: {
-      auth?: AuthMode;
+      auth?: RequestAuthSchema;
       headers: {
         name: string;
         value: string;

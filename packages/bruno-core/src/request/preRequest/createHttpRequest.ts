@@ -25,6 +25,10 @@ export function createAuthHeader(requestItem: RequestItem): Record<string, strin
       return {
         authorization: `Bearer ${auth.bearer.token}`
       };
+    case 'apikey':
+      return {
+        [auth.apikey.key]: auth.apikey.value
+      };
     default:
       return {};
   }
@@ -266,6 +270,11 @@ export async function createHttpRequest(context: RequestContext) {
   let urlObject;
   try {
     urlObject = new URL(context.requestItem.request.url);
+
+    const requestAuth = context.requestItem.request.auth;
+    if (requestAuth.mode === 'apikey' && requestAuth.apikey.placement === 'queryparams') {
+      urlObject.searchParams.append(requestAuth.apikey.key, requestAuth.apikey.value);
+    }
   } catch (error) {
     throw new Error(`Could not parse your URL "${context.requestItem.request.url}": "${error}"`);
   }
