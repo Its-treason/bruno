@@ -10,10 +10,12 @@ import { requestUrlChanged, updateRequestMethod } from 'providers/ReduxStore/sli
 import { MethodSelector } from './MethodSelector';
 import { get } from 'lodash';
 import CodeEditor from 'components/CodeEditor';
-import { IconDeviceFloppy, IconSend2 } from '@tabler/icons-react';
+import { IconCode, IconDeviceFloppy, IconSend2 } from '@tabler/icons-react';
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import NetworkError from 'components/ResponsePane/NetworkError';
 import toast from 'react-hot-toast';
+import { useState } from 'react';
+import { CodeGeneratorModal } from 'src/feature/code-generator';
 
 type RequestUrlBarProps = {
   item: RequestItemSchema;
@@ -22,6 +24,8 @@ type RequestUrlBarProps = {
 
 export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item }) => {
   const dispatch = useDispatch();
+
+  const [generateCodeItemModalOpen, setGenerateCodeItemModalOpen] = useState(false);
 
   const handleRun = async () => {
     // @ts-expect-error TS doesn't get that dispatch returns a promise
@@ -62,34 +66,56 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item }
   const isLoading = ['queued', 'sending'].includes(item.requestState);
 
   return (
-    <Paper className={classes.bar} m={'xs'}>
-      <MethodSelector value={method} onChange={onMethodSelect} />
+    <>
+      <CodeGeneratorModal
+        opened={generateCodeItemModalOpen}
+        onClose={() => setGenerateCodeItemModalOpen(false)}
+        collectionUid={collection.uid}
+        requestUid={item.uid}
+      />
 
-      <CodeEditor singleLine withVariables value={url} onSave={onSave} onChange={onUrlChange} onRun={handleRun} />
+      <Paper className={classes.bar} m={'xs'}>
+        <MethodSelector value={method} onChange={onMethodSelect} />
 
-      <Tooltip label={'Save request'}>
-        <Indicator position="top-start" disabled={!item.draft} offset={8}>
-          <ActionIcon onClick={onSave} size={'input-sm'} variant="transparent" c={'gray'}>
-            <IconDeviceFloppy style={{ width: rem(32) }} stroke={1.5} />
-          </ActionIcon>
-        </Indicator>
-      </Tooltip>
+        <CodeEditor singleLine withVariables value={url} onSave={onSave} onChange={onUrlChange} onRun={handleRun} />
 
-      <Button
-        size="input-sm"
-        rightSection={
-          isLoading ? (
-            <Loader style={{ width: rem(32), marginRight: 'calc(var(--button-padding-x-sm) / 2)' }} size={'xs'} />
-          ) : (
-            <IconSend2 style={{ width: rem(32), marginRight: 'calc(var(--button-padding-x-sm) / 2)' }} stroke={1.5} />
-          )
-        }
-        onClick={handleRun}
-        variant="filled"
-        disabled={isLoading}
-      >
-        Send
-      </Button>
-    </Paper>
+        <Tooltip label={'Generate code'}>
+          <Indicator position="top-start" disabled={!item.draft} offset={8}>
+            <ActionIcon
+              onClick={() => setGenerateCodeItemModalOpen(true)}
+              size={'input-sm'}
+              variant="transparent"
+              c={'gray'}
+            >
+              <IconCode style={{ width: rem(32) }} stroke={1.5} />
+            </ActionIcon>
+          </Indicator>
+        </Tooltip>
+
+        <Tooltip label={'Save request'}>
+          <Indicator position="top-start" disabled={!item.draft} offset={8}>
+            <ActionIcon onClick={onSave} size={'input-sm'} variant="transparent" c={'gray'}>
+              <IconDeviceFloppy style={{ width: rem(32) }} stroke={1.5} />
+            </ActionIcon>
+          </Indicator>
+        </Tooltip>
+
+        <Button
+          size="input-sm"
+          rightSection={
+            isLoading ? (
+              <Loader style={{ width: rem(32), marginRight: 'calc(var(--button-padding-x-sm) / 2)' }} size={'xs'} />
+            ) : (
+              <IconSend2 style={{ width: rem(32), marginRight: 'calc(var(--button-padding-x-sm) / 2)' }} stroke={1.5} />
+            )
+          }
+          onClick={handleRun}
+          variant="filled"
+          disabled={isLoading}
+        >
+          Send
+        </Button>
+      </Paper>
+    </>
   );
 };
