@@ -147,6 +147,7 @@ const defaultModuleWhiteList = [
   'moment',
   'uuid',
   'nanoid',
+  'node-fetch',
   'axios',
   'chai',
   'crypto-js',

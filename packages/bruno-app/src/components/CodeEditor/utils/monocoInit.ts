@@ -292,7 +292,7 @@ const buildSuggestions = (monaco: Monaco) => [
   {
     label: 'bru.sleep(ms: number): Promise<void>',
     kind: monaco.languages.CompletionItemKind.Function,
-    insertText: 'bru.setNextRequest()',
+    insertText: 'bru.sleep()',
     documentation: 'Sleep utiltlty function. Note: that the Promise of this function must be awaited'
   },
   {
