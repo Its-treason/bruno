@@ -66,6 +66,12 @@ export const apiKeyAuthSchema = z.object({
 });
 export type ApiKeyAuthSchema = z.infer<typeof apiKeyAuthSchema>;
 
+export const wsseAuthSchema = z.object({
+  username: z.string(),
+  password: z.string()
+});
+export type wsseAuthSchema = z.infer<typeof wsseAuthSchema>;
+
 export const requestAuthSchema = z
   .discriminatedUnion('mode', [
     z.object({
@@ -97,6 +103,10 @@ export const requestAuthSchema = z
     z.object({
       mode: z.literal('apikey'),
       apikey: apiKeyAuthSchema
+    }),
+    z.object({
+      mode: z.literal('wsse'),
+      wsse: wsseAuthSchema
     })
   ])
   .default({ mode: 'inherit' });

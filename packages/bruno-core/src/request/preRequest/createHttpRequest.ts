@@ -11,6 +11,20 @@ import { Agent } from 'node:http';
 import { ProxyAgent } from 'proxy-agent';
 import { DebugLogger } from '../DebugLogger';
 import { TlsOptions, rootCertificates } from 'node:tls';
+import { createHash, randomBytes } from 'node:crypto';
+
+function generateWSSEHeader(username: string, password: string): string {
+  const nonce = randomBytes(24).toString('hex');
+  const created = new Date().toISOString();
+
+  // Generate the password digest
+  const passwordDigest = createHash('sha256')
+    .update(nonce + created + password)
+    .digest('base64');
+
+  // Construct the WSSE header
+  return `UsernameToken Username="${username}", PasswordDigest="${passwordDigest}", Nonce="${nonce}", Created="${created}"`;
+}
 
 export function createAuthHeader(requestItem: RequestItem): Record<string, string> {
   const auth = requestItem.request.auth;
@@ -28,6 +42,10 @@ export function createAuthHeader(requestItem: RequestItem): Record<string, strin
     case 'apikey':
       return {
         [auth.apikey.key]: auth.apikey.value
+      };
+    case 'wsse':
+      return {
+        ['x-wsse']: generateWSSEHeader(auth.wsse.username, auth.wsse.password)
       };
     default:
       return {};
