@@ -16,7 +16,7 @@ import { TimelineNew } from 'components/ResponsePane/TimelineNew';
 const ResponsePane = ({ rightPaneWidth, item, collection }) => {
   const [selectedTab, setSelectedTab] = useState('response');
 
-  const { requestSent, responseReceived, testResults, assertionResults, isNew, timings, debug, timeline } = item;
+  const { requestSent, responseReceived, testResults, assertionResults, error, isNew, timings, debug, timeline } = item;
 
   const headers = get(item, 'responseReceived.headers', []);
   const status = get(item, 'responseReceived.status', 0);
@@ -35,6 +35,7 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
             width={rightPaneWidth}
             disableRunEventListener={true}
             headers={responseReceived.headers}
+            error={error}
             key={item.filename}
           />
         );
