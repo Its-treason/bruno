@@ -80,16 +80,14 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item }
         <CodeEditor singleLine withVariables value={url} onSave={onSave} onChange={onUrlChange} onRun={handleRun} />
 
         <Tooltip label={'Generate code'}>
-          <Indicator position="top-start" disabled={!item.draft} offset={8}>
-            <ActionIcon
-              onClick={() => setGenerateCodeItemModalOpen(true)}
-              size={'input-sm'}
-              variant="transparent"
-              c={'gray'}
-            >
-              <IconCode style={{ width: rem(32) }} stroke={1.5} />
-            </ActionIcon>
-          </Indicator>
+          <ActionIcon
+            onClick={() => setGenerateCodeItemModalOpen(true)}
+            size={'input-sm'}
+            variant="transparent"
+            c={'gray'}
+          >
+            <IconCode style={{ width: rem(32) }} stroke={1.5} />
+          </ActionIcon>
         </Tooltip>
 
         <Tooltip label={'Save request'}>
