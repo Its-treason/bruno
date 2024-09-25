@@ -2,7 +2,6 @@ import React from 'react';
 import cloneDeep from 'lodash/cloneDeep';
 import { IconTrash } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
-import { useTheme } from 'providers/Theme';
 import { addVar, updateVar, deleteVar } from 'providers/ReduxStore/slices/collections';
 import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import CodeEditor from 'src/components/CodeEditor';
@@ -82,7 +81,6 @@ const VarsTable = ({ item, collection, vars, varType }) => {
               <td>
                 <div className="flex items-center">
                   <span>Value</span>
-                  <Tooltip text="You can write any valid JS Template Literal here" tooltipId="request-var" />
                 </div>
               </td>
             ) : (
