@@ -27,6 +27,7 @@ export async function request(
   cancelToken: string,
   abortController: AbortController,
   brunoVersion: string,
+  executionMode: 'standalone' | 'runner',
   environment?: CollectionEnvironment,
   rawCallbacks: Partial<RawCallbacks> = {}
 ) {
@@ -63,6 +64,7 @@ export async function request(
     abortController,
     brunoVersion,
     environmentName: environment?.name,
+    executionMode,
 
     requestItem,
     collection,

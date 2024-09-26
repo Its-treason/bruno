@@ -213,6 +213,7 @@ export class AssertRuntime {
     responseBody: any,
     variables: RequestContext['variables'],
     collectionPath: string,
+    executionMode: string,
     environmentName?: string
   ) {
     const enabledAssertions = _.filter(assertions, (a) => a.enabled);
@@ -230,7 +231,7 @@ export class AssertRuntime {
       collectionPath,
       environmentName
     );
-    const req = new BrunoRequest(request, true);
+    const req = new BrunoRequest(request, true, executionMode);
     const res = createResponseParser(response, responseBody);
 
     const context = {

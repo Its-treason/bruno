@@ -29,6 +29,7 @@ export async function tests(context: RequestContext, folderData: FolderData[]) {
       context.environmentName,
       true,
       context.collection.pathname,
+      context.executionMode,
       context.collection.brunoConfig.scripts,
       (type: string, payload: any) => context.callback.consoleLog(type, payload)
     );

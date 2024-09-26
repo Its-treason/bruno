@@ -302,6 +302,7 @@ export type RequestContext = {
   readonly cancelToken: string;
   readonly brunoVersion: string;
   readonly environmentName?: string;
+  readonly executionMode: 'standalone' | 'runner';
 
   requestItem: RequestItem;
   collection: Collection;

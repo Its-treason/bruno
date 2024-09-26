@@ -3,7 +3,7 @@ import { RequestItem } from '../../types';
 import decomment from 'decomment';
 
 export class BrunoRequest {
-  constructor(private _req: RequestItem, private readonly: boolean) {}
+  constructor(private _req: RequestItem, private readonly: boolean, private executionMode: string) {}
 
   get url() {
     return this.getUrl();
@@ -152,5 +152,9 @@ export class BrunoRequest {
   disableParsingResponseJson() {
     // This method is only for compatibly purpose with Bruno
     // Lazer handles Response parsing correctly, so no need to disable it here
+  }
+
+  getExecutionMode() {
+    return this.executionMode;
   }
 }

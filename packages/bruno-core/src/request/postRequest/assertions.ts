@@ -12,6 +12,7 @@ export function assertions(context: RequestContext) {
       context.responseBody,
       context.variables,
       context.collection.pathname,
+      context.executionMode,
       context.environmentName
     );
 

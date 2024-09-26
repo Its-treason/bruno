@@ -27,6 +27,7 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
       context.environmentName,
       false,
       context.collection.pathname,
+      context.executionMode,
       context.collection.brunoConfig.scripts,
       (type: string, payload: any) => context.callback.consoleLog(type, payload)
     );

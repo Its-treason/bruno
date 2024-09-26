@@ -49,6 +49,8 @@ export async function generateCode(
   const context: RequestContext = {
     uid: nanoid(),
 
+    executionMode: 'standalone',
+
     requestItem,
     collection,
     preferences,

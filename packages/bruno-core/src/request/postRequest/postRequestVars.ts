@@ -26,6 +26,7 @@ export function postRequestVars(context: RequestContext, folderData: FolderData[
     context.responseBody,
     context.variables,
     context.collection.pathname,
+    context.executionMode,
     context.environmentName
   );
 

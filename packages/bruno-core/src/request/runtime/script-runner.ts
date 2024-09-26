@@ -24,6 +24,7 @@ export async function runScript(
   environmentName: string | undefined,
   useTests: boolean,
   collectionPath: string,
+  executionMode: string,
   scriptingConfig: BrunoConfig['scripts'],
   onConsoleLog?: (type: string, payload: any) => void
 ) {
@@ -35,6 +36,7 @@ export async function runScript(
     environmentName,
     useTests,
     collectionPath,
+    executionMode,
     scriptingConfig,
     onConsoleLog
   );
@@ -83,6 +85,7 @@ function buildScriptContext(
   environmentName: string | undefined,
   useTests: boolean,
   collectionPath: string,
+  executionMode: string,
   scriptingConfig: BrunoConfig['scripts'],
   onConsoleLog?: (type: string, payload: any) => void
 ) {
@@ -99,7 +102,7 @@ function buildScriptContext(
   } = {
     require: createCustomRequire(scriptingConfig, collectionPath),
     console: createCustomConsole(onConsoleLog),
-    req: new BrunoRequest(request, response !== null),
+    req: new BrunoRequest(request, response !== null, executionMode),
     res: null,
     bru: new Bru(
       variables.environment,

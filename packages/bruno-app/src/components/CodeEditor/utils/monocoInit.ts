@@ -210,6 +210,13 @@ const buildSuggestions = (monaco: Monaco) => [
     documentation:
       'Noop function for Bruno compatibility. This would disable JSON parsing in Bruno, but Lazer not have parsing issues.'
   },
+  {
+    label: 'req.getExecutionMode()',
+    kind: monaco.languages.CompletionItemKind.Function,
+    insertText: 'req.getExecutionMode()',
+    documentation:
+      'Return "standalone" or "runner" depending on, if the request is executed directly or from the request runner'
+  },
   // Bru
   {
     label: 'bru.interpolate()',
@@ -365,6 +372,7 @@ export const initMonaco = (monaco: Monaco) => {
     getTimeout(): number;
     setTimeout(timeout: number): void;
     disableParsingResponseJson(): void;
+    getExecutionMode(): 'standalone' | 'runner';
   };
   declare const bru: {
     interpolate(target: unknown): string | unknown;

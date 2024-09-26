@@ -12,6 +12,7 @@ export class VarsRuntime {
     responseBody: any,
     variables: RequestContext['variables'],
     collectionPath: string,
+    executionMode: string,
     environmentName?: string
   ) {
     const enabledVars = _.filter(vars, (v) => v.enabled);
@@ -29,7 +30,7 @@ export class VarsRuntime {
       collectionPath,
       environmentName
     );
-    const req = new BrunoRequest(request, true);
+    const req = new BrunoRequest(request, true, executionMode);
     const res = createResponseParser(response, responseBody);
 
     const context = {
