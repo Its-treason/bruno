@@ -7,7 +7,6 @@ import { Timings } from '../request/Timings';
 import { applyCollectionSettings } from '../request/preRequest/applyCollectionSettings';
 import { interpolateRequest } from '../request/preRequest/interpolateRequest';
 import { preRequestScript } from '../request/preRequest/preRequestScript';
-import { preRequestVars } from '../request/preRequest/preRequestVars';
 import { collectFolderData } from '../request/preRequest/collectFolderData';
 import { HTTPSnippet } from '@readme/httpsnippet';
 import { createHar } from './createHar';
@@ -83,7 +82,6 @@ async function doGenerateCode(context: RequestContext, options: GenerateCodeOpti
 
   // Folder Headers are also applied here
   applyCollectionSettings(context, folderData);
-  preRequestVars(context, folderData);
   await preRequestScript(context, folderData);
   interpolateRequest(context);
 

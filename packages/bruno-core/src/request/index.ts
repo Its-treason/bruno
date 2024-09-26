@@ -1,7 +1,6 @@
 import { DebugLogger } from './DebugLogger';
 import { Timings } from './Timings';
 import { Collection, CollectionEnvironment, Preferences, RequestContext, RequestItem } from './types';
-import { preRequestVars } from './preRequest/preRequestVars';
 import { preRequestScript } from './preRequest/preRequestScript';
 import { applyCollectionSettings } from './preRequest/applyCollectionSettings';
 import { createHttpRequest } from './preRequest/createHttpRequest';
@@ -114,7 +113,6 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
 
   // Folder Headers are also applied here
   applyCollectionSettings(context, folderData);
-  preRequestVars(context, folderData);
   await preRequestScript(context, folderData);
   interpolateRequest(context);
   await createHttpRequest(context);
