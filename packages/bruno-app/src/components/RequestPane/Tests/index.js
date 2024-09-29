@@ -30,6 +30,7 @@ const Tests = ({ item, collection }) => {
         onRun={onRun}
         onSave={onSave}
         height={'100%'}
+        extraLibs={['bru', 'chai', 'req', 'res']}
       />
     </div>
   );

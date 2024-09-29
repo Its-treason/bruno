@@ -10,6 +10,7 @@ import { editor } from 'monaco-editor';
 import classes from './Monaco.module.scss';
 import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
 import { addMonacoCommands, BrunoEditorCallbacks } from '../utils/monocoInit';
+import { getExtraLibraries, TypeInfoTargets } from '../utils/typeInformations';
 
 const languages: Record<string, string> = {
   'graphql-query': 'graphql',
@@ -31,6 +32,7 @@ type MonacoProps = {
   mode?: string;
   height?: string | number;
   hideMinimap?: boolean;
+  extraLibs?: TypeInfoTargets[];
 
   onChange?: (newValue: string) => void;
   onRun?: () => void;
@@ -46,6 +48,7 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
   value,
   withVariables = false,
   hideMinimap = false,
+  extraLibs = [],
   height = '60vh'
 }) => {
   const { displayedTheme } = useTheme();
@@ -68,6 +71,9 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
 
   const registerEditorVariables = useContext(CodeEditorVariableContext);
   const onMount = (editor: editor.IStandaloneCodeEditor, mountMonaco: Monaco) => {
+    const extraLib = getExtraLibraries(extraLibs);
+    mountMonaco.languages.typescript.typescriptDefaults.setExtraLibs([{ content: extraLib }]);
+
     editor.onDidFocusEditorText(() => {
       // @ts-expect-error editor._contextKeyService is an internal state from the Monaco editor
       // But i did not find a better way to do this, because "tabFocusMode" in options does work
@@ -76,6 +82,8 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
       if (editor._contextKeyService.getContextKeyValue('editorTabMovesFocus') === true) {
         editor.trigger('ActiveTabFocusMode', 'editor.action.toggleTabFocusMode', true);
       }
+
+      mountMonaco.languages.typescript.typescriptDefaults.setExtraLibs([{ content: extraLib }]);
     });
 
     if (withVariables) {

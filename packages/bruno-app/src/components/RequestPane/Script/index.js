@@ -47,6 +47,7 @@ const Script = ({ item, collection }) => {
           mode="javascript"
           onRun={onRun}
           onSave={onSave}
+          extraLibs={['bru', 'req', 'res']}
         />
       </div>
       <div>
@@ -60,6 +61,7 @@ const Script = ({ item, collection }) => {
           mode="javascript"
           onRun={onRun}
           onSave={onSave}
+          extraLibs={['bru', 'req', 'res']}
         />
       </div>
     </div>

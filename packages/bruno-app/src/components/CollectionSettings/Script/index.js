@@ -46,6 +46,7 @@ const Script = ({ collection }) => {
           mode="javascript"
           height={'30vh'}
           onSave={handleSave}
+          extraLibs={['bru', 'req', 'res']}
         />
       </div>
       <div className="flex-1 mt-6">
@@ -56,6 +57,7 @@ const Script = ({ collection }) => {
           height={'30vh'}
           mode="javascript"
           onSave={handleSave}
+          extraLibs={['bru', 'req', 'res']}
         />
       </div>
 

@@ -25,5 +25,6 @@
     },
     "baseUrl": "./"
   },
-  "include": ["src", "./src/env.d.ts"]
+  "include": ["src", "./src/env.d.ts"],
+  "exclude": ["./public/monacoChaiTypeInfo.d.ts"]
 }

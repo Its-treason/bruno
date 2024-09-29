@@ -52,6 +52,7 @@ const Script = ({ collection, folder }) => {
           mode="javascript"
           onSave={handleSave}
           height="40vh"
+          extraLibs={['bru', 'req', 'res']}
         />
       </div>
       <div className="flex flex-col flex-1 mt-2 gap-y-2">
@@ -65,6 +66,7 @@ const Script = ({ collection, folder }) => {
           onSave={handleSave}
           font={get(preferences, 'font.codeFont', 'default')}
           height="40vh"
+          extraLibs={['bru', 'req', 'res']}
         />
       </div>
 

@@ -24,7 +24,14 @@ const Tests = ({ collection }) => {
   return (
     <StyledWrapper className="w-full flex flex-col h-full">
       <div className="text-xs mb-4 text-muted">These tests will run any time a request in this collection is sent.</div>
-      <CodeEditor value={tests || ''} onChange={onEdit} mode="javascript" onSave={handleSave} />
+      <CodeEditor
+        value={tests || ''}
+        onChange={onEdit}
+        mode="javascript"
+        onSave={handleSave}
+        height={'70vh'}
+        extraLibs={['bru', 'chai', 'req', 'res']}
+      />
 
       <div className="mt-6">
         <button type="submit" className="submit btn btn-sm btn-secondary" onClick={handleSave}>
