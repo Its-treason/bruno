@@ -211,7 +211,6 @@ const add = async (win, pathname, collectionUid, collectionPath) => {
       const payload = {
         collectionUid,
         processEnvVariables: {
-          ...process.env,
           ...jsonData
         }
       };
@@ -338,7 +337,6 @@ const change = async (win, pathname, collectionUid, collectionPath) => {
       const payload = {
         collectionUid,
         processEnvVariables: {
-          ...process.env,
           ...jsonData
         }
       };
