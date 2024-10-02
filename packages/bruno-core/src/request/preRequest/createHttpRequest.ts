@@ -18,7 +18,7 @@ function generateWSSEHeader(username: string, password: string): string {
   const created = new Date().toISOString();
 
   // Generate the password digest
-  const passwordDigest = createHash('sha256')
+  const passwordDigest = createHash('sha1')
     .update(nonce + created + password)
     .digest('base64');
 

@@ -13,6 +13,11 @@ environment variables, the collection and the request itself. The Context is
 passed to everything function and updated throughout the request execution by
 reference.
 
+Bigger files with more functions are best read from bottom to top. The "entrypoint" or
+exported function mostly on the bottom of the files and function at the top are
+called later from the entrypoint or from other function within. All files
+(except `createHttpRequest.ts`) only export one function.
+
 The code is structured in different folder based on when its used in the request
 process.
 
