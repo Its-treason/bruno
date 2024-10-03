@@ -40,6 +40,9 @@ export function createAuthHeader(requestItem: RequestItem): Record<string, strin
         authorization: `Bearer ${auth.bearer.token}`
       };
     case 'apikey':
+      if (auth.apikey.placement !== 'header') {
+        return {};
+      }
       return {
         [auth.apikey.key]: auth.apikey.value
       };
