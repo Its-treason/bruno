@@ -71,20 +71,24 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
 
   const registerEditorVariables = useContext(CodeEditorVariableContext);
   const onMount = (editor: editor.IStandaloneCodeEditor, mountMonaco: Monaco) => {
-    const extraLib = getExtraLibraries(extraLibs);
-    mountMonaco.languages.typescript.typescriptDefaults.setExtraLibs([{ content: extraLib }]);
+    if ((languages[mode] ?? mode) === 'typescript') {
+      const extraLib = getExtraLibraries(extraLibs);
+      mountMonaco.languages.typescript.typescriptDefaults.setExtraLibs([{ content: extraLib, filePath: 'bruno.d.ts' }]);
 
-    editor.onDidFocusEditorText(() => {
-      // @ts-expect-error editor._contextKeyService is an internal state from the Monaco editor
-      // But i did not find a better way to do this, because "tabFocusMode" in options does work
-      // TabFocusMode itself is a global options, so it effects ALL monaco editor instances
-      // And its only possible to toggle the TabFocusMode, with the "normal" API
-      if (editor._contextKeyService.getContextKeyValue('editorTabMovesFocus') === true) {
-        editor.trigger('ActiveTabFocusMode', 'editor.action.toggleTabFocusMode', true);
-      }
+      editor.onDidFocusEditorText(() => {
+        // @ts-expect-error editor._contextKeyService is an internal state from the Monaco editor
+        // But i did not find a better way to do this, because "tabFocusMode" in options does work
+        // TabFocusMode itself is a global options, so it effects ALL monaco editor instances
+        // And its only possible to toggle the TabFocusMode, with the "normal" API
+        if (editor._contextKeyService.getContextKeyValue('editorTabMovesFocus') === true) {
+          editor.trigger('ActiveTabFocusMode', 'editor.action.toggleTabFocusMode', true);
+        }
 
-      mountMonaco.languages.typescript.typescriptDefaults.setExtraLibs([{ content: extraLib }]);
-    });
+        mountMonaco.languages.typescript.typescriptDefaults.setExtraLibs([
+          { content: extraLib, filePath: 'bruno.d.ts' }
+        ]);
+      });
+    }
 
     if (withVariables) {
       registerEditorVariables(editor);

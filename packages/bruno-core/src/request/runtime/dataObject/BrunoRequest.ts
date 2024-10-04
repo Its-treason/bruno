@@ -11,6 +11,9 @@ export class BrunoRequest {
   getUrl() {
     return this._req.request.url;
   }
+  set url(newUrl: string) {
+    this.setUrl(newUrl);
+  }
   setUrl(url: string) {
     if (this.readonly) {
       throw new Error('Cannot update "url" request is readonly');
@@ -18,18 +21,14 @@ export class BrunoRequest {
     this._req.request.url = url;
   }
 
-  get authMode() {
-    return this.getAuthMode();
-  }
-  getAuthMode() {
-    return this._req.request.auth.mode;
-  }
-
   get method() {
     return this.getMethod();
   }
   getMethod() {
     return this._req.request.method;
+  }
+  set method(newMethod: string) {
+    this.setMethod(newMethod);
   }
   setMethod(method: string) {
     if (this.readonly) {
@@ -41,8 +40,15 @@ export class BrunoRequest {
   get headers() {
     return this.getHeaders();
   }
-  getHeaders() {
-    return this._req.request.headers;
+  getHeaders(): Record<string, string> {
+    const rawHeaders = this._req.request.headers;
+
+    return rawHeaders.reduce((acc, curr) => {
+      if (curr.enabled) {
+        acc[curr.name] = acc.value;
+      }
+      return acc;
+    }, {} as Record<string, string>);
   }
   setHeaders(headers: Record<string, string>) {
     if (this.readonly) {
@@ -68,7 +74,7 @@ export class BrunoRequest {
     const newHeader = {
       name,
       value,
-      enabled: false
+      enabled: true
     };
 
     const index = this._req.request.headers.findIndex((header) => header.name.toLowerCase() === name.toLowerCase());
@@ -129,6 +135,13 @@ export class BrunoRequest {
     }
   }
 
+  get authMode() {
+    return this.getAuthMode();
+  }
+  getAuthMode() {
+    return this._req.request.auth.mode;
+  }
+
   setMaxRedirects(maxRedirects: number) {
     if (this.readonly) {
       throw new Error('Cannot update "maxRedirects" request is readonly');
@@ -141,6 +154,9 @@ export class BrunoRequest {
   }
   getTimeout(): number {
     return this._req.request.timeout;
+  }
+  set timeout(newTimeout: number) {
+    this.setTimeout(newTimeout);
   }
   setTimeout(timeout: number) {
     if (this.readonly) {
