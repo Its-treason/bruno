@@ -96,8 +96,7 @@ app.on('ready', async () => {
       });
     });
     server.listen(0, '127.0.0.1', () => {
-      const url = `http://localhost:${server.address().port}`;
-      console.log('the-url', url);
+      const url = `http://127.0.0.1:${server.address().port}`;
       mainWindow.loadURL(url).catch((reason) => {
         console.error(`Error: Failed to load URL: "${url}" (Electron shows a blank screen because of this).`);
         console.error('Original message:', reason);
@@ -110,9 +109,9 @@ app.on('ready', async () => {
       });
     });
   } else {
-    mainWindow.loadURL('http://localhost:3000').catch((reason) => {
+    mainWindow.loadURL('http://127.0.0.1:3000').catch((reason) => {
       console.error(
-        `Error: Failed to load URL: "http://localhost:3000" (Electron shows a blank screen because of this).`
+        `Error: Failed to load URL: "http://127.0.0.1:3000" (Electron shows a blank screen because of this).`
       );
       console.error('Original message:', reason);
       console.error(
