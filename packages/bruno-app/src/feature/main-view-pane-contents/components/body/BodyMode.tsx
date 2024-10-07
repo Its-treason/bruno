@@ -91,6 +91,7 @@ export const BodyMode: React.FC<BodyModeProps> = ({ item, collection }) => {
         onChange={(newBodyMode) => onModeChange(newBodyMode)}
         data={bodyModeSelectData}
         maxDropdownHeight={300}
+        allowDeselect={false}
       />
 
       {bodyMode === 'json' || bodyMode === 'xml' ? (
