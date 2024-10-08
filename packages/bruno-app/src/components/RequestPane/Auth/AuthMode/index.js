@@ -22,7 +22,7 @@ const AuthMode = ({ item, collection }) => {
   });
 
   const onModeChange = (value) => {
-    if (item.request.auth.mode === value) {
+    if (authMode === value) {
       return;
     }
     dispatch(
