@@ -205,6 +205,10 @@ const configureRequest = async (collectionUid, request, envVars, runtimeVariable
         );
         request.httpAgent = new HttpProxyAgent(proxyUri);
       }
+    } else {
+      request.httpsAgent = new https.Agent({
+        ...httpsAgentRequestFields
+      });
     }
   } else if (proxyMode === 'system') {
     const { http_proxy, https_proxy, no_proxy } = preferencesUtil.getSystemProxyEnvVariables();
@@ -229,6 +233,10 @@ const configureRequest = async (collectionUid, request, envVars, runtimeVariable
       } catch (error) {
         throw new Error('Invalid system https_proxy');
       }
+    } else {
+      request.httpsAgent = new https.Agent({
+        ...httpsAgentRequestFields
+      });
     }
   } else if (Object.keys(httpsAgentRequestFields).length > 0) {
     request.httpsAgent = new https.Agent({
