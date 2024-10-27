@@ -69,10 +69,20 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
       try {
         const dirPath = path.join(collectionLocation, collectionFolderName);
         if (fs.existsSync(dirPath)) {
-          throw new Error(`collection: ${dirPath} already exists`);
+          const files = fs.readdirSync(dirPath);
+
+          if (files.length > 0) {
+            throw new Error(`collection: ${dirPath} already exists and is not empty`);
+          }
         }
 
-        await createDirectory(dirPath);
+        if (!isValidPathname(dirPath)) {
+          throw new Error(`collection: invalid pathname - ${dir}`);
+        }
+
+        if (!fs.existsSync(dirPath)) {
+          await createDirectory(dirPath);
+        }
 
         const uid = generateUidBasedOnHash(dirPath);
         const brunoConfig = {
