@@ -9,14 +9,21 @@ import { useDispatch } from 'react-redux';
 import { deleteEnvironment } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { IconAlertCircle } from '@tabler/icons-react';
+import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
+import { useStore } from 'zustand';
 
 export const DeleteEnvironmentModal: React.FC = () => {
   const { activeModal, setActiveModal, selectedEnvironment, collection } = useEnvironmentEditor();
+  const deleteGlobalEnvironment = useStore(globalEnvironmentStore, (state) => state.deleteEnvironment);
   const dispatch = useDispatch();
 
   const deleteMutation = useMutation({
-    mutationFn: async (values: { environmentId: string; collectionId: string }) => {
-      await dispatch(deleteEnvironment(values.environmentId, values.collectionId));
+    mutationFn: async (values: { environmentId: string; collectionId?: string }) => {
+      if (values.collectionId) {
+        await dispatch(deleteEnvironment(values.environmentId, values.collectionId));
+        return;
+      }
+      deleteGlobalEnvironment(values.environmentId);
     },
     onSuccess: () => {
       toast.success('Environment deleted');
@@ -53,7 +60,7 @@ export const DeleteEnvironmentModal: React.FC = () => {
           variant="filled"
           color="red"
           onClick={() =>
-            deleteMutation.mutate({ environmentId: selectedEnvironment!.uid, collectionId: collection.uid })
+            deleteMutation.mutate({ environmentId: selectedEnvironment!.id, collectionId: collection?.uid })
           }
         >
           Delete

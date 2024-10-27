@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import StyledWrapper from './StyledWrapper';
 import { findItemInCollection } from 'utils/collections';
 import { CollectionTabButtons } from './CollectionTabButtons';
+import { GlobalEnvironmentSelector } from 'src/feature/environment-editor';
 
 const CollectionToolBar = ({ collection, activeTabUid }) => {
   const dispatch = useDispatch();
@@ -88,6 +89,8 @@ const CollectionToolBar = ({ collection, activeTabUid }) => {
           </span>
 
           <CollectionTabButtons activeTabType={tabType} collectionUid={collection.uid} />
+
+          <GlobalEnvironmentSelector />
 
           <EnvironmentSelector collection={collection} />
         </div>

@@ -5,29 +5,23 @@
 import { useCallback, useEffect, useMemo, useState } from 'react';
 import { Environment, EnvironmentEditorModalTypes, EnvironmentProviderProps, EnvironmentVariable } from '../types';
 import { useForm } from '@mantine/form';
-import { useDispatch } from 'react-redux';
-import { saveEnvironment } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { variableNameRegex } from 'utils/common/regex';
-import { EnvironmentSchema } from '@usebruno/schema';
+import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
+import { original, isDraft } from 'immer';
+import { useStore } from 'zustand';
 
-type Collection = {
-  environments: EnvironmentSchema[];
-  activeEnvironmentUid: string | undefined;
-  uid: string;
-};
-
-export const useEnvironmentEditorProvider = (
-  collection: Collection,
+export const useGlobalEnvironmentEditorProvider = (
   closeModal: () => void
 ): EnvironmentProviderProps => {
-  const dispatch = useDispatch();
+  const { activeEnvironment, environments, saveEnvironment } = useStore(globalEnvironmentStore);
+
   const [selectedEnvironment, setSelectedEnvironment] = useState<Environment | null>(() => {
-    const env = collection.environments[0];
+    let env = environments.get(activeEnvironment);
     if (!env) {
       return null;
     }
-    return { id: env.uid, name: env.name };
+    return { name: env.name, id: env.id };
   });
   const [unsavedChangesCallback, setUnsavedChangesCallback] = useState<(() => void) | null>(null);
   const [activeModal, setActiveModal] = useState<EnvironmentEditorModalTypes>(null);
@@ -54,74 +48,52 @@ export const useEnvironmentEditorProvider = (
 
   // Try to always select the active environment
   useEffect(() => {
-    if (collection.activeEnvironmentUid === null) {
+    if (activeEnvironment === null) {
       return;
     }
 
-    const foundSelectedEnv = collection.environments.find((env) => env.uid === collection.activeEnvironmentUid);
+    const foundSelectedEnv = environments.get(activeEnvironment);
     if (!foundSelectedEnv) {
       return;
     }
 
-    setSelectedEnvironment({ id: foundSelectedEnv.uid, name: foundSelectedEnv.name });
-    const variables: EnvironmentVariable[] = foundSelectedEnv.variables.map((env) => ({
-      id: env.uid,
-      name: env.name,
-      value: env.value,
-      enabled: env.enabled,
-      secret: env.secret,
-    }))
-    form.setInitialValues({ variables });
+    setSelectedEnvironment(foundSelectedEnv);
+    form.setInitialValues({ variables: structuredClone(foundSelectedEnv.variables) });
     form.reset();
-  }, [collection.activeEnvironmentUid]);
+  }, [environments, activeEnvironment]);
 
   useEffect(() => {
     // If the collection has no environments, reset the selected environment
-    if (collection.environments.length === 0) {
+    if (environments.size === 0) {
       setSelectedEnvironment(null);
       return;
     }
 
-    const foundSelectedEnv = collection.environments.find((env) => env.name === selectedEnvironment?.name);
+    const foundSelectedEnv = environments.get(selectedEnvironment?.id);
+
     // If the selected environment is not found in the collection, select the first one
     if (!foundSelectedEnv) {
-      const env = collection.environments[0];
-      setSelectedEnvironment({ id: env.uid, name: env.name });
-      const variables: EnvironmentVariable[] = env.variables.map((env) => ({
-        id: env.uid,
-        name: env.name,
-        value: env.value,
-        enabled: env.enabled,
-        secret: env.secret,
-      }));
-      form.setInitialValues({ variables });
+      const env = environments.get(environments.keys().next().value)
+      setSelectedEnvironment(env);
+      form.setInitialValues({ variables: structuredClone(env.variables) });
       form.reset();
-      return;
     }
-  }, [collection.environments, selectedEnvironment]);
+  }, [environments, selectedEnvironment]);
 
   const onSubmit = useCallback(
     async (values: EnvironmentVariable[]) => {
       try {
-        const variables = values.map((value) => ({
-          uid: value.id,
-          name: value.name,
-          value: value.value,
-          enabled: value.enabled,
-          secret: value.secret,
-          type: 'text',
-        }));
-        await dispatch(saveEnvironment(variables, selectedEnvironment?.id, collection.uid));
+        saveEnvironment(selectedEnvironment.id, values);
       } catch (error) {
         console.error('Could not save environment', error);
         toast.error('An error occurred while saving the changes');
         throw error;
       }
       toast.success('Changes saved successfully');
-      form.setInitialValues({ variables: values });
+      form.setInitialValues({ variables: structuredClone(values) });
       form.reset();
     },
-    [selectedEnvironment, collection.uid]
+    [selectedEnvironment]
   );
 
   const onClose = useCallback(() => {
@@ -156,30 +128,27 @@ export const useEnvironmentEditorProvider = (
         return;
       }
 
-      const newEnvironment = collection.environments.find((env) => env.uid === targetEnvironmentId);
+      const newEnvironment = environments.get(targetEnvironmentId);
       if (!newEnvironment) {
         throw new Error(`Could not find env "${targetEnvironmentId}" for switching`);
       }
-      setSelectedEnvironment({ id: newEnvironment.uid, name: newEnvironment.name });
-      const variables: EnvironmentVariable[] = newEnvironment.variables.map((env) => ({
-        id: env.uid,
-        name: env.name,
-        value: env.value,
-        enabled: env.enabled,
-        secret: env.secret,
-      }));
-      form.setInitialValues({ variables });
+      setSelectedEnvironment(newEnvironment);
+      form.setInitialValues({ variables: structuredClone(newEnvironment.variables) });
       form.reset();
     },
-    [collection.environments, form]
+    [environments, form]
   );
 
   const allEnvironments = useMemo(() => {
-    return collection.environments.map((env) => ({ id: env.uid, name: env.name }));
-  }, [collection.environments])
+    const list = [];
+    for (const env of environments.values()) {
+      list.push({ name: env.name, id: env.id } as const);
+    }
+    return list;
+  }, [environments]);
 
   return {
-    collection,
+    collection: null,
     allEnvironments,
     selectedEnvironment,
     form,

@@ -39,7 +39,7 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
     context.timings.stopMeasure('postScript');
   }
 
-  context.callback.updateScriptEnvironment(context, scriptResult.envVariables, scriptResult.runtimeVariables);
+  context.callback.updateScriptEnvironment(context, scriptResult.envVariables, scriptResult.runtimeVariables, scriptResult.globalVariables);
 
   context.debug.log('Post request script finished', scriptResult);
 
@@ -53,4 +53,5 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
   // This destroys the references, so we update variables here manually
   context.variables.collection = scriptResult.runtimeVariables;
   context.variables.environment = scriptResult.envVariables;
+  context.variables.global = scriptResult.globalVariables;
 }

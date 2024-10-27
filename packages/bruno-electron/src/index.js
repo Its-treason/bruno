@@ -15,6 +15,7 @@ const Watcher = require('./app/watcher');
 const { loadWindowState, saveBounds, saveMaximized } = require('./utils/window');
 const registerNotificationsIpc = require('./ipc/notifications');
 const registerEnvironmentsIpc = require('./ipc/environments');
+require('./ipc/zustand-store');
 
 const lastOpenedCollections = new LastOpenedCollections();
 

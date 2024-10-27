@@ -12,13 +12,16 @@ import importPostmanEnvironment from 'utils/importers/postman-environment';
 import { importEnvironment } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { IconAlertCircle } from '@tabler/icons-react';
+import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
+import { useStore } from 'zustand';
 
 export const ImportEnvironmentModal: React.FC = () => {
   const { activeModal, setActiveModal, collection } = useEnvironmentEditor();
+  const createGlobalEnvironment = useStore(globalEnvironmentStore, (state) => state.createEnvironment)
   const dispatch = useDispatch();
 
   const importMutation = useMutation({
-    mutationFn: async (values: { type: string; collectionId: string }) => {
+    mutationFn: async (values: { type: string; collectionId?: string }) => {
       let environment: any;
       switch (values.type) {
         case 'postman':
@@ -28,7 +31,11 @@ export const ImportEnvironmentModal: React.FC = () => {
           throw new Error(`Unknown environment type: ${values.type}`);
       }
 
-      dispatch(importEnvironment(environment.name, environment.variables, collection.uid));
+      if (values.collectionId) {
+        dispatch(importEnvironment(environment.name, environment.variables, collection.uid));
+        return;
+      }
+      createGlobalEnvironment(environment.name, environment.variables);
     },
     onSuccess: () => {
       toast.success('Environment imported');

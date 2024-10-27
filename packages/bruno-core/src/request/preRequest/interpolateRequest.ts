@@ -156,9 +156,12 @@ function interpolateBody(context: RequestContext, i: InterpolationShorthandFunct
 
 export function interpolateRequest(context: RequestContext) {
   const combinedVars: Record<string, unknown> = {
-    ...context.variables.environment,
+    ...context.variables.global,
     ...context.variables.collection,
+    ...context.variables.environment,
+    ...context.variables.folder,
     ...context.variables.request,
+    ...context.variables.runtime,
     ...context.variables.process
   };
 

@@ -3,16 +3,29 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { UseFormReturnType } from '@mantine/form';
-import { EnvironmentSchema, EnvironmentVariableSchema } from '@usebruno/schema';
+import { EnvironmentSchema } from '@usebruno/schema';
+
+export type Environment = {
+  name: string,
+  id: string,
+};
+
+export type EnvironmentVariable = {
+  name: string,
+  id: string,
+  value: unknown,
+  enabled: boolean,
+  secret: boolean,
+}
 
 export type EnvironmentProviderProps = {
-  collection: any;
-  allEnvironments: EnvironmentSchema[];
+  collection: any|null;
+  allEnvironments: Environment[];
 
-  selectedEnvironment: EnvironmentSchema | null;
-  form: UseFormReturnType<{ variables: EnvironmentVariableSchema[] }>;
+  selectedEnvironment: Environment | null;
+  form: UseFormReturnType<{ variables: EnvironmentVariable[] }>;
 
-  onSubmit: (values: EnvironmentVariableSchema[]) => Promise<void>;
+  onSubmit: (values: EnvironmentVariable[]) => Promise<void>;
   onEnvironmentSwitch: (targetEnvironmentId: string, ignoreUnsaved?: boolean) => void;
   onClose: () => void;
 

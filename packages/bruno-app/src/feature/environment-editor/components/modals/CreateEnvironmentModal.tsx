@@ -11,14 +11,22 @@ import { useDispatch } from 'react-redux';
 import { addEnvironment } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { IconAlertCircle } from '@tabler/icons-react';
+import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
+import { useStore } from 'zustand';
 
 export const CreateEnvironmentModal: React.FC = () => {
-  const { activeModal, setActiveModal, selectedEnvironment, allEnvironments, collection } = useEnvironmentEditor();
+  const { activeModal, setActiveModal, allEnvironments, collection, onEnvironmentSwitch } = useEnvironmentEditor();
+  const createGlobalEnvironment = useStore(globalEnvironmentStore, (state) => state.createEnvironment);
   const dispatch = useDispatch();
 
   const createMutation = useMutation({
-    mutationFn: async (values: { name: string; collectionId: string }) => {
-      await dispatch(addEnvironment(values.name, values.collectionId));
+    mutationFn: async (values: { name: string; collectionId?: string }) => {
+      if (values.collectionId) {
+        await dispatch(addEnvironment(values.name, values.collectionId));
+        return;
+      }
+      const newId = createGlobalEnvironment(values.name);
+      // onEnvironmentSwitch(newId, true);
     },
     onSuccess: () => {
       toast.success('Created new environment');
@@ -65,7 +73,7 @@ export const CreateEnvironmentModal: React.FC = () => {
 
       <form
         onSubmit={createForm.onSubmit((values) => {
-          createMutation.mutate({ collectionId: collection.uid, name: values.name });
+          createMutation.mutate({ collectionId: collection?.uid, name: values.name });
         })}
       >
         <TextInput

@@ -41,6 +41,7 @@ import { resolveRequestFilename } from 'utils/common/platform';
 import { uuid, waitForNextTick } from 'utils/common';
 import { sendCollectionOauth2Request as _sendCollectionOauth2Request } from 'utils/network/index';
 import { parsePathParams, parseQueryParams, splitOnFirst } from 'utils/url';
+import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
 
 export const renameCollection = (newName, collectionUid) => (dispatch, getState) => {
   const state = getState();
@@ -331,6 +332,15 @@ export const runCollectionFolder = (collectionUid, folderUid, recursive, delay) 
       })
     );
 
+    const globalEnvStore = globalEnvironmentStore.getState();
+    const globalVariableList = globalEnvStore.environments.get(globalEnvStore.activeEnvironment)?.variables ?? [];
+    const globalVariables = globalVariableList.reduce((acc, variable) => {
+      if (variable.enabled) {
+        acc[variable.name] = variable.value;
+      }
+      return acc;
+    }, {});
+
     ipcRenderer
       .invoke(
         'renderer:run-collection-folder',
@@ -338,6 +348,7 @@ export const runCollectionFolder = (collectionUid, folderUid, recursive, delay) 
         collectionCopy,
         environment,
         collectionCopy.runtimeVariables,
+        globalVariables,
         recursive,
         delay,
         localStorage.getItem('new-request') === '"true"'

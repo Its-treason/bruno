@@ -32,6 +32,16 @@ declare const bru: {
    */
   getEnvVar(key: string): any;
   /**
+   * Returns the value of a global variable by name.
+   */
+  getGlobalEnvVar(key: string): any;
+  /**
+   * Updates an environment variable. Note that the value is not written to disk and only saved temporary.
+   * 
+   * @throws If the "key" contains invalid characters.
+   */
+  setGlobalEnvVar(key: string, value: unknown): void;
+  /**
    * Updates an environment variable. Note that the value is not written to disk and only saved temporary.
    * 
    * @throws If the "key" contains invalid characters.

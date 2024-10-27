@@ -11,14 +11,21 @@ import { useDispatch } from 'react-redux';
 import { copyEnvironment } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { IconAlertCircle } from '@tabler/icons-react';
+import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
+import { useStore } from 'zustand';
 
 export const CloneEnvironmentModal: React.FC = () => {
   const { activeModal, setActiveModal, selectedEnvironment, allEnvironments, collection } = useEnvironmentEditor();
+  const copyGlobalEnvironment = useStore(globalEnvironmentStore, (state) => state.copyEnvironment)
   const dispatch = useDispatch();
 
   const cloneEnvironment = useMutation({
-    mutationFn: async (values: { name: string; oldEnvId: string; collectionId: string }) => {
-      await dispatch(copyEnvironment(values.name, values.oldEnvId, values.collectionId));
+    mutationFn: async (values: { name: string; oldEnvId: string; collectionId?: string }) => {
+      if (values.collectionId) {
+        await dispatch(copyEnvironment(values.name, values.oldEnvId, values.collectionId));
+        return;
+      }
+      copyGlobalEnvironment(values.oldEnvId, values.name);
     },
     onSuccess: () => {
       toast.success('Cloned environment');
@@ -66,9 +73,9 @@ export const CloneEnvironmentModal: React.FC = () => {
       <form
         onSubmit={cloneForm.onSubmit((values) => {
           cloneEnvironment.mutate({
-            collectionId: collection.uid,
+            collectionId: collection?.uid,
             name: values.name,
-            oldEnvId: selectedEnvironment!.uid
+            oldEnvId: selectedEnvironment.id
           });
         })}
       >

@@ -475,7 +475,7 @@ const registerNetworkIpc = (mainWindow) => {
     return scriptResult;
   };
 
-  async function executeNewFolder(folder, collection, environment, recursive, delay) {
+  async function executeNewFolder(folder, collection, environment, globalVariables, recursive, delay) {
     const folderUid = folder ? folder.uid : null;
     const dataDir = path.join(app.getPath('userData'), 'responseCache');
     const cancelToken = uuid();
@@ -546,6 +546,7 @@ const registerNetworkIpc = (mainWindow) => {
       const res = await newRequest(
         item,
         collection,
+        globalVariables,
         getPreferences(),
         cookieJar,
         dataDir,
@@ -633,7 +634,7 @@ const registerNetworkIpc = (mainWindow) => {
     });
   }
 
-  async function executeNewRequest(event, item, collection, environment) {
+  async function executeNewRequest(event, item, collection, environment, globalVariables) {
     const dataDir = path.join(app.getPath('userData'), 'responseCache');
     const cancelToken = uuid();
     const abortController = new AbortController();
@@ -642,6 +643,7 @@ const registerNetworkIpc = (mainWindow) => {
     const res = await newRequest(
       item,
       collection,
+      globalVariables,
       getPreferences(),
       cookieJar,
       dataDir,
@@ -689,9 +691,9 @@ const registerNetworkIpc = (mainWindow) => {
   }
 
   // handler for sending http request
-  ipcMain.handle('send-http-request', async (event, item, collection, environment, runtimeVariables, useNewRequest) => {
+  ipcMain.handle('send-http-request', async (event, item, collection, environment, runtimeVariables, globalVariables, useNewRequest) => {
     if (useNewRequest) {
-      return await executeNewRequest(event, item, collection, environment);
+      return await executeNewRequest(event, item, collection, environment, globalVariables);
     }
 
     const collectionUid = collection.uid;

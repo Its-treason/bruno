@@ -11,14 +11,21 @@ import { useDispatch } from 'react-redux';
 import { renameEnvironment } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { IconAlertCircle } from '@tabler/icons-react';
+import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
+import { useStore } from 'zustand';
 
 export const RenameEnvironmentModal: React.FC = () => {
   const { activeModal, setActiveModal, selectedEnvironment, allEnvironments, collection } = useEnvironmentEditor();
+  const renameGlobalEnvironment = useStore(globalEnvironmentStore, (state) => state.renameEnvironment);
   const dispatch = useDispatch();
 
   const renameMutation = useMutation({
-    mutationFn: async (values: { name: string; environmentId: string; collectionId: string }) => {
-      await dispatch(renameEnvironment(values.name, values.environmentId, values.collectionId));
+    mutationFn: async (values: { name: string; environmentId: string; collectionId?: string }) => {
+      if (values.collectionId) {
+        await dispatch(renameEnvironment(values.name, values.environmentId, values.collectionId));
+        return;
+      }
+      renameGlobalEnvironment(values.environmentId, values.name);
     },
     onSuccess: () => {
       toast.success('Renamed environment');
@@ -71,8 +78,8 @@ export const RenameEnvironmentModal: React.FC = () => {
       <form
         onSubmit={renameForm.onSubmit((values) => {
           renameMutation.mutate({
-            collectionId: collection.uid,
-            environmentId: selectedEnvironment!.uid,
+            collectionId: collection?.uid,
+            environmentId: selectedEnvironment!.id,
             name: values.name
           });
         })}

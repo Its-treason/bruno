@@ -314,6 +314,7 @@ export type RequestContext = {
     collection: Record<string, unknown>;
     folder: Record<string, unknown>;
     environment: Record<string, unknown>;
+    global: Record<string, unknown>;
     process: {
       process: {
         env: Record<string, string>;

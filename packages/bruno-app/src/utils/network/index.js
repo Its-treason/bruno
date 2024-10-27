@@ -1,4 +1,4 @@
-import { safeStringifyJSON } from 'utils/common';
+import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
 
 export const sendNetworkRequest = async (item, collection, environment, runtimeVariables) => {
   return new Promise((resolve, reject) => {
@@ -29,6 +29,15 @@ const sendHttpRequest = async (item, collection, environment, runtimeVariables) 
   return new Promise((resolve, reject) => {
     const { ipcRenderer } = window;
 
+    const globalEnvState = globalEnvironmentStore.getState();
+    const globalVariableList = globalEnvState.environments.get(globalEnvState.activeEnvironment)?.variables ?? [];
+    const globalVariables = globalVariableList.reduce((acc, variable) => {
+      if (variable.enabled) {
+        acc[variable.name] = variable.value;
+      }
+      return acc;
+    }, {});
+
     ipcRenderer
       .invoke(
         'send-http-request',
@@ -36,6 +45,7 @@ const sendHttpRequest = async (item, collection, environment, runtimeVariables) 
         collection,
         environment,
         runtimeVariables,
+        globalVariables,
         localStorage.getItem('new-request') === '"true"'
       )
       .then(resolve)

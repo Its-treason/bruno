@@ -26,6 +26,7 @@ export class VarsRuntime {
       variables.request,
       variables.folder,
       variables.collection,
+      variables.global,
       variables.process,
       collectionPath,
       environmentName
@@ -34,6 +35,7 @@ export class VarsRuntime {
     const res = createResponseParser(response, responseBody);
 
     const context = {
+      ...variables.global,
       ...variables.collection,
       ...variables.environment,
       ...variables.folder,

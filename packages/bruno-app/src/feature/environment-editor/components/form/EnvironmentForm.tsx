@@ -14,11 +14,13 @@ import classes from './EnvironmentTableRow.module.css';
 export const EnvironmentForm: React.FC = () => {
   const { form, selectedEnvironment, onSubmit, openActionModal } = useEnvironmentEditor();
   const addRow = useCallback(() => {
-    form.insertListItem('variables', { enabled: true, name: '', value: '', secret: false, uid: uuid(), type: 'text' });
+    form.insertListItem('variables', { enabled: true, name: '', value: '', secret: false, id: uuid(), type: 'text' });
   }, [form]);
 
   const tableRows = useMemo(() => {
-    return form.values.variables.map((val, index) => <EnvironmentTableRow pos={index} key={val.uid} />);
+    return form.values.variables
+      .filter((val) => typeof val.value === 'string') // TODO: Support other types
+      .map((val, index) => <EnvironmentTableRow pos={index} key={val.id} />);
   }, [form.values.variables.length]);
 
   if (!selectedEnvironment) {

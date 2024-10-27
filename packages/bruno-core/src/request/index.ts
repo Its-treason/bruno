@@ -21,6 +21,7 @@ import { collectFolderData } from './preRequest/collectFolderData';
 export async function request(
   requestItem: RequestItem,
   collection: Collection,
+  globalVariables: Record<string, unknown>,
   preferences: Preferences,
   cookieJar: CookieJar,
   dataDir: string,
@@ -79,6 +80,7 @@ export async function request(
       },
       environment: environmentVariableRecord,
       collection: collectionVariables,
+      global: globalVariables,
       request: requestVariables,
       // Runtime variables are stored inside the collection.
       runtime: collection.runtimeVariables

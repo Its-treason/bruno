@@ -71,6 +71,7 @@ export async function runScript(
   return {
     envVariables: cleanJson(scriptContext.bru.envVariables),
     runtimeVariables: cleanJson(scriptContext.bru.runtimeVariables),
+    globalVariables: cleanJson(scriptContext.bru.globalVariables),
     nextRequestName: scriptContext.bru._nextRequest,
     responseBody: scriptContext.res?.body,
     results: scriptContext.brunoTestResults ? cleanJson(scriptContext.brunoTestResults.getResults()) : null
@@ -110,6 +111,7 @@ function buildScriptContext(
       variables.request,
       variables.folder,
       variables.collection,
+      variables.global,
       variables.process,
       collectionPath,
       environmentName

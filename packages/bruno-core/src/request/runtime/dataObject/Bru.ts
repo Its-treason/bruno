@@ -11,6 +11,7 @@ export class Bru {
     public requestVariables: Record<string, unknown>,
     public folderVariables: Record<string, unknown>,
     public collectionVariables: Record<string, unknown>,
+    public globalVariables: Record<string, unknown>,
     public processEnvVars: any,
     private collectionPath: string,
     private environmentName?: string
@@ -18,6 +19,7 @@ export class Bru {
 
   interpolate(target: unknown): string | unknown {
     return interpolate(target, {
+      ...this.globalVariables,
       ...this.collectionVariables,
       ...this.envVariables,
       ...this.folderVariables,
@@ -53,6 +55,17 @@ export class Bru {
     }
 
     this.envVariables[key] = value;
+  }
+
+  getGlobalEnvVar(key: string) {
+    return this.interpolate(this.globalVariables[key]);
+  }
+
+  setGlobalEnvVar(key: string, value: unknown) {
+    if (!key) {
+      throw new Error('Creating a env variable without specifying a name is not allowed.');
+    }
+    this.globalVariables[key] = value;
   }
 
   hasVar(key: string) {

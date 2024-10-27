@@ -4,6 +4,9 @@ import { App } from './pages/App';
 import { Main } from './pages';
 import GlobalStyle from './globalStyles';
 import '@mantine/tiptap/styles.css';
+import { enableMapSet } from 'immer';
+
+enableMapSet();
 
 const rootEl = document.getElementById('root');
 if (rootEl) {

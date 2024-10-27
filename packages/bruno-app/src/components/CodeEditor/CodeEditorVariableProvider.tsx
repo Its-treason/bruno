@@ -7,6 +7,9 @@ import { useMonaco } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
 import { shallowEqual } from '@mantine/hooks';
 import { flattenVariables, highlightSpecificWords } from './utils/placeholderDecorator';
+import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
+import { useStore } from 'zustand';
+import { useShallow } from 'zustand/react/shallow'
 
 type CodeEditorVariableProviderProps = {
   children: ReactNode;
@@ -22,6 +25,7 @@ export const CodeEditorVariableProvider: React.FC<CodeEditorVariableProviderProp
   const tabs = useSelector<any>((state) => state.tabs.tabs) as any[];
   const collections = useSelector<any>((state) => state.collections.collections);
   const activeTabUid = useSelector<any>((state) => state.tabs.activeTabUid);
+  const globalVariableList = useStore(globalEnvironmentStore, useShallow((state) => state.environments.get(state.activeEnvironment)?.variables ?? []));
 
   const currentVariables = useRef({});
 
@@ -39,8 +43,20 @@ export const CodeEditorVariableProvider: React.FC<CodeEditorVariableProviderProp
     }
     const item = !ignoreRequestVariables ? findItemInCollection(collection, activeTabUid) : null;
 
+    const globalVariables = globalVariableList.reduce((acc, variable) => {
+      if (variable.enabled) {
+        acc[variable.name] = variable.value;
+      }
+      return acc;
+    }, {});
+
     const newVariables = getAllVariables(collection, item);
-    const flattened = Object.fromEntries(flattenVariables(newVariables.variables));
+    const flattened = Object.fromEntries(
+      flattenVariables({
+        ...globalVariables,
+        ...newVariables.variables,
+      }),
+    );
 
     // Don't update if both are still equal
     if (shallowEqual(flattened, currentVariables.current) === true) {
@@ -60,7 +76,7 @@ export const CodeEditorVariableProvider: React.FC<CodeEditorVariableProviderProp
       decorationsRefs.current.get(editorId)?.clear();
       decorationsRefs.current.set(editorId, highlightSpecificWords(editor, currentVariables.current));
     }
-  }, [activeTabUid, collections, monaco]);
+  }, [activeTabUid, collections, globalVariableList, monaco]);
 
   const registerEditor = useCallback((editor: editor.IStandaloneCodeEditor) => {
     const editorId = editor.getId();

@@ -4,3 +4,5 @@
  */
 export { EnvironmentDrawer } from './components/EnvironmentDrawer';
 export { EnvironmentSelector } from './components/EnvironmentSelector';
+export { GlobalEnvironmentDrawer } from './components/GlobalEnvironmentDrawer';
+export { GlobalEnvironmentSelector } from './components/GlobalEnvironmentSelector';

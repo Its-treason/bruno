@@ -13,13 +13,13 @@ export const EnvironmentList: React.FC = () => {
   const items = useMemo(() => {
     return allEnvironments.map((env) => (
       <EnvironmentListItem
-        key={env.uid}
-        environment={env}
-        active={env.uid === selectedEnvironment?.uid}
-        onClick={() => onEnvironmentSwitch(env.uid)}
+        key={env.id}
+        name={env.name}
+        active={env.id === selectedEnvironment?.id}
+        onClick={() => onEnvironmentSwitch(env.id)}
       />
     ));
-  }, [allEnvironments, selectedEnvironment?.uid]);
+  }, [allEnvironments, selectedEnvironment?.id]);
 
   if (allEnvironments.length === 0) {
     return null;
