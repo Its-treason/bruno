@@ -19,7 +19,7 @@ declare const assert: Chai.Assert;
 `;
 
 const typeInfo = chaiTypes + globalType;
-writeFileSync(resolve(__dirname, './public/monacoChaiTypeInfo.d.ts'), typeInfo);
+writeFileSync(resolve(__dirname, './public/monacoChaiTypeInfo'), typeInfo);
 
 export default defineConfig({
   plugins: [pluginReact(), pluginStyledComponents(), pluginSass()],

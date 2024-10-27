@@ -276,7 +276,7 @@ declare const res: {
 `;
 
 let chaiTypeInfo = '';
-fetch('/monacoChaiTypeInfo.d.ts')
+fetch('/monacoChaiTypeInfo')
   .then((res) => {
     return res.text();
   })

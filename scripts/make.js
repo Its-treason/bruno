@@ -108,16 +108,6 @@ async function main(args) {
   await fs.ensureDir('packages/bruno-electron/web');
   await copyFolderIfExists('packages/bruno-app/dist', 'packages/bruno-electron/web');
 
-  // Change paths in next
-  const files = await fs.readdir('packages/bruno-electron/web');
-  for (const file of files) {
-    if (file.endsWith('.html')) {
-      let content = await fs.readFile(`packages/bruno-electron/web/${file}`, 'utf8');
-      content = content.replace(/\/_next\//g, '_next/');
-      await fs.writeFile(`packages/bruno-electron/web/${file}`, content);
-    }
-  }
-
   // Run npm dist command
   log(`Building the Electron app for: ${os}/${arch}`);
   // This is a workaround for this error that started happening between: "ab9bcbe" & "7194998"

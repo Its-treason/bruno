@@ -7,7 +7,6 @@ const config = {
     buildResources: 'resources',
     output: 'out'
   },
-  files: ['**/*'],
   afterSign: 'notarize.js',
   afterPack: './linux-sandbox-fix.js',
   mac: {
