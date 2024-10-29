@@ -30,7 +30,7 @@ export const ResponseTimings: React.FC<ResponseTimingsProps> = ({ timings }) => 
           </Table.Tr>
         </Table.Thead>
         <Table.Tbody>
-          <TimingRow title="Pre-Request script" timing={timings.postScript} />
+          <TimingRow title="Pre-Request script" timing={timings.preScript} />
           <TimingRow title="Request" timing={timings.request} />
           <TimingRow title="Post-Request script" timing={timings.postScript} />
           <TimingRow title="Test" timing={timings.test} />
