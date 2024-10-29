@@ -106,7 +106,7 @@ export class Callbacks {
       for (const domain of domains) {
         const cookies = domainCookieMap[domain];
         const validCookies = cookies.filter(
-          (cookie) => cookie.expires === 'Infinity' || cookie.expires.getTime() > Date.now()
+          (cookie) => cookie.expires === 'Infinity' || (cookie.expires?.getTime() || 0) > Date.now()
         );
 
         if (validCookies.length) {
