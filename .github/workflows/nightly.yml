@@ -93,6 +93,7 @@ jobs:
         run: |
           npm i -g pnpm
           pnpm i
+          pip install setuptools
       - name: Make
         env:
           COMMIT_SHORT_SHA: ${{ steps.slug.outputs.SHORT_SHA }}
