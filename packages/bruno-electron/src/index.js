@@ -22,7 +22,7 @@ const lastOpenedCollections = new LastOpenedCollections();
 // Reference: https://content-security-policy.com/
 const contentSecurityPolicy = [
   "default-src 'self'",
-  "script-src * 'unsafe-inline' 'unsafe-eval'",
+  "script-src * 'self' blob: 'unsafe-inline' 'unsafe-eval'",
   "connect-src * 'unsafe-inline'",
   "font-src 'self' https:",
   // this has been commented out to make oauth2 work

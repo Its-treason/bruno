@@ -38,7 +38,7 @@
   "devDependencies": {
     "@types/node": "^20.11.25",
     "rimraf": "^5.0.5",
-    "typescript": "^5.5",
+    "typescript": "^5.6.3",
     "vite": "^5.4.3",
     "vite-plugin-commonjs": "^0.10.1",
     "vite-plugin-dts": "^3.7.3"
