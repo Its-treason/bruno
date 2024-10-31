@@ -22,7 +22,8 @@ export async function generateCode(
   preferences: Preferences,
   cookieJar: CookieJar,
   options: GenerateCodeOptions,
-  environment?: CollectionEnvironment
+  environment?: CollectionEnvironment,
+  globalVariables: Record<string, unknown> = {}
 ) {
   // Convert the EnvVariables into a Record
   const environmentVariableRecord = (environment?.variables ?? []).reduce<Record<string, unknown>>((acc, env) => {
@@ -65,6 +66,7 @@ export async function generateCode(
       environment: environmentVariableRecord,
       collection: collectionVariables,
       request: requestVariables,
+      global: globalVariables,
       runtime: collection.runtimeVariables
     },
 

@@ -743,8 +743,8 @@ const registerRendererEventHandlers = (mainWindow, watcher, lastOpenedCollection
     }
   });
 
-  ipcMain.handle('renderer:generate-code', async (event, item, collection, environment, options) => {
-    return await generateCode(item, collection, getPreferences(), cookieJar, options, environment);
+  ipcMain.handle('renderer:generate-code', async (event, item, collection, environment, globalVariables, options) => {
+    return await generateCode(item, collection, getPreferences(), cookieJar, options, environment, globalVariables);
   });
 
   ipcMain.handle('renderer:curl-to-request', async (event, curlString) => {
