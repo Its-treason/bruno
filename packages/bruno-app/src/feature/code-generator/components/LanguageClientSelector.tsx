@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Group, Select, Stack, Tabs, Text } from '@mantine/core';
+import { Group, Select, Stack, Switch, Tabs, Text } from '@mantine/core';
 import { useEffect, useMemo } from 'react';
 
 const options = {
@@ -81,13 +81,17 @@ type LanguageClientSelectorProps = {
   setTargetId: (newTargetId: string) => void;
   clientId: string;
   setClientId: (newClientId: string) => void;
+  executeScript: 'true' | 'false';
+  setExecuteScript: (newClientId: 'true' | 'false') => void;
 };
 
 export const LanguageClientSelector: React.FC<LanguageClientSelectorProps> = ({
   clientId,
   setClientId,
   setTargetId,
-  targetId
+  targetId,
+  executeScript,
+  setExecuteScript
 }) => {
   const selectOptions = useMemo(() => {
     return Object.keys(options).map((targetId) => ({
@@ -137,6 +141,13 @@ export const LanguageClientSelector: React.FC<LanguageClientSelectorProps> = ({
           </Tabs.List>
         </Tabs>
       </Stack>
+
+      <Switch
+        checked={executeScript === 'true'}
+        onClick={() => setExecuteScript(executeScript === 'true' ? 'false' : 'true')}
+        label="Execute pre-request script"
+        mt={'lg'}
+      />
     </Group>
   );
 };

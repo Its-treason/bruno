@@ -14,6 +14,7 @@ import { createHar } from './createHar';
 type GenerateCodeOptions = {
   targetId: string;
   clientId: string;
+  executeScript: boolean;
 };
 
 export async function generateCode(
@@ -86,7 +87,9 @@ async function doGenerateCode(context: RequestContext, options: GenerateCodeOpti
 
   // Folder Headers are also applied here
   applyCollectionSettings(context, folderData);
-  await preRequestScript(context, folderData);
+  if (options.executeScript) {
+    await preRequestScript(context, folderData);
+  }
   interpolateRequest(context);
 
   const harRequest = await createHar(context);

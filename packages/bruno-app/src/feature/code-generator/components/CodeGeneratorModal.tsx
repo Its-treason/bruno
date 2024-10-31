@@ -7,6 +7,7 @@ import React from 'react';
 import { LanguageClientSelector } from './LanguageClientSelector';
 import { useLanguageClient } from '../hooks/useLangugeClient';
 import { CodeGenerator } from './CodeGenerator';
+import { useLocalStorage } from '@mantine/hooks';
 
 type CodeGeneratorModalProps = {
   requestUid?: string;
@@ -22,6 +23,10 @@ export const CodeGeneratorModal: React.FC<CodeGeneratorModalProps> = ({
   onClose
 }) => {
   const { clientId, setClientId, setTargetId, targetId } = useLanguageClient();
+  const [executeScript, setExecuteScript] = useLocalStorage<'true' | 'false'>({
+    key: 'generate-code-execute-script',
+    defaultValue: 'false'
+  });
 
   return (
     <Modal size={'xl'} title={'Generate code'} opened={opened} onClose={onClose}>
@@ -30,10 +35,18 @@ export const CodeGeneratorModal: React.FC<CodeGeneratorModalProps> = ({
         setClientId={setClientId}
         targetId={targetId}
         setTargetId={setTargetId}
+        executeScript={executeScript}
+        setExecuteScript={setExecuteScript}
       />
 
       {requestUid !== undefined && collectionUid !== undefined ? (
-        <CodeGenerator clientId={clientId} targetId={targetId} collectionUid={collectionUid} requestUid={requestUid} />
+        <CodeGenerator
+          clientId={clientId}
+          targetId={targetId}
+          collectionUid={collectionUid}
+          requestUid={requestUid}
+          executeScript={executeScript}
+        />
       ) : null}
     </Modal>
   );

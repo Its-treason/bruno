@@ -14,12 +14,25 @@ type CodeGeneratorProps = {
   requestUid: string;
   targetId: string;
   clientId: string;
+  executeScript: 'true' | 'false';
 };
 
-export const CodeGenerator: React.FC<CodeGeneratorProps> = ({ clientId, collectionUid, requestUid, targetId }) => {
+export const CodeGenerator: React.FC<CodeGeneratorProps> = ({
+  clientId,
+  collectionUid,
+  requestUid,
+  targetId,
+  executeScript
+}) => {
   // Debounce values here, to prevent flickering if invalid values are in state
   const [debounced] = useDebouncedValue({ clientId, targetId }, 50);
-  const generateCodeResult = useGenerateCode(collectionUid, requestUid, debounced.targetId, debounced.clientId);
+  const generateCodeResult = useGenerateCode(
+    collectionUid,
+    requestUid,
+    debounced.targetId,
+    debounced.clientId,
+    executeScript
+  );
 
   if (generateCodeResult.error) {
     return (

@@ -10,13 +10,19 @@ import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
 
 type ReduxStore = { collections: { collections: CollectionSchema[] } };
 
-export function useGenerateCode(collectionId: string, requestId: string, targetId: string, clientId: string) {
+export function useGenerateCode(
+  collectionId: string,
+  requestId: string,
+  targetId: string,
+  clientId: string,
+  executeScript: 'true' | 'false'
+) {
   const collection: CollectionSchema = useSelector((store: ReduxStore) =>
     findCollectionByUid(store.collections.collections, collectionId)
   );
 
   return useQuery<string>({
-    queryKey: [collectionId, requestId, targetId, clientId],
+    queryKey: [collectionId, requestId, targetId, clientId, executeScript],
     retry: 0,
     queryFn: async () => {
       const item = findItemInCollection(collection, requestId);
@@ -36,7 +42,8 @@ export function useGenerateCode(collectionId: string, requestId: string, targetI
 
       const options = {
         targetId,
-        clientId
+        clientId,
+        executeScript: executeScript === 'true'
       };
 
       return await window.ipcRenderer.invoke(
