@@ -748,7 +748,7 @@ export const newHttpRequest = (params) => (dispatch, getState) => {
           formUrlEncoded: null
         },
         auth: auth ?? {
-          mode: 'none'
+          mode: 'inherit'
         }
       }
     };
