@@ -110,10 +110,14 @@ function interpolateBody(context: RequestContext, i: InterpolationShorthandFunct
       body.text = i(body.text, '');
       break;
     case 'json':
-      if (typeof body.json === 'object') {
-        body.json = stringify(body.json)!;
+      if (typeof body.json !== 'string') {
+        body.json = stringify(body.json);
+      }
+      if (body.json === undefined) {
+        break;
       }
       // Always decomment the body. Tolerant flag will ensure no error is thrown when json is invalid
+      console.log('tests', typeof body.json);
       body.json = decomment(body.json, { tolerant: true });
       body.json = i(body.json, 'Json body');
       try {

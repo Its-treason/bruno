@@ -21,7 +21,7 @@ export type RequestBody =
     }
   | {
       mode: 'json';
-      json: string | Record<string, unknown>;
+      json: string | Record<string, unknown> | undefined;
     }
   | {
       mode: 'text';
