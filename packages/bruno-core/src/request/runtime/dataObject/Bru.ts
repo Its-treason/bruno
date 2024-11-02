@@ -38,7 +38,7 @@ export class Bru {
   }
 
   getProcessEnv(key: string): unknown {
-    return this.processEnvVars[key];
+    return this.processEnvVars.process.env[key];
   }
 
   hasEnvVar(key: string) {

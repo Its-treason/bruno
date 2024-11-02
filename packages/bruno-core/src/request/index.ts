@@ -74,8 +74,11 @@ export async function request(
     variables: {
       process: {
         process: {
-          // @ts-ignore
-          env: process.env
+          // @ts-expect-error `process.env` is a dict with weird typings
+          env: {
+            ...process.env,
+            ...collection.processEnvVariables
+          }
         }
       },
       environment: environmentVariableRecord,

@@ -196,6 +196,8 @@ export type Collection = {
   lastAction: null | any;
   collapsed: boolean;
   environments: CollectionEnvironment[];
+  // Contains .env variables. Set with 'main:process-env-update'
+  processEnvVariables?: Record<string, string>;
   root?: {
     request?: {
       auth?: RequestAuthSchema;
