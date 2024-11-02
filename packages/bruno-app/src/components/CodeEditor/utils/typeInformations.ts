@@ -88,6 +88,11 @@ declare const bru: {
    * The promise must be awaited, for the sleep to take effect.
    */
   sleep(ms: number): Promise<void>;
+  /**
+   * Creates a Visualization in the response tab.
+   * This is not yet implemented in lazer!
+   */
+  visualize(type: 'table'|'html', config: any): void;
 };
 `;
 
@@ -101,15 +106,15 @@ declare const req: {
   /**
    * Url of the request. Before variable placeholder interpolation.
    */
-  url: string;
+  readonly url: string;
   /**
    * HTTP request method, e.g. "GET" or "POST"
    */
-  method: string;
+  readonly method: string;
   /**
    * Headers of the request. This includes headers inherited from collection and folder level.
    */
-  headers: Record<string, string>;
+  readonly headers: Record<string, string>;
   /**
    * The request body. The type depends on the currently selected body.
    *
@@ -121,15 +126,15 @@ declare const req: {
    *
    * @throws If called after the request was sent
    */
-  body: any;
+  readonly body: any;
   /**
    * Timeout for a request in milliseconds
    */
-  timeout: number;
+  readonly timeout: number;
   /**
    * Returns the url of the request.
    */
-  eeetUrl(): string;
+  getUrl(): string;
   /**
    * Updates the request url.
    * @throws If called after the request was sent
@@ -227,23 +232,23 @@ declare const res: {
   /**
    * HTTP Status code number
    */
-  status: number;
+  readonly status: number;
   /**
    * HTTP Status as Text
    */
-  statusText: string;
+  readonly statusText: string;
   /**
    * HTTP headers returned from the server
    */
-  headers: any;
+  readonly headers: any;
   /**
    * Response body. Either a string or any if the server returned something that is JSON parsable.
    */
-  body: any;
+  readonly body: any;
   /**
    * The total time the server needed to response in milliseconds.
    */
-  responseTime: number;
+  readonly responseTime: number;
   /**
    * Returns the HTTP status code number
    */

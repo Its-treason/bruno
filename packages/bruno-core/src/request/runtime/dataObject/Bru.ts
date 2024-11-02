@@ -127,4 +127,8 @@ export class Bru {
   sleep(ms: number): Promise<void> {
     return new Promise((resolve) => setTimeout(() => resolve(), ms));
   }
+
+  visualize(): void {
+    // TODO: Implemtation needed
+  }
 }

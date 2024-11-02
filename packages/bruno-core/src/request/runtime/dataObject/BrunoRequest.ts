@@ -3,43 +3,42 @@ import { RequestItem } from '../../types';
 import decomment from 'decomment';
 
 export class BrunoRequest {
-  constructor(private _req: RequestItem, private readonly: boolean, private executionMode: string) {}
+  public url: string;
+  public method: string;
+  public body: any;
+  public headers: Record<string, string>;
+  public timeout: number;
 
-  get url() {
-    return this.getUrl();
+  constructor(private _req: RequestItem, private readonly: boolean, private executionMode: string) {
+    this.url = _req.request.url;
+    this.method = _req.request.method;
+    this.body = this.getBody();
+    this.headers = this.getHeaders();
+    this.timeout = _req.request.timeout;
   }
+
   getUrl() {
     return this._req.request.url;
-  }
-  set url(newUrl: string) {
-    this.setUrl(newUrl);
   }
   setUrl(url: string) {
     if (this.readonly) {
       throw new Error('Cannot update "url" request is readonly');
     }
+    this.url = url;
     this._req.request.url = url;
   }
 
-  get method() {
-    return this.getMethod();
-  }
   getMethod() {
     return this._req.request.method;
-  }
-  set method(newMethod: string) {
-    this.setMethod(newMethod);
   }
   setMethod(method: string) {
     if (this.readonly) {
       throw new Error('Cannot update "method" request is readonly');
     }
+    this.method = method;
     this._req.request.method = method;
   }
 
-  get headers() {
-    return this.getHeaders();
-  }
   getHeaders(): Record<string, string> {
     const rawHeaders = this._req.request.headers;
 
@@ -54,6 +53,7 @@ export class BrunoRequest {
     if (this.readonly) {
       throw new Error('Cannot update "headers" request is readonly');
     }
+    this.headers = headers;
     this._req.request.headers = Object.entries(headers).map(([name, value]) => {
       return {
         name,
@@ -85,9 +85,6 @@ export class BrunoRequest {
     this._req.request.headers[index] = newHeader;
   }
 
-  get body() {
-    return this.getBody();
-  }
   getBody() {
     switch (this._req.request.body.mode) {
       case 'text':
@@ -113,6 +110,7 @@ export class BrunoRequest {
     if (this.readonly) {
       throw new Error('Cannot update "body" request is readonly');
     }
+    this.body = data;
     switch (this._req.request.body.mode) {
       case 'text':
         this._req.request.body.text = data;
@@ -149,19 +147,14 @@ export class BrunoRequest {
     this._req.request.maxRedirects = maxRedirects;
   }
 
-  get timeout() {
-    return this.getTimeout();
-  }
   getTimeout(): number {
     return this._req.request.timeout;
-  }
-  set timeout(newTimeout: number) {
-    this.setTimeout(newTimeout);
   }
   setTimeout(timeout: number) {
     if (this.readonly) {
       throw new Error('Cannot update "timeout" request is readonly');
     }
+    this.timeout = timeout;
     this._req.request.timeout = timeout;
   }
 
