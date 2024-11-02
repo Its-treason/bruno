@@ -22,7 +22,10 @@ export class BrunoResponse {
     return this.getHeaders();
   }
   getHeaders() {
-    return this._res.headers;
+    return Object.entries(this._res.headers).reduce((acc, [name, value]) => {
+      acc[name] = Array.isArray(value) ? value[0] : value;
+      return acc;
+    }, {} as Record<string, string | undefined>);
   }
 
   getBody() {

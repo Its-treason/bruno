@@ -44,7 +44,7 @@ export class BrunoRequest {
 
     return rawHeaders.reduce((acc, curr) => {
       if (curr.enabled) {
-        acc[curr.name] = acc.value;
+        acc[curr.name] = curr.value;
       }
       return acc;
     }, {} as Record<string, string>);

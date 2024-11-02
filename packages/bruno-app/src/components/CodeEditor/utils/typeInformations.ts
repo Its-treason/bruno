@@ -264,7 +264,7 @@ declare const res: {
   /**
    * Returns all headers returned by the server.
    */
-  getHeaders(): any;
+  getHeaders(): Record<string, string>;
   /**
    * Returns the response body. Either as string or any if the server returned something that is JSON parsable.
    */
