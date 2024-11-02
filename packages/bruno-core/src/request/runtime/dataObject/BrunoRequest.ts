@@ -1,4 +1,4 @@
-import { parse } from 'lossless-json';
+import { LosslessNumber, parse } from 'lossless-json';
 import { RequestItem } from '../../types';
 import decomment from 'decomment';
 
@@ -100,7 +100,11 @@ export class BrunoRequest {
       case 'json':
         if (typeof this._req.request.body.json === 'string') {
           try {
-            return parse(decomment(this._req.request.body.json, { tolerant: true }));
+            return parse(decomment(this._req.request.body.json, { tolerant: true }), null, (value) => {
+              // By default, this will return the LosslessNumber object, but because it's passed into ipc we
+              // need to convert it into a number because LosslessNumber is converted into a weird object
+              return new LosslessNumber(value).valueOf();
+            });
           } catch {}
         }
         return this._req.request.body.json;

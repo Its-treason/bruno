@@ -1,6 +1,6 @@
 import { RequestContext } from '../types';
 import { interpolate } from '@usebruno/common';
-import { parse, stringify } from 'lossless-json';
+import { LosslessNumber, parse, stringify } from 'lossless-json';
 import decomment from 'decomment';
 
 // This is wrapper/shorthand for the original `interpolate` function.
@@ -122,7 +122,10 @@ function interpolateBody(context: RequestContext, i: InterpolationShorthandFunct
       body.json = i(body.json, 'Json body');
       try {
         // @ts-ignore
-        body.json = parse(body.json);
+        body.json = parse(body.json, (value) => {
+          // Convert the Lossless number into whatever fits best
+          return new LosslessNumber(value).valueOf();
+        });
       } catch {}
       break;
     case 'multipartForm': {
