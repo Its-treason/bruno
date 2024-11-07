@@ -16,6 +16,7 @@ const { loadWindowState, saveBounds, saveMaximized } = require('./utils/window')
 const registerNotificationsIpc = require('./ipc/notifications');
 const registerEnvironmentsIpc = require('./ipc/environments');
 require('./ipc/zustand-store');
+require('./ipc/request');
 
 const lastOpenedCollections = new LastOpenedCollections();
 

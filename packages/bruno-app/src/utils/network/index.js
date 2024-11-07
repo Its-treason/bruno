@@ -38,18 +38,7 @@ const sendHttpRequest = async (item, collection, environment, runtimeVariables) 
       return acc;
     }, {});
 
-    ipcRenderer
-      .invoke(
-        'send-http-request',
-        item,
-        collection,
-        environment,
-        runtimeVariables,
-        globalVariables,
-        localStorage.getItem('new-request') === '"true"'
-      )
-      .then(resolve)
-      .catch(reject);
+    ipcRenderer.invoke('send-http-request', item, collection, environment, globalVariables).then(resolve).catch(reject);
   });
 };
 

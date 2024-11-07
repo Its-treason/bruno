@@ -57,11 +57,6 @@ const CollectionToolBar = ({ collection, activeTabUid }) => {
       console.error('No tab type case for: ', activeTab.type);
   }
 
-  const [useNewRequest, setNewRequest] = useLocalStorage({
-    key: 'new-request',
-    defaultValue: 'false'
-  });
-
   return (
     <StyledWrapper>
       <div className="flex items-center p-2">
@@ -78,16 +73,6 @@ const CollectionToolBar = ({ collection, activeTabUid }) => {
           ) : null}
         </div>
         <div className="flex flex-1 items-center justify-end">
-          <span className="mr-4">
-            <Switch
-              label={'New request method'}
-              onClick={(evt) => {
-                setNewRequest(evt.currentTarget.checked ? 'true' : 'false');
-              }}
-              checked={useNewRequest === 'true'}
-            />
-          </span>
-
           <CollectionTabButtons activeTabType={tabType} collectionUid={collection.uid} />
 
           <GlobalEnvironmentSelector />

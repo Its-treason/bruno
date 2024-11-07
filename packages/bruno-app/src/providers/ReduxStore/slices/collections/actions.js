@@ -342,17 +342,7 @@ export const runCollectionFolder = (collectionUid, folderUid, recursive, delay) 
     }, {});
 
     ipcRenderer
-      .invoke(
-        'renderer:run-collection-folder',
-        folder,
-        collectionCopy,
-        environment,
-        collectionCopy.runtimeVariables,
-        globalVariables,
-        recursive,
-        delay,
-        localStorage.getItem('new-request') === '"true"'
-      )
+      .invoke('renderer:run-collection-folder', folder, collectionCopy, environment, globalVariables, recursive, delay)
       .then(resolve)
       .catch((err) => {
         toast.error(get(err, 'error.message') || 'Something went wrong!');

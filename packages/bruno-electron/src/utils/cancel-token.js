@@ -1,3 +1,4 @@
+// TODO: This should be a Map
 const cancelTokens = {};
 
 const saveCancelToken = (uid, abortController) => {
