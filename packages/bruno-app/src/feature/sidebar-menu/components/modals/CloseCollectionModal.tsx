@@ -13,7 +13,7 @@ import { removeCollection } from 'providers/ReduxStore/slices/collections/action
 type CloseCollectionModalProps = {
   opened: boolean;
   onClose: () => void;
-  collection: CollectionSchema;
+  collection?: CollectionSchema;
 };
 
 export const CloseCollectionModal: React.FC<CloseCollectionModalProps> = ({ opened, onClose, collection }) => {
@@ -21,7 +21,7 @@ export const CloseCollectionModal: React.FC<CloseCollectionModalProps> = ({ open
 
   const closeMutation = useMutation({
     mutationFn: async () => {
-      await dispatch(removeCollection(collection.uid));
+      await dispatch(removeCollection(collection?.uid));
     },
     onSuccess: () => {
       toast.success('Closed collection');

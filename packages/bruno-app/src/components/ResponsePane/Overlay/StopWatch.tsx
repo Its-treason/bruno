@@ -22,6 +22,9 @@ export const StopWatch: React.FC<StopWatchProps> = ({ requestTimestamp }) => {
 
     ref.current.innerText = formatStopwatchTimestamp(Date.now() - requestTimestamp);
     const interval = setInterval(() => {
+      if (!ref.current) {
+        return;
+      }
       ref.current.innerText = formatStopwatchTimestamp(Date.now() - requestTimestamp);
     }, 100);
     return () => {

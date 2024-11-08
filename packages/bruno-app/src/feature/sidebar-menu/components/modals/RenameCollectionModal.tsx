@@ -21,7 +21,7 @@ type RenameCollectionFormSchema = z.infer<typeof renameCollectionFormSchema>;
 type RenameCollectionModalProps = {
   opened: boolean;
   onClose: () => void;
-  collection: CollectionSchema;
+  collection?: CollectionSchema;
 };
 
 export const RenameCollectionModal: React.FC<RenameCollectionModalProps> = ({ opened, onClose, collection }) => {
@@ -29,7 +29,7 @@ export const RenameCollectionModal: React.FC<RenameCollectionModalProps> = ({ op
 
   const renameMutation = useMutation({
     mutationFn: async (values: RenameCollectionFormSchema) => {
-      await dispatch(renameCollection(values.name.trim(), collection.pathname));
+      await dispatch(renameCollection(values.name.trim(), collection?.pathname));
     },
     onSuccess: () => {
       toast.success('Renamed collection');

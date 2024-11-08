@@ -15,7 +15,7 @@ import { recursivelyGetAllItemUids } from 'utils/collections';
 type DeleteItemModalProps = {
   opened: boolean;
   onClose: () => void;
-  collectionUid: string;
+  collectionUid?: string;
   item?: RequestItemSchema;
 };
 
@@ -24,6 +24,10 @@ export const DeleteItemModal: React.FC<DeleteItemModalProps> = ({ opened, onClos
 
   const deleteMutation = useMutation({
     mutationFn: async () => {
+      if (!item) {
+        throw new Error('`item` is not defined, but should have been at this point.');
+      }
+
       await dispatch(deleteItem(item.uid, collectionUid));
 
       const tabUids = item.type === 'folder' ? recursivelyGetAllItemUids(item.items) : [item.uid];
@@ -34,7 +38,7 @@ export const DeleteItemModal: React.FC<DeleteItemModalProps> = ({ opened, onClos
       );
     },
     onSuccess: () => {
-      toast.success(`Deleted ${item.type === 'folder' ? 'folder' : 'request'}`);
+      toast.success(`Deleted ${item?.type === 'folder' ? 'folder' : 'request'}`);
       onClose();
     }
   });

@@ -27,8 +27,8 @@
     "markdown-it": "^13.0.1"
   },
   "peerDependencies": {
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react": "19.0.0-rc-5c56b873-20241107",
+    "react-dom": "19.0.0-rc-5c56b873-20241107"
   },
   "devDependencies": {
     "@types/markdown-it": "^12.2.3",

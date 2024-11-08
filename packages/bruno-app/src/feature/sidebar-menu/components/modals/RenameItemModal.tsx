@@ -22,7 +22,7 @@ type RenameItemModalProps = {
   opened: boolean;
   onClose: () => void;
   collectionUid: string;
-  item: RequestItemSchema;
+  item?: RequestItemSchema;
 };
 
 export const RenameItemModal: React.FC<RenameItemModalProps> = ({ opened, onClose, collectionUid, item }) => {
@@ -43,6 +43,10 @@ export const RenameItemModal: React.FC<RenameItemModalProps> = ({ opened, onClos
 
   const renameMutation = useMutation({
     mutationFn: async (values: RenameItemFormSchema) => {
+      if (!item) {
+        throw new Error('`item` is not defined, but should have been at this point.');
+      }
+
       // if there is unsaved changes in the request,
       // save them before renaming the request
       if ((item.type === 'http-request' || item.type === 'graphql-request') && item.draft) {
@@ -53,7 +57,7 @@ export const RenameItemModal: React.FC<RenameItemModalProps> = ({ opened, onClos
     },
     onSuccess: (_, values) => {
       onClose();
-      toast.success(`Renamed from "${item.name}" to "${values.name}"`);
+      toast.success(`Renamed from "${item?.name}" to "${values.name}"`);
       renameForm.reset();
     }
   });

@@ -21,8 +21,8 @@ type CloneCollectionFormSchema = z.infer<typeof cloneItemCollectionSchema>;
 type CloneItemModalProps = {
   opened: boolean;
   onClose: () => void;
-  collectionUid: string;
-  item: RequestItemSchema;
+  collectionUid?: string;
+  item?: RequestItemSchema;
 };
 
 export const CloneItemModal: React.FC<CloneItemModalProps> = ({ opened, onClose, collectionUid, item }) => {
@@ -43,7 +43,7 @@ export const CloneItemModal: React.FC<CloneItemModalProps> = ({ opened, onClose,
 
   const cloneMutation = useMutation({
     mutationFn: async (values: CloneCollectionFormSchema) => {
-      await dispatch(cloneItem(values.name.trim(), item.uid, collectionUid));
+      await dispatch(cloneItem(values.name.trim(), item?.uid, collectionUid));
     },
     onSuccess: () => {
       toast.success('Cloned request');
