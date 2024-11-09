@@ -6,15 +6,9 @@ import React, { ReactNode, useCallback, useEffect, useMemo, useRef, useState } f
 import { SidebarActionContext, SidebarActionTypes } from '../provider/SidebarActionContext';
 import { useDispatch, useSelector } from 'react-redux';
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
-import { CloneCollectionModal } from './modals/CloneCollectionModal';
-import { CloneItemModal } from './modals/CloneItemModal';
-import { CloseCollectionModal } from './modals/CloseCollectionModal';
-import { DeleteItemModal } from './modals/DeleteItemModal';
-import { ExportCollectionModal } from './modals/ExportCollectionModal';
-import { NewFolderModal } from './modals/NewFolderModal';
-import { NewRequestModal } from './modals/NewRequestModal';
-import { RenameCollectionModal } from './modals/RenameCollectionModal';
-import { RenameItemModal } from './modals/RenameItemModal';
+import { NewRequestModalContent } from './modalContent/NewRequestModalContent';
+import { RenameCollectionModalContent } from './modalContent/RenameCollectionModalContent';
+import { RenameItemModalContent } from './modalContent/RenameItemModalContent';
 import { getDefaultRequestPaneTab, isItemARequest } from 'utils/collections';
 import {
   runCollectionFolder,
@@ -28,11 +22,31 @@ import { addTab, focusTab } from 'providers/ReduxStore/slices/tabs';
 import { collectionClicked, collectionFolderClicked } from 'providers/ReduxStore/slices/collections';
 import { uuid } from 'utils/common';
 import { CodeGeneratorModal } from 'src/feature/code-generator';
+import { Modal } from '@mantine/core';
+import { CloneCollectionModalContent } from './modalContent/CloneCollectionModalContent';
+import { CloneItemModalContent } from './modalContent/CloneItemModalContent';
+import { DeleteItemModalContent } from './modalContent/DeleteItemModalContent';
+import { NewFolderModalContent } from './modalContent/NewFolderModalContent';
+import { CloseCollectionModalContent } from './modalContent/CloseCollectionModalContent';
+import { ExportCollectionModalContent } from './modalContent/ExportCollectionModalContent';
 
 type ActiveAction = {
   type: SidebarActionTypes;
-  collection: any | CollectionSchema; // TODO: Refactor
+  collection: CollectionSchema; // TODO: Refactor
   item?: any | RequestItemSchema;
+};
+
+const modalTitleMap: Record<SidebarActionTypes, string> = {
+  'clone-collection': 'Clone collection',
+  'close-collection': 'Close collection',
+  'rename-collection': 'Rename collection',
+  'export-collection': 'Export collection',
+  clone: 'Clone item',
+  'new-folder': 'New folder',
+  'new-request': 'New request',
+  delete: 'Delete item',
+  rename: 'Rename item',
+  generate: 'Generate code'
 };
 
 type ReduxState = {
@@ -103,12 +117,13 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
 
     if (isItemARequest(item)) {
       setTimeout(() => {
-        // TODO: This is bad
+        // TODO: This is bad. The Tab should listen to this themself
         const activeTab = document.querySelector('.request-tab.active');
         if (activeTab) {
           activeTab.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
       }, 50);
+
       dispatch(hideHomePage());
       dispatch(
         addTab({
@@ -117,11 +132,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
           requestPaneTab: getDefaultRequestPaneTab(item)
         })
       );
-      dispatch(
-        focusTab({
-          uid: item.uid
-        })
-      );
+      dispatch(focusTab({ uid: item.uid }));
       return;
     }
     dispatch(
@@ -189,60 +200,94 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
     []
   );
 
+  const modalContent = useMemo(() => {
+    switch (activeAction?.type) {
+      case 'clone':
+        return (
+          <CloneItemModalContent
+            onClose={() => setActiveActionState(null)}
+            collectionUid={activeAction.collection.uid}
+            item={activeAction.item}
+          />
+        );
+      case 'delete':
+        return (
+          <DeleteItemModalContent
+            onClose={() => setActiveActionState(null)}
+            collectionUid={activeAction.collection.uid}
+            item={activeAction.item}
+          />
+        );
+      case 'rename':
+        return (
+          <RenameItemModalContent
+            onClose={() => setActiveActionState(null)}
+            collectionUid={activeAction.collection.uid}
+            item={activeAction.item}
+          />
+        );
+      case 'new-request':
+        return (
+          <NewRequestModalContent
+            onClose={() => setActiveActionState(null)}
+            collectionUid={activeAction.collection.uid}
+            brunoConfig={activeAction.collection.brunoConfig}
+            itemUid={activeAction.item?.uid}
+          />
+        );
+      case 'new-folder':
+        return (
+          <NewFolderModalContent
+            onClose={() => setActiveActionState(null)}
+            collectionUid={activeAction.collection.uid}
+            itemUid={activeAction.item?.uid}
+          />
+        );
+      case 'clone-collection':
+        return (
+          <CloneCollectionModalContent
+            onClose={() => setActiveActionState(null)}
+            collectionName={activeAction.collection.name}
+            collectionPath={activeAction.collection.pathname}
+          />
+        );
+      case 'close-collection':
+        return (
+          <CloseCollectionModalContent
+            onClose={() => setActiveActionState(null)}
+            collection={activeAction.collection}
+          />
+        );
+      case 'export-collection':
+        return (
+          <ExportCollectionModalContent
+            onClose={() => setActiveActionState(null)}
+            collection={activeAction.collection}
+          />
+        );
+      case 'rename-collection':
+        return (
+          <RenameCollectionModalContent
+            onClose={() => setActiveActionState(null)}
+            collection={activeAction.collection}
+          />
+        );
+      case 'generate':
+      default:
+        return null;
+    }
+  }, [activeAction]);
+
   return (
     <SidebarActionContext.Provider value={contextData}>
-      <CloneCollectionModal
-        opened={activeAction?.type === 'clone-collection'}
+      <Modal
+        opened={modalContent !== null}
+        title={modalTitleMap[activeAction?.type]}
         onClose={() => setActiveActionState(null)}
-        collectionName={activeAction?.collection.name}
-        collectionPath={activeAction?.collection}
-      />
-      <CloneItemModal
-        opened={activeAction?.type === 'clone'}
-        onClose={() => setActiveActionState(null)}
-        collectionUid={activeAction?.collection.uid ?? ''}
-        item={activeAction?.item}
-      />
-      <CloseCollectionModal
-        opened={activeAction?.type === 'close-collection'}
-        onClose={() => setActiveActionState(null)}
-        collection={activeAction?.collection}
-      />
-      <DeleteItemModal
-        opened={activeAction?.type === 'delete'}
-        onClose={() => setActiveActionState(null)}
-        collectionUid={activeAction?.collection.uid ?? ''}
-        item={activeAction?.item}
-      />
-      <ExportCollectionModal
-        opened={activeAction?.type === 'export-collection'}
-        onClose={() => setActiveActionState(null)}
-        collection={activeAction?.collection}
-      />
-      <NewFolderModal
-        opened={activeAction?.type === 'new-folder'}
-        onClose={() => setActiveActionState(null)}
-        collectionUid={activeAction?.collection?.uid ?? ''}
-        itemUid={activeAction?.item?.uid}
-      />
-      <NewRequestModal
-        opened={activeAction?.type === 'new-request'}
-        onClose={() => setActiveActionState(null)}
-        brunoConfig={activeAction?.collection.brunoConfig}
-        collectionUid={activeAction?.collection.uid ?? ''}
-        itemUid={activeAction?.item?.uid ?? ''}
-      />
-      <RenameCollectionModal
-        opened={activeAction?.type === 'rename-collection'}
-        onClose={() => setActiveActionState(null)}
-        collection={activeAction?.collection}
-      />
-      <RenameItemModal
-        opened={activeAction?.type === 'rename'}
-        onClose={() => setActiveActionState(null)}
-        collectionUid={activeAction?.collection.uid ?? ''}
-        item={activeAction?.item}
-      />
+      >
+        {modalContent}
+      </Modal>
+
       <CodeGeneratorModal
         opened={activeAction?.type === 'generate'}
         onClose={() => setActiveActionState(null)}

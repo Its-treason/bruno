@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Button, Group, Modal, Radio, Stack } from '@mantine/core';
+import { Button, Group, Radio, Stack } from '@mantine/core';
 import { CollectionSchema } from '@usebruno/schema';
 import exportBrunoCollection from 'utils/collections/export';
 import exportPostmanCollection from 'utils/exporters/postman-collection';
@@ -17,13 +17,12 @@ const exportCollectionFormSchema = z.object({
 });
 type ExportCollectionFormSchema = z.infer<typeof exportCollectionFormSchema>;
 
-type CloseCollectionModalProps = {
-  opened: boolean;
+type CloseCollectionModalContentProps = {
   onClose: () => void;
   collection: CollectionSchema;
 };
 
-export const ExportCollectionModal: React.FC<CloseCollectionModalProps> = ({ opened, onClose, collection }) => {
+export const ExportCollectionModalContent: React.FC<CloseCollectionModalContentProps> = ({ onClose, collection }) => {
   const handleSubmit = useCallback(
     ({ type }: ExportCollectionFormSchema) => {
       const collectionCopy = cloneDeep(collection);
@@ -45,37 +44,28 @@ export const ExportCollectionModal: React.FC<CloseCollectionModalProps> = ({ ope
   });
 
   return (
-    <Modal
-      opened={opened}
-      onClose={() => {
-        onClose();
-        exportForm.reset();
-      }}
-      title="Export collection"
-    >
-      <form onSubmit={exportForm.onSubmit(handleSubmit)}>
-        <Radio.Group {...exportForm.getInputProps('type')} label={'Export format'} withAsterisk>
-          <Stack my={'xs'} gap={'xs'}>
-            <Radio label={'Bruno'} value={'bruno'} />
-            <Radio label={'Postman (v2.1)'} value={'postman'} />
-          </Stack>
-        </Radio.Group>
+    <form onSubmit={exportForm.onSubmit(handleSubmit)}>
+      <Radio.Group {...exportForm.getInputProps('type')} label={'Export format'} withAsterisk>
+        <Stack my={'xs'} gap={'xs'}>
+          <Radio label={'Bruno'} value={'bruno'} />
+          <Radio label={'Postman (v2.1)'} value={'postman'} />
+        </Stack>
+      </Radio.Group>
 
-        <Group justify="flex-end" mt={'md'}>
-          <Button
-            variant="subtle"
-            onClick={() => {
-              onClose();
-              exportForm.reset();
-            }}
-          >
-            Cancel
-          </Button>
-          <Button variant="filled" type="submit">
-            Export
-          </Button>
-        </Group>
-      </form>
-    </Modal>
+      <Group justify="flex-end" mt={'md'}>
+        <Button
+          variant="subtle"
+          onClick={() => {
+            onClose();
+            exportForm.reset();
+          }}
+        >
+          Cancel
+        </Button>
+        <Button variant="filled" type="submit">
+          Export
+        </Button>
+      </Group>
+    </form>
   );
 };

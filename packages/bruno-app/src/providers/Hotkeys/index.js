@@ -9,8 +9,9 @@ import { sendRequest, saveRequest, saveCollectionRoot } from 'providers/ReduxSto
 import { findCollectionByUid, findItemInCollection } from 'utils/collections';
 import { closeTabs, switchTab } from 'providers/ReduxStore/slices/tabs';
 import { EnvironmentDrawer } from 'src/feature/environment-editor';
-import { NewRequestModal } from 'src/feature/sidebar-menu/components/modals/NewRequestModal';
+import { NewRequestModalContent } from 'src/feature/sidebar-menu/components/modalContent/NewRequestModalContent';
 import { getKeyBindingsForActionAllOS } from './keyMappings';
+import { Modal } from '@mantine/core';
 
 export const HotkeysContext = React.createContext();
 
@@ -228,12 +229,13 @@ export const HotkeysProvider = (props) => {
           onClose={() => setShowEnvSettingsModal(false)}
         />
       ) : null}
-      <NewRequestModal
-        brunoConfig={getCurrentCollection()?.brunoConfig}
-        collectionUid={getCurrentCollection()?.uid}
-        onClose={() => setShowNewRequestModal(false)}
-        opened={showNewRequestModal}
-      />
+      <Modal opened={showNewRequestModal} onClose={() => setShowNewRequestModal(false)} title="New request">
+        <NewRequestModalContent
+          brunoConfig={getCurrentCollection()?.brunoConfig}
+          collectionUid={getCurrentCollection()?.uid}
+          onClose={() => setShowNewRequestModal(false)}
+        />
+      </Modal>
       <div>{props.children}</div>
     </HotkeysContext.Provider>
   );

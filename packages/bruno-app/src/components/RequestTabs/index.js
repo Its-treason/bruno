@@ -12,7 +12,8 @@ import { deleteRequestDraft } from 'providers/ReduxStore/slices/collections';
 import { saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import { findItemInCollection } from 'utils/collections';
 import get from 'lodash/get';
-import { NewRequestModal } from 'src/feature/sidebar-menu/components/modals/NewRequestModal';
+import { NewRequestModalContent } from 'src/feature/sidebar-menu/components/modalContent/NewRequestModalContent';
+import { Modal } from '@mantine/core';
 
 const RequestTabs = () => {
   const dispatch = useDispatch();
@@ -136,12 +137,14 @@ const RequestTabs = () => {
           }}
         />
       )}
-      <NewRequestModal
-        brunoConfig={activeCollection.brunoConfig}
-        collectionUid={activeCollection.uid}
-        onClose={() => setNewRequestModalOpen(false)}
-        opened={newRequestModalOpen}
-      />
+      <Modal opened={newRequestModalOpen} onClose={() => setNewRequestModalOpen(false)} title="New Request">
+        <NewRequestModalContent
+          brunoConfig={activeCollection.brunoConfig}
+          collectionUid={activeCollection.uid}
+          onClose={() => setNewRequestModalOpen(false)}
+          opened={newRequestModalOpen}
+        />
+      </Modal>
       {collectionRequestTabs?.length && !hideTabs ? (
         <div className="flex items-center pl-4">
           <ul role="tablist">

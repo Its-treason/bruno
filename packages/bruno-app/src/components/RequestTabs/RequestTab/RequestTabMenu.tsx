@@ -2,12 +2,11 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Menu, rem } from '@mantine/core';
+import { Menu, Modal, rem } from '@mantine/core';
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import React, { ReactNode, useMemo, useState } from 'react';
 import { useRequestTabMenu } from './useRequestTabMenu';
-import { NewRequestModal } from 'src/feature/sidebar-menu/components/modals/NewRequestModal';
-import { CloneItemModal } from 'src/feature/sidebar-menu/components/modals/CloneItemModal';
+import { NewRequestModalContent } from 'src/feature/sidebar-menu/components/modalContent/NewRequestModalContent';
 import {
   IconArrowLeft,
   IconArrowRight,
@@ -20,9 +19,10 @@ import {
   IconTrash,
   IconX
 } from '@tabler/icons-react';
-import { RenameItemModal } from 'src/feature/sidebar-menu/components/modals/RenameItemModal';
-import { DeleteItemModal } from 'src/feature/sidebar-menu/components/modals/DeleteItemModal';
+import { RenameItemModalContent } from 'src/feature/sidebar-menu/components/modalContent/RenameItemModalContent';
 import { findParentItemInCollection } from 'utils/collections';
+import { DeleteItemModalContent } from 'src/feature/sidebar-menu/components/modalContent/DeleteItemModalContent';
+import { CloneItemModalContent } from 'src/feature/sidebar-menu/components/modalContent/CloneItemModalContent';
 
 const ICON_STYLE = { width: rem(16), height: rem(16) };
 
@@ -72,34 +72,38 @@ export const RequestTabMenu: React.FC<RequestTabMenuProps> = ({
     <Menu shadow="md" opened={opened} onClose={onClose} position="bottom-start" offset={4}>
       {item ? (
         <>
-          <NewRequestModal
-            onClose={() => setNewRequestModalOpened(false)}
-            opened={newRequestModalOpened}
-            brunoConfig={collection?.brunoConfig}
-            collectionUid={collection.uid}
-            itemUid={parentUid}
-          />
+          <Modal opened={newRequestModalOpened} onClose={() => setNewRequestModalOpened(false)}>
+            <NewRequestModalContent
+              onClose={() => setNewRequestModalOpened(false)}
+              brunoConfig={collection?.brunoConfig}
+              collectionUid={collection.uid}
+              itemUid={parentUid}
+            />
+          </Modal>
 
-          <CloneItemModal
-            onClose={() => setCloneModalOpened(false)}
-            opened={cloneModalOpened}
-            collectionUid={collection.uid}
-            item={item}
-          />
+          <Modal opened={cloneModalOpened} onClose={() => setCloneModalOpened(false)}>
+            <CloneItemModalContent
+              onClose={() => setCloneModalOpened(false)}
+              collectionUid={collection.uid}
+              item={item}
+            />
+          </Modal>
 
-          <RenameItemModal
-            onClose={() => setRenameModalOpened(false)}
-            opened={renameModalOpened}
-            collectionUid={collection.uid}
-            item={item}
-          />
+          <Modal opened={renameModalOpened} onClose={() => setRenameModalOpened(false)}>
+            <RenameItemModalContent
+              onClose={() => setRenameModalOpened(false)}
+              collectionUid={collection.uid}
+              item={item}
+            />
+          </Modal>
 
-          <DeleteItemModal
-            onClose={() => setDeleteModalOpened(false)}
-            opened={deleteModalOpened}
-            collectionUid={collection.uid}
-            item={item}
-          />
+          <Modal opened={deleteModalOpened} onClose={() => setDeleteModalOpened(false)}>
+            <DeleteItemModalContent
+              onClose={() => setDeleteModalOpened(false)}
+              collectionUid={collection.uid}
+              item={item}
+            />
+          </Modal>
         </>
       ) : null}
 

@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Alert, Button, Group, Modal, Text, rem } from '@mantine/core';
+import { Alert, Button, Group, Text, rem } from '@mantine/core';
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
@@ -13,13 +13,12 @@ import { closeTabs } from 'providers/ReduxStore/slices/tabs';
 import { recursivelyGetAllItemUids } from 'utils/collections';
 
 type DeleteItemModalProps = {
-  opened: boolean;
   onClose: () => void;
-  collectionUid?: string;
-  item?: RequestItemSchema;
+  collectionUid: string;
+  item: RequestItemSchema;
 };
 
-export const DeleteItemModal: React.FC<DeleteItemModalProps> = ({ opened, onClose, collectionUid, item }) => {
+export const DeleteItemModalContent: React.FC<DeleteItemModalProps> = ({ onClose, collectionUid, item }) => {
   const dispatch = useDispatch();
 
   const deleteMutation = useMutation({
@@ -44,14 +43,7 @@ export const DeleteItemModal: React.FC<DeleteItemModalProps> = ({ opened, onClos
   });
 
   return (
-    <Modal
-      opened={opened}
-      onClose={() => {
-        onClose();
-        deleteMutation.reset();
-      }}
-      title="Delete request"
-    >
+    <>
       <Text>Do you really want to delete "{item?.name}"?</Text>
 
       {deleteMutation.error ? (
@@ -83,6 +75,6 @@ export const DeleteItemModal: React.FC<DeleteItemModalProps> = ({ opened, onClos
           Delete
         </Button>
       </Group>
-    </Modal>
+    </>
   );
 };

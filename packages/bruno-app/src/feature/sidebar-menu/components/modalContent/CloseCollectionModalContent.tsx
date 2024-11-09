@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Alert, Button, Group, Modal, Text, rem } from '@mantine/core';
+import { Alert, Button, Group, Text, rem } from '@mantine/core';
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
@@ -11,12 +11,11 @@ import { CollectionSchema } from '@usebruno/schema';
 import { removeCollection } from 'providers/ReduxStore/slices/collections/actions';
 
 type CloseCollectionModalProps = {
-  opened: boolean;
   onClose: () => void;
-  collection?: CollectionSchema;
+  collection: CollectionSchema;
 };
 
-export const CloseCollectionModal: React.FC<CloseCollectionModalProps> = ({ opened, onClose, collection }) => {
+export const CloseCollectionModalContent: React.FC<CloseCollectionModalProps> = ({ onClose, collection }) => {
   const dispatch = useDispatch();
 
   const closeMutation = useMutation({
@@ -30,14 +29,7 @@ export const CloseCollectionModal: React.FC<CloseCollectionModalProps> = ({ open
   });
 
   return (
-    <Modal
-      opened={opened}
-      onClose={() => {
-        onClose();
-        closeMutation.reset();
-      }}
-      title="Close collection"
-    >
+    <>
       <Text>Do you want to close "{collection?.name}"?</Text>
       <Text>It will still be available in the file system at the above location and can be re-opened later.</Text>
 
@@ -70,6 +62,6 @@ export const CloseCollectionModal: React.FC<CloseCollectionModalProps> = ({ open
           Close
         </Button>
       </Group>
-    </Modal>
+    </>
   );
 };
