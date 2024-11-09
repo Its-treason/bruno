@@ -12,7 +12,10 @@ export const store = configureStore({
     tabs: tabsReducer,
     notifications: notificationsReducer
   },
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat([tasksMiddleware.middleware])
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false
+    }).concat([tasksMiddleware.middleware])
 });
 
 export default store;
