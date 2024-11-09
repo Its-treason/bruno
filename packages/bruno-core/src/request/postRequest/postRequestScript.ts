@@ -2,6 +2,7 @@ import { RequestContext } from '../types';
 import { runScript } from '../runtime/script-runner';
 import { EOL } from 'node:os';
 import { FolderData } from '../preRequest/collectFolderData';
+import { VarsRuntime } from '../runtime/vars-runtime';
 
 export async function postRequestScript(context: RequestContext, folderData: FolderData[]) {
   const collectionPostRequestScript = context.collection.root?.request?.script?.res ?? '';
@@ -39,9 +40,19 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
     context.timings.stopMeasure('postScript');
   }
 
-  context.callback.updateScriptEnvironment(context, scriptResult.envVariables, scriptResult.runtimeVariables, scriptResult.globalVariables);
+  context.callback.updateScriptEnvironment(
+    context,
+    scriptResult.envVariables,
+    scriptResult.runtimeVariables,
+    scriptResult.globalVariables
+  );
 
-  context.debug.log('Post request script finished', scriptResult);
+  context.debug.log('Post request script finished', {
+    envVariables: scriptResult.envVariables,
+    runtimeVariables: scriptResult.runtimeVariables,
+    globalVariables: scriptResult.globalVariables,
+    results: scriptResult.results
+  });
 
   if (context.responseBody !== scriptResult.responseBody) {
     context.debug.log('Response body was overwritten');

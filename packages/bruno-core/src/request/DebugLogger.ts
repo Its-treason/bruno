@@ -3,18 +3,20 @@ import { cleanJson } from './runtime/utils';
 type Logs = { title: string; data: unknown; date: number }[];
 type LogStages = { stage: string; logs: Logs };
 
-export class DebugLogger extends Array<LogStages> {
+export class DebugLogger {
+  private logs: LogStages[] = [];
+
   public log(title: string, data?: unknown): void {
-    // We use structuredClone here to prevent any further changes through object references
-    const log = structuredClone({ title, data, date: Date.now() });
-    this[this.length - 1].logs.push(log);
+    // CleanJson everything, so it loses its reference and can be send over ipc without any problem
+    const log = cleanJson({ title, data, date: Date.now() });
+    this.logs[this.logs.length - 1].logs.push(log);
   }
 
   public addStage(stage: string): void {
-    this.push({ stage, logs: [] });
+    this.logs.push({ stage, logs: [] });
   }
 
   getClean() {
-    return cleanJson(this);
+    return this.logs;
   }
 }
