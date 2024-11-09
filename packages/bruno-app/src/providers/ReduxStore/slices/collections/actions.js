@@ -244,11 +244,8 @@ export const sendRequest = (item, collectionUid) => (dispatch, getState) => {
       return reject(new Error('Collection not found'));
     }
 
-    const itemCopy = cloneDeep(item || {});
-    const collectionCopy = cloneDeep(collection);
-
-    const environment = findEnvironmentInCollection(collectionCopy, collectionCopy.activeEnvironmentUid);
-    sendNetworkRequest(itemCopy, collectionCopy, environment, collectionCopy.runtimeVariables)
+    const environment = findEnvironmentInCollection(collection, collection.activeEnvironmentUid);
+    sendNetworkRequest(item, collection, environment)
       .then((response) => {
         return dispatch(
           responseReceived({

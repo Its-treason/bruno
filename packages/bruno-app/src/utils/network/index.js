@@ -1,45 +1,36 @@
 import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
 
-export const sendNetworkRequest = async (item, collection, environment, runtimeVariables) => {
-  return new Promise((resolve, reject) => {
-    if (['http-request', 'graphql-request'].includes(item.type)) {
-      sendHttpRequest(item, collection, environment, runtimeVariables)
-        .then((response) => {
-          resolve({
-            state: response.error ? 'Error' : 'success',
-            headers: response.headers,
-            size: response.size,
-            status: response.status,
-            statusText: response.statusText,
-            duration: response.duration,
-            isNew: response.isNew ?? false,
-            timeline: response.timeline,
-            timings: response.timings,
-            debug: response.debug,
-            error: response.error,
-            isError: response.error ? true : undefined
-          });
-        })
-        .catch((err) => reject(err));
+export const sendNetworkRequest = async (item, collection, environment) => {
+  if (!['http-request', 'graphql-request'].includes(item.type)) {
+    return;
+  }
+
+  // Get current global environment and convert it from Array to Record
+  const globalEnvState = globalEnvironmentStore.getState();
+  const globalVariableList = globalEnvState.environments.get(globalEnvState.activeEnvironment)?.variables ?? [];
+  const globalVariables = globalVariableList.reduce((acc, variable) => {
+    if (variable.enabled) {
+      acc[variable.name] = variable.value;
     }
-  });
-};
+    return acc;
+  }, {});
 
-const sendHttpRequest = async (item, collection, environment, runtimeVariables) => {
-  return new Promise((resolve, reject) => {
-    const { ipcRenderer } = window;
+  const response = await window.ipcRenderer.invoke('send-http-request', item, collection, environment, globalVariables);
 
-    const globalEnvState = globalEnvironmentStore.getState();
-    const globalVariableList = globalEnvState.environments.get(globalEnvState.activeEnvironment)?.variables ?? [];
-    const globalVariables = globalVariableList.reduce((acc, variable) => {
-      if (variable.enabled) {
-        acc[variable.name] = variable.value;
-      }
-      return acc;
-    }, {});
-
-    ipcRenderer.invoke('send-http-request', item, collection, environment, globalVariables).then(resolve).catch(reject);
-  });
+  return {
+    state: response.error ? 'Error' : 'success',
+    headers: response.headers,
+    size: response.size,
+    status: response.status,
+    statusText: response.statusText,
+    duration: response.duration,
+    isNew: response.isNew ?? false,
+    timeline: response.timeline,
+    timings: response.timings,
+    debug: response.debug,
+    error: response.error,
+    isError: response.error ? true : undefined
+  };
 };
 
 export const getResponseBody = async (requestId) => {
