@@ -14,8 +14,20 @@ export default defineConfig({
       fileName: 'index'
     },
     rollupOptions: {
-      external: ['react', 'react-dom', 'graphql']
+      external: ['react', 'react-dom', 'graphql'],
+      output: {
+        // Ensure consistent global names
+        globals: {
+          react: 'React',
+          'react-dom': 'ReactDOM'
+        },
+        // Ensure consistent module format
+        format: 'esm'
+      }
     }
+  },
+  resolve: {
+    dedupe: ['react', 'react-dom']
   },
   clearScreen: false
 });
