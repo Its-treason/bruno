@@ -58,7 +58,20 @@ export const fetchGqlSchema = async (endpoint, environment, request, collection)
   return new Promise((resolve, reject) => {
     const { ipcRenderer } = window;
 
-    ipcRenderer.invoke('fetch-gql-schema', endpoint, environment, request, collection).then(resolve).catch(reject);
+    // Get current global environment and convert it from Array to Record
+    const globalEnvState = globalEnvironmentStore.getState();
+    const globalVariableList = globalEnvState.environments.get(globalEnvState.activeEnvironment)?.variables ?? [];
+    const globalVariables = globalVariableList.reduce((acc, variable) => {
+      if (variable.enabled) {
+        acc[variable.name] = variable.value;
+      }
+      return acc;
+    }, {});
+
+    ipcRenderer
+      .invoke('fetch-gql-schema', endpoint, environment, request, collection, globalVariables)
+      .then(resolve)
+      .catch(reject);
   });
 };
 

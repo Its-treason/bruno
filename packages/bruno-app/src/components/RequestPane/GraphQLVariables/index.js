@@ -20,14 +20,7 @@ const GraphQLVariables = ({ variables, item, collection }) => {
   const onSave = () => dispatch(saveRequest(item.uid, collection.uid));
 
   return (
-    <CodeEditor
-      value={variables || ''}
-      onChange={onEdit}
-      mode="javascript"
-      onRun={onRun}
-      onSave={onSave}
-      height={'100%'}
-    />
+    <CodeEditor value={variables || ''} onChange={onEdit} mode="json" onRun={onRun} onSave={onSave} height={'100%'} />
   );
 };
 

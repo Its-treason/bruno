@@ -4,8 +4,9 @@
  */
 import { ipcMain, app } from 'electron';
 import path from 'node:path';
-import { request as executeRequest, FolderItem, RequestItem } from '@usebruno/core';
+import { request as executeRequest, FolderItem, request, RequestItem } from '@usebruno/core';
 import { CollectionSchema, EnvironmentSchema } from '@usebruno/schema';
+import { getIntrospectionQuery } from 'graphql';
 const { uuid, safeStringifyJSON } = require('../utils/common');
 const { cookieJar } = require('../utils/cookies');
 const { getPreferences } = require('../store/preferences');
@@ -240,6 +241,96 @@ ipcMain.handle(
       folderUid,
       error: null
     });
+  }
+);
+
+ipcMain.handle(
+  'fetch-gql-schema',
+  async (event, endpoint, environment, requestItem: RequestItem['request'], collection, globalVariables) => {
+    const webContents = event.sender;
+    const cancelToken = uuid();
+    const abortController = new AbortController();
+    cancelTokens.set(cancelToken, abortController);
+
+    const body = {
+      mode: 'json',
+      json: JSON.stringify({
+        query: getIntrospectionQuery()
+      })
+    } as const;
+
+    const headers = requestItem.headers;
+    headers.push({
+      enabled: true,
+      name: 'accept',
+      value: 'application/json'
+    });
+
+    const item: RequestItem = {
+      depth: 0,
+      draft: null,
+      filename: 'graphql-introspection',
+      name: 'graphql-introspection',
+      pathname: '',
+      seq: 0,
+      type: 'http-request',
+      uid: uuid(),
+      request: {
+        ...requestItem,
+        assertions: [],
+        tests: '',
+        script: { req: '', res: '' },
+        params: [],
+        headers,
+        url: endpoint,
+        body
+      }
+    };
+
+    const res = await executeRequest(
+      item,
+      collection,
+      globalVariables,
+      getPreferences(),
+      cookieJar,
+      responseDataDir,
+      cancelToken,
+      abortController,
+      // @ts-expect-error Defined in `vite.base.config.js`
+      BRUNO_VERSION,
+      'standalone',
+      environment,
+      {
+        updateScriptEnvironment: (payload) => {
+          webContents.send('main:script-environment-update', payload);
+        },
+        cookieUpdated: (payload) => {
+          webContents.send('main:cookies-update', payload);
+        },
+        requestEvent: (payload) => {
+          webContents.send('main:run-request-event', payload);
+        },
+        consoleLog: (payload) => {
+          webContents.send('main:console-log', payload);
+        }
+      }
+    );
+    if (res.error) {
+      throw res.error;
+    }
+
+    cancelTokens.delete(cancelToken);
+
+    if (abortController.signal.aborted) {
+      throw new Error('Request aborted');
+    }
+
+    return {
+      status: res.response?.statusCode,
+      headers: res.response?.headers,
+      size: res.response?.size ?? 0,
+      data: res.responseBody
+    };
   }
 );
 
