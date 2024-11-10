@@ -30,8 +30,8 @@ export const multipartFormBodySchema = z.discriminatedUnion('type', [
 export type MultipartFormBodySchema = z.infer<typeof multipartFormBodySchema>;
 
 export const graphqlBodySchema = z.object({
-  query: z.string(),
-  variables: z.string()
+  query: z.string().default(''),
+  variables: z.string().default('')
 });
 export type GraphqlBodySchema = z.infer<typeof graphqlBodySchema>;
 
