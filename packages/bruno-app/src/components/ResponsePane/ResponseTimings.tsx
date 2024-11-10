@@ -8,6 +8,7 @@ type ResponseTimingsProps = {
   timings: {
     total?: number;
     request?: number;
+    parseResponse?: number;
     preScript?: number;
     postScript?: number;
     test?: number;
@@ -32,6 +33,7 @@ export const ResponseTimings: React.FC<ResponseTimingsProps> = ({ timings }) => 
         <Table.Tbody>
           <TimingRow title="Pre-Request script" timing={timings.preScript} />
           <TimingRow title="Request" timing={timings.request} />
+          <TimingRow title="Parsing of response body" timing={timings.parseResponse} />
           <TimingRow title="Post-Request script" timing={timings.postScript} />
           <TimingRow title="Test" timing={timings.test} />
           <TimingRow title="Total" timing={timings.total} />

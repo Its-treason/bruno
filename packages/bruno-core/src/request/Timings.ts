@@ -1,6 +1,6 @@
 import { cleanJson } from './runtime/utils';
 
-type TimingName = 'request' | 'preScript' | 'postScript' | 'test' | 'total';
+type TimingName = 'request' | 'preScript' | 'parseResponse' | 'postScript' | 'test' | 'total';
 
 export class Timings {
   private startTimings: Record<string, number> = {};

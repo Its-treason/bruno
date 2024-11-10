@@ -134,7 +134,9 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
   context.debug.addStage('Post-Request');
   context.callback.cookieUpdated(context.cookieJar);
 
+  context.timings.startMeasure('parseResponse');
   context.responseBody = await readResponseBodyAsync(context.response!.path);
+  context.timings.stopMeasure('parseResponse');
 
   postRequestVars(context, folderData);
   await postRequestScript(context, folderData);
