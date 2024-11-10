@@ -15,7 +15,6 @@ const { isUndefined, isNull, each, get, compact, cloneDeep } = require('lodash')
 const prepareRequest = require('./prepare-request');
 const prepareCollectionRequest = require('./prepare-collection-request');
 const prepareGqlIntrospectionRequest = require('./prepare-gql-introspection-request');
-const { cancelTokens, saveCancelToken, deleteCancelToken } = require('../../utils/cancel-token');
 const { uuid } = require('../../utils/common');
 const interpolateVars = require('./interpolate-vars');
 const { interpolateString } = require('./interpolate-string');
@@ -550,18 +549,6 @@ const registerNetworkIpc = (mainWindow) => {
         resolve();
       } catch (err) {
         reject(new Error('Could not clear oauth2 cache'));
-      }
-    });
-  });
-
-  ipcMain.handle('cancel-http-request', async (event, cancelTokenUid) => {
-    return new Promise((resolve, reject) => {
-      if (cancelTokenUid && cancelTokens[cancelTokenUid]) {
-        cancelTokens[cancelTokenUid].abort();
-        deleteCancelToken(cancelTokenUid);
-        resolve();
-      } else {
-        reject(new Error('cancel token not found'));
       }
     });
   });

@@ -7,18 +7,19 @@ import path from 'node:path';
 import { request as executeRequest, FolderItem, RequestItem } from '@usebruno/core';
 import { CollectionSchema, EnvironmentSchema } from '@usebruno/schema';
 const { uuid, safeStringifyJSON } = require('../utils/common');
-const { saveCancelToken, deleteCancelToken } = require('../utils/cancel-token');
 const { cookieJar } = require('../utils/cookies');
 const { getPreferences } = require('../store/preferences');
 const { getAllRequestsInFolderRecursively } = require('./network/helper');
 
-const dataDir = path.join(app.getPath('userData'), 'responseCache');
+const responseDataDir = path.join(app.getPath('userData'), 'responseCache');
+
+const cancelTokens = new Map<string, AbortController>();
 
 ipcMain.handle('send-http-request', async (event, item, collection, environment, globalVariables) => {
   const webContents = event.sender;
   const cancelToken = uuid();
   const abortController = new AbortController();
-  saveCancelToken(cancelToken, abortController);
+  cancelTokens.set(cancelToken, abortController);
 
   const res = await executeRequest(
     item,
@@ -26,7 +27,7 @@ ipcMain.handle('send-http-request', async (event, item, collection, environment,
     globalVariables,
     getPreferences(),
     cookieJar,
-    dataDir,
+    responseDataDir,
     cancelToken,
     abortController,
     // @ts-expect-error Defined in `vite.base.config.js`
@@ -52,7 +53,7 @@ ipcMain.handle('send-http-request', async (event, item, collection, environment,
     console.error(res.error);
   }
 
-  deleteCancelToken(cancelToken);
+  cancelTokens.delete(cancelToken);
 
   if (abortController.signal.aborted) {
     throw new Error('Request aborted');
@@ -86,7 +87,7 @@ ipcMain.handle(
     const webContents = event.sender;
     const cancelToken = uuid();
     const abortController = new AbortController();
-    saveCancelToken(cancelToken, abortController);
+    cancelTokens.set(cancelToken, abortController);
 
     // @ts-expect-error Here is the type from @bruno/schemas converted into the type of @bruno/core
     // Both types a little different, but are mostly identical.
@@ -139,7 +140,7 @@ ipcMain.handle(
       }
 
       if (abortController.signal.aborted) {
-        deleteCancelToken(cancelToken);
+        cancelTokens.delete(cancelToken);
         webContents.send('main:run-folder-event', {
           type: 'testrun-ended',
           collectionUid: collection.uid,
@@ -155,7 +156,7 @@ ipcMain.handle(
         globalVariables,
         getPreferences(),
         cookieJar,
-        dataDir,
+        responseDataDir,
         cancelToken,
         abortController,
         // @ts-expect-error Defined in `vite.base.config.js`
@@ -231,7 +232,7 @@ ipcMain.handle(
       }
     }
 
-    deleteCancelToken(cancelToken);
+    cancelTokens.delete(cancelToken);
 
     webContents.send('main:run-folder-event', {
       type: 'testrun-ended',
@@ -241,3 +242,8 @@ ipcMain.handle(
     });
   }
 );
+
+ipcMain.handle('cancel-http-request', async (_event, cancelTokenUid) => {
+  cancelTokens.get(cancelTokenUid)?.abort();
+  cancelTokens.delete(cancelTokenUid);
+});
