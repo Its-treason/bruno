@@ -36,7 +36,7 @@ const useGraphqlSchema = (endpoint, environment, request, collection) => {
       throw new Error('Introspection query failed');
     }
     if (response.status !== 200) {
-      throw new Error(response.statusText);
+      throw new Error(`Error getting GraphQL schema! Server returned status ${response.status}.`);
     }
     const data = response.data?.data;
     if (!data) {
@@ -82,7 +82,7 @@ const useGraphqlSchema = (endpoint, environment, request, collection) => {
       }
     } catch (err) {
       setError(err);
-      console.error(err);
+      console.error('Error fetching GraphQL schema', err);
       toast.error(`Error occurred while loading GraphQL Schema: ${err.message}`);
     }
 
