@@ -17,7 +17,7 @@ import { useStore } from 'zustand';
 
 export const ImportEnvironmentModal: React.FC = () => {
   const { activeModal, setActiveModal, collection } = useEnvironmentEditor();
-  const createGlobalEnvironment = useStore(globalEnvironmentStore, (state) => state.createEnvironment)
+  const createGlobalEnvironment = useStore(globalEnvironmentStore, (state) => state.createEnvironment);
   const dispatch = useDispatch();
 
   const importMutation = useMutation({
@@ -32,7 +32,7 @@ export const ImportEnvironmentModal: React.FC = () => {
       }
 
       if (values.collectionId) {
-        dispatch(importEnvironment(environment.name, environment.variables, collection.uid));
+        dispatch(importEnvironment(environment.name, environment.variables, collection?.uid));
         return;
       }
       createGlobalEnvironment(environment.name, environment.variables);
@@ -72,7 +72,7 @@ export const ImportEnvironmentModal: React.FC = () => {
       <form
         onSubmit={importForm.onSubmit((values) => {
           importMutation.mutate({
-            collectionId: collection.uid,
+            collectionId: collection?.uid,
             type: values.type
           });
         })}
