@@ -4,22 +4,18 @@ const fsPromise = require('fs/promises');
 const qs = require('qs');
 const https = require('https');
 const tls = require('tls');
-const axios = require('axios');
 const path = require('path');
 const decomment = require('decomment');
 const contentDispositionParser = require('content-disposition');
 const mime = require('mime-types');
 const { ipcMain, app } = require('electron');
-const { VarsRuntime, AssertRuntime, runScript } = require('@usebruno/js');
+const { VarsRuntime, runScript } = require('@usebruno/js');
 const { isUndefined, isNull, each, get, compact, cloneDeep } = require('lodash');
-const prepareRequest = require('./prepare-request');
 const prepareCollectionRequest = require('./prepare-collection-request');
-const prepareGqlIntrospectionRequest = require('./prepare-gql-introspection-request');
 const { uuid } = require('../../utils/common');
 const interpolateVars = require('./interpolate-vars');
 const { interpolateString } = require('./interpolate-string');
-const { sortFolder, getAllRequestsInFolderRecursively } = require('./helper');
-const { preferencesUtil, getPreferences } = require('../../store/preferences');
+const { preferencesUtil } = require('../../store/preferences');
 const { getProcessEnvVars } = require('../../store/process-env');
 const { getBrunoConfig } = require('../../store/bruno-config');
 const { HttpProxyAgent } = require('http-proxy-agent');
@@ -28,33 +24,16 @@ const { makeAxiosInstance } = require('./axios-instance');
 const { addAwsV4Interceptor, resolveAwsV4Credentials } = require('./awsv4auth-helper');
 const { addDigestInterceptor } = require('./digestauth-helper');
 const { shouldUseProxy, PatchedHttpsProxyAgent } = require('../../utils/proxy-util');
-const { chooseFileToSave, writeBinaryFile, writeFile } = require('../../utils/filesystem');
-const { getCookieStringForUrl, addCookieToJar, getDomainsWithCookies, cookieJar } = require('../../utils/cookies');
+const { chooseFileToSave } = require('../../utils/filesystem');
+const { getCookieStringForUrl } = require('../../utils/cookies');
 const {
   resolveOAuth2AuthorizationCodeAccessToken,
   transformClientCredentialsRequest,
   transformPasswordCredentialsRequest
 } = require('./oauth2-helper');
 const Oauth2Store = require('../../store/oauth2');
-const { request: newRequest } = require('@usebruno/core');
 const iconv = require('iconv-lite');
 const { parse, LosslessNumber } = require('lossless-json');
-
-const safeStringifyJSON = (data) => {
-  try {
-    return JSON.stringify(data);
-  } catch (e) {
-    return data;
-  }
-};
-
-const safeParseJSON = (data) => {
-  try {
-    return JSON.parse(data);
-  } catch (e) {
-    return data;
-  }
-};
 
 const getEnvVars = (environment = {}) => {
   const variables = environment.variables;
@@ -241,25 +220,6 @@ const configureRequest = async (collectionUid, request, envVars, runtimeVariable
         request.headers['content-type'] = 'application/x-www-form-urlencoded';
         request.data = authorizationCodeData;
         request.url = authorizationCodeAccessTokenUrl;
-        break;
-      case 'client_credentials':
-        interpolateVars(requestCopy, envVars, runtimeVariables, processEnvVars);
-        const { data: clientCredentialsData, url: clientCredentialsAccessTokenUrl } =
-          await transformClientCredentialsRequest(requestCopy);
-        request.method = 'POST';
-        request.headers['content-type'] = 'application/x-www-form-urlencoded';
-        request.data = clientCredentialsData;
-        request.url = clientCredentialsAccessTokenUrl;
-        break;
-      case 'password':
-        interpolateVars(requestCopy, envVars, runtimeVariables, processEnvVars);
-        const { data: passwordData, url: passwordAccessTokenUrl } = await transformPasswordCredentialsRequest(
-          requestCopy
-        );
-        request.method = 'POST';
-        request.headers['content-type'] = 'application/x-www-form-urlencoded';
-        request.data = passwordData;
-        request.url = passwordAccessTokenUrl;
         break;
     }
   }

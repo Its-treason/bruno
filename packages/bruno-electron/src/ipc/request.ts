@@ -10,7 +10,31 @@ import { getIntrospectionQuery } from 'graphql';
 const { uuid, safeStringifyJSON } = require('../utils/common');
 const { cookieJar } = require('../utils/cookies');
 const { getPreferences } = require('../store/preferences');
-const { getAllRequestsInFolderRecursively } = require('./network/helper');
+
+const getAllRequestsInFolderRecursively = (items: any[] = []) => {
+  // This is the sort function from useRequestList.tsx
+  items.sort((a, b) => {
+    if (a.seq === undefined && b.seq !== undefined) {
+      return -1;
+    } else if (a.seq !== undefined && b.seq === undefined) {
+      return 1;
+    } else if (a.seq === undefined && b.seq === undefined) {
+      return 0;
+    }
+    return a.seq < b.seq ? -1 : 1;
+  });
+
+  const requests: any[] = [];
+  for (const item of items) {
+    if (item.type !== 'folder') {
+      requests.push(item);
+    } else {
+      requests.push(...getAllRequestsInFolderRecursively(item.items));
+    }
+  }
+
+  return requests;
+};
 
 const responseDataDir = path.join(app.getPath('userData'), 'responseCache');
 
@@ -151,7 +175,7 @@ ipcMain.handle(
         return;
       }
 
-      const res = await executeRequest(
+      const { error, nextRequestName } = await executeRequest(
         item,
         collection as any, // @usebruno/core uses its own type for collection
         globalVariables,
@@ -193,6 +217,7 @@ ipcMain.handle(
           }
         }
       );
+
       if (abortController.signal.aborted) {
         webContents.send('main:run-folder-event', {
           type: 'error',
@@ -205,10 +230,10 @@ ipcMain.handle(
         continue;
       }
 
-      if (res.error) {
+      if (error) {
         webContents.send('main:run-folder-event', {
           type: 'error',
-          error: String(res.error) || 'An unknown error occurred while running the request',
+          error: String(error) || 'An unknown error occurred while running the request',
           responseReceived: {},
           collectionUid: collection.uid,
           itemUid: item.uid,
@@ -216,19 +241,20 @@ ipcMain.handle(
         });
       }
 
-      if (typeof res.nextRequestName !== 'string') {
+      if (typeof nextRequestName !== 'string') {
         currentRequestIndex++;
         continue;
       }
+
       nJumps++;
       if (nJumps > 100) {
         throw new Error('Too many jumps, possible infinite loop');
       }
-      const nextRequestIdx = folderRequests.findIndex((request) => request.name === res.nextRequestName);
+      const nextRequestIdx = folderRequests.findIndex((request) => request.name === nextRequestName);
       if (nextRequestIdx >= 0) {
         currentRequestIndex = nextRequestIdx;
       } else {
-        console.error("Could not find request with name '" + res.nextRequestName + "'");
+        console.error("Could not find request with name '" + nextRequestName + "'");
         currentRequestIndex++;
       }
     }

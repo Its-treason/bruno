@@ -30,7 +30,7 @@ const { generateUidBasedOnHash, stringifyJson, safeParseJSON, safeStringifyJSON 
 const { moveRequestUid, deleteRequestUid } = require('../cache/requestUids');
 const { deleteCookiesForDomain, getDomainsWithCookies, cookieJar } = require('../utils/cookies');
 const EnvironmentSecretsStore = require('../store/env-secrets');
-const { preferencesUtil, getPreferences } = require('../store/preferences');
+const { getPreferences } = require('../store/preferences');
 const { getRequestFromCurlCommand } = require('../utils/curl');
 
 const environmentSecretsStore = new EnvironmentSecretsStore();

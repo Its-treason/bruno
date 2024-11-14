@@ -58,6 +58,7 @@ export const oauth2AuthSchema = z.discriminatedUnion('grantType', [
     pkce: z.boolean()
   })
 ]);
+export type OAuth2AuthSchema = z.infer<typeof oauth2AuthSchema>;
 
 export const apiKeyAuthSchema = z.object({
   key: z.string(),

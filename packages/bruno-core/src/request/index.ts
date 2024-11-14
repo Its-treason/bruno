@@ -17,6 +17,7 @@ import { makeHttpRequest } from './httpRequest/requestHandler';
 import { CookieJar } from 'tough-cookie';
 import { readResponseBodyAsync } from './runtime/utils';
 import { collectFolderData } from './preRequest/collectFolderData';
+import { applyOAuth2 } from './preRequest/OAuth2/applyOAuth2';
 
 export async function request(
   requestItem: RequestItem,
@@ -122,6 +123,9 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
   applyCollectionSettings(context, folderData);
   await preRequestScript(context, folderData);
   interpolateRequest(context);
+  if (context.requestItem.request.auth.mode === 'oauth2') {
+    await applyOAuth2(context);
+  }
   await createHttpRequest(context);
 
   context.callback.requestSend(context);

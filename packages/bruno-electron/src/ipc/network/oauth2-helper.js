@@ -77,53 +77,7 @@ const getOAuth2AuthorizationCode = (request, codeChallenge, collectionUid) => {
   });
 };
 
-// CLIENT CREDENTIALS
-
-const transformClientCredentialsRequest = async (request) => {
-  let requestCopy = cloneDeep(request);
-  const oAuth = get(requestCopy, 'oauth2', {});
-  const { clientId, clientSecret, scope } = oAuth;
-  const data = {
-    grant_type: 'client_credentials',
-    client_id: clientId,
-    client_secret: clientSecret
-  };
-  if (scope) {
-    data.scope = scope;
-  }
-  const url = requestCopy?.oauth2?.accessTokenUrl;
-  return {
-    data,
-    url
-  };
-};
-
-// PASSWORD CREDENTIALS
-
-const transformPasswordCredentialsRequest = async (request) => {
-  let requestCopy = cloneDeep(request);
-  const oAuth = get(requestCopy, 'oauth2', {});
-  const { username, password, clientId, clientSecret, scope } = oAuth;
-  const data = {
-    grant_type: 'password',
-    username,
-    password,
-    client_id: clientId,
-    client_secret: clientSecret
-  };
-  if (scope) {
-    data.scope = scope;
-  }
-  const url = requestCopy?.oauth2?.accessTokenUrl;
-  return {
-    data,
-    url
-  };
-};
-
 module.exports = {
   resolveOAuth2AuthorizationCodeAccessToken,
-  getOAuth2AuthorizationCode,
-  transformClientCredentialsRequest,
-  transformPasswordCredentialsRequest
+  getOAuth2AuthorizationCode
 };

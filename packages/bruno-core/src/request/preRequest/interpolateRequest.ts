@@ -34,12 +34,22 @@ function interpolateBrunoConfigOptions(context: RequestContext, i: Interpolation
 function interpolateRequestItem(context: RequestContext, i: InterpolationShorthandFunction) {
   const request = context.requestItem.request;
 
-  request.url = i(request.url, 'Request url');
+  let pos = 0;
+  for (const header of request.headers) {
+    pos++;
+    header.name = i(header.name, `Header name #${pos}`);
+    header.value = i(header.value, `Header value #${pos}`);
+  }
 
+  request.url = i(request.url, 'Request url');
   let urlParsed;
   try {
     urlParsed = new URL(context.requestItem.request.url);
   } catch (error) {
+    if (context.requestItem.request.url.trim().length === 0) {
+      // Ignore empty urls. This is probably a OAuth2 request.
+      return;
+    }
     throw new Error(`Could not parse your URL "${context.requestItem.request.url}": "${error}"`);
   }
   const urlPathname = urlParsed.pathname
@@ -57,13 +67,6 @@ function interpolateRequestItem(context: RequestContext, i: InterpolationShortha
     .join('/');
   urlParsed.pathname = urlPathname;
   request.url = urlParsed.href;
-
-  let pos = 0;
-  for (const header of request.headers) {
-    pos++;
-    header.name = i(header.name, `Header name #${pos}`);
-    header.value = i(header.value, `Header value #${pos}`);
-  }
 }
 
 function interpolateAuth(context: RequestContext, i: InterpolationShorthandFunction) {
@@ -100,6 +103,34 @@ function interpolateAuth(context: RequestContext, i: InterpolationShorthandFunct
       auth.awsv4.sessionToken = i(auth.awsv4.sessionToken, 'AWS auth SessionToken');
       auth.awsv4.secretAccessKey = i(auth.awsv4.secretAccessKey, 'AWS auth SecretAccessKey');
       break;
+    case 'oauth2':
+      switch (auth.oauth2.grantType) {
+        case 'authorization_code':
+          auth.oauth2.accessTokenUrl = i(auth.oauth2.accessTokenUrl, 'OAuth2 Access Token Url');
+          auth.oauth2.authorizationUrl = i(auth.oauth2.authorizationUrl, 'OAuth2 Authorization Url');
+          auth.oauth2.callbackUrl = i(auth.oauth2.callbackUrl, 'OAuth2 Callback Url');
+          auth.oauth2.clientId = i(auth.oauth2.clientId, 'OAuth2 Client Id');
+          auth.oauth2.clientSecret = i(auth.oauth2.clientSecret, 'OAuth2 Client secret');
+          auth.oauth2.scope = i(auth.oauth2.scope, 'OAuth2 Scope');
+          auth.oauth2.state = i(auth.oauth2.state, 'OAuth2 State');
+          break;
+        case 'client_credentials':
+          auth.oauth2.accessTokenUrl = i(auth.oauth2.accessTokenUrl, 'OAuth2 Access Token Url');
+          auth.oauth2.clientId = i(auth.oauth2.clientId, 'OAuth2 Client Id');
+          auth.oauth2.clientSecret = i(auth.oauth2.clientSecret, 'OAuth2 Client secret');
+          auth.oauth2.password = i(auth.oauth2.password, 'OAuth2 Password');
+          auth.oauth2.username = i(auth.oauth2.username, 'OAuth2 Username');
+          auth.oauth2.scope = i(auth.oauth2.scope, 'OAuth2 Scope');
+          break;
+        case 'password':
+          auth.oauth2.accessTokenUrl = i(auth.oauth2.accessTokenUrl, 'OAuth2 Access Token Url');
+          auth.oauth2.clientId = i(auth.oauth2.clientId, 'OAuth2 Client Id');
+          auth.oauth2.clientSecret = i(auth.oauth2.clientSecret, 'OAuth2 Client Secret');
+          auth.oauth2.password = i(auth.oauth2.password, 'OAuth2 Password');
+          auth.oauth2.username = i(auth.oauth2.username, 'OAuth2 Username');
+          auth.oauth2.scope = i(auth.oauth2.scope, 'OAuth2 Scope');
+          break;
+      }
   }
 }
 
