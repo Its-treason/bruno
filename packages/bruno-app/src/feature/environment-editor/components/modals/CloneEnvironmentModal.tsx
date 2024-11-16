@@ -16,7 +16,7 @@ import { useStore } from 'zustand';
 
 export const CloneEnvironmentModal: React.FC = () => {
   const { activeModal, setActiveModal, selectedEnvironment, allEnvironments, collection } = useEnvironmentEditor();
-  const copyGlobalEnvironment = useStore(globalEnvironmentStore, (state) => state.copyEnvironment)
+  const copyGlobalEnvironment = useStore(globalEnvironmentStore, (state) => state.copyEnvironment);
   const dispatch = useDispatch();
 
   const cloneEnvironment = useMutation({
@@ -75,7 +75,7 @@ export const CloneEnvironmentModal: React.FC = () => {
           cloneEnvironment.mutate({
             collectionId: collection?.uid,
             name: values.name,
-            oldEnvId: selectedEnvironment.id
+            oldEnvId: selectedEnvironment?.id
           });
         })}
       >
