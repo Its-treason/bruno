@@ -1,5 +1,10 @@
 const bruTypeInfo = `
 /**
+ * Allows for requiring external modules or scripts. Note that modules must be whitelisted before use.
+ */
+declare const require: (module: string) => any;
+
+/**
  * Object with common utility function for Bruno.
  * @see {@link https://docs.usebruno.com/scripting/javascript-reference#bru} Documentation 
  * @see {@link https://github.com/Its-treason/bruno/blob/lazer/packages/bruno-core/src/request/runtime/dataObject/Bru.ts} Source code 
