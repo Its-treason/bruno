@@ -90,7 +90,7 @@ export async function handleAuthorizationCodeInElectron(
   }
 }
 
-export async function clearSession(collectionId: string) {
+export async function clearElectronOAuthSession(collectionId: string) {
   const localSession = session.fromPartition(collectionId);
   await localSession.clearData();
 }

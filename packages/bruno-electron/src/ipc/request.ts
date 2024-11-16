@@ -4,10 +4,13 @@
  */
 import { ipcMain, app } from 'electron';
 import path from 'node:path';
-import { request as executeRequest, FolderItem, request, RequestItem } from '@usebruno/core';
+import { request as executeRequest, FolderItem, RequestItem } from '@usebruno/core';
 import { CollectionSchema, EnvironmentSchema } from '@usebruno/schema';
 import { getIntrospectionQuery } from 'graphql';
-import { handleAuthorizationCodeInElectron } from '../utils/handleAuthorizationCodeInElectron';
+import {
+  clearElectronOAuthSession,
+  handleAuthorizationCodeInElectron
+} from '../utils/handleAuthorizationCodeInElectron';
 const { uuid, safeStringifyJSON } = require('../utils/common');
 const { cookieJar } = require('../utils/cookies');
 const { getPreferences } = require('../store/preferences');
@@ -363,6 +366,85 @@ ipcMain.handle(
     };
   }
 );
+
+ipcMain.handle('send-collection-oauth2-request', async (event, collection, environment, globalVariables) => {
+  const webContents = event.sender;
+  const cancelToken = uuid();
+  const abortController = new AbortController();
+  cancelTokens.set(cancelToken, abortController);
+
+  const request = collection.root.request;
+  if (request?.auth.mode !== 'oauth2') {
+    throw new Error(`Auth mode must be "oauth2", but is actually: ${request?.auth.mode}`);
+  }
+
+  const item: RequestItem = {
+    depth: 0,
+    draft: null,
+    filename: 'collection-oauth2-request',
+    name: 'collection-oauth2-request',
+    pathname: '',
+    seq: 0,
+    type: 'http-request',
+    uid: uuid(),
+    request: {
+      headers: [],
+      auth: { mode: 'inherit' },
+      assertions: [],
+      tests: '',
+      script: { req: '', res: '' },
+      params: [],
+      url: '',
+      body: { mode: 'none' },
+      docs: '',
+      maxRedirects: 25,
+      method: 'GET',
+      timeout: 60_000,
+      vars: { req: [], res: [] }
+    }
+  };
+
+  const res = await executeRequest(
+    item,
+    collection,
+    globalVariables,
+    getPreferences(),
+    cookieJar,
+    responseDataDir,
+    cancelToken,
+    abortController,
+    // @ts-expect-error Defined in `vite.base.config.js`
+    BRUNO_VERSION,
+    'standalone',
+    handleAuthorizationCodeInElectron,
+    environment,
+    {
+      updateScriptEnvironment: (payload) => {
+        webContents.send('main:script-environment-update', payload);
+      },
+      cookieUpdated: (payload) => {
+        webContents.send('main:cookies-update', payload);
+      },
+      requestEvent: (payload) => {
+        webContents.send('main:run-request-event', payload);
+      },
+      consoleLog: (payload) => {
+        webContents.send('main:console-log', payload);
+      }
+    }
+  );
+
+  return {
+    status: res.response?.statusCode,
+    headers: res.response?.headers,
+    size: res.response?.size ?? 0,
+    data: res.responseBody
+  };
+});
+
+ipcMain.handle('clear-oauth2-cache', async (_event, collectionUid) => {
+  await clearElectronOAuthSession(collectionUid);
+});
 
 ipcMain.handle('cancel-http-request', async (_event, cancelTokenUid) => {
   cancelTokens.get(cancelTokenUid)?.abort();

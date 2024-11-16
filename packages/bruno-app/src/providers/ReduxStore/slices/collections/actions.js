@@ -186,11 +186,9 @@ export const sendCollectionOauth2Request = (collectionUid, itemUid) => (dispatch
       return reject(new Error('Collection not found'));
     }
 
-    const collectionCopy = cloneDeep(collection);
+    const environment = findEnvironmentInCollection(collection, collection.activeEnvironmentUid);
 
-    const environment = findEnvironmentInCollection(collectionCopy, collection.activeEnvironmentUid);
-
-    _sendCollectionOauth2Request(collection, environment, collectionCopy.runtimeVariables)
+    _sendCollectionOauth2Request(collection, environment, collection.runtimeVariables)
       .then((response) => {
         if (response?.data?.error) {
           toast.error(response?.data?.error);
