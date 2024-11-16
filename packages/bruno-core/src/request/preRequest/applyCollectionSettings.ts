@@ -44,7 +44,10 @@ function applyGlobalProxy(context: RequestContext) {
   const proxyStatus = context.collection.brunoConfig.proxy?.enabled ?? 'global';
   if (proxyStatus === 'global') {
     context.debug.log('Global proxy config applied', context.preferences.proxy);
-    context.collection.brunoConfig.proxy = context.preferences.proxy;
+    context.collection.brunoConfig.proxy = {
+      ...context.preferences.proxy,
+      enabled: context.preferences.proxy.mode !== 'off'
+    };
   }
 }
 

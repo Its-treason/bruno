@@ -239,7 +239,7 @@ export type Preferences = {
     codeFont: string | null;
   };
   proxy: {
-    enabled: boolean;
+    mode: 'on' | 'off' | 'system';
     protocol: 'http' | 'https' | 'socks4' | 'socks5';
     hostname: string;
     port: number | null;
