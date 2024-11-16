@@ -1,16 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import tasksMiddleware from './middlewares/tasks/middleware';
-import appReducer, { showHomePage } from './slices/app';
+import appReducer from './slices/app';
 import collectionsReducer from './slices/collections';
 import tabsReducer from './slices/tabs';
-import notificationsReducer from './slices/notifications';
 
 export const store = configureStore({
   reducer: {
     app: appReducer,
     collections: collectionsReducer,
-    tabs: tabsReducer,
-    notifications: notificationsReducer
+    tabs: tabsReducer
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({

@@ -9,8 +9,6 @@ const { dotenvToJson } = require('@usebruno/lang');
 const { uuid } = require('../utils/common');
 const { getRequestUid } = require('../cache/requestUids');
 const { decryptString } = require('../utils/encryption');
-const { setDotEnvVars } = require('../store/process-env');
-const { setBrunoConfig } = require('../store/bruno-config');
 const EnvironmentSecretsStore = require('../store/env-secrets');
 
 const environmentSecretsStore = new EnvironmentSecretsStore();
@@ -196,7 +194,12 @@ const add = async (win, pathname, collectionUid, collectionPath) => {
       const content = fs.readFileSync(pathname, 'utf8');
       const brunoConfig = JSON.parse(content);
 
-      setBrunoConfig(collectionUid, brunoConfig);
+      const payload = {
+        collectionUid,
+        brunoConfig: brunoConfig
+      };
+
+      win.webContents.send('main:bruno-config-update', payload);
     } catch (err) {
       console.error(err);
     }
@@ -207,7 +210,6 @@ const add = async (win, pathname, collectionUid, collectionPath) => {
       const content = fs.readFileSync(pathname, 'utf8');
       const jsonData = dotenvToJson(content);
 
-      setDotEnvVars(collectionUid, jsonData);
       const payload = {
         collectionUid,
         processEnvVariables: {
@@ -321,7 +323,6 @@ const change = async (win, pathname, collectionUid, collectionPath) => {
         brunoConfig: brunoConfig
       };
 
-      setBrunoConfig(collectionUid, brunoConfig);
       win.webContents.send('main:bruno-config-update', payload);
     } catch (err) {
       console.error(err);
@@ -333,7 +334,6 @@ const change = async (win, pathname, collectionUid, collectionPath) => {
       const content = fs.readFileSync(pathname, 'utf8');
       const jsonData = dotenvToJson(content);
 
-      setDotEnvVars(collectionUid, jsonData);
       const payload = {
         collectionUid,
         processEnvVariables: {

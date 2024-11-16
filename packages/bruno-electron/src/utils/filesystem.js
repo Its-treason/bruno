@@ -1,17 +1,7 @@
 const path = require('path');
 const fs = require('fs-extra');
-const fsPromises = require('fs/promises');
 const { dialog } = require('electron');
 const isValidPathname = require('is-valid-path');
-
-const exists = async (p) => {
-  try {
-    await fsPromises.access(p);
-    return true;
-  } catch (_) {
-    return false;
-  }
-};
 
 const isSymbolicLink = (filepath) => {
   try {
@@ -164,7 +154,6 @@ const canRenameFile = (newFilePath, oldFilePath) => {
 
 module.exports = {
   isValidPathname,
-  exists,
   isSymbolicLink,
   isFile,
   isDirectory,

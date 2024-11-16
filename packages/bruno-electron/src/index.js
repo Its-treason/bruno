@@ -1,19 +1,16 @@
 const path = require('path');
 const http = require('http');
 const fs = require('fs');
-const { format } = require('url');
 const { BrowserWindow, app, Menu, ipcMain, shell } = require('electron');
 const { setContentSecurityPolicy } = require('electron-util');
 
 const menuTemplate = require('./app/menu-template');
 const { openCollection } = require('./app/collections');
 const LastOpenedCollections = require('./store/last-opened-collections');
-const registerNetworkIpc = require('./ipc/network');
 const registerCollectionsIpc = require('./ipc/collection');
 const registerPreferencesIpc = require('./ipc/preferences');
 const Watcher = require('./app/watcher');
 const { loadWindowState, saveBounds, saveMaximized } = require('./utils/window');
-const registerNotificationsIpc = require('./ipc/notifications');
 const registerEnvironmentsIpc = require('./ipc/environments');
 require('./ipc/zustand-store');
 require('./ipc/request');
@@ -153,10 +150,8 @@ app.on('ready', async () => {
   });
 
   // register all ipc handlers
-  registerNetworkIpc(mainWindow);
   registerCollectionsIpc(mainWindow, watcher, lastOpenedCollections);
   registerPreferencesIpc(mainWindow, watcher, lastOpenedCollections);
-  registerNotificationsIpc(mainWindow, watcher);
   registerEnvironmentsIpc(mainWindow, watcher);
 });
 
