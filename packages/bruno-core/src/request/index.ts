@@ -30,6 +30,7 @@ export async function request(
   abortController: AbortController,
   brunoVersion: string,
   executionMode: 'standalone' | 'runner',
+  fetchAuthorizationCode: Callbacks['fetchAuthorizationCode'],
   environment?: CollectionEnvironment,
   rawCallbacks: Partial<RawCallbacks> = {}
 ) {
@@ -90,7 +91,7 @@ export async function request(
       runtime: collection.runtimeVariables
     },
 
-    callback: new Callbacks(rawCallbacks),
+    callback: new Callbacks(rawCallbacks, fetchAuthorizationCode),
     timings: new Timings(),
     debug: new DebugLogger()
   };

@@ -7,6 +7,7 @@ import path from 'node:path';
 import { request as executeRequest, FolderItem, request, RequestItem } from '@usebruno/core';
 import { CollectionSchema, EnvironmentSchema } from '@usebruno/schema';
 import { getIntrospectionQuery } from 'graphql';
+import { handleAuthorizationCodeInElectron } from '../utils/handleAuthorizationCodeInElectron';
 const { uuid, safeStringifyJSON } = require('../utils/common');
 const { cookieJar } = require('../utils/cookies');
 const { getPreferences } = require('../store/preferences');
@@ -58,6 +59,7 @@ ipcMain.handle('send-http-request', async (event, item, collection, environment,
     // @ts-expect-error Defined in `vite.base.config.js`
     BRUNO_VERSION,
     'standalone',
+    handleAuthorizationCodeInElectron,
     environment,
     {
       updateScriptEnvironment: (payload) => {
@@ -187,6 +189,7 @@ ipcMain.handle(
         // @ts-expect-error Defined in `vite.base.config.js`
         BRUNO_VERSION,
         'runner',
+        handleAuthorizationCodeInElectron,
         environment,
         {
           runFolderEvent: (payload) => {
@@ -325,6 +328,7 @@ ipcMain.handle(
       // @ts-expect-error Defined in `vite.base.config.js`
       BRUNO_VERSION,
       'standalone',
+      handleAuthorizationCodeInElectron,
       environment,
       {
         updateScriptEnvironment: (payload) => {

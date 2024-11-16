@@ -12,7 +12,7 @@ export async function applyOAuth2(context: RequestContext) {
 
   switch (auth.oauth2.grantType) {
     case 'authorization_code':
-      await applyAuthorizationCode(context);
+      await applyAuthorizationCode(context, auth.oauth2);
       break;
     case 'client_credentials':
       await applyClientCredentials(context, auth.oauth2);

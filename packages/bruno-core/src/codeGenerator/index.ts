@@ -23,6 +23,7 @@ export async function generateCode(
   preferences: Preferences,
   cookieJar: CookieJar,
   options: GenerateCodeOptions,
+  fetchAuthorizationCode: Callbacks['fetchAuthorizationCode'],
   environment?: CollectionEnvironment,
   globalVariables: Record<string, unknown> = {}
 ) {
@@ -71,7 +72,7 @@ export async function generateCode(
       runtime: collection.runtimeVariables
     },
 
-    callback: new Callbacks({}),
+    callback: new Callbacks({}, fetchAuthorizationCode),
     timings: new Timings(),
     debug: new DebugLogger()
   };

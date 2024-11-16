@@ -14,7 +14,10 @@ export type RawCallbacks = {
 };
 
 export class Callbacks {
-  constructor(private rawCallbacks: Partial<RawCallbacks>) {}
+  constructor(
+    private rawCallbacks: Partial<RawCallbacks>,
+    public fetchAuthorizationCode: (authorizeUrl: string, callbackUrl: string, collectionId: string) => Promise<string>
+  ) {}
 
   private send(callbackName: keyof RawCallbacks, context: RequestContext, payload: any) {
     const callback = this.rawCallbacks[callbackName];
