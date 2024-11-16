@@ -28,7 +28,7 @@ export const RenameCollectionModalContent: React.FC<RenameCollectionModalContent
 
   const renameMutation = useMutation({
     mutationFn: async (values: RenameCollectionFormSchema) => {
-      await dispatch(renameCollection(values.name.trim(), collection?.pathname));
+      await dispatch(renameCollection(values.name.trim(), collection?.uid));
     },
     onSuccess: () => {
       toast.success('Renamed collection');
