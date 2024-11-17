@@ -3,7 +3,7 @@ import styled from 'styled-components';
 const StyledWrapper = styled.div`
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: 1.25rem 1fr;
+  grid-template-rows: 1.25rem calc(100% - 1.25rem);
 
   .react-pdf__Page {
     margin-top: 10px;
