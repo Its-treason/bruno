@@ -62,7 +62,7 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
   context.nextRequestName = scriptResult.nextRequestName;
   // The script will use `cleanJson` to remove any weird things before sending to the mainWindow
   // This destroys the references, so we update variables here manually
-  context.variables.collection = scriptResult.runtimeVariables;
+  context.variables.runtime = scriptResult.runtimeVariables;
   context.variables.environment = scriptResult.envVariables;
   context.variables.global = scriptResult.globalVariables;
 }
