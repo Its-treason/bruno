@@ -27,16 +27,16 @@
     "markdown-it": "^13.0.1"
   },
   "peerDependencies": {
-    "react": "19.0.0-rc-5c56b873-20241107",
-    "react-dom": "19.0.0-rc-5c56b873-20241107"
+    "react": "19.0.0-rc-e1ef8c95-20241115",
+    "react-dom": "19.0.0-rc-e1ef8c95-20241115"
   },
   "devDependencies": {
     "@types/markdown-it": "^12.2.3",
     "@types/react": "^18.0.25",
     "graphql": "^16.9.0",
     "markdown-it": "^13.0.1",
-    "react": "19.0.0-rc-5c56b873-20241107",
-    "react-dom": "19.0.0-rc-5c56b873-20241107",
+    "react": "19.0.0-rc-e1ef8c95-20241115",
+    "react-dom": "19.0.0-rc-e1ef8c95-20241115",
     "rimraf": "^5.0.5",
     "vite": "^5.4.3",
     "vite-plugin-dts": "^3.7.3",

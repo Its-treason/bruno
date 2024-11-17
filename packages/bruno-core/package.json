@@ -20,7 +20,7 @@
     "@usebruno/common": "workspace:*",
     "@usebruno/schema": "workspace:*",
     "@usebruno/query": "workspace:*",
-    "@readme/httpsnippet": "^10.0.5",
+    "@readme/httpsnippet": "^11.0.0",
     "chai": "^4.3.7",
     "chai-string": "^1.5.0",
     "decomment": "^0.9.5",
