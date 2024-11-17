@@ -22,48 +22,20 @@ export const parseQueryParams = (query) => {
       return [];
     }
 
-    return Array.from(new URLSearchParams(query.split('#')[0]).entries())
-      .map(([name, value]) => ({ name, value }));
+    return Array.from(new URLSearchParams(query.split('#')[0]).entries()).map(([name, value]) => ({ name, value }));
   } catch (error) {
     console.error('Error parsing query params:', error);
     return [];
   }
 };
 
+const pathParamRegex = /\/:([^/]+)/g;
 export const parsePathParams = (url) => {
-  let uri = url.slice();
+  const matches = [...url.matchAll(pathParamRegex)];
+  const pathParams = matches.map((match) => match[1]);
 
-  if (!uri || !uri.length) {
-    return [];
-  }
-
-  if (!uri.startsWith('http://') && !uri.startsWith('https://')) {
-    uri = `http://${uri}`;
-  }
-
-  try {
-    uri = new URL(uri);
-  } catch (e) {
-    // URL is non-parsable, is it incomplete? Ignore.
-    return [];
-  }
-
-  let paths = uri.pathname.split('/');
-
-  paths = paths.reduce((acc, path) => {
-    if (path !== '' && path[0] === ':') {
-      let name = path.slice(1, path.length);
-      if (name) {
-        let isExist = find(acc, (path) => path.name === name);
-        if (!isExist) {
-          acc.push({ name: path.slice(1, path.length), value: '' });
-        }
-      }
-    }
-    return acc;
-  }, []);
-
-  return paths;
+  // Remove duplicates with the Set
+  return Array.from(new Set(pathParams)).map((name) => ({ name, value: '' }));
 };
 
 export const stringifyQueryParams = (params) => {
