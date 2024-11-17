@@ -56,7 +56,8 @@ app.on('ready', async () => {
     webPreferences: {
       nodeIntegration: true,
       preload: path.join(__dirname, 'preload.js'),
-      webviewTag: true
+      webviewTag: true,
+      spellcheck: false
     },
     title: 'Bruno lazer',
     icon: path.join(__dirname, 'about/256x256.png'),
