@@ -182,7 +182,16 @@ function createCustomRequire(scriptingConfig: BrunoConfig['scripts'], collection
     // Remove the "node:" prefix, to make sure "node:fs" and "fs" can be required, and we only need to whitelist one
     if (whitelistedModules.includes(moduleName.replace(/^node:/, ''))) {
       try {
-        return dynamicRequire(moduleName);
+        switch (moduleName) {
+          case 'node-fetch':
+            return fetch;
+          case 'atob':
+            return atob;
+          case 'btoa':
+            return btoa;
+          default:
+            return dynamicRequire(moduleName);
+        }
       } catch {
         // This can happen, if it s module installed by the user under additionalContextRoots
         // So now we check if the user installed it themselves
