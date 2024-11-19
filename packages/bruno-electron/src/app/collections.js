@@ -1,9 +1,10 @@
 const fs = require('fs');
 const path = require('path');
-const { dialog, ipcMain } = require('electron');
+const { dialog, ipcMain, WebContentsView, BrowserWindow } = require('electron');
 const Yup = require('yup');
 const { isDirectory, normalizeAndResolvePath } = require('../utils/filesystem');
 const { generateUidBasedOnHash } = require('../utils/common');
+const Watcher = require('./watcher');
 
 // todo: bruno.json config schema validation errors must be propagated to the UI
 const configSchema = Yup.object({
@@ -41,7 +42,7 @@ const getCollectionConfigFile = async (pathname) => {
   return config;
 };
 
-const openCollectionDialog = async (win, watcher) => {
+const openCollectionDialog = async (win) => {
   const { filePaths } = await dialog.showOpenDialog(win, {
     properties: ['openDirectory', 'createDirectory']
   });
@@ -49,43 +50,51 @@ const openCollectionDialog = async (win, watcher) => {
   if (filePaths && filePaths[0]) {
     const resolvedPath = normalizeAndResolvePath(filePaths[0]);
     if (isDirectory(resolvedPath)) {
-      openCollection(win, watcher, resolvedPath);
+      openCollection(resolvedPath);
     } else {
       console.error(`[ERROR] Cannot open unknown folder: "${resolvedPath}"`);
     }
   }
 };
 
-const openCollection = async (win, watcher, collectionPath, init = false) => {
+const openCollection = async (collectionPath, init = false) => {
+  const watcher = Watcher.getInstance();
   // Re-Add the watcher on init
-  if (init && watcher.hasWatcher(collectionPath)) {
-    watcher.removeWatcher(collectionPath);
+  if (watcher.hasWatcher(collectionPath)) {
+    if (init) {
+      watcher.removeWatcher(collectionPath);
+    } else {
+      BrowserWindow.getAllWindows().forEach((win) => {
+        win.webContents.send('main:collection-already-opened', collectionPath);
+      });
+      return;
+    }
   }
 
-  if (!watcher.hasWatcher(collectionPath)) {
-    try {
-      const brunoConfig = await getCollectionConfigFile(collectionPath);
-      const uid = generateUidBasedOnHash(collectionPath);
+  try {
+    const brunoConfig = await getCollectionConfigFile(collectionPath);
+    const uid = generateUidBasedOnHash(collectionPath);
 
-      if (!brunoConfig.ignore || brunoConfig.ignore.length === 0) {
-        // 5 Feb 2024:
-        // bruno.json now supports an "ignore" field to specify which folders to ignore
-        // if the ignore field is not present, we default to ignoring node_modules and .git
-        // this is to maintain backwards compatibility with older collections
-        brunoConfig.ignore = ['node_modules', '.git'];
-      }
+    if (!brunoConfig.ignore || brunoConfig.ignore.length === 0) {
+      // 5 Feb 2024:
+      // bruno.json now supports an "ignore" field to specify which folders to ignore
+      // if the ignore field is not present, we default to ignoring node_modules and .git
+      // this is to maintain backwards compatibility with older collections
+      brunoConfig.ignore = ['node_modules', '.git'];
+    }
 
+    BrowserWindow.getAllWindows().forEach((win) => {
       win.webContents.send('main:collection-opened', collectionPath, uid, brunoConfig);
       ipcMain.emit('main:collection-opened', win, collectionPath, uid, brunoConfig);
-    } catch (err) {
-      if (!init) {
+    });
+  } catch (err) {
+    if (!init && win) {
+      BrowserWindow.getAllWindows().forEach((win) => {
         win.webContents.send('main:display-error', {
           error: err.message || 'An error occurred while opening the local collection'
         });
-      }
+      });
     }
-  } else {
-    win.webContents.send('main:collection-already-opened', collectionPath);
   }
 };
 

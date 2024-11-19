@@ -3,6 +3,14 @@ const Store = require('electron-store');
 const { isDirectory } = require('../utils/filesystem');
 
 class LastOpenedCollections {
+  static lastOpened;
+  static getInstance() {
+    if (!LastOpenedCollections.lastOpened) {
+      LastOpenedCollections.lastOpened = new LastOpenedCollections();
+    }
+    return LastOpenedCollections.lastOpened;
+  }
+
   constructor() {
     this.store = new Store({
       name: 'preferences',

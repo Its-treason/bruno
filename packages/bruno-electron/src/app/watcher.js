@@ -454,6 +454,20 @@ const unlinkDir = (win, pathname, collectionUid, collectionPath) => {
 };
 
 class Watcher {
+  /**
+   * @private
+   */
+  static watcher;
+  static getInstance() {
+    if (!Watcher.watcher) {
+      Watcher.watcher = new Watcher();
+    }
+    return Watcher.watcher;
+  }
+
+  /**
+   * @private
+   */
   constructor() {
     this.watchers = {};
   }
@@ -523,11 +537,18 @@ class Watcher {
     return this.watchers[watchPath];
   }
 
-  removeWatcher(watchPath, win) {
+  removeWatcher(watchPath) {
     if (this.watchers[watchPath]) {
       this.watchers[watchPath].close();
       this.watchers[watchPath] = null;
     }
+  }
+
+  removeAllWatcher() {
+    for (const watcher of this.watchers) {
+      watcher?.close();
+    }
+    this.watchers = {};
   }
 }
 

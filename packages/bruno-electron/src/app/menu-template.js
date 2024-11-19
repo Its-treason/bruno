@@ -37,7 +37,7 @@ const template = [
       {
         label: 'Force Quit',
         click() {
-          process.exit();
+          app.quit();
         }
       }
     ]

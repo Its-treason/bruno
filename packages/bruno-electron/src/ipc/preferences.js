@@ -1,41 +1,35 @@
-const { ipcMain } = require('electron');
+const { ipcMain, BrowserWindow } = require('electron');
 const { getPreferences, savePreferences, preferencesUtil } = require('../store/preferences');
 const { isDirectory } = require('../utils/filesystem');
 const { openCollection } = require('../app/collections');
-``;
-const registerPreferencesIpc = (mainWindow, watcher, lastOpenedCollections) => {
-  ipcMain.handle('renderer:ready', async (event) => {
-    // load preferences
-    const preferences = getPreferences();
-    mainWindow.webContents.send('main:load-preferences', preferences);
+const LastOpenedCollection = require('../store/last-opened-collections');
 
-    const systemProxyVars = preferencesUtil.getSystemProxyEnvVariables();
-    const { http_proxy, https_proxy, no_proxy } = systemProxyVars || {};
-    mainWindow.webContents.send('main:load-system-proxy-env', { http_proxy, https_proxy, no_proxy });
+ipcMain.handle('renderer:ready', async (event) => {
+  // load preferences
+  const preferences = getPreferences();
 
-    // reload last opened collections
-    const lastOpened = lastOpenedCollections.getAll();
+  const mainWindow = BrowserWindow.fromWebContents(event.sender);
+  mainWindow.webContents.send('main:load-preferences', preferences);
 
-    if (lastOpened && lastOpened.length) {
-      for (let collectionPath of lastOpened) {
-        if (isDirectory(collectionPath)) {
-          await openCollection(mainWindow, watcher, collectionPath, true);
-        }
-      }
+  const systemProxyVars = preferencesUtil.getSystemProxyEnvVariables();
+  const { http_proxy, https_proxy, no_proxy } = systemProxyVars || {};
+  mainWindow.webContents.send('main:load-system-proxy-env', { http_proxy, https_proxy, no_proxy });
+
+  // reload last opened collections
+  const lastOpenedCollections = LastOpenedCollection.getInstance();
+  const lastOpened = lastOpenedCollections.getAll();
+
+  for (const collectionPath of lastOpened) {
+    if (isDirectory(collectionPath)) {
+      await openCollection(collectionPath, true);
     }
-  });
+  }
+});
 
-  ipcMain.on('main:open-preferences', () => {
-    mainWindow.webContents.send('main:open-preferences');
-  });
+ipcMain.on('main:open-preferences', () => {
+  mainWindow.webContents.send('main:open-preferences');
+});
 
-  ipcMain.handle('renderer:save-preferences', async (event, preferences) => {
-    try {
-      await savePreferences(preferences);
-    } catch (error) {
-      return Promise.reject(error);
-    }
-  });
-};
-
-module.exports = registerPreferencesIpc;
+ipcMain.handle('renderer:save-preferences', async (_event, preferences) => {
+  await savePreferences(preferences);
+});
