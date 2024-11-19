@@ -9,7 +9,7 @@ export async function tests(context: RequestContext, folderData: FolderData[]) {
   const requestPostRequestScript = context.requestItem.request.tests ?? '';
 
   const postRequestScript =
-    context.collection.brunoConfig.scripts.flow === 'sequential'
+    context.collection.brunoConfig.scripts?.flow === 'sequential'
       ? [collectionPostRequestScript, ...folderLevelTests, requestPostRequestScript].join(EOL)
       : [requestPostRequestScript, ...folderLevelTests.reverse(), collectionPostRequestScript].join(EOL);
 

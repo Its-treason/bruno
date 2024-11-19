@@ -2,7 +2,6 @@ import { RequestContext } from '../types';
 import { runScript } from '../runtime/script-runner';
 import { EOL } from 'node:os';
 import { FolderData } from '../preRequest/collectFolderData';
-import { VarsRuntime } from '../runtime/vars-runtime';
 
 export async function postRequestScript(context: RequestContext, folderData: FolderData[]) {
   const collectionPostRequestScript = context.collection.root?.request?.script?.res ?? '';
@@ -10,7 +9,7 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
   const requestPostRequestScript = context.requestItem.request.script.res ?? '';
 
   const postRequestScript =
-    context.collection.brunoConfig.scripts.flow === 'sequential'
+    context.collection.brunoConfig.scripts?.flow === 'sequential'
       ? [collectionPostRequestScript, ...folderLevelScripts, requestPostRequestScript].join(EOL)
       : [requestPostRequestScript, ...folderLevelScripts.reverse(), collectionPostRequestScript].join(EOL);
 
