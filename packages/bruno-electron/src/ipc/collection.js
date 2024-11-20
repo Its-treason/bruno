@@ -34,6 +34,7 @@ const { getPreferences } = require('../store/preferences');
 const { getRequestFromCurlCommand } = require('../utils/curl');
 const Watcher = require('../app/watcher');
 const LastOpenedCollection = require('../store/last-opened-collections');
+const { handleAuthorizationCodeInElectron } = require('../utils/handleAuthorizationCodeInElectron');
 
 const environmentSecretsStore = new EnvironmentSecretsStore();
 
@@ -754,7 +755,16 @@ ipcMain.handle('renderer:delete-cookies-for-domain', async (event, domain) => {
 });
 
 ipcMain.handle('renderer:generate-code', async (event, item, collection, environment, globalVariables, options) => {
-  return await generateCode(item, collection, getPreferences(), cookieJar, options, environment, globalVariables);
+  return await generateCode(
+    item,
+    collection,
+    getPreferences(),
+    cookieJar,
+    options,
+    handleAuthorizationCodeInElectron,
+    environment,
+    globalVariables
+  );
 });
 
 ipcMain.handle('renderer:curl-to-request', async (event, curlString) => {
