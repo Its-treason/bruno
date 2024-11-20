@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Alert, Button, Group, Radio, TextInput, Textarea, rem } from '@mantine/core';
+import { Alert, Button, Group, Radio, Stack, Switch, TextInput, Textarea, rem } from '@mantine/core';
 import { useForm, zodResolver } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
@@ -15,16 +15,18 @@ import { MethodSelector } from 'src/feature/request-url-bar';
 import { useEffect } from 'react';
 import CodeEditor from 'components/CodeEditor';
 
-const newRequestFormSchema = z.discriminatedUnion('type', [
+const newRequestFormSchema = z.discriminatedUnion('curlImport', [
   z.object({
+    curlImport: z.literal(false),
     type: z.enum(['http-request', 'graphql-request']),
     name: z.string().trim().min(1, 'Name is required').max(255),
     method: z.string().min(1),
     url: z.string()
   }),
   z.object({
-    type: z.literal('from-curl'),
+    curlImport: z.literal(true),
     name: z.string().trim().min(1, 'Name is required').max(255),
+    type: z.enum(['http-request', 'graphql-request']),
     curlCommand: z.string().min(1, 'Curl command is required')
   })
 ]);
@@ -47,41 +49,50 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
 
   const newRequestMutation = useMutation({
     mutationFn: async (values: NewFolderFormSchema) => {
-      switch (values.type) {
-        case 'from-curl':
-          const request = await window.ipcRenderer.invoke('renderer:curl-to-request', values.curlCommand);
-          if (!request) {
-            throw new Error('Could not generate request from cURL');
+      if (values.curlImport) {
+        const request = await window.ipcRenderer.invoke('renderer:curl-to-request', values.curlCommand);
+        if (!request) {
+          throw new Error('Could not generate request from cURL');
+        }
+
+        // Graphql will be parsed as json by default. So it must be converted here.
+        // TODO: this should be handled in renderer:curl-to-request
+        if (values.type === 'graphql-request' && request.body.mode === 'json') {
+          const graphql = JSON.parse(request.body.json);
+          if (typeof graphql.variables !== 'string') {
+            graphql.variables = JSON.stringify(graphql.variables);
           }
-          dispatch(
-            newHttpRequest({
-              requestName: values.name.trim(),
-              requestType: 'http-request',
-              requestUrl: request.url,
-              requestMethod: request.method,
-              collectionUid,
-              itemUid,
-              headers: request.headers,
-              body: request.body
-            })
-          );
-          return;
-        case 'http-request':
-        case 'graphql-request':
-          await dispatch(
-            newHttpRequest({
-              requestName: values.name.trim(),
-              requestType: values.type,
-              requestUrl: values.url,
-              requestMethod: values.method,
-              collectionUid,
-              itemUid
-            })
-          );
-          return;
-        default:
-          // @ts-expect-error
-          throw new Error(`Unknown request type: "${values.type}"`);
+
+          request.body = {
+            mode: 'graphql',
+            graphql
+          };
+        }
+
+        dispatch(
+          newHttpRequest({
+            requestName: values.name.trim(),
+            requestType: values.type,
+            requestUrl: request.url,
+            requestMethod: request.method,
+            collectionUid,
+            itemUid,
+            headers: request.headers,
+            body: request.body
+          })
+        );
+        return;
+      } else if (values.curlImport === false) {
+        await dispatch(
+          newHttpRequest({
+            requestName: values.name.trim(),
+            requestType: values.type,
+            requestUrl: values.url,
+            requestMethod: values.method,
+            collectionUid,
+            itemUid
+          })
+        );
       }
     },
     onSuccess: () => {
@@ -93,6 +104,7 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
   const newRequestForm = useForm<NewFolderFormSchema>({
     validate: zodResolver(newRequestFormSchema),
     initialValues: {
+      curlImport: false,
       name: '',
       method: 'GET',
       type: brunoConfig?.presets?.requestType === 'graphql' ? 'graphql-request' : 'http-request',
@@ -101,6 +113,7 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
   });
   useEffect(() => {
     newRequestForm.setInitialValues({
+      curlImport: false,
       name: '',
       method: brunoConfig?.presets?.requestMethod ?? 'GET',
       type: brunoConfig?.presets?.requestType === 'graphql' ? 'graphql-request' : 'http-request',
@@ -123,15 +136,21 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
         data-autofocus
       />
 
+      <Switch
+        label="Import curl command"
+        {...newRequestForm.getInputProps('curlImport')}
+        mt={'md'}
+        defaultChecked={false}
+      />
+
       <Radio.Group {...newRequestForm.getInputProps('type')} label={'Request type'} mt={'md'}>
         <Group mt={'xs'} mb={'md'}>
           <Radio value={'http-request'} label={'Http'} />
           <Radio value={'graphql-request'} label={'GraphQL'} />
-          <Radio value={'from-curl'} label={'From cURL'} />
         </Group>
       </Radio.Group>
 
-      {newRequestForm.values.type === 'from-curl' ? (
+      {newRequestForm.values.curlImport ? (
         <Textarea
           {...newRequestForm.getInputProps('curlCommand')}
           key={newRequestForm.key('curlCommand')}
@@ -140,7 +159,12 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
           resize={'vertical'}
           minRows={4}
           maxRows={8}
-          onPaste={(evt) => {}}
+          onPaste={(evt) => {
+            const pastedUrl = evt.currentTarget.value.toLowerCase();
+            if (pastedUrl.includes('/graphql') || pastedUrl.includes('application/graphql')) {
+              newRequestForm.setFieldValue('requestType', 'graphql-request');
+            }
+          }}
         />
       ) : (
         <Group gap={'xs'} grow preventGrowOverflow={false}>
