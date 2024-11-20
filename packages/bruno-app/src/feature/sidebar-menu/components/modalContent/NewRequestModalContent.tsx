@@ -13,6 +13,7 @@ import { BrunoConfigSchema } from '@usebruno/schema';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { MethodSelector } from 'src/feature/request-url-bar';
 import { useEffect } from 'react';
+import CodeEditor from 'components/CodeEditor';
 
 const newRequestFormSchema = z.discriminatedUnion('type', [
   z.object({
@@ -139,15 +140,12 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
           resize={'vertical'}
           minRows={4}
           maxRows={8}
+          onPaste={(evt) => {}}
         />
       ) : (
         <Group gap={'xs'} grow preventGrowOverflow={false}>
-          <MethodSelector {...newRequestForm.getInputProps('method')} label={'Method'} withBorder maw={rem(125)} />
-          <TextInput
-            {...newRequestForm.getInputProps('url')}
-            label={'Url'}
-            placeholder="https://example.com/hello-world?foo=bar"
-          />
+          <MethodSelector {...newRequestForm.getInputProps('method')} label={'Method'} withBorder maw={rem(110)} />
+          <CodeEditor label="Url" singleLine asInput withVariables {...newRequestForm.getInputProps('url')} />
         </Group>
       )}
 
