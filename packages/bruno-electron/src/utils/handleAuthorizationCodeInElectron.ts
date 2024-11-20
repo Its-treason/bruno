@@ -2,8 +2,18 @@
  * This file is part of bruno-electron.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { BrowserWindow, session } from 'electron';
+import { BrowserWindow, Menu, session } from 'electron';
 const { preferencesUtil } = require('../store/preferences');
+
+const oAuthMenu = Menu.buildFromTemplate([
+  {
+    label: 'File',
+    submenu: [{ role: 'close' }]
+  },
+  { role: 'editMenu' },
+  { role: 'viewMenu' },
+  { role: 'windowMenu' }
+]);
 
 export async function handleAuthorizationCodeInElectron(
   authorizeUrl: string,
@@ -18,6 +28,8 @@ export async function handleAuthorizationCodeInElectron(
     center: true
   });
   window.on('ready-to-show', () => window.show());
+
+  window.setMenu(oAuthMenu);
 
   // Ignore invalid ssl certificates based on the app setting. See: https://github.com/usebruno/bruno/issues/1684
   window.webContents.on('certificate-error', (event, _url, _error, _certificate, callback) => {
