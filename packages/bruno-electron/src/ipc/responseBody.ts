@@ -59,7 +59,16 @@ protocol.registerSchemesAsPrivileged([
 ]);
 app.once('ready', () => {
   protocol.handle('response-body', async (req) => {
-    const requestId = req.url.replace('response-body:', '').replaceAll('/', '');
+    const url = new URL(req.url);
+    const requestId = url.host;
+
+    // Ensure the request id only contains words and digits but no dots or something
+    if (/^[\w\d]+$/.test(requestId) === false) {
+      return new globalThis.Response('Invalid request id', {
+        status: 400
+      });
+    }
+
     const responsePath = path.join(app.getPath('userData'), 'responseCache', requestId);
 
     // return net.fetch(pathToFileURL(responsePath).toString())
