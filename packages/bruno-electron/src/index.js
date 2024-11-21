@@ -13,7 +13,7 @@ require('./ipc/responseBody');
 
 // Reference: https://content-security-policy.com/
 const contentSecurityPolicy = [
-  "default-src 'self'",
+  "default-src 'self' response-body:",
   "script-src * 'self' blob: 'unsafe-inline' 'unsafe-eval'",
   "connect-src * 'unsafe-inline'",
   "font-src 'self' https:",
@@ -21,8 +21,8 @@ const contentSecurityPolicy = [
   // "form-action 'none'",
   // we make an exception and allow http for images so that
   // they can be used as link in the embedded markdown editors
-  "img-src 'self' blob: data: http: https:",
-  "media-src 'self' blob: data: https:",
+  "img-src 'self' blob: data: http: https: response-body:",
+  "media-src 'self' blob: data: https: response-body:",
   "style-src 'self' 'unsafe-inline' https:"
 ];
 setContentSecurityPolicy(contentSecurityPolicy.join(';') + ';');

@@ -1,6 +1,6 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { ipcMain, app, BrowserWindow } from 'electron';
+import { ipcMain, app, BrowserWindow, protocol } from 'electron';
 import { parse, LosslessNumber } from 'lossless-json';
 import contentDispositionParser from 'content-disposition';
 import mimeTypes from 'mime-types';
@@ -44,6 +44,33 @@ ipcMain.handle('renderer:get-response-body', async (_event, requestId) => {
   }
 
   return { data, dataBuffer: rawData.toString('base64') };
+});
+
+protocol.registerSchemesAsPrivileged([
+  {
+    scheme: 'response-body',
+    privileges: {
+      standard: true,
+      secure: true,
+      supportFetchAPI: true,
+      stream: true
+    }
+  }
+]);
+app.once('ready', () => {
+  protocol.handle('response-body', async (req) => {
+    const requestId = req.url.replace('response-body:', '').replaceAll('/', '');
+    const responsePath = path.join(app.getPath('userData'), 'responseCache', requestId);
+
+    // return net.fetch(pathToFileURL(responsePath).toString())
+    const data = await fs.readFile(responsePath);
+    return new globalThis.Response(data, {
+      status: 200,
+      headers: {
+        'Content-Type': 'application/octet-stream'
+      }
+    });
+  });
 });
 //#endregion
 

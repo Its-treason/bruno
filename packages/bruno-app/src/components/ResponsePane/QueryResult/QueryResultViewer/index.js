@@ -35,6 +35,9 @@ const QueryResultPreview = ({
   };
 
   switch (previewTab) {
+    case 'pretty': {
+      return <CodeEditor onRun={onRun} value={formattedData} mode={mode} height={'100%'} readOnly />;
+    }
     case 'preview-web': {
       const webViewSrc = data.replace('<head>', `<head><base href="${item.requestSent?.url || ''}">`);
       return (
@@ -45,24 +48,17 @@ const QueryResultPreview = ({
         />
       );
     }
-    case 'preview-image': {
-      return <img src={`data:${contentType.replace(/\;(.*)/, '')};base64,${dataBuffer}`} className="mx-auto" />;
-    }
     case 'preview-pdf': {
       return <PdfResultViewer dataBuffer={dataBuffer} />;
     }
-    case 'pretty': {
-      return <CodeEditor onRun={onRun} value={formattedData} mode={mode} height={'100%'} readOnly />;
+    case 'preview-image': {
+      return <img src={`response-body://${item.uid}`} className="mx-auto" />;
     }
     case 'preview-audio': {
-      return (
-        <audio controls src={`data:${contentType.replace(/\;(.*)/, '')};base64,${dataBuffer}`} className="mx-auto" />
-      );
+      return <audio controls src={`response-body://${item.uid}`} className="mx-auto" />;
     }
     case 'preview-video': {
-      return (
-        <video controls src={`data:${contentType.replace(/\;(.*)/, '')};base64,${dataBuffer}`} className="mx-auto" />
-      );
+      return <video controls src={`response-body://${item.uid}`} className="mx-auto" onErrorCapture={console.error} />;
     }
     case 'error': {
       return <QueryResultError error={error} />;
