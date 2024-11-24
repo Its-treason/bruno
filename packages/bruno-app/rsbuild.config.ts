@@ -14,7 +14,7 @@ cpSync(resolve(__dirname, '../../node_modules/monaco-editor/min/vs'), resolve(__
 // Copy chai types, for use in initMonaco.ts
 const chaiTypes = readFileSync(resolve(__dirname, '../../node_modules/@types/chai/index.d.ts'), 'utf-8');
 const globalType = `
-declare const test: (name: string, fn: () => Promise<any>) => void;
+declare const test: (name: string, fn: () => any) => void;
 declare const expect: Chai.ExpectStatic;
 declare const assert: Chai.Assert;
 `;
