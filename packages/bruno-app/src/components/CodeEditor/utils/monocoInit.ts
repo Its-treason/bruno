@@ -348,10 +348,10 @@ export const initMonaco = (monaco: Monaco) => {
   // javascript is solely used for the query editor
   // Reference for all codes: https://raw.githubusercontent.com/microsoft/TypeScript/refs/tags/v5.6.2/src/compiler/diagnosticMessages.json
   monaco.languages.typescript.javascriptDefaults.setDiagnosticsOptions({
-    diagnosticCodesToIgnore: [1109, 2580, 2451, 80005, 1375, 1378]
+    diagnosticCodesToIgnore: [1109, 2580, 2451, 80005, 1375, 1378, 1108]
   });
   monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
-    diagnosticCodesToIgnore: [80005, 1375, 1378]
+    diagnosticCodesToIgnore: [80005, 1375, 1378, 1108]
   });
 
   monaco.languages.json.jsonDefaults.setDiagnosticsOptions({
