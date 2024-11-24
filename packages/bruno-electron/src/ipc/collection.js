@@ -1,5 +1,6 @@
 const _ = require('lodash');
 const fs = require('fs');
+const fsPromises = require('fs/promises');
 const path = require('path');
 const { ipcMain, shell, dialog, app, BrowserWindow } = require('electron');
 const {
@@ -493,7 +494,11 @@ ipcMain.handle('renderer:rename-item', async (event, oldPathFull, newPath, newNa
         const newBruFilePath = bruFile.replace(oldPathFull, newPathFull);
         moveRequestUid(bruFile, newBruFilePath);
       }
-      return fs.renameSync(oldPathFull, newPathFull);
+
+      // Rename directory by moving it around because of https://github.com/paulmillr/chokidar/issues/1031
+      await fsPromises.cp(oldPathFull, newPathFull, { recursive: true });
+      await fsPromises.rm(oldPathFull, { recursive: true });
+      return;
     }
 
     const isBru = hasBruExtension(oldPathFull);
