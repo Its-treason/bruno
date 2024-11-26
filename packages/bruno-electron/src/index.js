@@ -15,7 +15,7 @@ require('./ipc/responseBody');
 const contentSecurityPolicy = [
   "default-src 'self' response-body:",
   "script-src * 'self' blob: 'unsafe-inline' 'unsafe-eval'",
-  "connect-src * 'unsafe-inline'",
+  "connect-src * 'unsafe-inline' response-body:",
   "font-src 'self' https:",
   // this has been commented out to make oauth2 work
   // "form-action 'none'",

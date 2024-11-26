@@ -5,13 +5,13 @@ import { updateResponsePaneTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch } from 'react-redux';
 import Placeholder from 'components/ResponsePane/Placeholder';
 import { ResponseLoadingOverlay as Overlay } from 'components/ResponsePane/Overlay';
-import QueryResult from 'components/ResponsePane/QueryResult';
 import ResponseHeaders from 'components/ResponsePane/ResponseHeaders';
 import { TimelineNew } from 'components/ResponsePane/TimelineNew';
 import Timeline from 'components/ResponsePane/Timeline';
 import { DebugTab } from 'components/ResponsePane/Debug';
 import TestResults from 'components/ResponsePane/TestResults';
 import { ResponseSummary } from './ResponseSummary';
+import { ResponsePaneBody } from 'src/feature/response-pane-body';
 
 type ResponsePane = {
   item: RequestItemSchema;
@@ -32,13 +32,17 @@ export const ResponsePane: React.FC<ResponsePane> = ({ item, collection, activeT
 
     switch (activeTab.responsePaneTab) {
       case 'response':
+        if (isLoading) {
+          return;
+        }
         return (
-          <QueryResult
+          <ResponsePaneBody
             item={item}
             collection={collection}
-            headers={res.headers}
             error={res.error}
-            disableRunEventListener={isLoading}
+            disableRun={isLoading}
+            // @ts-expect-error
+            key={item.requestSentTimestamp}
           />
         );
       case 'headers':

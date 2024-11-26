@@ -41,6 +41,7 @@
     "jsesc": "^3.0.2",
     "lodash": "^4.17.21",
     "mime-types": "^2.1.35",
+    "prettier": "^3.3.3",
     "query-string": "^7.0.1",
     "tough-cookie": "^5.0.0",
     "yargs-parser": "^21.1.1",

@@ -1,11 +1,11 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { ipcMain, app, BrowserWindow, protocol } from 'electron';
+import { ipcMain, app, BrowserWindow, protocol, dialog } from 'electron';
 import { parse, LosslessNumber } from 'lossless-json';
 import contentDispositionParser from 'content-disposition';
 import mimeTypes from 'mime-types';
 import { Response } from '@usebruno/core';
-const { chooseFileToSave } = require('../utils/filesystem');
+import { format } from 'prettier';
 
 //#region Get response body
 async () => {
@@ -70,9 +70,29 @@ app.once('ready', () => {
     }
 
     const responsePath = path.join(app.getPath('userData'), 'responseCache', requestId);
-
-    // return net.fetch(pathToFileURL(responsePath).toString())
     const data = await fs.readFile(responsePath);
+
+    if (url.searchParams.has('format')) {
+      const parser = url.searchParams.get('format')!;
+      let formatted;
+      try {
+        formatted = await format(data.toString('utf-8'), { parser });
+      } catch (error) {
+        return new globalThis.Response(String(error), {
+          status: 400,
+          headers: {
+            'Content-Type': 'text/plain'
+          }
+        });
+      }
+      return new globalThis.Response(formatted, {
+        status: 200,
+        headers: {
+          'Content-Type': 'application/octet-stream'
+        }
+      });
+    }
+
     return new globalThis.Response(data, {
       status: 200,
       headers: {
@@ -118,17 +138,19 @@ function getFileNameBasedOnContentTypeHeader(response: Response): string {
 }
 
 ipcMain.handle('renderer:save-response-to-file', async (event, itemUid: string, response: Response, url: string) => {
-  const fileName =
+  const defaultPath =
     getFileNameFromContentDispositionHeader(response) ||
     getFileNameFromUrlPath(url) ||
     getFileNameBasedOnContentTypeHeader(response);
 
-  const window = BrowserWindow.fromWebContents(event.sender);
-  const targetFilePath = await chooseFileToSave(window, fileName);
+  const window = BrowserWindow.fromWebContents(event.sender)!;
+  const { filePath } = await dialog.showSaveDialog(window, {
+    defaultPath
+  });
 
-  if (targetFilePath) {
+  if (filePath) {
     const responsePath = path.join(app.getPath('userData'), 'responseCache', itemUid);
-    await fs.copyFile(responsePath, targetFilePath);
+    await fs.copyFile(responsePath, filePath);
   }
 });
 //#endregion

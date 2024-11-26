@@ -1,7 +1,6 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import get from 'lodash/get';
 import classnames from 'classnames';
-import QueryResult from 'components/ResponsePane/QueryResult';
 import ResponseHeaders from 'components/ResponsePane/ResponseHeaders';
 import StatusCode from 'components/ResponsePane/StatusCode';
 import ResponseTime from 'components/ResponsePane/ResponseTime';
@@ -12,6 +11,7 @@ import TestResultsLabel from 'components/ResponsePane/TestResultsLabel';
 import StyledWrapper from './StyledWrapper';
 import { DebugTab } from 'components/ResponsePane/Debug';
 import { TimelineNew } from 'components/ResponsePane/TimelineNew';
+import { ResponsePaneBody } from 'src/feature/response-pane-body';
 
 const ResponsePane = ({ rightPaneWidth, item, collection }) => {
   const [selectedTab, setSelectedTab] = useState('response');
@@ -29,12 +29,11 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
     switch (tab) {
       case 'response': {
         return (
-          <QueryResult
+          <ResponsePaneBody
             item={item}
             collection={collection}
             width={rightPaneWidth}
-            disableRunEventListener={true}
-            headers={responseReceived.headers}
+            disableRun={true} // Running request from Runner view does not make sense
             error={error}
             key={item.filename}
           />
