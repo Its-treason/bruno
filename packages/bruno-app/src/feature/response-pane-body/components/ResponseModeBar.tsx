@@ -16,10 +16,11 @@ const prettyModeOptions: { label: string; value: PrettyMode }[] = [
 ];
 
 const previewModeOptions: { label: string; value: PreviewMode }[] = [
-  { label: 'Audio', value: 'audio' },
   { label: 'Web', value: 'html' },
+  { label: 'PDF', value: 'pdf' },
   { label: 'Image', value: 'image' },
-  { label: 'Video', value: 'video' }
+  { label: 'Video', value: 'video' },
+  { label: 'Audio', value: 'audio' }
 ];
 
 type ResponseModeBarProps = {
@@ -34,30 +35,6 @@ export const ResponseModeBar: React.FC<ResponseModeBarProps> = ({ mode, setMode,
 
   return (
     <Group justify="start" gap={'xs'}>
-      <ResponseModeSelector<PreviewMode>
-        active={mode[0] === 'preview'}
-        onSelect={(newMode) => {
-          setMode(['preview', newMode]);
-          setPreviewMode(newMode);
-        }}
-        options={previewModeOptions}
-        selected={previewMode}
-      />
-
-      <ResponseModeSelector<PrettyMode>
-        active={mode[0] === 'pretty'}
-        onSelect={(newMode) => {
-          setMode(['pretty', newMode]);
-          setPrettyMode(newMode);
-        }}
-        options={prettyModeOptions}
-        selected={prettyMode}
-      />
-
-      <Button size="xs" variant={mode[0] === 'raw' ? 'light' : 'default'} onClick={() => setMode(['raw', null])}>
-        Raw
-      </Button>
-
       {hasError ? (
         <Button
           size="xs"
@@ -69,6 +46,30 @@ export const ResponseModeBar: React.FC<ResponseModeBarProps> = ({ mode, setMode,
           Error
         </Button>
       ) : null}
+
+      <Button size="xs" variant={mode[0] === 'raw' ? 'light' : 'default'} onClick={() => setMode(['raw', null])}>
+        Raw
+      </Button>
+
+      <ResponseModeSelector<PrettyMode>
+        active={mode[0] === 'pretty'}
+        onSelect={(newMode) => {
+          setMode(['pretty', newMode]);
+          setPrettyMode(newMode);
+        }}
+        options={prettyModeOptions}
+        selected={prettyMode}
+      />
+
+      <ResponseModeSelector<PreviewMode>
+        active={mode[0] === 'preview'}
+        onSelect={(newMode) => {
+          setMode(['preview', newMode]);
+          setPreviewMode(newMode);
+        }}
+        options={previewModeOptions}
+        selected={previewMode}
+      />
     </Group>
   );
 };

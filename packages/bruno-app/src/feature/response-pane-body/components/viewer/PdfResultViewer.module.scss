@@ -1,0 +1,15 @@
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
+.document {
+  overflow: auto;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.page {
+  background-color: transparent !important;
+  width: min-content;
+}

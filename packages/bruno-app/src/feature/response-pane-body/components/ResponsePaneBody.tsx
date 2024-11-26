@@ -13,6 +13,7 @@ import { HtmlResultViewer } from './viewer/HtmlResultViewer';
 import { ImageResultViewer } from './viewer/ImageResultViewer';
 import { VideoResultViewer } from './viewer/VIdeoResultViewer';
 import { ErrorResultViewer } from './viewer/ErrorResultViewer';
+import { PdfResultViewer } from './viewer/PdfResultViewer';
 
 type ResponsePaneBodyProps = {
   item: RequestItemSchema;
@@ -43,6 +44,8 @@ export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({ item, collec
         return <ImageResultViewer itemId={item.uid} />;
       case 'video':
         return <VideoResultViewer itemId={item.uid} />;
+      case 'pdf':
+        return <PdfResultViewer itemId={item.uid} />;
     }
   }, [mode]);
 

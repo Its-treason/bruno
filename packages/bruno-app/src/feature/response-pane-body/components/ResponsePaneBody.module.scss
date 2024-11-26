@@ -5,5 +5,5 @@
   display: grid;
   gap: var(--mantine-spacing-xs);
   grid-template-columns: 100%;
-  grid-template-rows: 2rem calc(100% - calc(2rem - var(--mantine-spacing-xs)));
+  grid-template-rows: 2rem calc(100% - calc(2rem + var(--mantine-spacing-xs)));
 }

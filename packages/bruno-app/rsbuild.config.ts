@@ -4,7 +4,7 @@ import { pluginBabel } from '@rsbuild/plugin-babel';
 import { pluginStyledComponents } from '@rsbuild/plugin-styled-components';
 import { pluginSass } from '@rsbuild/plugin-sass';
 import { cpSync, readFileSync, writeFileSync } from 'node:fs';
-import { resolve } from 'path';
+import { resolve, dirname, join } from 'path';
 
 // Make the monaco-editor available to public for offline loading
 cpSync(resolve(__dirname, '../../node_modules/monaco-editor/min/vs'), resolve(__dirname, './public/vs'), {
