@@ -4,9 +4,8 @@ import toast from 'react-hot-toast';
 import get from 'lodash/get';
 import { IconDownload } from '@tabler/icons-react';
 
-const ResponseSave = ({ item }) => {
+const ResponseSave = ({ item, size }) => {
   const { ipcRenderer } = window;
-  const size = item.response.size ?? 0;
 
   const saveResponseToFile = () => {
     return new Promise((resolve, reject) => {

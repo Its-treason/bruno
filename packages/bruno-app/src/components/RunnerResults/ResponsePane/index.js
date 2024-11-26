@@ -1,29 +1,19 @@
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 import get from 'lodash/get';
-import classnames from 'classnames';
 import ResponseHeaders from 'components/ResponsePane/ResponseHeaders';
-import StatusCode from 'components/ResponsePane/StatusCode';
-import ResponseTime from 'components/ResponsePane/ResponseTime';
-import ResponseSize from 'components/ResponsePane/ResponseSize';
-import Timeline from 'components/ResponsePane/Timeline';
 import TestResults from 'components/ResponsePane/TestResults';
-import TestResultsLabel from 'components/ResponsePane/TestResultsLabel';
-import StyledWrapper from './StyledWrapper';
 import { DebugTab } from 'components/ResponsePane/Debug';
 import { TimelineNew } from 'components/ResponsePane/TimelineNew';
 import { ResponsePaneBody } from 'src/feature/response-pane-body';
+import { PaneWrapper } from 'src/feature/main-view/components/panes/PaneWrapper';
+import { ResponseSummary } from 'src/feature/main-view/components/panes/response/ResponseSummary';
 
 const ResponsePane = ({ rightPaneWidth, item, collection }) => {
   const [selectedTab, setSelectedTab] = useState('response');
 
-  const { requestSent, responseReceived, testResults, assertionResults, error, isNew, timings, debug, timeline } = item;
+  const { responseReceived, testResults, assertionResults, error, timings, debug, timeline } = item;
 
   const headers = get(item, 'responseReceived.headers', []);
-  const status = get(item, 'responseReceived.status', 0);
-  const size = get(item, 'responseReceived.size', 0);
-  const duration = get(item, 'responseReceived.duration', 0);
-
-  const selectTab = (tab) => setSelectedTab(tab);
 
   const getTabPanel = (tab) => {
     switch (tab) {
@@ -43,19 +33,13 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
         return <ResponseHeaders headers={headers} />;
       }
       case 'timeline': {
-        if (isNew) {
-          return <TimelineNew timeline={timeline} />;
-        }
-        return <Timeline request={requestSent} response={responseReceived} />;
+        return <TimelineNew timeline={timeline} />;
       }
       case 'tests': {
         return <TestResults results={testResults} assertionResults={assertionResults} />;
       }
       case 'debug': {
-        if (isNew) {
-          return <DebugTab debugInfo={debug} timings={timings || {}} />;
-        }
-        return 'Only for new request Method';
+        return <DebugTab debugInfo={debug} timings={timings || {}} />;
       }
       default: {
         return <div>404 | Not found</div>;
@@ -63,39 +47,28 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
     }
   };
 
-  const getTabClassname = (tabName) => {
-    return classnames(`tab select-none ${tabName}`, {
-      active: tabName === selectedTab
-    });
-  };
+  const tabs = useMemo(() => {
+    const headerCount = headers ? Object.entries(headers).length : null;
+
+    return [
+      { value: 'response', label: 'Response' },
+      { value: 'headers', label: <>Headers {headerCount ? <sup>{headerCount}</sup> : null}</> },
+      { value: 'timeline', label: 'Timeline' },
+      { value: 'tests', label: 'Tests' },
+      { value: 'debug', label: 'Debug' }
+    ];
+  }, [item]);
 
   return (
-    <StyledWrapper className="flex flex-col h-full relative">
-      <div className="flex items-center px-3 tabs" role="tablist">
-        <div className={getTabClassname('response')} role="tab" onClick={() => selectTab('response')}>
-          Response
-        </div>
-        <div className={getTabClassname('headers')} role="tab" onClick={() => selectTab('headers')}>
-          Headers
-          {headers?.length > 0 && <sup className="ml-1 font-medium">{headers.length}</sup>}
-        </div>
-        <div className={getTabClassname('timeline')} role="tab" onClick={() => selectTab('timeline')}>
-          Timeline
-        </div>
-        <div className={getTabClassname('tests')} role="tab" onClick={() => selectTab('tests')}>
-          <TestResultsLabel results={testResults} assertionResults={assertionResults} />
-        </div>
-        <div className={getTabClassname('debug')} role="tab" onClick={() => selectTab('debug')}>
-          Debug
-        </div>
-        <div className="flex flex-grow justify-end items-center">
-          <StatusCode status={status} />
-          <ResponseTime duration={duration} />
-          <ResponseSize size={size} />
-        </div>
-      </div>
-      <section className="flex flex-grow mt-5">{getTabPanel(selectedTab)}</section>
-    </StyledWrapper>
+    <PaneWrapper
+      tabs={tabs}
+      activeTab={selectedTab}
+      aboveTabs={<ResponseSummary collection={collection} item={item} response={responseReceived} />}
+      onTabChange={(tab) => {
+        setSelectedTab(tab);
+      }}
+      content={getTabPanel(selectedTab)}
+    />
   );
 };
 

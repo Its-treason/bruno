@@ -267,7 +267,9 @@ export default function RunnerResults({ collection }) {
                 </span>
               </div>
               {/* <div className='px-3 mb-4 font-medium'>{selectedItem.relativePath}</div> */}
-              <ResponsePane item={selectedItem} collection={collection} />
+              <div className="flex-1">
+                <ResponsePane item={selectedItem} collection={collection} />
+              </div>
             </div>
           </div>
         ) : null}

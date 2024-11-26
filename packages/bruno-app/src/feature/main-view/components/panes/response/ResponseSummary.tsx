@@ -20,7 +20,7 @@ export const ResponseSummary: React.FC<ResponseSummaryProps> = ({ response, item
       <ResponseTime duration={response.duration} />
       <ResponseSize size={response.size} />
       <ResponseClear item={item} collection={collection} />
-      <ResponseSave item={item} />
+      <ResponseSave item={item} size={response.size} />
     </Group>
   );
 };

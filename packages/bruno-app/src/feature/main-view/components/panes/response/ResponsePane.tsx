@@ -7,7 +7,6 @@ import Placeholder from 'components/ResponsePane/Placeholder';
 import { ResponseLoadingOverlay as Overlay } from 'components/ResponsePane/Overlay';
 import ResponseHeaders from 'components/ResponsePane/ResponseHeaders';
 import { TimelineNew } from 'components/ResponsePane/TimelineNew';
-import Timeline from 'components/ResponsePane/Timeline';
 import { DebugTab } from 'components/ResponsePane/Debug';
 import TestResults from 'components/ResponsePane/TestResults';
 import { ResponseSummary } from './ResponseSummary';
@@ -48,12 +47,7 @@ export const ResponsePane: React.FC<ResponsePane> = ({ item, collection, activeT
       case 'headers':
         return <ResponseHeaders headers={res.headers} />;
       case 'timeline':
-        return res.isNew ? (
-          <TimelineNew timeline={res.timeline} />
-        ) : (
-          // @ts-expect-error
-          <Timeline request={item.requestSent} response={res} />
-        );
+        return <TimelineNew timeline={res.timeline} />;
       case 'tests':
         // @ts-expect-error
         return <TestResults results={item.testResults} assertionResults={item.assertionResults} />;
