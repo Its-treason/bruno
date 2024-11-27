@@ -67,16 +67,30 @@ async function doExecHttpRequest(info: HttpRequestInfo, options: BrunoRequestOpt
   if (supportHttp2) {
     return makeHttp2Request(info, options, tlsSocket, body);
   }
-  // Create a new socket for the http1 request. Reusing the tlsSocket did cause ssl error when making the https request
-  tlsSocket?.destroy();
+
+  // tlsSocket?.destroy();
+  if (tlsSocket) {
+    console.log('using tls socket');
+    options.agent = new Agent({ socket: tlsSocket });
+  }
 
   return makeHttp1Request(info, options, body);
 }
 
+// The `serverName` must be a hostname not a ip address.
+// `(?!^[\d\.]+$)` -> Negativ lookahead that ensure the string does not only container dots and numbers
+// `^[\w\d\.]+$` -> The string itsself must only contain: letters, number and dots
+// This should cover most cases
+const servernameRegex = /(?!^[\d\.]+$)^[\w\d\.]+$/;
+
 async function checkIfHttp2IsSupported(info: HttpRequestInfo, options: BrunoRequestOptions) {
   const socketPromise = new Promise<TLSSocket>((resolve, reject) => {
+    // Server name is used for SNI (Server Name Indication). And must only be set: if hostname is a name, not a ip
+    const servername = servernameRegex.test(options.hostname) ? options.hostname : undefined;
+
     const tlsSocket = tls.connect({
       host: options.hostname,
+      servername,
       port: options.port ? Number(options.port) : 443,
       rejectUnauthorized: false,
       ALPNProtocols: ['h2', 'http/1.1']
@@ -90,11 +104,12 @@ async function checkIfHttp2IsSupported(info: HttpRequestInfo, options: BrunoRequ
     tlsSocket.on('secureConnect', () => {
       info.sslInfo = collectSslInfo(tlsSocket, options.hostname);
       if (!info.sslInfo.authorized && options.abortOnInvalidSsl) {
-        tlsSocket.destroy(
-          new Error(
-            `${info.sslInfo.authorizationError} (This can be ignore in app preferences: "SSL/TLS Certificate Verification")`
-          )
+        const error = new Error(
+          `${info.sslInfo.authorizationError} (This can be ignore in app preferences: "SSL/TLS Certificate Verification")`
         );
+        tlsSocket.destroy(error);
+        reject(error);
+        return;
       }
       resolve(tlsSocket);
     });
@@ -266,5 +281,6 @@ async function makeHttp2Request(
     await reqPromise;
   } finally {
     session?.destroy();
+    socket.destroy();
   }
 }
