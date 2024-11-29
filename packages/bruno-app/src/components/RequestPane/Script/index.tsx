@@ -3,13 +3,23 @@ import { useDispatch } from 'react-redux';
 import CodeEditor from 'components/CodeEditor';
 import { updateRequestScript, updateResponseScript } from 'providers/ReduxStore/slices/collections';
 import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
-import { Text } from '@mantine/core';
+import { ActionIcon, Group, Text } from '@mantine/core';
 import classes from './Script.module.scss';
+import React, { useState } from 'react';
+import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
+import { IconZoomIn, IconZoomOut } from '@tabler/icons-react';
 
-const Script = ({ item, collection }) => {
+type ScriptProps = {
+  item: RequestItemSchema;
+  collection: CollectionSchema;
+};
+
+export const Script: React.FC<ScriptProps> = ({ item, collection }) => {
   const dispatch = useDispatch();
   const requestScript = item.draft ? get(item, 'draft.request.script.req') : get(item, 'request.script.req');
   const responseScript = item.draft ? get(item, 'draft.request.script.res') : get(item, 'request.script.res');
+
+  const [zoomIn, setZoomIn] = useState<null | 'pre' | 'post'>(null);
 
   const onRequestScriptEdit = (value) => {
     dispatch(
@@ -35,11 +45,18 @@ const Script = ({ item, collection }) => {
   const onSave = () => dispatch(saveRequest(item.uid, collection.uid));
 
   return (
-    <div className={classes.container}>
+    <div className={classes.container} data-pre-zoom-on={zoomIn === 'pre'} data-post-zoom-on={zoomIn === 'post'}>
       <div>
-        <Text size="xs" c={'dimmed'}>
-          Pre Request
-        </Text>
+        <Group justify="space-between">
+          <Text>Pre Request</Text>
+          <ActionIcon
+            variant={'default'}
+            onClick={() => setZoomIn(zoomIn === 'pre' ? null : 'pre')}
+            aria-label={'Increase pre request script size'}
+          >
+            {zoomIn === 'pre' ? <IconZoomOut size={18} stroke={1.5} /> : <IconZoomIn size={18} stroke={1.5} />}
+          </ActionIcon>
+        </Group>
         <CodeEditor
           value={requestScript || ''}
           height={'100%'}
@@ -51,9 +68,16 @@ const Script = ({ item, collection }) => {
         />
       </div>
       <div>
-        <Text size="xs" c={'dimmed'}>
-          Post Request
-        </Text>
+        <Group justify="space-between">
+          <Text>Post Request</Text>
+          <ActionIcon
+            variant={'default'}
+            onClick={() => setZoomIn(zoomIn === 'post' ? null : 'post')}
+            aria-label={'Increase post request script size'}
+          >
+            {zoomIn === 'post' ? <IconZoomOut size={18} stroke={1.5} /> : <IconZoomIn size={18} stroke={1.5} />}
+          </ActionIcon>
+        </Group>
         <CodeEditor
           value={responseScript || ''}
           height={'100%'}
