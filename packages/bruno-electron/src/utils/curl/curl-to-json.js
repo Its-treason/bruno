@@ -41,10 +41,12 @@ function getDataString(request) {
     request.data = request.data.toString();
   }
 
-  const contentType = getContentType(request.headers);
+  const contentType = getContentType(request.headers) ?? '';
 
-  if (contentType && contentType.includes('application/json')) {
-    return { data: request.data.toString() };
+  if (contentType.includes('json')) {
+    return { data: String(request.data) };
+  } else if (contentType.includes('xml')) {
+    return { data: String(request.data) };
   }
 
   const parsedQueryString = querystring.parse(request.data, { sort: false });

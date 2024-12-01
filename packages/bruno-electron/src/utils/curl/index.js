@@ -37,7 +37,7 @@ export const getRequestFromCurlCommand = (curlCommand) => {
       if (contentType.includes('application/json')) {
         body.mode = 'json';
         body.json = parsedBody;
-      } else if (contentType.includes('text/xml')) {
+      } else if (contentType.includes('xml')) {
         body.mode = 'xml';
         body.xml = parsedBody;
       } else if (contentType.includes('application/x-www-form-urlencoded')) {
