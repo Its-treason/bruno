@@ -60,7 +60,7 @@ const bodyContentTypeMap: Record<RequestBody['mode'], string | undefined> = {
   formUrlEncoded: 'application/x-www-form-urlencoded',
   json: 'application/json',
   graphql: 'application/json',
-  xml: 'text/xml',
+  xml: 'application/xml',
   text: 'text/plain',
   sparql: 'application/sparql-query',
   none: undefined
