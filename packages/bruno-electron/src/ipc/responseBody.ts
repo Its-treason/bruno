@@ -1,3 +1,7 @@
+/*
+ * This file is part of bruno-electron.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { ipcMain, app, BrowserWindow, protocol, dialog } from 'electron';
@@ -5,7 +9,7 @@ import { parse, LosslessNumber } from 'lossless-json';
 import contentDispositionParser from 'content-disposition';
 import mimeTypes from 'mime-types';
 import { Response } from '@usebruno/core';
-import { format } from 'prettier';
+import { WorkerManager } from '../worker/manager';
 
 //#region Get response body
 async () => {
@@ -76,7 +80,8 @@ app.once('ready', () => {
       const parser = url.searchParams.get('format')!;
       let formatted;
       try {
-        formatted = await format(data.toString('utf-8'), { parser });
+        const manager = WorkerManager.getInstance();
+        formatted = await manager.format(data.toString('utf-8'), parser);
       } catch (error) {
         return new globalThis.Response(String(error), {
           status: 400,

@@ -7,7 +7,7 @@
   "main": ".vite/build/index.js",
   "author": "Anoop M D <anoop.md1421@gmail.com> (https://helloanoop.com/)",
   "scripts": {
-    "build": "vite build -c vite.main.config.ts && vite build -c vite.preload.config.ts",
+    "build": "vite build -c vite.main.config.ts && vite build -c vite.preload.config.ts && vite build -c vite.worker.config.ts",
     "predev": "pnpm run build",
     "dev": "vite build -c vite.main.config.ts --watch",
     "preelectron": "pnpm run build",
