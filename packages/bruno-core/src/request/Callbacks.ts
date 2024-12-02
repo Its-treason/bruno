@@ -153,7 +153,6 @@ export class Callbacks {
         headers: context.httpRequest!.options.headers,
         data: context.httpRequest!.body ?? undefined
       },
-      isNew: true,
       itemUid: context.requestItem.uid,
       collectionUid: context.collection.uid
     });

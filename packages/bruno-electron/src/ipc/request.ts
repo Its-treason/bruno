@@ -94,7 +94,6 @@ ipcMain.handle('send-http-request', async (event, item, collection, environment,
     headers: res.response?.headers,
     size: res.response?.size ?? 0,
     duration: res.response?.responseTime ?? 0,
-    isNew: true, // TODO: Remove this
     timeline: res.timeline,
     debug: res.debug.getClean(),
     timings: res.timings.getClean(),

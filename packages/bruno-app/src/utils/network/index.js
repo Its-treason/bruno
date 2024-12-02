@@ -28,7 +28,6 @@ export const sendNetworkRequest = async (item, collection, environment) => {
     status: response.status,
     statusText: response.statusText,
     duration: response.duration,
-    isNew: response.isNew ?? false,
     timeline: response.timeline,
     timings: response.timings,
     debug: response.debug,

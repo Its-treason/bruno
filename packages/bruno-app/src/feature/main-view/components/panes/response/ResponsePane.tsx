@@ -52,7 +52,7 @@ export const ResponsePane: React.FC<ResponsePane> = ({ item, collection, activeT
         // @ts-expect-error
         return <TestResults results={item.testResults} assertionResults={item.assertionResults} />;
       case 'debug':
-        return res.isNew ? <DebugTab debugInfo={res.debug} timings={res.timings} /> : 'Only with new Request method';
+        return <DebugTab debugInfo={res.debug} timings={res.timings} />;
     }
   }, [activeTab.responsePaneTab, item]);
 
