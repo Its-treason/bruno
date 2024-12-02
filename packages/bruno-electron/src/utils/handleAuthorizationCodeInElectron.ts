@@ -22,7 +22,7 @@ export async function handleAuthorizationCodeInElectron(
 ): Promise<string> {
   const window = new BrowserWindow({
     webPreferences: {
-      partition: collectionId
+      partition: `persist:${collectionId}`
     },
     show: false,
     center: true

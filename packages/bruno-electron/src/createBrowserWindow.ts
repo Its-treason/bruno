@@ -17,7 +17,8 @@ export function createBrowserWindow(loadState = true): BrowserWindow {
       nodeIntegration: true,
       preload: path.join(__dirname, 'preload.js'),
       webviewTag: true,
-      spellcheck: false
+      spellcheck: false,
+      partition: 'persist:main-window'
     },
     title: 'Bruno lazer',
     icon: path.join(__dirname, 'about/256x256.png')
