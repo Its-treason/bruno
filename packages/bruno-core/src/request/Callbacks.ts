@@ -167,7 +167,7 @@ export class Callbacks {
         statusText: STATUS_CODES[context.response?.statusCode || 0] || 'Unknown',
         headers: context.response?.headers,
         duration: context.response?.responseTime,
-        size: context.response?.headers['content-size'] ?? 0,
+        size: context.response?.size,
         responseTime: context.response?.responseTime
       },
       timeline: context.timeline,

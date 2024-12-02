@@ -68,11 +68,7 @@ async function doExecHttpRequest(info: HttpRequestInfo, options: BrunoRequestOpt
     return makeHttp2Request(info, options, tlsSocket, body);
   }
 
-  // tlsSocket?.destroy();
-  if (tlsSocket) {
-    console.log('using tls socket');
-    options.agent = new Agent({ socket: tlsSocket });
-  }
+  tlsSocket?.destroy();
 
   return makeHttp1Request(info, options, body);
 }
