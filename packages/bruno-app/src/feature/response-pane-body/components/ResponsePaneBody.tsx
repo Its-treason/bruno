@@ -15,16 +15,19 @@ import { VideoResultViewer } from './viewer/VIdeoResultViewer';
 import { ErrorResultViewer } from './viewer/ErrorResultViewer';
 import { PdfResultViewer } from './viewer/PdfResultViewer';
 import { JsonFilterResultViewer } from './viewer/JsonFilterResultViewer';
+import { Button, Stack, Text } from '@mantine/core';
 
 type ResponsePaneBodyProps = {
   item: RequestItemSchema;
   collection: CollectionSchema;
   disableRun: boolean;
+  size: number;
   error?: Error;
 };
 
-export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({ item, collection, disableRun, error }) => {
+export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({ item, collection, disableRun, size, error }) => {
   const [mode, setMode] = useState<ResponseMode>(error ? ['error', null] : ['raw', null]);
+  const [dismissedSizeWarning, setDismissedSizeWarning] = useState(false);
 
   const preview = useMemo(() => {
     if (mode[0] === 'raw') {
@@ -52,6 +55,18 @@ export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({ item, collec
         return <PdfResultViewer itemId={item.uid} />;
     }
   }, [mode]);
+
+  if (size > 25_000_000 && !dismissedSizeWarning) {
+    return (
+      <Stack align="center" mt={'xl'}>
+        <Text c={'red'}>Warning: Response is over 10 MB!</Text>
+        <Text size="sm">Rendering such a large response may cause performance issues.</Text>
+        <Button variant={'filled'} onClick={() => setDismissedSizeWarning(true)} mt={'xl'}>
+          Show anyway
+        </Button>
+      </Stack>
+    );
+  }
 
   return (
     <div className={classes.body}>

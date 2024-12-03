@@ -25,6 +25,7 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
             width={rightPaneWidth}
             disableRun={true} // Running request from Runner view does not make sense
             error={error}
+            size={responseReceived.size}
             key={item.filename}
           />
         );

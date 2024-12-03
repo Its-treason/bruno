@@ -39,6 +39,7 @@ export const ResponsePane: React.FC<ResponsePane> = ({ item, collection, activeT
             item={item}
             collection={collection}
             error={res.error}
+            size={res.size}
             disableRun={isLoading}
             // @ts-expect-error
             key={item.requestSentTimestamp}
