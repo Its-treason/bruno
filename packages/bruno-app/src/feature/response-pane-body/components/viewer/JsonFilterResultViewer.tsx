@@ -52,7 +52,7 @@ export const JsonFilterResultViewer: React.FC<JsonFilterResultViewerProps> = ({ 
       return stringify(value.data, null, 2);
     }
 
-    const filtered = JSONPath({ json: value.data, path: filter });
+    const filtered = JSONPath({ json: value.data, path: filter, wrap: false });
     return stringify(filtered, null, 2);
   }, [filter, value.data]);
 

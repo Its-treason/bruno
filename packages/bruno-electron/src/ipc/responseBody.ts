@@ -4,7 +4,7 @@
  */
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { ipcMain, app, BrowserWindow, protocol, dialog } from 'electron';
+import { ipcMain, app, BrowserWindow, protocol, dialog, session } from 'electron';
 import contentDispositionParser from 'content-disposition';
 import mimeTypes from 'mime-types';
 import { Response } from '@usebruno/core';
@@ -37,7 +37,9 @@ protocol.registerSchemesAsPrivileged([
   }
 ]);
 app.once('ready', () => {
-  protocol.handle('response-body', async (req) => {
+  const mainWindowSession = session.fromPartition('persist:main-window');
+
+  mainWindowSession.protocol.handle('response-body', async (req) => {
     const url = new URL(req.url);
     const requestId = url.host;
 

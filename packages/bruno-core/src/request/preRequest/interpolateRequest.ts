@@ -148,7 +148,6 @@ function interpolateBody(context: RequestContext, i: InterpolationShorthandFunct
         break;
       }
       // Always decomment the body. Tolerant flag will ensure no error is thrown when json is invalid
-      console.log('tests', typeof body.json);
       body.json = decomment(body.json, { tolerant: true });
       body.json = i(body.json, 'Json body');
       try {
