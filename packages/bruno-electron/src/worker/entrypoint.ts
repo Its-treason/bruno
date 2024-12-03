@@ -4,7 +4,7 @@
  */
 import { parentPort } from 'process';
 import { WorkerTask, WorkerTaskResult } from './types';
-import { format } from 'prettier';
+import { prettierFormat } from './feature/prettierFormat';
 
 parentPort.on('message', (evt) => {
   const [port] = evt.ports;
@@ -26,7 +26,7 @@ parentPort.on('message', (evt) => {
 async function handleTask(task: WorkerTask): Promise<any> {
   switch (task.type) {
     case 'prettier':
-      return await format(task.payload.data, { parser: task.payload.parser });
+      return await prettierFormat(task.payload.data, task.payload.parser);
   }
 
   throw new Error(`Unknown task type: ${task.type}`);

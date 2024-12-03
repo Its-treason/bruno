@@ -6,28 +6,25 @@ import { useQuery } from '@tanstack/react-query';
 import { RequestItemSchema } from '@usebruno/schema';
 import CodeEditor from 'components/CodeEditor';
 import { sendRequest } from 'providers/ReduxStore/slices/collections/actions';
-import React, { useCallback } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { LoadingResponse } from '../LoadingResponse';
-import { PrettyMode } from '../../types/preview';
+import { ActionIcon, TextInput } from '@mantine/core';
+import classes from './JsonFilterResultViewer.module.scss';
+import { IconFilter } from '@tabler/icons-react';
+import { useDebouncedState } from '@mantine/hooks';
+import { parse, stringify } from 'lossless-json';
+import { JSONPath } from 'jsonpath-plus';
 
-type TextResultViewerProps = {
+type JsonFilterResultViewerProps = {
   item: RequestItemSchema;
   collectionUid: string;
   disableRun: boolean;
-  format?: PrettyMode;
 };
 
-// Map PrettyModes to Prettier parser: https://prettier.io/docs/en/options#parser
-const parseMap: Record<PrettyMode, string> = {
-  html: 'html',
-  json: 'json',
-  xml: 'html',
-  yaml: 'yaml'
-};
-
-export const TextResultViewer: React.FC<TextResultViewerProps> = ({ collectionUid, item, format, disableRun }) => {
+export const JsonFilterResultViewer: React.FC<JsonFilterResultViewerProps> = ({ collectionUid, item, disableRun }) => {
   const dispatch = useDispatch();
+  const [filter, setFilter] = useDebouncedState('', 200);
+  const [filterOpened, setFilterOpened] = useState(false);
 
   const onRun = useCallback(() => {
     if (!disableRun) {
@@ -36,24 +33,49 @@ export const TextResultViewer: React.FC<TextResultViewerProps> = ({ collectionUi
   }, []);
 
   const value = useQuery({
-    queryKey: ['response-body', item.uid, 'json'],
+    queryKey: ['response-body', item.uid],
     retry: false,
     staleTime: 0,
-    queryFn: async () => {
-      const param = format ? `?format=${parseMap[format]}` : '';
-      const data = await fetch(`response-body://${item.uid}${param}`);
-      return data.text();
+    queryFn: async (ctx) => {
+      const data = await fetch(`response-body://${item.uid}`, { signal: ctx.signal });
+      const text = await data.text();
+      return parse(text) as object;
     }
   });
 
-  if (value.isLoading) {
-    return <LoadingResponse />;
-  }
+  const filtered = useMemo(() => {
+    if (value.isLoading) {
+      return '';
+    }
+
+    if (!filter.trim()) {
+      return stringify(value.data, null, 2);
+    }
+
+    const filtered = JSONPath({ json: value.data, path: filter });
+    return stringify(filtered, null, 2);
+  }, [filter, value.data]);
 
   return (
     <>
-      <div></div>
-      <CodeEditor onRun={onRun} value={value.data} mode={format} height={'100%'} readOnly />
+      <div className={classes.filterContainer} data-opened={filterOpened}>
+        <ActionIcon
+          size={'input-sm'}
+          variant={'default'}
+          aria-label="Open JSON filter"
+          onClick={() => setFilterOpened(!filterOpened)}
+        >
+          <IconFilter size={20} stroke={1.5} />
+        </ActionIcon>
+        <TextInput
+          className={classes.filterInput}
+          aria-hidden={!filterOpened}
+          placeholder={'Filter with "jsonpath-plus"'}
+          defaultValue={filter}
+          onChange={(evt) => setFilter(evt.currentTarget.value)}
+        />
+      </div>
+      <CodeEditor onRun={onRun} value={filtered} mode={'json'} height={'100%'} readOnly />
     </>
   );
 };

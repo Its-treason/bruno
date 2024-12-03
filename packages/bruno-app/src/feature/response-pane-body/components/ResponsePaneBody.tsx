@@ -14,6 +14,7 @@ import { ImageResultViewer } from './viewer/ImageResultViewer';
 import { VideoResultViewer } from './viewer/VIdeoResultViewer';
 import { ErrorResultViewer } from './viewer/ErrorResultViewer';
 import { PdfResultViewer } from './viewer/PdfResultViewer';
+import { JsonFilterResultViewer } from './viewer/JsonFilterResultViewer';
 
 type ResponsePaneBodyProps = {
   item: RequestItemSchema;
@@ -29,6 +30,9 @@ export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({ item, collec
     if (mode[0] === 'raw') {
       return <TextResultViewer collectionUid={collection.uid} item={item} disableRun={disableRun} />;
     } else if (mode[0] === 'pretty') {
+      if (mode[1] === 'json') {
+        return <JsonFilterResultViewer collectionUid={collection.uid} item={item} disableRun={disableRun} />;
+      }
       return <TextResultViewer collectionUid={collection.uid} item={item} format={mode[1]} disableRun={disableRun} />;
     } else if (mode[0] === 'error') {
       return <ErrorResultViewer error={error!} />;

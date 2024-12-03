@@ -1,0 +1,28 @@
+.filterContainer {
+  position: absolute;
+  pointer-events: visiblePainted;
+  // Ensure this is above the minimap
+  z-index: 6;
+  bottom: var(--mantine-spacing-lg);
+  left: var(--mantine-spacing-lg);
+  width: auto;
+
+  overflow-y: visible;
+
+  display: flex;
+  flex-direction: row;
+  gap: var(--mantine-spacing-xs);
+
+  &[data-opened='true'] {
+    width: calc(100% - calc(var(--mantine-spacing-lg) + var(--mantine-spacing-lg)));
+
+    .filterInput {
+      display: initial;
+    }
+  }
+}
+
+.filterInput {
+  width: 100%;
+  display: none;
+}

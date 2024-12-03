@@ -5,18 +5,17 @@
 import path from 'node:path';
 import fs from 'node:fs/promises';
 import { ipcMain, app, BrowserWindow, protocol, dialog } from 'electron';
-import { parse, LosslessNumber } from 'lossless-json';
 import contentDispositionParser from 'content-disposition';
 import mimeTypes from 'mime-types';
 import { Response } from '@usebruno/core';
 import { WorkerManager } from '../worker/manager';
 
 //#region Get response body
-async () => {
+(async () => {
   // Ensure the response dir directory exists
   const responseCacheDir = path.join(app.getPath('userData'), 'responseCache');
   try {
-    fs.mkdir(responseCacheDir);
+    await fs.mkdir(responseCacheDir);
   } catch {}
 
   // Delete old files
@@ -24,31 +23,7 @@ async () => {
   for (const file of files) {
     await fs.rm(path.join(responseCacheDir, file));
   }
-};
-
-ipcMain.handle('renderer:get-response-body', async (_event, requestId) => {
-  const responsePath = path.join(app.getPath('userData'), 'responseCache', requestId);
-
-  let rawData;
-  try {
-    rawData = await fs.readFile(responsePath);
-  } catch (e) {
-    return null;
-  }
-
-  let data: unknown = null;
-  try {
-    data = parse(rawData.toString('utf-8'), null, (value) => {
-      // By default, this will return the LosslessNumber object, but because it's passed into ipc we
-      // need to convert it into a number because LosslessNumber is converted into a weird object
-      return new LosslessNumber(value).valueOf();
-    });
-  } catch (e) {
-    data = rawData.toString('utf-8');
-  }
-
-  return { data, dataBuffer: rawData.toString('base64') };
-});
+})();
 
 protocol.registerSchemesAsPrivileged([
   {
@@ -76,26 +51,20 @@ app.once('ready', () => {
     const responsePath = path.join(app.getPath('userData'), 'responseCache', requestId);
     const data = await fs.readFile(responsePath);
 
+    // This parameter is used by the TextResultViewer component
     if (url.searchParams.has('format')) {
       const parser = url.searchParams.get('format')!;
-      let formatted;
+      const manager = WorkerManager.getInstance();
       try {
-        const manager = WorkerManager.getInstance();
-        formatted = await manager.format(data.toString('utf-8'), parser);
+        const formatted = await manager.format(data.toString('utf-8'), parser);
+        return new globalThis.Response(formatted, {
+          status: 200
+        });
       } catch (error) {
         return new globalThis.Response(String(error), {
-          status: 400,
-          headers: {
-            'Content-Type': 'text/plain'
-          }
+          status: 400
         });
       }
-      return new globalThis.Response(formatted, {
-        status: 200,
-        headers: {
-          'Content-Type': 'application/octet-stream'
-        }
-      });
     }
 
     return new globalThis.Response(data, {

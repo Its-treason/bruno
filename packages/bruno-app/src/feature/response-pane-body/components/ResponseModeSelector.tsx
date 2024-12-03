@@ -26,6 +26,7 @@ export const ResponseModeSelector = <T extends string>({
   const optionList = useMemo(() => {
     return options.map((option) => (
       <Button
+        key={option.value}
         variant="subtle"
         onClick={() => {
           onSelect(option.value);

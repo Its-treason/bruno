@@ -4,7 +4,7 @@
  */
 import { utilityProcess, app, MessageChannelMain, MessagePortMain, UtilityProcess } from 'electron';
 import path from 'path';
-import { WorkerTask, WorkerTaskResult } from './types';
+import { WorkerTaskPayloads, WorkerTaskResult } from './types';
 import { randomUUID } from 'node:crypto';
 
 app.whenReady().then(() => {
@@ -52,7 +52,7 @@ export class WorkerManager {
     port2.start();
   }
 
-  public format<T extends string>(data: string, parser: string): Promise<T> {
+  private addTask<T>(payload: WorkerTaskPayloads): Promise<T> {
     return new Promise((resolve, reject) => {
       const id = randomUUID();
 
@@ -60,12 +60,18 @@ export class WorkerManager {
 
       this.port2.postMessage({
         id,
-        type: 'prettier',
-        payload: {
-          data,
-          parser
-        }
-      } satisfies WorkerTask);
+        ...payload
+      });
+    });
+  }
+
+  public format(data: string, parser: string) {
+    return this.addTask<string>({
+      type: 'prettier',
+      payload: {
+        data,
+        parser
+      }
     });
   }
 
