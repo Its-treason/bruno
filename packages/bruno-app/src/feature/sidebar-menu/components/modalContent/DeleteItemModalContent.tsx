@@ -29,7 +29,7 @@ export const DeleteItemModalContent: React.FC<DeleteItemModalProps> = ({ onClose
 
       await dispatch(deleteItem(item.uid, collectionUid));
 
-      const tabUids = item.type === 'folder' ? recursivelyGetAllItemUids(item.items) : [item.uid];
+      const tabUids = item.type === 'folder' ? [...recursivelyGetAllItemUids(item.items), item.uid] : [item.uid];
       dispatch(
         closeTabs({
           tabUids

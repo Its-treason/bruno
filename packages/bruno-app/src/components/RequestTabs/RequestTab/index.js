@@ -51,6 +51,7 @@ const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUi
     return folderUid ? findItemInCollection(collection, folderUid) : null;
   }, [folderUid]);
   if (['collection-settings', 'folder-settings', 'variables', 'collection-runner'].includes(tab.type)) {
+    console.log(folder);
     return (
       <RequestTabMenu
         collection={collection}
@@ -66,7 +67,11 @@ const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUi
           className="flex items-center justify-between tab-container px-1"
         >
           {tab.type === 'folder-settings' ? (
-            <SpecialTab handleCloseClick={handleCloseClick} type={tab.type} tabName={folder?.name} />
+            !folder ? (
+              <RequestTabNotFound handleCloseClick={handleCloseClick} />
+            ) : (
+              <SpecialTab handleCloseClick={handleCloseClick} type={tab.type} tabName={folder?.name} />
+            )
           ) : (
             <SpecialTab handleCloseClick={handleCloseClick} type={tab.type} />
           )}
