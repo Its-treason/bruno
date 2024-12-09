@@ -1,7 +1,6 @@
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import CollectionSettings from 'components/CollectionSettings';
 import FolderSettings from 'components/FolderSettings';
-import RunnerResults from 'components/RunnerResults';
 import VariablesEditor from 'components/VariablesEditor';
 import { RequestPaneSplit } from './RequestPaneSplit';
 import { RequestUrlBar } from 'src/feature/request-url-bar';
@@ -21,7 +20,6 @@ export const MainContent: React.FC<MainContentProps> = ({ collection, focusedTab
   switch (focusedTab.type) {
     case 'collection-runner':
       return <Runner collection={collection} />;
-    // return <RunnerResults collection={collection} />;
     case 'variables':
       return <VariablesEditor collection={collection} />;
     case 'collection-settings':

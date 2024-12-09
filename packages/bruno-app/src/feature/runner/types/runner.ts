@@ -22,12 +22,12 @@ export type RunnerResultItem = {
   status: 'delayed' | 'queued' | 'running' | 'completed' | 'error';
   uid: string; // Id of the request
   responseReceived: RunnerResponse;
-  testResults?: any[];
+  testResults?: TestResult[];
   timeline?: any[];
   timings?: Record<string, number>;
   requestSent: any;
   debug?: any;
-  assertionResults?: any[];
+  assertionResults?: RunnerAssertion[];
 };
 
 export type RunnerResponse = {
@@ -38,10 +38,16 @@ export type RunnerResponse = {
   statusText: string;
 };
 
-export type RunnerAsertion = {
+export type RunnerAssertion = {
   lhsExpr: string;
   operator: string;
   rhsExpr: string;
+  status: 'pass' | 'fail';
+  uid: string;
+};
+
+export type TestResult = {
+  description: string;
   status: 'pass' | 'fail';
   uid: string;
 };

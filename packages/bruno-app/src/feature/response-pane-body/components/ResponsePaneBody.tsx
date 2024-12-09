@@ -22,7 +22,7 @@ type ResponsePaneBodyProps = {
   collection: CollectionSchema;
   disableRun: boolean;
   size: number;
-  error?: Error;
+  error?: Error | string;
 };
 
 export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({ item, collection, disableRun, size, error }) => {
@@ -54,7 +54,7 @@ export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({ item, collec
       case 'pdf':
         return <PdfResultViewer itemId={item.uid} />;
     }
-  }, [mode]);
+  }, [mode, item.uid]);
 
   if (size > 25_000_000 && !dismissedSizeWarning) {
     return (

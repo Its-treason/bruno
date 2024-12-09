@@ -1,6 +1,12 @@
 .container {
   display: grid;
+  grid-auto-flow: column;
   grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto;
+
+  &[data-result-focused='true'] {
+    grid-template-columns: 50% 50%;
+  }
 }
 
 .requests {
@@ -10,5 +16,6 @@
   flex-direction: column;
   overflow: auto;
 
-  margin: var(--mantine-spacing-xs) var(--mantine-spacing-md);
+  margin-left: var(--mantine-spacing-md);
+  padding: var(--mantine-spacing-xs) 0;
 }

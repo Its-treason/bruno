@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { RunnerResultItem } from '../../types/runner';
-import { Box, Group, RingProgress, Space, Stack, Text, Title } from '@mantine/core';
+import { Group, RingProgress, Text } from '@mantine/core';
 import runnerItemStatus from '../../util/runnerItemStatus';
 import { CollectionSchema } from '@usebruno/schema';
 import { flattenItems } from 'utils/collections';
@@ -35,10 +35,10 @@ export const Summary: React.FC<SummaryProps> = ({ items, collection }) => {
   }, [items]);
 
   return (
-    <Group m={'md'}>
+    <Group m={'xs'}>
       <RingProgress
-        size={64}
-        thickness={8}
+        size={58}
+        thickness={9}
         sections={[
           { value: Math.min(100, (passed / total) * 100), color: 'teal' },
           { value: Math.min(100, (failed / total) * 100), color: 'red' }

@@ -12,7 +12,7 @@ type DebugInfo = { stage: string; logs: Logs }[];
 
 export const DebugTab: React.FC<{ debugInfo: DebugInfo; timings: unknown }> = ({ debugInfo = [], timings }) => {
   return (
-    <Stack w={'100%'} maw={'100%'} gap={'xl'} pb={'sm'}>
+    <Stack w={'100%'} gap={'xl'} h={'100%'} style={{ overflow: 'auto' }}>
       <ResponseTimings timings={timings} />
       {debugInfo.map(({ stage, logs }) => (
         <div key={stage}>
