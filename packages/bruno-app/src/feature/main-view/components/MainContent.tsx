@@ -1,7 +1,6 @@
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import CollectionSettings from 'components/CollectionSettings';
 import FolderSettings from 'components/FolderSettings';
-import RunnerResults from 'components/RunnerResults';
 import VariablesEditor from 'components/VariablesEditor';
 import { RequestPaneSplit } from './RequestPaneSplit';
 import { RequestUrlBar } from 'src/feature/request-url-bar';
@@ -9,6 +8,7 @@ import { HttpRequestPane } from './panes/http/HttpRequestPane';
 import { GraphqlRequestPane } from './panes/graphql/GraphqlRequestPane';
 import { ResponsePane } from './panes/response/ResponsePane';
 import { Text } from '@mantine/core';
+import { Runner } from 'src/feature/runner';
 
 type MainContentProps = {
   collection: CollectionSchema;
@@ -19,7 +19,7 @@ type MainContentProps = {
 export const MainContent: React.FC<MainContentProps> = ({ collection, focusedTab, item }) => {
   switch (focusedTab.type) {
     case 'collection-runner':
-      return <RunnerResults collection={collection} />;
+      return <Runner collection={collection} />;
     case 'variables':
       return <VariablesEditor collection={collection} />;
     case 'collection-settings':

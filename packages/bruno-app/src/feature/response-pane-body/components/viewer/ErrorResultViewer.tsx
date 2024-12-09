@@ -5,7 +5,7 @@
 import React from 'react';
 
 type ErrorResultViewer = {
-  error: Error;
+  error: Error | string;
 };
 
 export const ErrorResultViewer: React.FC<ErrorResultViewer> = ({ error }) => {

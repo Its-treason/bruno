@@ -1,0 +1,16 @@
+.container {
+  grid-row: span 5;
+  overflow-y: hidden;
+  height: minmax(0, auto);
+
+  display: flex;
+
+  border-left: 1px solid var(--mantine-color-gray-4);
+  [data-mantine-color-scheme='dark'] & {
+    border-left: 1px solid var(--mantine-color-dark-4);
+  }
+
+  & > {
+    max-height: 100%;
+  }
+}

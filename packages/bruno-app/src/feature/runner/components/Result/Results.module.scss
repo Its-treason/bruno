@@ -1,0 +1,21 @@
+.container {
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto;
+  grid-template-columns: auto;
+
+  &[data-result-focused='true'] {
+    grid-template-columns: 50% 50%;
+  }
+}
+
+.requests {
+  display: flex;
+  flex-grow: 1;
+  gap: var(--mantine-spacing-xs);
+  flex-direction: column;
+  overflow: auto;
+
+  margin-left: var(--mantine-spacing-md);
+  padding: var(--mantine-spacing-xs) 0;
+}

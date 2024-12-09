@@ -1701,7 +1701,6 @@ export const collectionsSlice = createSlice({
 
         if (type === 'response-received') {
           const item = collection.runnerResult.items.findLast((i) => i.uid === request.uid);
-          console.log(action.payload);
           item.status = 'completed';
           item.responseReceived = action.payload.responseReceived;
           item.timeline = action.payload.timeline;

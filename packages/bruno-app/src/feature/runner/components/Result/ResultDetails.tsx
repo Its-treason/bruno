@@ -1,36 +1,41 @@
-import { useMemo, useState } from 'react';
-import get from 'lodash/get';
-import ResponseHeaders from 'components/ResponsePane/ResponseHeaders';
-import TestResults from 'components/ResponsePane/TestResults';
-import { DebugTab } from 'components/ResponsePane/Debug';
-import { TimelineNew } from 'components/ResponsePane/TimelineNew';
-import { ResponsePaneBody } from 'src/feature/response-pane-body';
+import { CollectionSchema } from '@usebruno/schema';
+import { RunnerResultItem } from '../../types/runner';
 import { PaneWrapper } from 'src/feature/main-view/components/panes/PaneWrapper';
 import { ResponseSummary } from 'src/feature/main-view/components/panes/response/ResponseSummary';
+import classes from './ResultDetails.module.scss';
+import { useMemo, useState } from 'react';
+import { ResponsePaneBody } from 'src/feature/response-pane-body';
+import ResponseHeaders from 'components/ResponsePane/ResponseHeaders';
+import { TimelineNew } from 'components/ResponsePane/TimelineNew';
+import TestResults from 'components/ResponsePane/TestResults';
+import { DebugTab } from 'components/ResponsePane/Debug';
 
-const ResponsePane = ({ rightPaneWidth, item, collection }) => {
+type ResultDetailsProps = {
+  item: RunnerResultItem;
+  collection: CollectionSchema;
+};
+
+export const ResultDetails: React.FC<ResultDetailsProps> = ({ item, collection }) => {
   const [selectedTab, setSelectedTab] = useState('response');
 
   const { responseReceived, testResults, assertionResults, error, timings, debug, timeline } = item;
 
-  const headers = get(item, 'responseReceived.headers', []);
-
-  const getTabPanel = (tab) => {
-    switch (tab) {
+  const content = useMemo(() => {
+    switch (selectedTab) {
       case 'response': {
         return (
           <ResponsePaneBody
+            // @ts-expect-error
             item={item}
             collection={collection}
-            width={rightPaneWidth}
             disableRun={true} // Running request from Runner view does not make sense
             error={error}
             size={responseReceived.size}
-            key={item.filename}
           />
         );
       }
       case 'headers': {
+        const headers = responseReceived.headers ?? [];
         return <ResponseHeaders headers={headers} />;
       }
       case 'timeline': {
@@ -46,10 +51,10 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
         return <div>404 | Not found</div>;
       }
     }
-  };
+  }, [selectedTab, item.uid]);
 
   const tabs = useMemo(() => {
-    const headerCount = headers ? Object.entries(headers).length : null;
+    const headerCount = responseReceived.headers ? Object.entries(responseReceived.headers).length : null;
 
     return [
       { value: 'response', label: 'Response' },
@@ -61,16 +66,17 @@ const ResponsePane = ({ rightPaneWidth, item, collection }) => {
   }, [item]);
 
   return (
-    <PaneWrapper
-      tabs={tabs}
-      activeTab={selectedTab}
-      aboveTabs={<ResponseSummary collection={collection} item={item} response={responseReceived} />}
-      onTabChange={(tab) => {
-        setSelectedTab(tab);
-      }}
-      content={getTabPanel(selectedTab)}
-    />
+    <div className={classes.container}>
+      <PaneWrapper
+        tabs={tabs}
+        activeTab={selectedTab}
+        // @ts-expect-error
+        aboveTabs={<ResponseSummary collection={collection} item={item} response={responseReceived} />}
+        onTabChange={(tab) => {
+          setSelectedTab(tab);
+        }}
+        content={content}
+      />
+    </div>
   );
 };
-
-export default ResponsePane;

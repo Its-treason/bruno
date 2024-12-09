@@ -51,7 +51,6 @@ const RequestTab = ({ tab, collection, tabIndex, collectionRequestTabs, folderUi
     return folderUid ? findItemInCollection(collection, folderUid) : null;
   }, [folderUid]);
   if (['collection-settings', 'folder-settings', 'variables', 'collection-runner'].includes(tab.type)) {
-    console.log(folder);
     return (
       <RequestTabMenu
         collection={collection}
