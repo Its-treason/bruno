@@ -1,6 +1,10 @@
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
 import { CollectionSchema } from '@usebruno/schema';
 import { RunnerConfig, RunnerResult, RunnerResultItem } from '../../types/runner';
-import { useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useLayoutEffect, useRef, useState } from 'react';
 import { Summary } from './Summary';
 import classes from './Results.module.scss';
 import { RequestList } from './RequestList';
@@ -9,7 +13,6 @@ import { CancelRunner } from './CancelRunner';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Divider } from '@mantine/core';
 import { ResultDetails } from './ResultDetails';
-import { useEditor } from '@tiptap/react';
 
 type ResultProps = {
   collection: CollectionSchema;

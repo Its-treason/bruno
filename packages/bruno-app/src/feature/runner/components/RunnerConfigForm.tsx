@@ -1,7 +1,11 @@
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
 import { Button, Group, NumberInput, Stack, Title } from '@mantine/core';
 import { RunnerConfig } from '../types/runner';
 import { useForm } from '@mantine/form';
-import { IconArrowBack, IconRun, IconX } from '@tabler/icons-react';
+import { IconRun } from '@tabler/icons-react';
 
 type RunnerConfigFormProps = {
   startRun: (config: any) => void;
