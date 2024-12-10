@@ -20,6 +20,14 @@
       }
     }
 
+    .sticky-widget {
+      background-color: var(--mantine-color-body) !important;
+      box-shadow: var(--mantine-color-gray-4) 0 3px 2px -2px;
+      [data-mantine-color-scheme='dark'] & {
+        box-shadow: var(--mantine-color-dark-4) 0 3px 2px -2px;
+      }
+    }
+
     .minimap,
     .decorationsOverviewRuler {
       background-color: var(--mantine-color-body);
