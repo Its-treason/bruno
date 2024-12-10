@@ -1,3 +1,7 @@
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
 import { Button, Group } from '@mantine/core';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';

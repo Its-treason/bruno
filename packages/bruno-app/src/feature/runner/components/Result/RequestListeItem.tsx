@@ -1,3 +1,7 @@
+/**
+ * This file is part of bruno-app.
+ * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
+ */
 import React, { useCallback, useMemo } from 'react';
 import { RunnerResultItem } from '../../types/runner';
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
@@ -73,7 +77,7 @@ export const RequestListItem: React.FC<RequestListItemProps> = ({ item, collecti
   }, [item.status]);
 
   const handleClick = useCallback(() => {
-    if (item.status === 'completed') {
+    if (item.status === 'completed' || item.status === 'error') {
       onFocus(item);
     }
   }, [item.status]);
