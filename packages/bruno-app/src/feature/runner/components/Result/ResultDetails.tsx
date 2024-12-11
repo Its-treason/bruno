@@ -35,6 +35,7 @@ export const ResultDetails: React.FC<ResultDetailsProps> = ({ item, collection }
             disableRun={true} // Running request from Runner view does not make sense
             error={error}
             size={responseReceived.size}
+            initialPreviewModes={responseReceived.previewModes}
           />
         );
       }

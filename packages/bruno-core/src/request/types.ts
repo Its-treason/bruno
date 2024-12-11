@@ -338,4 +338,9 @@ export type RequestContext = {
   response?: Response;
   responseBody?: unknown;
   error?: Error;
+
+  previewModes?: {
+    pretty: string | null;
+    preview: string | null;
+  };
 };

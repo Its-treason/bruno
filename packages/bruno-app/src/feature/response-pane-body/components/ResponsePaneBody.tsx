@@ -3,10 +3,10 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import classes from './ResponsePaneBody.module.scss';
 import { ResponseModeBar } from './ResponseModeBar';
-import { ResponseMode } from '../types/preview';
+import { PrettyMode, PreviewMode, ResponseMode } from '../types/preview';
 import { TextResultViewer } from './viewer/TextResultViewer';
 import { AudioResultViewer } from './viewer/AudioResultViewer';
 import { HtmlResultViewer } from './viewer/HtmlResultViewer';
@@ -23,11 +23,34 @@ type ResponsePaneBodyProps = {
   disableRun: boolean;
   size: number;
   error?: Error | string;
+  initialPreviewModes?: { pretty: string | null; preview: string | null };
 };
 
-export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({ item, collection, disableRun, size, error }) => {
+export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({
+  item,
+  collection,
+  disableRun,
+  size,
+  error,
+  initialPreviewModes
+}) => {
   const [mode, setMode] = useState<ResponseMode>(error ? ['error', null] : ['raw', null]);
   const [dismissedSizeWarning, setDismissedSizeWarning] = useState(false);
+
+  useEffect(() => {
+    if (!initialPreviewModes) {
+      setMode(['raw', null]);
+      return;
+    }
+
+    if (initialPreviewModes.pretty) {
+      setMode(['pretty', initialPreviewModes.pretty as any]);
+    }
+    if (initialPreviewModes.preview) {
+      setMode(['preview', initialPreviewModes.preview as any]);
+    }
+    // Explicity listen for changes for the values. So that this does not run, if the object ref changes
+  }, [initialPreviewModes?.pretty, initialPreviewModes?.preview]);
 
   const preview = useMemo(() => {
     if (mode[0] === 'raw') {
@@ -70,7 +93,15 @@ export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({ item, collec
 
   return (
     <div className={classes.body}>
-      <ResponseModeBar mode={mode} setMode={setMode} hasError={!!error} />
+      <ResponseModeBar
+        mode={mode}
+        setMode={setMode}
+        hasError={!!error}
+        // TODO: We have to check if we really received a body
+        hasBody={true}
+        initialPrettyMode={initialPreviewModes?.pretty as PrettyMode}
+        initialPreviewMode={initialPreviewModes?.preview as PreviewMode}
+      />
       {preview}
     </div>
   );

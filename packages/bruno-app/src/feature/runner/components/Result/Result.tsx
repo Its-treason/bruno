@@ -36,7 +36,6 @@ export const Result: React.FC<ResultProps> = ({ collection, runnerConfig, onRun 
     const distanceFromBottom = scrollHeight - scrollTop - clientHeight;
     // Only scroll if the user is already near the bottom
     if (distanceFromBottom < 200) {
-      console.log('must scroll', distanceFromBottom);
       listRef.current.scrollTo({ top: 999999999, behavior: 'smooth' });
     }
   }, [runnerResults.items.length]);

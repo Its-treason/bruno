@@ -40,6 +40,7 @@ export type RunnerResponse = {
   size: number;
   status: number;
   statusText: string;
+  previewModes?: { pretty: string | null; preview: string | null };
 };
 
 export type RunnerAssertion = {

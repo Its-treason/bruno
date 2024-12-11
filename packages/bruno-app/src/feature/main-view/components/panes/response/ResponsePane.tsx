@@ -41,8 +41,7 @@ export const ResponsePane: React.FC<ResponsePane> = ({ item, collection, activeT
             error={res.error}
             size={res.size}
             disableRun={isLoading}
-            // @ts-expect-error
-            key={item.requestSentTimestamp}
+            initialPreviewModes={res.previewModes}
           />
         );
       case 'headers':

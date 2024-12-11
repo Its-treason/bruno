@@ -18,6 +18,7 @@ import { CookieJar } from 'tough-cookie';
 import { readResponseBodyAsync } from './runtime/utils';
 import { collectFolderData } from './preRequest/collectFolderData';
 import { applyOAuth2 } from './preRequest/OAuth2/applyOAuth2';
+import { determinePreviewType } from './preRequest/determinePreviewMode';
 
 export async function request(
   requestItem: RequestItem,
@@ -46,19 +47,25 @@ export async function request(
     requestItem.request = requestItem.draft.request;
   }
 
-  const collectionVariables = (collection.root?.request?.vars?.req || []).reduce((acc, variable) => {
-    if (variable.enabled) {
-      acc[variable.name] = variable.value;
-    }
-    return acc;
-  }, {} as Record<string, unknown>);
+  const collectionVariables = (collection.root?.request?.vars?.req || []).reduce(
+    (acc, variable) => {
+      if (variable.enabled) {
+        acc[variable.name] = variable.value;
+      }
+      return acc;
+    },
+    {} as Record<string, unknown>
+  );
 
-  const requestVariables = (requestItem.request?.vars?.req || []).reduce((acc, variable) => {
-    if (variable.enabled) {
-      acc[variable.name] = variable.value;
-    }
-    return acc;
-  }, {} as Record<string, unknown>);
+  const requestVariables = (requestItem.request?.vars?.req || []).reduce(
+    (acc, variable) => {
+      if (variable.enabled) {
+        acc[variable.name] = variable.value;
+      }
+      return acc;
+    },
+    {} as Record<string, unknown>
+  );
 
   const context: RequestContext = {
     uid: nanoid(),
@@ -143,6 +150,7 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
   context.responseBody = await readResponseBodyAsync(context.response!.path);
   context.timings.stopMeasure('parseResponse');
 
+  determinePreviewType(context);
   postRequestVars(context, folderData);
   await postRequestScript(context, folderData);
   assertions(context);

@@ -32,7 +32,7 @@ export const ResponseModeSelector = <T extends string>({
           onSelect(option.value);
           setPopoverOpened(false);
         }}
-        leftSection={option.value === selected ? <IconCheck /> : null}
+        leftSection={option.value === selected ? <IconCheck size={19} /> : null}
         justify="start"
         color="gray"
       >
@@ -57,8 +57,8 @@ export const ResponseModeSelector = <T extends string>({
             <IconSelector />
           </ActionIcon>
         </Popover.Target>
-        <Popover.Dropdown p={'xs'}>
-          <Stack justify="start" gap={'xs'}>
+        <Popover.Dropdown p={4}>
+          <Stack justify="start" gap={4}>
             {optionList}
           </Stack>
         </Popover.Dropdown>

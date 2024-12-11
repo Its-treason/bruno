@@ -167,7 +167,8 @@ export class Callbacks {
         headers: context.response?.headers,
         duration: context.response?.responseTime,
         size: context.response?.size,
-        responseTime: context.response?.responseTime
+        responseTime: context.response?.responseTime,
+        previewModes: context.previewModes
       },
       timeline: context.timeline,
       timings: context.timings.getClean(),

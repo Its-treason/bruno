@@ -9,8 +9,8 @@ import { ResponseModeSelector } from './ResponseModeSelector';
 import { IconExclamationCircle } from '@tabler/icons-react';
 
 const prettyModeOptions: { label: string; value: PrettyMode }[] = [
-  { label: 'HTML', value: 'html' },
   { label: 'JSON', value: 'json' },
+  { label: 'HTML', value: 'html' },
   { label: 'XML', value: 'xml' },
   { label: 'YAML', value: 'yaml' }
 ];
@@ -27,11 +27,21 @@ type ResponseModeBarProps = {
   mode: ResponseMode;
   setMode: (mode: ResponseMode) => void;
   hasError: boolean;
+  hasBody: boolean;
+  initialPrettyMode: PrettyMode | null;
+  initialPreviewMode: PreviewMode | null;
 };
 
-export const ResponseModeBar: React.FC<ResponseModeBarProps> = ({ mode, setMode, hasError }) => {
-  const [prettyMode, setPrettyMode] = useState<PrettyMode>('json');
-  const [previewMode, setPreviewMode] = useState<PreviewMode>('html');
+export const ResponseModeBar: React.FC<ResponseModeBarProps> = ({
+  mode,
+  setMode,
+  hasError,
+  hasBody,
+  initialPrettyMode,
+  initialPreviewMode
+}) => {
+  const [prettyMode, setPrettyMode] = useState<PrettyMode>(initialPrettyMode ?? 'json');
+  const [previewMode, setPreviewMode] = useState<PreviewMode>(initialPreviewMode ?? 'html');
 
   return (
     <Group justify="start" gap={'xs'}>
@@ -47,29 +57,33 @@ export const ResponseModeBar: React.FC<ResponseModeBarProps> = ({ mode, setMode,
         </Button>
       ) : null}
 
-      <Button size="xs" variant={mode[0] === 'raw' ? 'light' : 'default'} onClick={() => setMode(['raw', null])}>
-        Raw
-      </Button>
+      {hasBody ? (
+        <>
+          <Button size="xs" variant={mode[0] === 'raw' ? 'light' : 'default'} onClick={() => setMode(['raw', null])}>
+            Raw
+          </Button>
 
-      <ResponseModeSelector<PrettyMode>
-        active={mode[0] === 'pretty'}
-        onSelect={(newMode) => {
-          setMode(['pretty', newMode]);
-          setPrettyMode(newMode);
-        }}
-        options={prettyModeOptions}
-        selected={prettyMode}
-      />
+          <ResponseModeSelector<PrettyMode>
+            active={mode[0] === 'pretty'}
+            onSelect={(newMode) => {
+              setMode(['pretty', newMode]);
+              setPrettyMode(newMode);
+            }}
+            options={prettyModeOptions}
+            selected={prettyMode}
+          />
 
-      <ResponseModeSelector<PreviewMode>
-        active={mode[0] === 'preview'}
-        onSelect={(newMode) => {
-          setMode(['preview', newMode]);
-          setPreviewMode(newMode);
-        }}
-        options={previewModeOptions}
-        selected={previewMode}
-      />
+          <ResponseModeSelector<PreviewMode>
+            active={mode[0] === 'preview'}
+            onSelect={(newMode) => {
+              setMode(['preview', newMode]);
+              setPreviewMode(newMode);
+            }}
+            options={previewModeOptions}
+            selected={previewMode}
+          />
+        </>
+      ) : null}
     </Group>
   );
 };

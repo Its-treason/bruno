@@ -32,7 +32,8 @@ export const sendNetworkRequest = async (item, collection, environment) => {
     timings: response.timings,
     debug: response.debug,
     error: response.error,
-    isError: response.error ? true : undefined
+    isError: response.error ? true : undefined,
+    previewModes: response.previewModes
   };
 };
 

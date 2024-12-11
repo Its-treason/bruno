@@ -1706,6 +1706,7 @@ export const collectionsSlice = createSlice({
           item.timeline = action.payload.timeline;
           item.timings = action.payload.timings;
           item.debug = action.payload.debug;
+          item.previewModes = action.payload.previewModes;
         }
 
         if (type === 'test-results') {

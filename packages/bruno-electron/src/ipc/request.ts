@@ -97,7 +97,8 @@ ipcMain.handle('send-http-request', async (event, item, collection, environment,
     timeline: res.timeline,
     debug: res.debug.getClean(),
     timings: res.timings.getClean(),
-    error: res.error ? String(res.error) : undefined
+    error: res.error ? String(res.error) : undefined,
+    previewModes: res.previewModes
   };
 });
 
