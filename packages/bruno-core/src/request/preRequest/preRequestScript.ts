@@ -9,6 +9,10 @@ export async function preRequestScript(context: RequestContext, folderData: Fold
   const requestPreRequestScript = context.requestItem.request.script.req ?? '';
   const preRequestScript = [collectionPreRequestScript, ...folderLevelScripts, requestPreRequestScript].join(os.EOL);
 
+  if (preRequestScript.replaceAll('\n', '').trim().length === 0) {
+    return;
+  }
+
   context.debug.log('Pre request script', {
     preRequestScript
   });

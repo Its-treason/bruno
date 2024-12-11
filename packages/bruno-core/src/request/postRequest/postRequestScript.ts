@@ -13,10 +13,15 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
       ? [collectionPostRequestScript, ...folderLevelScripts, requestPostRequestScript].join(EOL)
       : [requestPostRequestScript, ...folderLevelScripts.reverse(), collectionPostRequestScript].join(EOL);
 
+  if (postRequestScript.replaceAll('\n', '').trim().length === 0) {
+    return;
+  }
+
   context.debug.log('Post request script', postRequestScript);
   context.timings.startMeasure('postScript');
 
   let scriptResult;
+
   try {
     scriptResult = await runScript(
       postRequestScript,

@@ -8,20 +8,24 @@ export async function tests(context: RequestContext, folderData: FolderData[]) {
   const folderLevelTests = folderData.map((data) => data.testScript).filter(Boolean);
   const requestPostRequestScript = context.requestItem.request.tests ?? '';
 
-  const postRequestScript =
+  const testScript =
     context.collection.brunoConfig.scripts?.flow === 'sequential'
       ? [collectionPostRequestScript, ...folderLevelTests, requestPostRequestScript].join(EOL)
       : [requestPostRequestScript, ...folderLevelTests.reverse(), collectionPostRequestScript].join(EOL);
 
+  if (testScript.replaceAll('\n', '').trim().length === 0) {
+    return;
+  }
+
   context.debug.log('Test script', {
-    postRequestScript
+    testScript
   });
   context.timings.startMeasure('test');
 
   let scriptResult;
   try {
     scriptResult = await runScript(
-      postRequestScript,
+      testScript,
       context.requestItem,
       context.response!,
       context.responseBody,
