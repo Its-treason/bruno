@@ -1,4 +1,4 @@
-const { ipcMain } = require('electron');
+const { ipcMain, MenuItem, BrowserWindow } = require('electron');
 const os = require('os');
 const { join } = require('path');
 // prettier-ignore
@@ -10,8 +10,8 @@ const template = [
     submenu: [
       {
         label: 'Open Collection',
-        click() {
-          ipcMain.emit('main:open-collection');
+        click(_menuItem, browserWindow) {
+          ipcMain.emit('main:open-collection', browserWindow);
         }
       },
       {
@@ -28,18 +28,12 @@ const template = [
       {
         label: 'Preferences',
         accelerator: 'CommandOrControl+,',
-        click() {
-          ipcMain.emit('main:open-preferences');
+        click(_menuItem, browserWindow) {
+          ipcMain.emit('main:open-preferences', browserWindow);
         }
       },
       { type: 'separator' },
-      { role: 'quit' },
-      {
-        label: 'Force Quit',
-        click() {
-          app.quit();
-        }
-      }
+      { role: 'quit' }
     ]
   },
   {

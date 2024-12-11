@@ -26,8 +26,8 @@ ipcMain.handle('renderer:ready', async (event) => {
   }
 });
 
-ipcMain.on('main:open-preferences', () => {
-  mainWindow.webContents.send('main:open-preferences');
+ipcMain.on('main:open-preferences', (browserWindow) => {
+  browserWindow.webContents.send('main:open-preferences');
 });
 
 ipcMain.handle('renderer:save-preferences', async (_event, preferences) => {

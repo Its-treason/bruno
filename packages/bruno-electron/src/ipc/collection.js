@@ -778,8 +778,7 @@ ipcMain.handle('renderer:curl-to-request', async (event, curlString) => {
 //#endRegion
 
 //#region Main listener
-ipcMain.on('main:open-collection', () => {
-  const mainWindow = BrowserWindow.getAllWindows()[0];
+ipcMain.on('main:open-collection', (mainWindow) => {
   openCollectionDialog(mainWindow);
 });
 
