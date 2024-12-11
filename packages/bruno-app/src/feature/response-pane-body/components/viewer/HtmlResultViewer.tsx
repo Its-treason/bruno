@@ -15,6 +15,8 @@ export const HtmlResultViewer: React.FC<AudioResultViewer> = ({ itemId, originUr
   const value = useQuery({
     queryKey: ['response-body', itemId],
     retry: false,
+    gcTime: 0,
+    staleTime: 0,
     queryFn: async () => {
       const data = await fetch(`response-body://${itemId}`);
       const text = await data.text();

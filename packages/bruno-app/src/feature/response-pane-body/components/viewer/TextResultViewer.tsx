@@ -39,6 +39,7 @@ export const TextResultViewer: React.FC<TextResultViewerProps> = ({ collectionUi
     queryKey: ['response-body', item.uid, format],
     retry: false,
     staleTime: 0,
+    gcTime: 0,
     queryFn: async () => {
       const param = format ? `?format=${parseMap[format]}` : '';
       const data = await fetch(`response-body://${item.uid}${param}`);

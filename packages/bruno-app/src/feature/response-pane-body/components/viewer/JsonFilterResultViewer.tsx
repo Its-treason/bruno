@@ -36,6 +36,7 @@ export const JsonFilterResultViewer: React.FC<JsonFilterResultViewerProps> = ({ 
     queryKey: ['response-body', item.uid],
     retry: false,
     staleTime: 0,
+    gcTime: 0,
     queryFn: async (ctx) => {
       const data = await fetch(`response-body://${item.uid}`, { signal: ctx.signal });
       const text = await data.text();
