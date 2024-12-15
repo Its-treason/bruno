@@ -21,8 +21,8 @@ const JS_KEYWORDS = `
  * ```js
  * res.data.pets.map(pet => pet.name.toUpperCase())
  *
- * function(context) {
- *   const { res, pet } = context;
+ * function(__PARAM_NAME_DO_NOT_USE_OR_YOU_WILL_BE_FIRED) {
+ *   const { res, pet } = __PARAM_NAME_DO_NOT_USE_OR_YOU_WILL_BE_FIRED;
  *   return res.data.pets.map(pet => pet.name.toUpperCase())
  * }
  * ```
@@ -48,9 +48,11 @@ export const compileJsExpression = (expr: string) => {
     globals: globals.map((name) => ` ${name} = ${name} ?? globalThis.${name};`).join('')
   };
 
-  const body = `let { ${code.vars} } = context; ${code.globals}; return ${expr}`;
+  // Use a param name, no one will use: https://github.com/usebruno/bruno/issues/521
+  const paramName = '__PARAM_NAME_DO_NOT_USE_OR_YOU_WILL_BE_FIRED';
+  const body = `let { ${code.vars} } = ${paramName}; ${code.globals}; return ${expr}`;
 
-  return new Function('context', body);
+  return new Function(paramName, body);
 };
 
 const internalExpressionCache = new Map();
