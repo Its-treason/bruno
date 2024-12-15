@@ -131,8 +131,14 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
                 targetPath = path.join(collectionPath, targetPath);
               }
 
+              let contentType;
+              if (item.contentType) {
+                contentType = item.contentType;
+              }
+
+              const filename = path.basename(targetPath);
               const fileData = await fs.readFile(targetPath);
-              formData.append(item.name, fileData, path.basename(targetPath));
+              formData.append(item.name, fileData, { filename, contentType });
             }
             break;
         }

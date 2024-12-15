@@ -35,6 +35,7 @@ export type RequestBody =
             value: string;
             enabled: boolean;
             type: 'text';
+            contentType: string;
             uid: string;
           }
         | {
@@ -43,6 +44,7 @@ export type RequestBody =
             enabled: boolean;
             type: 'file';
             description: string;
+            contentType: string;
             uid: string;
           }
       )[];

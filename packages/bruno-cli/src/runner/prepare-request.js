@@ -4,7 +4,38 @@ var JSONbig = require('json-bigint');
 const decomment = require('decomment');
 const crypto = require('node:crypto');
 
-const prepareRequest = (request, collectionRoot) => {
+const createFormData = (datas, collectionPath) => {
+  // make axios work in node using form data
+  // reference: https://github.com/axios/axios/issues/1006#issuecomment-320165427
+  const form = new FormData();
+  datas.forEach((item) => {
+    const value = item.value;
+    const name = item.name;
+    let options = {};
+    if (item.contentType) {
+      options.contentType = item.contentType;
+    }
+    if (item.type === 'file') {
+      const filePaths = value || [];
+      filePaths.forEach((filePath) => {
+        let trimmedFilePath = filePath.trim();
+
+        if (!path.isAbsolute(trimmedFilePath)) {
+          trimmedFilePath = path.join(collectionPath, trimmedFilePath);
+        }
+        options.filename = path.basename(trimmedFilePath);
+        form.append(name, fs.createReadStream(trimmedFilePath), options);
+      });
+    } else {
+      form.append(name, value, options);
+    }
+  });
+  return form;
+};
+
+const prepareRequest = (item = {}, collection = {}) => {
+  const request = item?.request;
+  const brunoConfig = get(collection, 'brunoConfig', {});
   const headers = {};
   let contentTypeDefined = false;
 
@@ -84,9 +115,8 @@ const prepareRequest = (request, collectionRoot) => {
       const digest = hash.digest('base64');
 
       // Construct the WSSE header
-      axiosRequest.headers[
-        'X-WSSE'
-      ] = `UsernameToken Username="${username}", PasswordDigest="${digest}", Created="${ts}", Nonce="${nonce}"`;
+      axiosRequest.headers['X-WSSE'] =
+        `UsernameToken Username="${username}", PasswordDigest="${digest}", Created="${ts}", Nonce="${nonce}"`;
     }
   }
 
@@ -139,17 +169,9 @@ const prepareRequest = (request, collectionRoot) => {
   }
 
   if (request.body.mode === 'multipartForm') {
-    const params = {};
-    const enabledParams = filter(request.body.multipartForm, (p) => p.enabled);
-    each(enabledParams, (p) => {
-      if (p.type === 'file') {
-        params[p.name] = p.value.map((path) => fs.createReadStream(path));
-      } else {
-        params[p.name] = p.value;
-      }
-    });
     axiosRequest.headers['content-type'] = 'multipart/form-data';
-    axiosRequest.data = params;
+    const enabledParams = filter(request.body.multipartForm, (p) => p.enabled);
+    axiosRequest.data = createFormData(enabledParams);
   }
 
   if (request.body.mode === 'graphql') {

@@ -16,6 +16,7 @@ export const multipartFormBodySchema = z.discriminatedUnion('type', [
     type: z.literal('text'),
     value: z.string(),
     description: z.string().default(''),
+    contentType: z.string().default(''),
     enabled: z.boolean()
   }),
   z.object({
@@ -24,6 +25,7 @@ export const multipartFormBodySchema = z.discriminatedUnion('type', [
     type: z.literal('file'),
     value: z.array(z.string()),
     description: z.string().default(''),
+    contentType: z.string().default(''),
     enabled: z.boolean()
   })
 ]);

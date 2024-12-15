@@ -52,6 +52,10 @@ const MultipartFormParams = ({ item, collection }) => {
         param.value = e.target.value;
         break;
       }
+      case 'contentType': {
+        param.contentType = e.target.value;
+        break;
+      }
       case 'enabled': {
         param.enabled = e.target.checked;
         break;
@@ -83,6 +87,7 @@ const MultipartFormParams = ({ item, collection }) => {
           <tr>
             <td>Key</td>
             <td>Value</td>
+            <td>Content-Type</td>
             <td></td>
           </tr>
         </thead>
@@ -142,6 +147,29 @@ const MultipartFormParams = ({ item, collection }) => {
                           withVariables
                         />
                       )}
+                    </td>
+                    <td>
+                      <CodeEditor
+                        singleLine
+                        onSave={onSave}
+                        value={param.contentType}
+                        onChange={(newValue) =>
+                          handleParamChange(
+                            {
+                              target: {
+                                value: newValue
+                              }
+                            },
+                            param,
+                            'contentType'
+                          )
+                        }
+                        onRun={handleRun}
+                        collection={collection}
+                        allowNewlines
+                        allowLinebreaks
+                        withVariables
+                      />
                     </td>
                     <td>
                       <div className="flex items-center">
