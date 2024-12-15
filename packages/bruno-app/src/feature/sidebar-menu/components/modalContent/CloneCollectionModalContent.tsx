@@ -12,14 +12,12 @@ import { IconAlertCircle, IconHelp } from '@tabler/icons-react';
 import { DirectoryPicker } from 'components/inputs/DirectoryPicker';
 import { z } from 'zod';
 import { useEffect } from 'react';
+import { fileNameSchema } from '@usebruno/schema';
 
 const cloneCollectionFormSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(255),
-  folder: z
-    .string()
-    .min(1, 'Folder is required')
-    .max(255)
-    .regex(/^[\w\-. ]+$/),
+  // @ts-expect-error
+  folder: fileNameSchema,
   location: z.string().trim().min(1, 'Location is required')
 });
 type CloneCollectionFormSchema = z.infer<typeof cloneCollectionFormSchema>;

@@ -14,7 +14,6 @@ const {
 const { generateCode } = require('@usebruno/core');
 
 const {
-  isValidPathname,
   writeFile,
   hasBruExtension,
   isDirectory,
@@ -69,10 +68,6 @@ ipcMain.handle(
         }
       }
 
-      if (!isValidPathname(dirPath)) {
-        throw new Error(`collection: invalid pathname - ${dir}`);
-      }
-
       if (!fs.existsSync(dirPath)) {
         await createDirectory(dirPath);
       }
@@ -102,10 +97,6 @@ ipcMain.handle(
     const dirPath = path.join(collectionLocation, collectionFolderName);
     if (fs.existsSync(dirPath)) {
       throw new Error(`collection: ${dirPath} already exists`);
-    }
-
-    if (!isValidPathname(dirPath)) {
-      throw new Error(`collection: invalid pathname - ${dir}`);
     }
 
     // create dir

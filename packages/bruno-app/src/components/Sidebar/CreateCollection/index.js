@@ -30,6 +30,7 @@ const CreateCollection = ({ onClose }) => {
         .matches(dirnameRegex, 'Folder name contains invalid characters')
         .max(250, 'must be 250 characters or less')
         .min(1, 'must be at least 1 character')
+
         .required('folder name is required'),
       collectionLocation: Yup.string().min(1, 'location is required').required('location is required')
     }),
