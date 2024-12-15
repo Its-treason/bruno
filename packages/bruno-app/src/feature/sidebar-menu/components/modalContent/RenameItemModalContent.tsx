@@ -12,6 +12,7 @@ import { IconAlertCircle } from '@tabler/icons-react';
 import { RequestItemSchema } from '@usebruno/schema';
 import { z } from 'zod';
 import { useEffect } from 'react';
+import { closeTabs } from 'providers/ReduxStore/slices/tabs';
 
 const renameItemFormSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(255)
@@ -57,6 +58,12 @@ export const RenameItemModalContent: React.FC<RenameItemModalContentProps> = ({ 
     onSuccess: (_, values) => {
       onClose();
       toast.success(`Renamed from "${item?.name}" to "${values.name}"`);
+
+      // Folders lose their Id or something
+      if (item.type === 'folder') {
+        dispatch(closeTabs({ tabUids: [item.uid] }));
+      }
+
       renameForm.reset();
     }
   });
