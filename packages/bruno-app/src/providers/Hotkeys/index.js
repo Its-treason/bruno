@@ -5,7 +5,12 @@ import Mousetrap from 'mousetrap';
 import { useSelector, useDispatch } from 'react-redux';
 import SaveRequest from 'components/RequestPane/SaveRequest';
 import NetworkError from 'components/ResponsePane/NetworkError';
-import { sendRequest, saveRequest, saveCollectionRoot } from 'providers/ReduxStore/slices/collections/actions';
+import {
+  sendRequest,
+  saveRequest,
+  saveCollectionRoot,
+  saveFolderRoot
+} from 'providers/ReduxStore/slices/collections/actions';
 import { findCollectionByUid, findItemInCollection } from 'utils/collections';
 import { closeTabs, switchTab } from 'providers/ReduxStore/slices/tabs';
 import { EnvironmentDrawer } from 'src/feature/environment-editor';
@@ -55,7 +60,11 @@ export const HotkeysProvider = (props) => {
           if (collection) {
             const item = findItemInCollection(collection, activeTab.uid);
             if (item && item.uid) {
-              dispatch(saveRequest(activeTab.uid, activeTab.collectionUid));
+              if (activeTab.type === 'folder-settings') {
+                dispatch(saveFolderRoot(collection.uid, item.uid));
+              } else {
+                dispatch(saveRequest(activeTab.uid, activeTab.collectionUid));
+              }
             } else if (activeTab.type === 'collection-settings') {
               dispatch(saveCollectionRoot(collection.uid));
             } else {

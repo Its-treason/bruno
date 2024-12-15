@@ -399,7 +399,7 @@ export const transformCollectionToSaveToExportAsFile = (collection, options = {}
           request: {}
         };
 
-        let { request, meta } = si?.root || {};
+        let { request, meta, docs } = si?.root || {};
         let { headers, script = {}, vars = {}, tests } = request || {};
 
         // folder level headers
@@ -429,6 +429,11 @@ export const transformCollectionToSaveToExportAsFile = (collection, options = {}
         // folder level tests
         if (tests?.length) {
           di.root.request.tests = tests;
+        }
+
+        // folder level docs
+        if (docs?.length) {
+          di.root.docs = docs;
         }
 
         if (meta?.name) {
