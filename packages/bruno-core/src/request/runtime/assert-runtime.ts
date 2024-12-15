@@ -60,6 +60,7 @@ use(function (chai, utils) {
  * endsWith    : ends with
  * between     : between
  * isEmpty     : is empty
+ * isNotEmpty  : is not empty
  * isNull      : is null
  * isUndefined : is undefined
  * isDefined   : is defined
@@ -97,6 +98,7 @@ const parseAssertionOperator = (str = '') => {
     'endsWith',
     'between',
     'isEmpty',
+    'isNotEmpty',
     'isNull',
     'isUndefined',
     'isDefined',
@@ -149,6 +151,7 @@ const parseAssertionOperator = (str = '') => {
 const isUnaryOperator = (operator: string) => {
   const unaryOperators = [
     'isEmpty',
+    'isNotEmpty',
     'isNull',
     'isUndefined',
     'isDefined',
@@ -312,6 +315,9 @@ export class AssertRuntime {
             break;
           case 'isEmpty':
             expect(lhs).to.be.empty;
+            break;
+          case 'isNotEmpty':
+            expect(lhs).to.not.be.empty;
             break;
           case 'isNull':
             expect(lhs).to.be.null;
