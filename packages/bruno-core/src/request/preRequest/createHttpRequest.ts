@@ -125,14 +125,15 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
             formData.append(item.name, item.value);
             break;
           case 'file':
-            let targetPath = item.value[0];
-            // If the Item is inside the collection, the path will be relative
-            if (!path.isAbsolute(targetPath)) {
-              targetPath = path.join(collectionPath, targetPath);
-            }
+            for (let targetPath of item.value) {
+              // If the Item is inside the collection, the path will be relative
+              if (!path.isAbsolute(targetPath)) {
+                targetPath = path.join(collectionPath, targetPath);
+              }
 
-            const fileData = await fs.readFile(targetPath);
-            formData.append(item.name, fileData, path.basename(item.value[0]!));
+              const fileData = await fs.readFile(targetPath);
+              formData.append(item.name, fileData, path.basename(targetPath));
+            }
             break;
         }
       }
