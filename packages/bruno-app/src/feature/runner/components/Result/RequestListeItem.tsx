@@ -6,7 +6,7 @@ import React, { useCallback, useMemo } from 'react';
 import { RunnerResultItem } from '../../types/runner';
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import { findItemInCollection } from 'utils/collections';
-import { Badge, Button, List, Loader, Text } from '@mantine/core';
+import { Badge, Button, List, Loader, Spoiler, Text } from '@mantine/core';
 import runnerItemStatus from '../../util/runnerItemStatus';
 import { IconCheck, IconCircleCheck, IconCircleX, IconClockPause, IconX } from '@tabler/icons-react';
 
@@ -48,6 +48,34 @@ export const RequestListItem: React.FC<RequestListItemProps> = ({ item, collecti
       </>
     );
   }, [item.uid]);
+
+  const resultList = useMemo(() => {
+    return (
+      <List withPadding spacing={'xs'} size="sm" ml={'xl'}>
+        {item.assertionResults?.map((assertion) => (
+          <List.Item
+            key={assertion.uid}
+            styles={{ itemIcon: { marginInlineEnd: 4 } }}
+            c={assertion.status === 'pass' ? 'teal' : 'red'}
+            icon={assertion.status === 'pass' ? <IconCheck size={18} /> : <IconX size={18} />}
+          >
+            {assertion.lhsExpr} {assertion.rhsExpr}
+          </List.Item>
+        ))}
+
+        {item.testResults?.map((test) => (
+          <List.Item
+            key={test.uid}
+            styles={{ itemIcon: { marginInlineEnd: 4 } }}
+            c={test.status === 'pass' ? 'teal' : 'red'}
+            icon={test.status === 'pass' ? <IconCheck size={18} /> : <IconX size={18} />}
+          >
+            {test.description}
+          </List.Item>
+        ))}
+      </List>
+    );
+  }, [item.testResults, item.assertionResults]);
 
   const { status, icon, color } = useMemo(() => {
     const status = runnerItemStatus(item);
@@ -104,29 +132,12 @@ export const RequestListItem: React.FC<RequestListItemProps> = ({ item, collecti
           </Badge>
         ) : null}
       </Button>
-      <List withPadding spacing={'xs'} size="sm" ml={'xl'}>
-        {item.assertionResults?.map((assertion) => (
-          <List.Item
-            key={assertion.uid}
-            styles={{ itemIcon: { marginInlineEnd: 4 } }}
-            c={assertion.status === 'pass' ? 'teal' : 'red'}
-            icon={assertion.status === 'pass' ? <IconCheck size={18} /> : <IconX size={18} />}
-          >
-            {assertion.lhsExpr} {assertion.rhsExpr}
-          </List.Item>
-        ))}
-
-        {item.testResults?.map((test) => (
-          <List.Item
-            key={test.uid}
-            styles={{ itemIcon: { marginInlineEnd: 4 } }}
-            c={test.status === 'pass' ? 'teal' : 'red'}
-            icon={test.status === 'pass' ? <IconCheck size={18} /> : <IconX size={18} />}
-          >
-            {test.description}
-          </List.Item>
-        ))}
-      </List>
+      {resultList}
+      {item.error ? (
+        <Spoiler maxHeight={60} showLabel="Show more" hideLabel="Show less" c={'red'} ml={48}>
+          <pre>{item.error}</pre>
+        </Spoiler>
+      ) : null}
     </div>
   );
 };
