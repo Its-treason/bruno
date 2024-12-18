@@ -56,7 +56,8 @@ export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({
     if (mode[0] === 'raw') {
       return <TextResultViewer collectionUid={collection.uid} item={item} disableRun={disableRun} />;
     } else if (mode[0] === 'pretty') {
-      if (mode[1] === 'json') {
+      //                        Disable the JSON filter if the response is way to large
+      if (mode[1] === 'json' && size < 20_000_000) {
         return <JsonFilterResultViewer collectionUid={collection.uid} item={item} disableRun={disableRun} />;
       }
       return <TextResultViewer collectionUid={collection.uid} item={item} format={mode[1]} disableRun={disableRun} />;
@@ -79,7 +80,7 @@ export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({
     }
   }, [mode, item.uid]);
 
-  if (size > 25_000_000 && !dismissedSizeWarning) {
+  if (size > 10_000_000 && !dismissedSizeWarning) {
     return (
       <Stack align="center" mt={'xl'}>
         <Text c={'red'}>Warning: Response is over 10 MB!</Text>
