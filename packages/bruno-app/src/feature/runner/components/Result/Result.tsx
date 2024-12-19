@@ -4,7 +4,7 @@
  */
 import { CollectionSchema } from '@usebruno/schema';
 import { RunnerConfig, RunnerResult, RunnerResultItem } from '../../types/runner';
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Summary } from './Summary';
 import classes from './Results.module.scss';
 import { RequestList } from './RequestList';
@@ -40,6 +40,15 @@ export const Result: React.FC<ResultProps> = ({ collection, runnerConfig, onRun 
     }
   }, [runnerResults.items.length]);
 
+  const onFocus = useCallback((item: RunnerResultItem) => {
+    setResultFocused((current) => {
+      if (item.uid === current?.uid) {
+        return null;
+      }
+      return item;
+    });
+  }, []);
+
   return (
     <AutoSizer disableWidth>
       {({ height }) => (
@@ -48,11 +57,7 @@ export const Result: React.FC<ResultProps> = ({ collection, runnerConfig, onRun 
           <Divider />
 
           <div className={classes.requests} ref={listRef}>
-            <RequestList
-              collection={collection}
-              items={runnerResults.items}
-              onFocus={(item) => setResultFocused(item)}
-            />
+            <RequestList collection={collection} items={runnerResults.items} onFocus={onFocus} />
           </div>
 
           <Divider />
