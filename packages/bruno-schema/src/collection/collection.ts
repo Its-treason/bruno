@@ -17,13 +17,13 @@ export const brunoConfigSchema = z
     proxy: z
       .object({
         enabled: z.boolean().default(false),
-        protocol: z.enum(['http', 'https', 'socks4', 'socks5']),
-        hostname: z.string(),
-        port: z.number().or(z.string()),
+        protocol: z.enum(['http', 'https', 'socks4', 'socks5']).default('https'),
+        hostname: z.string().default(''),
+        port: z.number().or(z.string()).nullable(),
         auth: z.object({
           enabled: z.boolean(),
-          username: z.string(),
-          password: z.string()
+          username: z.string().default(''),
+          password: z.string().default('')
         }),
         bypassProxy: z.string().default('')
       })
