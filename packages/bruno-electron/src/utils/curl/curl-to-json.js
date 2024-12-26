@@ -43,9 +43,7 @@ function getDataString(request) {
 
   const contentType = getContentType(request.headers) ?? '';
 
-  if (contentType.includes('json')) {
-    return { data: String(request.data) };
-  } else if (contentType.includes('xml')) {
+  if (!contentType.includes('form-urlencoded') && !contentType.includes('form-data')) {
     return { data: String(request.data) };
   }
 
