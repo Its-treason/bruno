@@ -4,9 +4,10 @@ import { RequestOptions } from 'http';
 import { RequestAuthSchema } from 'packages/bruno-schema/dist';
 
 type DigestAuthDetails = {
-  algorithm: string;
-  'Digest realm': string;
-  nonce: string;
+  algorithm?: string;
+  'Digest realm'?: string;
+  nonce?: string;
+  opaque?: string;
 };
 
 function hash(input: string, algo: string) {
@@ -42,7 +43,7 @@ export function handleDigestAuth(
   const uri = new URL(originalRequest.path!, `${originalRequest.protocol}//${originalRequest.hostname}`).pathname;
 
   let algo = 'md5';
-  switch (authDetails.algorithm.toLowerCase()) {
+  switch (authDetails.algorithm?.toLowerCase()) {
     case 'sha-256':
     case 'sha256':
       algo = 'sha256';
@@ -57,10 +58,14 @@ export function handleDigestAuth(
   const ha2 = hash(`${originalRequest.method}:${uri}`, algo);
   const response = hash(`${ha1}:${authDetails.nonce}:${nonceCount}:${cnonce}:auth:${ha2}`, algo);
 
-  const authorizationHeader =
+  let authorizationHeader =
     `Digest username="${auth.digest.username}",realm="${authDetails['Digest realm']}",` +
     `nonce="${authDetails.nonce}",uri="${uri}",qop="auth",algorithm="${authDetails.algorithm}",` +
     `response="${response}",nc="${nonceCount}",cnonce="${cnonce}"`;
+
+  if (authDetails.opaque) {
+    authorizationHeader += `,opaque="${authDetails.opaque}"`;
+  }
 
   originalRequest.headers!['authorization'] = authorizationHeader;
 
