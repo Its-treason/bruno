@@ -6,8 +6,10 @@ import { useMemo } from 'react';
 import { Stack, Group, Text, Space, ThemeIcon, Alert, Spoiler, rem } from '@mantine/core';
 import { IconAlertTriangle, IconHome, IconInfoCircle, IconNetwork, IconWorld, IconWorldWww } from '@tabler/icons-react';
 import classes from './TimelinewNew.module.css';
-import { RequestSslInfo } from './SslInfo/types';
 import { SslInfoButton } from './SslInfo/SslInfoButton';
+import { useStore } from 'zustand';
+import { responseStore } from 'src/store/responseStore';
+import type { RequestContext } from '@usebruno/core';
 
 type RemoteAddressIconProps = {
   ip: string;
@@ -28,32 +30,7 @@ const RemoteAddressIcon: React.FC<RemoteAddressIconProps> = ({ ip }) => {
   return <IconWorld style={IconStyles} />;
 };
 
-type RequestTimeline = {
-  // RequestInfo
-  finalOptions: {
-    method: string;
-    protocol: string;
-    hostname: string;
-    port: string;
-    path: string;
-    headers: Record<string, string[]>;
-  };
-  requestBody?: string;
-  // Response
-  responseTime?: number;
-  statusCode?: number;
-  statusMessage?: String;
-  headers?: Record<string, string[]>;
-  httpVersion?: string;
-  responseBody?: string;
-  error?: string;
-  info?: string;
-  sslInfo?: RequestSslInfo;
-  remoteAddress?: string;
-  remotePort?: number;
-};
-
-const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
+const TimelineItem: React.FC<{ item: RequestContext['timeline'][0] }> = ({ item }) => {
   const requestHeader: string[] = useMemo(() => {
     const port = item.finalOptions.port ? `:${item.finalOptions.port}` : '';
     const url = `${item.finalOptions.protocol}//${item.finalOptions.hostname}${port}${item.finalOptions.path}`;
@@ -174,10 +151,14 @@ const TimelineItem: React.FC<{ item: RequestTimeline }> = ({ item }) => {
 };
 
 type TimelineNewProps = {
-  timeline: RequestTimeline[];
+  itemUid: string;
 };
 
-export const TimelineNew: React.FC<TimelineNewProps> = ({ timeline }) => {
+export const TimelineNew: React.FC<TimelineNewProps> = ({ itemUid }) => {
+  const timeline = useStore(responseStore, (state) => {
+    return state.responses.get(itemUid)?.timeline;
+  });
+
   if (!timeline) {
     return <div>No timeline data available</div>;
   }

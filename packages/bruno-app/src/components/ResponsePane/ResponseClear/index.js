@@ -1,20 +1,11 @@
-import React from 'react';
 import { IconEraser } from '@tabler/icons-react';
-import { useDispatch } from 'react-redux';
 import StyledWrapper from './StyledWrapper';
-import { responseCleared } from 'providers/ReduxStore/slices/collections/index';
+import { responseStore } from 'src/store/responseStore';
 
-const ResponseClear = ({ collection, item }) => {
-  const dispatch = useDispatch();
-
-  const clearResponse = () =>
-    dispatch(
-      responseCleared({
-        itemUid: item.uid,
-        collectionUid: collection.uid,
-        response: null
-      })
-    );
+const ResponseClear = ({ itemUid }) => {
+  const clearResponse = () => {
+    responseStore.getState().clearResponse(itemUid);
+  };
 
   return (
     <StyledWrapper className="flex items-center">
@@ -24,4 +15,5 @@ const ResponseClear = ({ collection, item }) => {
     </StyledWrapper>
   );
 };
+
 export default ResponseClear;

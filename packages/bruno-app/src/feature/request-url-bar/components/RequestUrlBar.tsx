@@ -16,6 +16,8 @@ import NetworkError from 'components/ResponsePane/NetworkError';
 import toast from 'react-hot-toast';
 import { useState } from 'react';
 import { CodeGeneratorModal } from 'src/feature/code-generator';
+import { useStore } from 'zustand';
+import { responseStore } from 'src/store/responseStore';
 
 type RequestUrlBarProps = {
   item: RequestItemSchema;
@@ -63,7 +65,10 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item }
   const method = item.draft ? get(item, 'draft.request.method') : get(item, 'request.method');
   const url = item.draft ? get(item, 'draft.request.url', '') : get(item, 'request.url', '');
 
-  const isLoading = ['queued', 'sending'].includes(item.requestState);
+  const isLoading = useStore(responseStore, (state) => {
+    const requestState = state.responses.get(item.uid)?.requestState ?? '';
+    return requestState === 'queued' || requestState === 'sending';
+  });
 
   return (
     <>

@@ -11,6 +11,9 @@ import { DebugTab } from 'components/ResponsePane/Debug';
 import TestResults from 'components/ResponsePane/TestResults';
 import { ResponseSummary } from './ResponseSummary';
 import { ResponsePaneBody } from 'src/feature/response-pane-body';
+import { useStore } from 'zustand';
+import { responseStore } from 'src/store/responseStore';
+import { useShallow } from 'zustand/react/shallow';
 
 type ResponsePane = {
   item: RequestItemSchema;
@@ -20,12 +23,20 @@ type ResponsePane = {
 
 export const ResponsePane: React.FC<ResponsePane> = ({ item, collection, activeTab }) => {
   const dispatch = useDispatch();
-  const isLoading = ['queued', 'sending'].includes(item.requestState);
-  // @ts-expect-error
-  const res = item.response;
+
+  const [hasResponse, isLoading] = useStore(
+    responseStore,
+    useShallow((state) => {
+      const response = state.responses.get(item.uid);
+      if (response === undefined) {
+        return [false, false];
+      }
+      return [true, response.requestState === 'queued' || response.requestState === 'sending'];
+    })
+  );
 
   const content = useMemo(() => {
-    if (!res) {
+    if (!hasResponse) {
       return;
     }
 
@@ -34,27 +45,17 @@ export const ResponsePane: React.FC<ResponsePane> = ({ item, collection, activeT
         if (isLoading) {
           return;
         }
-        return (
-          <ResponsePaneBody
-            item={item}
-            collection={collection}
-            error={res.error}
-            size={res.size}
-            disableRun={isLoading}
-            initialPreviewModes={res.previewModes}
-          />
-        );
+        return <ResponsePaneBody item={item} collectionUid={collection.uid} disableRun={isLoading} />;
       case 'headers':
-        return <ResponseHeaders headers={res.headers} />;
+        return <ResponseHeaders itemUid={item.uid} />;
       case 'timeline':
-        return <TimelineNew timeline={res.timeline} />;
+        return <TimelineNew itemUid={item.uid} />;
       case 'tests':
-        // @ts-expect-error
-        return <TestResults results={item.testResults} assertionResults={item.assertionResults} />;
+        return <TestResults itemUid={item.uid} />;
       case 'debug':
-        return <DebugTab debugInfo={res.debug} timings={res.timings} />;
+        return <DebugTab itemUid={item.uid} />;
     }
-  }, [activeTab.responsePaneTab, item]);
+  }, [activeTab.responsePaneTab, item, isLoading, hasResponse]);
 
   const tabs = useMemo(() => {
     // @ts-expect-error
@@ -71,23 +72,22 @@ export const ResponsePane: React.FC<ResponsePane> = ({ item, collection, activeT
     ];
   }, [item]);
 
-  // @ts-expect-error
-  if (!item.response) {
+  if (!content) {
     return (
       <>
         <Placeholder />
-        {isLoading ? <Overlay item={item} collection={collection} /> : null}
+        {isLoading ? <Overlay item={item} /> : null}
       </>
     );
   }
 
   return (
     <>
-      {isLoading ? <Overlay item={item} collection={collection} /> : null}
+      {isLoading ? <Overlay item={item} /> : null}
       <PaneWrapper
         tabs={tabs}
         activeTab={activeTab.responsePaneTab}
-        aboveTabs={<ResponseSummary collection={collection} item={item} response={res} />}
+        aboveTabs={<ResponseSummary item={item} />}
         onTabChange={(tab) => {
           dispatch(
             updateResponsePaneTab({

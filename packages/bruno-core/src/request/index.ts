@@ -158,6 +158,7 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
 
   context.timings.stopMeasure('total');
 
+  context.callback.responseReceived(context);
   context.callback.folderResponseReceived(context);
 
   return context;

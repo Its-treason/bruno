@@ -256,40 +256,6 @@ export const collectionsSlice = createSlice({
         collection.processEnvVariables = processEnvVariables;
       }
     },
-    requestCancelled: (state, action) => {
-      const { itemUid, collectionUid } = action.payload;
-      const collection = findCollectionByUid(state.collections, collectionUid);
-
-      if (collection) {
-        const item = findItemInCollection(collection, itemUid);
-        if (item) {
-          item.response = null;
-          item.cancelTokenUid = null;
-        }
-      }
-    },
-    responseReceived: (state, action) => {
-      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
-
-      if (collection) {
-        const item = findItemInCollection(collection, action.payload.itemUid);
-        if (item) {
-          item.requestState = 'received';
-          item.response = action.payload.response;
-          item.cancelTokenUid = null;
-        }
-      }
-    },
-    responseCleared: (state, action) => {
-      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
-
-      if (collection) {
-        const item = findItemInCollection(collection, action.payload.itemUid);
-        if (item) {
-          item.response = null;
-        }
-      }
-    },
     saveRequest: (state, action) => {
       const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
 
@@ -1611,51 +1577,11 @@ export const collectionsSlice = createSlice({
         collection.runnerResult = null;
       }
     },
-    runRequestEvent: (state, action) => {
-      const { itemUid, collectionUid, type, requestUid } = action.payload;
-      const collection = findCollectionByUid(state.collections, collectionUid);
-
-      if (collection) {
-        const item = findItemInCollection(collection, itemUid);
-        if (item) {
-          if (type === 'request-queued') {
-            const { cancelTokenUid } = action.payload;
-            item.requestUid = requestUid;
-            item.requestState = 'queued';
-            item.cancelTokenUid = cancelTokenUid;
-            item.requestSentTimestamp = Date.now();
-          }
-
-          if (type === 'request-sent') {
-            const { cancelTokenUid, requestSent } = action.payload;
-            item.requestSent = requestSent;
-
-            // sometimes the response is received before the request-sent event arrives
-            if (item.requestUid === requestUid && item.requestState === 'queued') {
-              item.requestUid = requestUid;
-              item.requestState = 'sending';
-              item.cancelTokenUid = cancelTokenUid;
-            }
-          }
-
-          if (type === 'assertion-results') {
-            const { results } = action.payload;
-            item.assertionResults = results;
-          }
-
-          if (type === 'test-results') {
-            const { results } = action.payload;
-            item.testResults = results;
-          }
-        }
-      }
-    },
     runFolderEvent: (state, action) => {
       const { collectionUid, folderUid, itemUid, type, isRecursive, error, cancelTokenUid } = action.payload;
       const collection = findCollectionByUid(state.collections, collectionUid);
 
       if (collection) {
-        const folder = findItemInCollection(collection, folderUid);
         const request = findItemInCollection(collection, itemUid);
 
         collection.runnerResult = collection.runnerResult || { info: {}, items: [] };
@@ -1782,9 +1708,6 @@ export const {
   cloneItem,
   scriptEnvironmentUpdateEvent,
   processEnvUpdateEvent,
-  requestCancelled,
-  responseReceived,
-  responseCleared,
   saveRequest,
   deleteRequestDraft,
   newEphemeralHttpRequest,

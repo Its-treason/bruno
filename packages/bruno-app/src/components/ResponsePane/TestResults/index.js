@@ -1,9 +1,17 @@
-import React from 'react';
 import StyledWrapper from './StyledWrapper';
+import { useStore } from 'zustand';
+import { responseStore } from 'src/store/responseStore';
 
-const TestResults = ({ results, assertionResults }) => {
-  results = results || [];
-  assertionResults = assertionResults || [];
+const TestResults = ({ itemUid }) => {
+  const assertionResults =
+    useStore(responseStore, (state) => {
+      return state.responses.get(itemUid)?.assertionResults;
+    }) ?? [];
+  const results =
+    useStore(responseStore, (state) => {
+      return state.responses.get(itemUid)?.testResults;
+    }) ?? [];
+
   if (!results.length && !assertionResults.length) {
     return <div className="px-3">No tests found</div>;
   }

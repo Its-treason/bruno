@@ -1,8 +1,27 @@
-import React from 'react';
+import { useStore } from 'zustand';
 import StyledWrapper from './StyledWrapper';
+import { responseStore } from 'src/store/responseStore';
+import { useShallow } from 'zustand/react/shallow';
+import { useMemo } from 'react';
 
-const ResponseHeaders = ({ headers }) => {
-  const headersArray = typeof headers === 'object' ? Object.entries(headers) : [];
+const ResponseHeaders = ({ itemUid }) => {
+  const headersArray = useStore(
+    responseStore,
+    useShallow((state) => {
+      return state.responses.get(itemUid)?.headers;
+    })
+  );
+
+  const rows = useMemo(() => {
+    return Object.entries(headersArray ?? {}).map(([name, value], index) => {
+      return (
+        <tr key={index}>
+          <td className="key">{name}</td>
+          <td className="value">{value}</td>
+        </tr>
+      );
+    });
+  });
 
   return (
     <StyledWrapper className="w-full">
@@ -13,18 +32,7 @@ const ResponseHeaders = ({ headers }) => {
             <td>Value</td>
           </tr>
         </thead>
-        <tbody>
-          {headersArray && headersArray.length
-            ? headersArray.map((header, index) => {
-                return (
-                  <tr key={index}>
-                    <td className="key">{header[0]}</td>
-                    <td className="value">{header[1]}</td>
-                  </tr>
-                );
-              })
-            : null}
-        </tbody>
+        <tbody>{rows}</tbody>
       </table>
     </StyledWrapper>
   );

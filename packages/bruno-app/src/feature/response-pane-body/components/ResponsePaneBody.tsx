@@ -16,51 +16,45 @@ import { ErrorResultViewer } from './viewer/ErrorResultViewer';
 import { PdfResultViewer } from './viewer/PdfResultViewer';
 import { JsonFilterResultViewer } from './viewer/JsonFilterResultViewer';
 import { Button, Stack, Text } from '@mantine/core';
+import { useStore } from 'zustand';
+import { responseStore } from 'src/store/responseStore';
 
 type ResponsePaneBodyProps = {
   item: RequestItemSchema;
-  collection: CollectionSchema;
+  collectionUid: string;
   disableRun: boolean;
-  size: number;
-  error?: Error | string;
-  initialPreviewModes?: { pretty: string | null; preview: string | null };
 };
 
-export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({
-  item,
-  collection,
-  disableRun,
-  size,
-  error,
-  initialPreviewModes
-}) => {
+export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({ item, collectionUid, disableRun }) => {
+  const { error, previewModes, size } = useStore(responseStore, (state) => state.responses.get(item.uid)) ?? {};
+
   const [mode, setMode] = useState<ResponseMode>(error ? ['error', null] : ['raw', null]);
   const [dismissedSizeWarning, setDismissedSizeWarning] = useState(false);
 
   useEffect(() => {
-    if (!initialPreviewModes) {
+    if (!previewModes) {
       setMode(['raw', null]);
       return;
     }
 
-    if (initialPreviewModes.pretty) {
-      setMode(['pretty', initialPreviewModes.pretty as any]);
+    if (previewModes.pretty) {
+      setMode(['pretty', previewModes.pretty as any]);
     }
-    if (initialPreviewModes.preview) {
-      setMode(['preview', initialPreviewModes.preview as any]);
+    if (previewModes.preview) {
+      setMode(['preview', previewModes.preview as any]);
     }
     // Explicity listen for changes for the values. So that this does not run, if the object ref changes
-  }, [initialPreviewModes?.pretty, initialPreviewModes?.preview]);
+  }, [previewModes?.pretty, previewModes?.preview]);
 
   const preview = useMemo(() => {
     if (mode[0] === 'raw') {
-      return <TextResultViewer collectionUid={collection.uid} item={item} disableRun={disableRun} />;
+      return <TextResultViewer collectionUid={collectionUid} item={item} disableRun={disableRun} />;
     } else if (mode[0] === 'pretty') {
       //                        Disable the JSON filter if the response is way to large
       if (mode[1] === 'json' && size < 20_000_000) {
-        return <JsonFilterResultViewer collectionUid={collection.uid} item={item} disableRun={disableRun} />;
+        return <JsonFilterResultViewer collectionUid={collectionUid} item={item} disableRun={disableRun} />;
       }
-      return <TextResultViewer collectionUid={collection.uid} item={item} format={mode[1]} disableRun={disableRun} />;
+      return <TextResultViewer collectionUid={collectionUid} item={item} format={mode[1]} disableRun={disableRun} />;
     } else if (mode[0] === 'error') {
       return <ErrorResultViewer error={error!} />;
     }
@@ -98,10 +92,9 @@ export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({
         mode={mode}
         setMode={setMode}
         hasError={!!error}
-        // TODO: We have to check if we really received a body
-        hasBody={true}
-        initialPrettyMode={initialPreviewModes?.pretty as PrettyMode}
-        initialPreviewMode={initialPreviewModes?.preview as PreviewMode}
+        hasBody={size !== undefined}
+        initialPrettyMode={previewModes?.pretty as PrettyMode}
+        initialPreviewMode={previewModes?.preview as PreviewMode}
       />
       {preview}
     </div>

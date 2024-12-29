@@ -29,9 +29,7 @@ import {
   selectEnvironment as _selectEnvironment,
   sortCollections as _sortCollections,
   filterCollections as _filterCollections,
-  requestCancelled,
   resetRunResults,
-  responseReceived,
   updateLastAction
 } from './index';
 
@@ -42,6 +40,7 @@ import { uuid, waitForNextTick } from 'utils/common';
 import { sendCollectionOauth2Request as _sendCollectionOauth2Request } from 'utils/network/index';
 import { parsePathParams, parseQueryParams, splitOnFirst } from 'utils/url';
 import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
+import { responseStore } from 'src/store/responseStore';
 
 export const renameCollection = (newName, collectionUid) => (dispatch, getState) => {
   const state = getState();
@@ -204,99 +203,39 @@ export const sendCollectionOauth2Request = (collectionUid, itemUid) => (dispatch
   });
 };
 
-export const retrieveDirectoriesBetween = (pathname, parameter, filename) => {
-  const parameterIndex = pathname.indexOf(parameter);
-  const filenameIndex = pathname.indexOf(filename);
-  if (parameterIndex === -1 || filenameIndex === -1 || filenameIndex < parameterIndex) {
-    return [];
-  }
-  const directories = pathname
-    .substring(parameterIndex + parameter.length, filenameIndex)
-    .split(PATH_SEPARATOR)
-    .filter((directory) => directory.trim() !== '');
-  const reconstructedPaths = [];
-  let currentPath = pathname.substring(0, parameterIndex + parameter.length);
-  for (const directory of directories) {
-    currentPath += `${PATH_SEPARATOR}${directory}`;
-    reconstructedPaths.push(currentPath);
-  }
-  return reconstructedPaths;
-};
-export const mergeRequests = (parentRequest, childRequest) => {
-  return _.mergeWith({}, parentRequest, childRequest, customizer);
-};
-function customizer(objValue, srcValue, key) {
-  const exceptions = ['headers', 'params', 'vars'];
-  if (exceptions.includes(key) && _.isArray(objValue) && _.isArray(srcValue)) {
-    return _.unionBy(srcValue, objValue, 'name');
-  }
-  return undefined;
-}
-
-export const sendRequest = (item, collectionUid) => (dispatch, getState) => {
+export const sendRequest = (item, collectionUid) => async (_dispatch, getState) => {
   const state = getState();
   const collection = findCollectionByUid(state.collections.collections, collectionUid);
+  if (!collection) {
+    throw new Error(`Collection with id ${collectionUid} not found!`);
+  }
 
-  return new Promise((resolve, reject) => {
-    if (!collection) {
-      return reject(new Error('Collection not found'));
+  const environment = findEnvironmentInCollection(collection, collection.activeEnvironmentUid);
+
+  const store = responseStore.getState();
+  store.clearResponse(item.uid);
+
+  try {
+    await sendNetworkRequest(item, collection, environment);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error);
+
+    if (message.includes('Request cancelled')) {
+      console.warn('Request canceleed!! REMOVE ME');
+      store.cancelResponse(item.uid);
+      return;
     }
 
-    const environment = findEnvironmentInCollection(collection, collection.activeEnvironmentUid);
-    sendNetworkRequest(item, collection, environment)
-      .then((response) => {
-        return dispatch(
-          responseReceived({
-            itemUid: item.uid,
-            collectionUid: collectionUid,
-            response: response
-          })
-        );
-      })
-      .then(resolve)
-      .catch((err) => {
-        if (err && err.message === "Error invoking remote method 'send-http-request': Error: Request cancelled") {
-          console.log('>> request cancelled');
-          dispatch(
-            responseReceived({
-              itemUid: item.uid,
-              collectionUid: collectionUid,
-              response: null
-            })
-          );
-          return;
-        }
-
-        const errorResponse = {
-          status: 'Error',
-          isError: true,
-          error: err.message ?? 'Something went wrong',
-          size: 0,
-          duration: 0
-        };
-
-        dispatch(
-          responseReceived({
-            itemUid: item.uid,
-            collectionUid: collectionUid,
-            response: errorResponse
-          })
-        );
-      });
-  });
+    store.responseError(item.uid, message);
+  }
 };
 
-export const cancelRequest = (cancelTokenUid, item, collection) => (dispatch) => {
+export const cancelRequest = (cancelTokenUid, item) => () => {
   cancelNetworkRequest(cancelTokenUid)
     .then(() => {
-      dispatch(
-        requestCancelled({
-          itemUid: item.uid,
-          collectionUid: collection.uid
-        })
-      );
+      responseStore.getState().cancelResponse(item.uid);
     })
-    .catch((err) => console.log(err));
+    .catch((err) => console.error('Could not cancel request', err));
 };
 
 export const cancelRunnerExecution = (cancelTokenUid) => (dispatch) => {

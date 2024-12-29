@@ -1,5 +1,6 @@
-import React from 'react';
+import { useStore } from 'zustand';
 import StyledWrapper from './StyledWrapper';
+import { responseStore } from 'src/store/responseStore';
 
 function formatBytes(bytes, decimals = 2) {
   if (!+bytes) return '0 Bytes';
@@ -13,7 +14,9 @@ function formatBytes(bytes, decimals = 2) {
   return `${parseFloat((bytes / Math.pow(k, i)).toFixed(dm))} ${sizes[i]}`;
 }
 
-const ResponseSize = ({ size }) => {
+const ResponseSize = ({ itemUid }) => {
+  const size = useStore(responseStore, (state) => state.responses.get(itemUid)?.size ?? 0);
+
   const formatted = formatBytes(size);
 
   return <StyledWrapper title={`${size} bytes`}>{formatted}</StyledWrapper>;

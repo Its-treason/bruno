@@ -27,6 +27,7 @@
     "@tiptap/react": "^2.10.3",
     "@tiptap/starter-kit": "^2.10.3",
     "@usebruno/common": "workspace:*",
+    "@usebruno/core": "workspace:*",
     "@usebruno/graphql-docs": "workspace:*",
     "@usebruno/schema": "workspace:*",
     "classnames": "^2.5.1",

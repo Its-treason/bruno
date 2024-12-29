@@ -96,7 +96,7 @@ ipcMain.handle('send-http-request', async (event, item, collection, environment,
     duration: res.response?.responseTime ?? 0,
     timeline: res.timeline,
     debug: res.debug.getClean(),
-    timings: res.timings.getClean(),
+    timings: res.timings.getAll(),
     error: res.error ? String(res.error) : undefined,
     previewModes: res.previewModes
   };
@@ -200,6 +200,9 @@ ipcMain.handle(
               ...payload,
               folderUid
             });
+          },
+          requestEvent: (payload) => {
+            webContents.send('main:run-request-event', payload);
           },
           updateScriptEnvironment: (payload) => {
             webContents.send('main:script-environment-update', payload);

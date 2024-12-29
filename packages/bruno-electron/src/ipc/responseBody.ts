@@ -80,14 +80,14 @@ app.once('ready', () => {
 //#endregion
 
 //#region Save response to file
-function getHeaderValue(response: Response, headerName: string): string | null {
-  const value = response.headers[headerName];
+function getHeaderValue(headers: Record<string, string[]>, headerName: string): string | null {
+  const value = headers[headerName];
   if (!value) return null;
   return Array.isArray(value) ? value[0] : value;
 }
 
-function getFileNameFromContentDispositionHeader(response: Response): string | undefined {
-  const contentDisposition = getHeaderValue(response, 'content-disposition');
+function getFileNameFromContentDispositionHeader(headers: Record<string, string[]>): string | undefined {
+  const contentDisposition = getHeaderValue(headers, 'content-disposition');
   if (!contentDisposition) {
     return undefined;
   }
@@ -107,26 +107,29 @@ function getFileNameFromUrlPath(url: string): string | undefined {
   return undefined;
 }
 
-function getFileNameBasedOnContentTypeHeader(response: Response): string {
-  const contentType = getHeaderValue(response, 'content-type');
+function getFileNameBasedOnContentTypeHeader(headers: Record<string, string[]>): string {
+  const contentType = getHeaderValue(headers, 'content-type');
   const extension = (contentType && mimeTypes.extension(contentType)) || 'txt';
   return `response.${extension}`;
 }
 
-ipcMain.handle('renderer:save-response-to-file', async (event, itemUid: string, response: Response, url: string) => {
-  const defaultPath =
-    getFileNameFromContentDispositionHeader(response) ||
-    getFileNameFromUrlPath(url) ||
-    getFileNameBasedOnContentTypeHeader(response);
+ipcMain.handle(
+  'renderer:save-response-to-file',
+  async (event, itemUid: string, headers: Record<string, string[]>, url: string) => {
+    const defaultPath =
+      getFileNameFromContentDispositionHeader(headers) ||
+      getFileNameFromUrlPath(url) ||
+      getFileNameBasedOnContentTypeHeader(headers);
 
-  const window = BrowserWindow.fromWebContents(event.sender)!;
-  const { filePath } = await dialog.showSaveDialog(window, {
-    defaultPath
-  });
+    const window = BrowserWindow.fromWebContents(event.sender)!;
+    const { filePath } = await dialog.showSaveDialog(window, {
+      defaultPath
+    });
 
-  if (filePath) {
-    const responsePath = path.join(app.getPath('userData'), 'responseCache', itemUid);
-    await fs.copyFile(responsePath, filePath);
+    if (filePath) {
+      const responsePath = path.join(app.getPath('userData'), 'responseCache', itemUid);
+      await fs.copyFile(responsePath, filePath);
+    }
   }
-});
+);
 //#endregion

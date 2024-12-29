@@ -4,23 +4,21 @@ import ResponseClear from 'components/ResponsePane/ResponseClear';
 import ResponseSave from 'components/ResponsePane/ResponseSave';
 import ResponseSize from 'components/ResponsePane/ResponseSize';
 import ResponseTime from 'components/ResponsePane/ResponseTime';
-import StatusCode from 'components/ResponsePane/StatusCode';
+import { StatusCode } from 'components/ResponsePane/StatusCode';
 import React from 'react';
 
 type ResponseSummaryProps = {
-  response: any;
   item: RequestItemSchema;
-  collection: CollectionSchema;
 };
 
-export const ResponseSummary: React.FC<ResponseSummaryProps> = ({ response, item, collection }) => {
+export const ResponseSummary: React.FC<ResponseSummaryProps> = ({ item }) => {
   return (
     <Group gap={'xs'}>
-      <StatusCode status={response.status} />
-      <ResponseTime duration={response.duration} />
-      <ResponseSize size={response.size} />
-      <ResponseClear item={item} collection={collection} />
-      <ResponseSave item={item} size={response.size} />
+      <StatusCode itemUid={item.uid} />
+      <ResponseTime itemUid={item.uid} />
+      <ResponseSize itemUid={item.uid} />
+      <ResponseClear itemUid={item.uid} />
+      <ResponseSave itemUid={item.uid} />
     </Group>
   );
 };

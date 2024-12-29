@@ -1,5 +1,4 @@
 import { RequestContext } from './types';
-import { stringify, parse } from 'lossless-json';
 import { STATUS_CODES } from 'node:http';
 import { Cookie, CookieJar } from 'tough-cookie';
 import { cleanJson } from './runtime/utils';
@@ -30,46 +29,67 @@ export class Callbacks {
   requestQueued(context: RequestContext) {
     this.send('requestEvent', context, {
       type: 'request-queued',
-      requestUid: context.requestItem.uid,
+      requestUid: context.uid,
       collectionUid: context.collection.uid,
       itemUid: context.requestItem.uid,
-      cancelTokenUid: context.cancelToken
+      data: {
+        cancelTokenUid: context.cancelToken
+      }
     });
   }
 
   requestSend(context: RequestContext) {
     this.send('requestEvent', context, {
       type: 'request-sent',
-      requestSent: {
-        url: context.requestItem.request.url,
-        method: context.requestItem.request.method,
-        headers: context.requestItem.request.headers,
-        data: parse(stringify('{}')!)
-      },
       collectionUid: context.collection.uid,
       itemUid: context.requestItem.uid,
       requestUid: context.uid,
-      cancelTokenUid: ''
+      data: {
+        cancelTokenUid: context.cancelToken
+      }
     });
   }
 
-  assertionResults(context: RequestContext, results: any[]) {
+  assertionResults(context: RequestContext, assertionResults: any[]) {
     this.send('requestEvent', context, {
       type: 'assertion-results',
-      results: results,
       itemUid: context.requestItem.uid,
       requestUid: context.uid,
-      collectionUid: context.collection.uid
+      collectionUid: context.collection.uid,
+      data: {
+        assertionResults
+      }
     });
   }
 
-  testResults(context: RequestContext, results: any[]) {
+  testResults(context: RequestContext, testResults: any[]) {
     this.send('requestEvent', context, {
       type: 'test-results',
-      results: results,
       itemUid: context.requestItem.uid,
       requestUid: context.uid,
-      collectionUid: context.collection.uid
+      collectionUid: context.collection.uid,
+      data: {
+        testResults
+      }
+    });
+  }
+
+  responseReceived(context: RequestContext) {
+    this.send('requestEvent', context, {
+      type: 'response-received',
+      itemUid: context.requestItem.uid,
+      requestUid: context.uid,
+      collectionUid: context.collection.uid,
+      data: {
+        status: context.response?.statusCode,
+        size: context.response?.size,
+        duration: context.response?.responseTime,
+        headers: context.response?.headers,
+        previewModes: context.previewModes,
+        debug: context.debug.getClean(),
+        timeline: context.timeline,
+        timings: context.timings.getAll()
+      }
     });
   }
 
@@ -171,7 +191,7 @@ export class Callbacks {
         previewModes: context.previewModes
       },
       timeline: context.timeline,
-      timings: context.timings.getClean(),
+      timings: context.timings.getAll(),
       debug: context.debug.getClean(),
       itemUid: context.requestItem.uid,
       collectionUid: context.collection.uid

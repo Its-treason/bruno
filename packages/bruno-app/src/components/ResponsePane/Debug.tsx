@@ -6,14 +6,25 @@ import { Stack, Title, Text } from '@mantine/core';
 import { Inspector } from 'react-inspector';
 import { useTheme } from 'providers/Theme';
 import { ResponseTimings } from 'components/ResponsePane/ResponseTimings';
+import { useStore } from 'zustand';
+import { responseStore } from 'src/store/responseStore';
 
 type Logs = { title: string; data: string; date: number }[];
-type DebugInfo = { stage: string; logs: Logs }[];
+export type DebugInfo = { stage: string; logs: Logs }[];
 
-export const DebugTab: React.FC<{ debugInfo: DebugInfo; timings: unknown }> = ({ debugInfo = [], timings }) => {
+type DebugTabProps = {
+  itemUid: string;
+};
+
+export const DebugTab: React.FC<DebugTabProps> = ({ itemUid }) => {
+  const debugInfo =
+    useStore(responseStore, (state) => {
+      return state.responses.get(itemUid)?.debug;
+    }) ?? [];
+
   return (
     <Stack w={'100%'} gap={'xl'} h={'100%'} style={{ overflow: 'auto' }}>
-      <ResponseTimings timings={timings} />
+      <ResponseTimings itemUid={itemUid} />
       {debugInfo.map(({ stage, logs }) => (
         <div key={stage}>
           <Title key={stage} order={3} mb={'xs'}>

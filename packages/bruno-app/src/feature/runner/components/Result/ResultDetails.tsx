@@ -13,6 +13,8 @@ import ResponseHeaders from 'components/ResponsePane/ResponseHeaders';
 import { TimelineNew } from 'components/ResponsePane/TimelineNew';
 import TestResults from 'components/ResponsePane/TestResults';
 import { DebugTab } from 'components/ResponsePane/Debug';
+import { useStore } from 'zustand';
+import { responseStore } from 'src/store/responseStore';
 
 type ResultDetailsProps = {
   item: RunnerResultItem;
@@ -22,8 +24,6 @@ type ResultDetailsProps = {
 export const ResultDetails: React.FC<ResultDetailsProps> = ({ item, collection }) => {
   const [selectedTab, setSelectedTab] = useState('response');
 
-  const { responseReceived, testResults, assertionResults, error, timings, debug, timeline } = item;
-
   const content = useMemo(() => {
     switch (selectedTab) {
       case 'response': {
@@ -31,26 +31,22 @@ export const ResultDetails: React.FC<ResultDetailsProps> = ({ item, collection }
           <ResponsePaneBody
             // @ts-expect-error
             item={item}
-            collection={collection}
+            collectionUid={collection.uid}
             disableRun={true} // Running request from Runner view does not make sense
-            error={error}
-            size={responseReceived.size}
-            initialPreviewModes={responseReceived.previewModes}
           />
         );
       }
       case 'headers': {
-        const headers = responseReceived.headers ?? [];
-        return <ResponseHeaders headers={headers} />;
+        return <ResponseHeaders itemUid={item.uid} />;
       }
       case 'timeline': {
-        return <TimelineNew timeline={timeline} />;
+        return <TimelineNew itemUid={item.uid} />;
       }
       case 'tests': {
-        return <TestResults results={testResults} assertionResults={assertionResults} />;
+        return <TestResults itemUid={item.uid} />;
       }
       case 'debug': {
-        return <DebugTab debugInfo={debug} timings={timings || {}} />;
+        return <DebugTab itemUid={item.uid} />;
       }
       default: {
         return <div>404 | Not found</div>;
@@ -58,9 +54,9 @@ export const ResultDetails: React.FC<ResultDetailsProps> = ({ item, collection }
     }
   }, [selectedTab, item.uid]);
 
+  const headers = useStore(responseStore, (state) => state.responses.get(item.uid)?.headers);
   const tabs = useMemo(() => {
-    const headerCount = responseReceived.headers ? Object.entries(responseReceived.headers).length : null;
-
+    const headerCount = headers ? Object.keys(headers).length : null;
     return [
       { value: 'response', label: 'Response' },
       { value: 'headers', label: <>Headers {headerCount ? <sup>{headerCount}</sup> : null}</> },
@@ -68,7 +64,7 @@ export const ResultDetails: React.FC<ResultDetailsProps> = ({ item, collection }
       { value: 'tests', label: 'Tests' },
       { value: 'debug', label: 'Debug' }
     ];
-  }, [item]);
+  }, [headers]);
 
   return (
     <div className={classes.container}>
@@ -76,7 +72,7 @@ export const ResultDetails: React.FC<ResultDetailsProps> = ({ item, collection }
         tabs={tabs}
         activeTab={selectedTab}
         // @ts-expect-error
-        aboveTabs={<ResponseSummary collection={collection} item={item} response={responseReceived} />}
+        aboveTabs={<ResponseSummary item={item} />}
         onTabChange={(tab) => {
           setSelectedTab(tab);
         }}
