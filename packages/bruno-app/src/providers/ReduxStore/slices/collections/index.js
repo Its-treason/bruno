@@ -1569,100 +1569,6 @@ export const collectionsSlice = createSlice({
         collection.name = newName;
       }
     },
-    resetRunResults: (state, action) => {
-      const { collectionUid } = action.payload;
-      const collection = findCollectionByUid(state.collections, collectionUid);
-
-      if (collection) {
-        collection.runnerResult = null;
-      }
-    },
-    runFolderEvent: (state, action) => {
-      const { collectionUid, folderUid, itemUid, type, isRecursive, error, cancelTokenUid } = action.payload;
-      const collection = findCollectionByUid(state.collections, collectionUid);
-
-      if (collection) {
-        const request = findItemInCollection(collection, itemUid);
-
-        collection.runnerResult = collection.runnerResult || { info: {}, items: [] };
-
-        // todo
-        // get startedAt and endedAt from the runner and display it in the UI
-        if (type === 'testrun-started') {
-          const info = collection.runnerResult.info;
-          info.collectionUid = collectionUid;
-          info.folderUid = folderUid;
-          info.isRecursive = isRecursive;
-          info.cancelTokenUid = cancelTokenUid;
-          info.status = 'started';
-        }
-
-        if (type === 'testrun-ended') {
-          const info = collection.runnerResult.info;
-          info.status = 'ended';
-        }
-
-        if (type === 'request-delayed') {
-          collection.runnerResult.items.push({
-            uid: request.uid,
-            status: 'delayed'
-          });
-        }
-
-        if (type === 'request-queued') {
-          const item = collection.runnerResult.items.findLast((i) => i.uid === request.uid);
-          if (item?.status === 'delayed') {
-            item.status = 'queued';
-          } else {
-            collection.runnerResult.items.push({
-              uid: request.uid,
-              status: 'queued'
-            });
-          }
-        }
-
-        if (type === 'request-sent') {
-          const item = collection.runnerResult.items.findLast((i) => i.uid === request.uid);
-          item.status = 'running';
-          item.requestSent = action.payload.requestSent;
-        }
-
-        if (type === 'response-received') {
-          const item = collection.runnerResult.items.findLast((i) => i.uid === request.uid);
-          item.status = 'completed';
-          item.responseReceived = action.payload.responseReceived;
-          item.timeline = action.payload.timeline;
-          item.timings = action.payload.timings;
-          item.debug = action.payload.debug;
-          item.previewModes = action.payload.previewModes;
-        }
-
-        if (type === 'test-results') {
-          const item = collection.runnerResult.items.findLast((i) => i.uid === request.uid);
-          item.testResults = action.payload.testResults;
-        }
-
-        if (type === 'assertion-results') {
-          const item = collection.runnerResult.items.findLast((i) => i.uid === request.uid);
-          item.assertionResults = action.payload.assertionResults;
-        }
-
-        if (type === 'error') {
-          const item = collection.runnerResult.items.findLast((i) => i.uid === request.uid);
-          item.error = action.payload.error;
-          item.responseReceived = action.payload.responseReceived;
-          item.status = 'error';
-        }
-      }
-    },
-    resetCollectionRunner: (state, action) => {
-      const { collectionUid } = action.payload;
-      const collection = findCollectionByUid(state.collections, collectionUid);
-
-      if (collection) {
-        collection.runnerResult = null;
-      }
-    },
     updateRequestDocs: (state, action) => {
       const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
 
@@ -1775,7 +1681,6 @@ export const {
   resetRunResults,
   runRequestEvent,
   runFolderEvent,
-  resetCollectionRunner,
   updateRequestDocs,
   updateFolderDocs
 } = collectionsSlice.actions;

@@ -32,6 +32,11 @@ export const ResponsePaneBody: React.FC<ResponsePaneBodyProps> = ({ item, collec
   const [dismissedSizeWarning, setDismissedSizeWarning] = useState(false);
 
   useEffect(() => {
+    if (error) {
+      setMode(['error', null]);
+      return;
+    }
+
     if (!previewModes) {
       setMode(['raw', null]);
       return;

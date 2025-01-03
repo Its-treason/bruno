@@ -5,8 +5,7 @@
 import { Button, Group } from '@mantine/core';
 import { RunnerConfig } from '../../types/runner';
 import { useCallback } from 'react';
-import { useDispatch } from 'react-redux';
-import { resetCollectionRunner } from 'providers/ReduxStore/slices/collections';
+import { runnerStore } from 'src/store/runnerStore';
 
 type RunAgain = {
   runnerConfig: RunnerConfig;
@@ -15,13 +14,8 @@ type RunAgain = {
 };
 
 export const RunAgain: React.FC<RunAgain> = ({ collectionUid, runnerConfig, onRun }) => {
-  const dispatch = useDispatch();
   const reset = useCallback(() => {
-    dispatch(
-      resetCollectionRunner({
-        collectionUid
-      })
-    );
+    runnerStore.getState().resetRun(collectionUid);
   }, [collectionUid]);
 
   return (

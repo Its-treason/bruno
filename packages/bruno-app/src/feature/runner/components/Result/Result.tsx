@@ -3,7 +3,7 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { CollectionSchema } from '@usebruno/schema';
-import { RunnerConfig, RunnerResult, RunnerResultItem } from '../../types/runner';
+import { RunnerConfig } from '../../types/runner';
 import { useCallback, useLayoutEffect, useRef, useState } from 'react';
 import { Summary } from './Summary';
 import classes from './Results.module.scss';
@@ -13,18 +13,18 @@ import { CancelRunner } from './CancelRunner';
 import AutoSizer from 'react-virtualized-auto-sizer';
 import { Divider } from '@mantine/core';
 import { ResultDetails } from './ResultDetails';
+import { useStore } from 'zustand';
+import { runnerStore } from 'src/store/runnerStore';
 
 type ResultProps = {
   collection: CollectionSchema;
-  runnerConfig: RunnerConfig;
   onRun: (config: RunnerConfig) => void;
 };
 
-export const Result: React.FC<ResultProps> = ({ collection, runnerConfig, onRun }) => {
-  const [resultFocused, setResultFocused] = useState<null | RunnerResultItem>(null);
+export const Result: React.FC<ResultProps> = ({ collection, onRun }) => {
+  const [resultFocused, setResultFocused] = useState<null | string>(null);
 
-  // @ts-expect-error TODO: Remove this from the collection
-  const runnerResults = collection.runnerResult as RunnerResult;
+  const runnerResults = useStore(runnerStore, (state) => state.runs.get(collection.uid));
 
   const listRef = useRef<HTMLDivElement>(null);
   useLayoutEffect(() => {
@@ -40,12 +40,12 @@ export const Result: React.FC<ResultProps> = ({ collection, runnerConfig, onRun 
     }
   }, [runnerResults.items.length]);
 
-  const onFocus = useCallback((item: RunnerResultItem) => {
+  const onFocus = useCallback((uid: string) => {
     setResultFocused((current) => {
-      if (item.uid === current?.uid) {
+      if (uid === current) {
         return null;
       }
-      return item;
+      return uid;
     });
   }, []);
 
@@ -53,7 +53,7 @@ export const Result: React.FC<ResultProps> = ({ collection, runnerConfig, onRun 
     <AutoSizer disableWidth>
       {({ height }) => (
         <div className={classes.container} style={{ height }} data-result-focused={resultFocused !== null}>
-          <Summary items={runnerResults.items} collection={collection} />
+          <Summary itemUids={runnerResults.items} collection={collection} />
           <Divider />
 
           <div className={classes.requests} ref={listRef}>
@@ -61,13 +61,13 @@ export const Result: React.FC<ResultProps> = ({ collection, runnerConfig, onRun 
           </div>
 
           <Divider />
-          {runnerResults.info.status !== 'ended' ? (
-            <CancelRunner cancelToken={runnerResults.info.cancelTokenUid} />
+          {runnerResults.status !== 'ended' ? (
+            <CancelRunner cancelToken={runnerResults.cancelTokenUid} />
           ) : (
-            <RunAgain onRun={onRun} collectionUid={collection.uid} runnerConfig={runnerConfig} />
+            <RunAgain onRun={onRun} collectionUid={collection.uid} runnerConfig={runnerResults.runnerConfig} />
           )}
 
-          {resultFocused ? <ResultDetails item={resultFocused} collection={collection} /> : null}
+          {resultFocused ? <ResultDetails itemUid={resultFocused} collection={collection} /> : null}
         </div>
       )}
     </AutoSizer>

@@ -33,7 +33,8 @@ export async function request(
   executionMode: 'standalone' | 'runner',
   fetchAuthorizationCode: Callbacks['fetchAuthorizationCode'],
   environment?: CollectionEnvironment,
-  rawCallbacks: Partial<RawCallbacks> = {}
+  rawCallbacks: Partial<RawCallbacks> = {},
+  delay: number = 0
 ) {
   // Convert the EnvVariables into a Record
   const environmentVariableRecord = (environment?.variables ?? []).reduce<Record<string, unknown>>((acc, env) => {
@@ -75,6 +76,7 @@ export async function request(
     brunoVersion,
     environmentName: environment?.name,
     executionMode,
+    delay,
 
     requestItem,
     collection,
@@ -110,6 +112,7 @@ export async function request(
     return await doRequest(context);
   } catch (error) {
     context.error = error instanceof Error ? error : new Error(String(error));
+    context.callback.responseError(context, context.error.message);
   } finally {
     context.timings.stopAll();
   }
@@ -122,7 +125,16 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
   context.debug.addStage('Pre-Request');
 
   context.callback.requestQueued(context);
-  context.callback.folderRequestQueued(context);
+
+  // This will only be used for the request runner
+  if (context.delay > 0) {
+    context.callback.requestDelayed(context);
+
+    await new Promise<void>((resolve) => {
+      context.abortController?.signal.addEventListener('abort', () => resolve());
+      setTimeout(() => resolve(), context.delay);
+    });
+  }
 
   const [folderData, folderVariables] = collectFolderData(context.collection, context.requestItem.uid);
   context.variables.folder = folderVariables;
@@ -151,15 +163,14 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
   context.timings.stopMeasure('parseResponse');
 
   determinePreviewType(context);
+  context.callback.responseReceived(context);
+
   postRequestVars(context, folderData);
   await postRequestScript(context, folderData);
   assertions(context);
   await tests(context, folderData);
 
   context.timings.stopMeasure('total');
-
-  context.callback.responseReceived(context);
-  context.callback.folderResponseReceived(context);
 
   return context;
 }

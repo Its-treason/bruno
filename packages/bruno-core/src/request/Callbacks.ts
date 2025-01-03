@@ -1,5 +1,4 @@
 import { RequestContext } from './types';
-import { STATUS_CODES } from 'node:http';
 import { Cookie, CookieJar } from 'tough-cookie';
 import { cleanJson } from './runtime/utils';
 
@@ -35,6 +34,15 @@ export class Callbacks {
       data: {
         cancelTokenUid: context.cancelToken
       }
+    });
+  }
+
+  requestDelayed(context: RequestContext) {
+    this.send('requestEvent', context, {
+      type: 'request-delayed',
+      requestUid: context.uid,
+      collectionUid: context.collection.uid,
+      itemUid: context.requestItem.uid
     });
   }
 
@@ -89,6 +97,18 @@ export class Callbacks {
         debug: context.debug.getClean(),
         timeline: context.timeline,
         timings: context.timings.getAll()
+      }
+    });
+  }
+
+  responseError(context: RequestContext, error: string) {
+    this.send('requestEvent', context, {
+      type: 'response-error',
+      itemUid: context.requestItem.uid,
+      requestUid: context.uid,
+      collectionUid: context.collection.uid,
+      data: {
+        error
       }
     });
   }
@@ -156,61 +176,9 @@ export class Callbacks {
     this.rawCallbacks.consoleLog({ type, args });
   }
 
-  folderRequestQueued(context: RequestContext) {
+  folderRequestAdded(context: RequestContext) {
     this.send('runFolderEvent', context, {
-      type: 'request-queued',
-      itemUid: context.requestItem.uid,
-      collectionUid: context.collection.uid
-    });
-  }
-
-  folderRequestSent(context: RequestContext) {
-    this.send('runFolderEvent', context, {
-      type: 'request-sent',
-      requestSent: {
-        url: context.requestItem.request.url,
-        method: context.httpRequest!.options.method,
-        headers: context.httpRequest!.options.headers,
-        data: context.httpRequest!.body ?? undefined
-      },
-      itemUid: context.requestItem.uid,
-      collectionUid: context.collection.uid
-    });
-  }
-
-  folderResponseReceived(context: RequestContext) {
-    this.send('runFolderEvent', context, {
-      type: 'response-received',
-      responseReceived: {
-        status: context.response?.statusCode,
-        statusText: STATUS_CODES[context.response?.statusCode || 0] || 'Unknown',
-        headers: context.response?.headers,
-        duration: context.response?.responseTime,
-        size: context.response?.size,
-        responseTime: context.response?.responseTime,
-        previewModes: context.previewModes
-      },
-      timeline: context.timeline,
-      timings: context.timings.getAll(),
-      debug: context.debug.getClean(),
-      itemUid: context.requestItem.uid,
-      collectionUid: context.collection.uid
-    });
-  }
-
-  folderAssertionResults(context: RequestContext, results: any[]) {
-    this.send('runFolderEvent', context, {
-      type: 'assertion-results',
-      assertionResults: results,
-      itemUid: context.requestItem.uid,
-      collectionUid: context.collection.uid
-    });
-  }
-
-  folderTestResults(context: RequestContext, results: any[]) {
-    this.send('runFolderEvent', context, {
-      type: 'test-results',
-      testResults: results,
+      type: 'request-added',
       itemUid: context.requestItem.uid,
       collectionUid: context.collection.uid
     });

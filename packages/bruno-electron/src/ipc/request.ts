@@ -126,9 +126,7 @@ ipcMain.handle(
 
     webContents.send('main:run-folder-event', {
       type: 'testrun-started',
-      isRecursive: recursive,
       collectionUid: collection.uid,
-      folderUid,
       cancelTokenUid: cancelToken
     });
 
@@ -154,13 +152,18 @@ ipcMain.handle(
     while (currentRequestIndex < folderRequests.length) {
       const item = folderRequests[currentRequestIndex];
 
+      webContents.send('main:run-folder-event', {
+        type: 'request-added',
+        itemUid: item.uid,
+        collectionUid: collection.uid
+      });
+
       if (!isNaN(delay) && delay > 0) {
         // Send the queue event so ui shows its loading
-        webContents.send('main:run-folder-event', {
+        webContents.send('main:run-request-event', {
           type: 'request-delayed',
           itemUid: item.uid,
-          collectionUid: collection.uid,
-          folderUid
+          collectionUid: collection.uid
         });
 
         await new Promise<void>((resolve) => {
@@ -174,7 +177,6 @@ ipcMain.handle(
         webContents.send('main:run-folder-event', {
           type: 'testrun-ended',
           collectionUid: collection.uid,
-          folderUid,
           error: 'Request runner cancelled'
         });
         return;
@@ -224,12 +226,13 @@ ipcMain.handle(
               });
             }
           }
-        }
+        },
+        isNaN(delay) ? 0 : delay
       );
 
       if (abortController.signal.aborted) {
         webContents.send('main:run-folder-event', {
-          type: 'error',
+          type: '',
           error: 'Aborted',
           responseReceived: {},
           collectionUid: collection.uid,

@@ -2,20 +2,24 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { RunnerResultItem } from '../types/runner';
+import { Response } from 'src/store/responseStore';
 
 // This converts the internal status into a Status for the UI
 // Also checks tests & assertions
-export default function runnerItemStatus(item: RunnerResultItem): 'passed' | 'failed' | 'running' | 'delayed' {
-  switch (item.status) {
+export default function runnerItemStatus(item: Response): 'passed' | 'failed' | 'running' | 'delayed' {
+  switch (item.requestState) {
     case 'delayed':
       return 'delayed';
-    case 'running':
     case 'queued':
+    case 'sending':
       return 'running';
-    case 'error':
+    case 'cancelled':
       return 'failed';
-    case 'completed':
+    case 'received':
+      if (item.error) {
+        return 'failed';
+      }
+
       const hasFailedTests = item.testResults?.some((result) => result.status === 'fail');
       if (hasFailedTests) {
         return 'failed';

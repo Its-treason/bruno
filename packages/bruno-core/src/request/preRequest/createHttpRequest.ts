@@ -347,6 +347,4 @@ export async function createHttpRequest(context: RequestContext) {
       context.httpRequest.options.agent = agent;
     }
   }
-
-  context.callback.folderRequestSent(context);
 }

@@ -29,7 +29,6 @@ import {
   selectEnvironment as _selectEnvironment,
   sortCollections as _sortCollections,
   filterCollections as _filterCollections,
-  resetRunResults,
   updateLastAction
 } from './index';
 
@@ -41,6 +40,7 @@ import { sendCollectionOauth2Request as _sendCollectionOauth2Request } from 'uti
 import { parsePathParams, parseQueryParams, splitOnFirst } from 'utils/url';
 import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
 import { responseStore } from 'src/store/responseStore';
+import { runnerStore } from 'src/store/runnerStore';
 
 export const renameCollection = (newName, collectionUid) => (dispatch, getState) => {
   const state = getState();
@@ -242,47 +242,51 @@ export const cancelRunnerExecution = (cancelTokenUid) => (dispatch) => {
   cancelNetworkRequest(cancelTokenUid).catch((err) => console.log(err));
 };
 
-export const runCollectionFolder = (collectionUid, folderUid, recursive, delay) => (dispatch, getState) => {
+export const runCollectionFolder = (collectionUid, folderUid, recursive, delay) => async (_dispatch, getState) => {
   const state = getState();
   const collection = findCollectionByUid(state.collections.collections, collectionUid);
 
-  return new Promise((resolve, reject) => {
-    if (!collection) {
-      return reject(new Error('Collection not found'));
+  if (!collection) {
+    return reject(new Error('Collection not found'));
+  }
+
+  const collectionCopy = cloneDeep(collection);
+  const folder = findItemInCollection(collectionCopy, folderUid);
+
+  if (folderUid && !folder) {
+    return new Error('Folder not found');
+  }
+
+  const environment = findEnvironmentInCollection(collectionCopy, collection.activeEnvironmentUid);
+
+  const globalEnvStore = globalEnvironmentStore.getState();
+  const globalVariableList = globalEnvStore.environments.get(globalEnvStore.activeEnvironment)?.variables ?? [];
+  const globalVariables = globalVariableList.reduce((acc, variable) => {
+    if (variable.enabled) {
+      acc[variable.name] = variable.value;
     }
+    return acc;
+  }, {});
 
-    const collectionCopy = cloneDeep(collection);
-    const folder = findItemInCollection(collectionCopy, folderUid);
-
-    if (folderUid && !folder) {
-      return reject(new Error('Folder not found'));
-    }
-
-    const environment = findEnvironmentInCollection(collectionCopy, collection.activeEnvironmentUid);
-
-    dispatch(
-      resetRunResults({
-        collectionUid: collection.uid
-      })
-    );
-
-    const globalEnvStore = globalEnvironmentStore.getState();
-    const globalVariableList = globalEnvStore.environments.get(globalEnvStore.activeEnvironment)?.variables ?? [];
-    const globalVariables = globalVariableList.reduce((acc, variable) => {
-      if (variable.enabled) {
-        acc[variable.name] = variable.value;
-      }
-      return acc;
-    }, {});
-
-    ipcRenderer
-      .invoke('renderer:run-collection-folder', folder, collectionCopy, environment, globalVariables, recursive, delay)
-      .then(resolve)
-      .catch((err) => {
-        toast.error(get(err, 'error.message') || 'Something went wrong!');
-        reject(err);
-      });
+  runnerStore.getState().initRun(collectionUid, {
+    recursive,
+    delay,
+    path: folderUid
   });
+
+  try {
+    await ipcRenderer.invoke(
+      'renderer:run-collection-folder',
+      folder,
+      collectionCopy,
+      environment,
+      globalVariables,
+      recursive,
+      delay
+    );
+  } catch (error) {
+    runnerStore.getState().runEnded(collectionUid, String(error));
+  }
 };
 
 export const newFolder = (folderName, collectionUid, itemUid) => (dispatch, getState) => {

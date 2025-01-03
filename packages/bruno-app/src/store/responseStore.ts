@@ -5,6 +5,7 @@ import { DebugInfo } from 'components/ResponsePane/Debug';
 
 type Actions = {
   requestQueued: (id: string, requestId: string, data: Partial<Response>) => void;
+  requestDelayed: (id: string, requestId: string) => void;
   requestSent: (id: string, requestId: string, data: Partial<Response>) => void;
   requestTestResults: (id: string, requestId: string, data: Partial<Response>) => void;
   requestReceived: (id: string, requestId: string, data: Partial<Response>) => void;
@@ -17,7 +18,7 @@ type Actions = {
 export type Response = {
   requestId: string;
   requestSentTimestamp: number;
-  requestState: 'queued' | 'sending' | 'received' | 'cancelled';
+  requestState: 'queued' | 'delayed' | 'sending' | 'received' | 'cancelled';
 
   error?: string;
 
@@ -57,6 +58,17 @@ export const responseStore = createStore(
         });
       });
     },
+    // This is only used in the collection runner
+    requestDelayed: (id: string, requestId: string) => {
+      set((store) => {
+        const response = store.responses.get(id);
+        if (response?.requestId !== requestId || response?.requestState === 'cancelled') {
+          return;
+        }
+
+        response.requestState = 'delayed';
+      });
+    },
     requestSent: (id: string, requestId: string, data: any) => {
       set((store) => {
         const response = store.responses.get(id);
@@ -69,9 +81,6 @@ export const responseStore = createStore(
           requestId,
           requestState: 'sending'
         } satisfies Response;
-        if (!response.requestSentTimestamp) {
-          updatedData.requestSentTimestamp = Date.now();
-        }
 
         store.responses.set(id, Object.assign(response, updatedData));
       });
@@ -136,6 +145,9 @@ window.ipcRenderer.on('main:run-request-event', (payload) => {
     case 'request-queued':
       responseStore.getState().requestQueued(itemUid, requestUid, data);
       break;
+    case 'request-delayed':
+      responseStore.getState().requestDelayed(itemUid, requestUid);
+      break;
     case 'request-sent':
       responseStore.getState().requestSent(itemUid, requestUid, data);
       break;
@@ -145,6 +157,9 @@ window.ipcRenderer.on('main:run-request-event', (payload) => {
       break;
     case 'response-received':
       responseStore.getState().requestReceived(itemUid, requestUid, data);
+      break;
+    case 'response-error':
+      responseStore.getState().responseError(itemUid, data.error);
       break;
     default:
       throw new Error(`case defined for "${type}" in "main:run-request-event" listener`);

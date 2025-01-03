@@ -9,14 +9,17 @@ import { IconRun } from '@tabler/icons-react';
 
 type RunnerConfigFormProps = {
   startRun: (config: any) => void;
-  initialConfig: RunnerConfig;
 };
 
-export const RunnerConfigForm: React.FC<RunnerConfigFormProps> = ({ startRun, initialConfig }) => {
-  const configForm = useForm({
+export const RunnerConfigForm: React.FC<RunnerConfigFormProps> = ({ startRun }) => {
+  const configForm = useForm<RunnerConfig>({
     name: 'runner-form',
     mode: 'uncontrolled',
-    initialValues: initialConfig
+    initialValues: {
+      recursive: false,
+      delay: 0,
+      path: null
+    }
   });
 
   return (

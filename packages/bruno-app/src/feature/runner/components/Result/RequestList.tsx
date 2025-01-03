@@ -8,11 +8,11 @@ import { CollectionSchema } from '@usebruno/schema';
 import { RequestListItem } from './RequestListeItem';
 
 type RequestListProps = {
-  items: RunnerResultItem[];
+  items: string[];
   collection: CollectionSchema;
-  onFocus: (item: RunnerResultItem) => void;
+  onFocus: (item: string) => void;
 };
 
 export const RequestList: React.FC<RequestListProps> = memo(({ items, collection, onFocus }) => {
-  return items.map((item) => <RequestListItem onFocus={onFocus} key={item.uid} item={item} collection={collection} />);
+  return items.map((item) => <RequestListItem onFocus={onFocus} key={item} itemUid={item} collection={collection} />);
 });

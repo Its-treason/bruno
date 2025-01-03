@@ -3,27 +3,40 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { useMemo } from 'react';
-import { RunnerResultItem } from '../../types/runner';
 import { Group, RingProgress, Text } from '@mantine/core';
 import runnerItemStatus from '../../util/runnerItemStatus';
 import { CollectionSchema } from '@usebruno/schema';
 import { flattenItems } from 'utils/collections';
+import { useStore } from 'zustand';
+import { responseStore } from 'src/store/responseStore';
+import { useShallow } from 'zustand/react/shallow';
 
 type SummaryProps = {
-  items: RunnerResultItem[];
+  itemUids: string[];
   collection: CollectionSchema;
 };
 
-export const Summary: React.FC<SummaryProps> = ({ items, collection }) => {
+export const Summary: React.FC<SummaryProps> = ({ itemUids, collection }) => {
   const total = useMemo(() => {
     return flattenItems(collection.items).filter((item) => item.type !== 'folder').length;
   }, []);
+
+  const items = useStore(
+    responseStore,
+    useShallow((state) => {
+      return itemUids.map((itemUid) => state.responses.get(itemUid));
+    })
+  );
 
   const { passed, failed } = useMemo(() => {
     let passed = 0;
     let failed = 0;
 
     for (const item of items) {
+      if (!item) {
+        continue;
+      }
+
       const status = runnerItemStatus(item);
       switch (status) {
         case 'passed':

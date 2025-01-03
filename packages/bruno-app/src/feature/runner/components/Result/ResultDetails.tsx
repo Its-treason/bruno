@@ -2,7 +2,7 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { CollectionSchema } from '@usebruno/schema';
+import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import { RunnerResultItem } from '../../types/runner';
 import { PaneWrapper } from 'src/feature/main-view/components/panes/PaneWrapper';
 import { ResponseSummary } from 'src/feature/main-view/components/panes/response/ResponseSummary';
@@ -15,21 +15,25 @@ import TestResults from 'components/ResponsePane/TestResults';
 import { DebugTab } from 'components/ResponsePane/Debug';
 import { useStore } from 'zustand';
 import { responseStore } from 'src/store/responseStore';
+import { findItemInCollection } from 'utils/collections';
 
 type ResultDetailsProps = {
-  item: RunnerResultItem;
+  itemUid: string;
   collection: CollectionSchema;
 };
 
-export const ResultDetails: React.FC<ResultDetailsProps> = ({ item, collection }) => {
+export const ResultDetails: React.FC<ResultDetailsProps> = ({ itemUid, collection }) => {
   const [selectedTab, setSelectedTab] = useState('response');
+
+  const item = useMemo(() => {
+    return findItemInCollection(collection, itemUid) as RequestItemSchema;
+  }, [itemUid]);
 
   const content = useMemo(() => {
     switch (selectedTab) {
       case 'response': {
         return (
           <ResponsePaneBody
-            // @ts-expect-error
             item={item}
             collectionUid={collection.uid}
             disableRun={true} // Running request from Runner view does not make sense
@@ -71,7 +75,6 @@ export const ResultDetails: React.FC<ResultDetailsProps> = ({ item, collection }
       <PaneWrapper
         tabs={tabs}
         activeTab={selectedTab}
-        // @ts-expect-error
         aboveTabs={<ResponseSummary item={item} />}
         onTabChange={(tab) => {
           setSelectedTab(tab);

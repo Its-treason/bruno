@@ -307,6 +307,7 @@ export type RequestContext = {
   readonly brunoVersion: string;
   readonly environmentName?: string;
   readonly executionMode: 'standalone' | 'runner';
+  readonly delay: number;
 
   requestItem: RequestItem;
   collection: Collection;

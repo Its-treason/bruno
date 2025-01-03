@@ -10,6 +10,8 @@ import { RunnerConfigForm } from './RunnerConfigForm';
 import { Result } from './Result/Result';
 import { useDispatch } from 'react-redux';
 import { runCollectionFolder } from 'providers/ReduxStore/slices/collections/actions';
+import { useStore } from 'zustand';
+import { runnerStore } from 'src/store/runnerStore';
 
 type RunnerProps = {
   collection: CollectionSchema & { runnerResult?: RunnerResult };
@@ -17,7 +19,6 @@ type RunnerProps = {
 
 export const Runner: React.FC<RunnerProps> = ({ collection }) => {
   const dispatch = useDispatch();
-  const [runnerConfig, setRunnerConfig] = useState<RunnerConfig>({ recursive: true });
 
   const handleRun = useCallback(
     (config: RunnerConfig) => {
@@ -26,13 +27,14 @@ export const Runner: React.FC<RunnerProps> = ({ collection }) => {
     [collection.uid]
   );
 
-  if (!collection.runnerResult) {
+  const hasRun = useStore(runnerStore, (state) => state.runs.has(collection.uid));
+  if (!hasRun) {
     return (
       <Container size={'xs'} mx={'auto'} mt={'xl'}>
-        <RunnerConfigForm initialConfig={runnerConfig} startRun={handleRun} />
+        <RunnerConfigForm startRun={handleRun} />
       </Container>
     );
   }
 
-  return <Result collection={collection} runnerConfig={runnerConfig} onRun={handleRun} />;
+  return <Result collection={collection} onRun={handleRun} />;
 };

@@ -15,7 +15,6 @@ import {
   collectionUnlinkEnvFileEvent,
   collectionUnlinkFileEvent,
   processEnvUpdateEvent,
-  runFolderEvent,
   scriptEnvironmentUpdateEvent
 } from 'providers/ReduxStore/slices/collections';
 import { collectionAddEnvFileEvent, openCollectionEvent } from 'providers/ReduxStore/slices/collections/actions';
@@ -117,10 +116,6 @@ const useIpcEvents = () => {
       dispatch(collectionRenamedEvent(val));
     });
 
-    const removeRunFolderEventListener = ipcRenderer.on('main:run-folder-event', (val) => {
-      dispatch(runFolderEvent(val));
-    });
-
     const removeProcessEnvUpdatesListener = ipcRenderer.on('main:process-env-update', (val) => {
       dispatch(processEnvUpdateEvent(val));
     });
@@ -156,7 +151,6 @@ const useIpcEvents = () => {
       removeDisplayErrorListener();
       removeScriptEnvUpdateListener();
       removeCollectionRenamedListener();
-      removeRunFolderEventListener();
       removeProcessEnvUpdatesListener();
       removeConsoleLogListener();
       removeConfigUpdatesListener();

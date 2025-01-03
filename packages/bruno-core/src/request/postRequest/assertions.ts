@@ -16,7 +16,6 @@ export function assertions(context: RequestContext) {
       context.environmentName
     );
 
-    context.callback.folderAssertionResults(context, results);
     context.callback.assertionResults(context, results);
   }
 }
