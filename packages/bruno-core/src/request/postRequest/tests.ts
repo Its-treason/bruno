@@ -14,6 +14,7 @@ export async function tests(context: RequestContext, folderData: FolderData[]) {
       : [requestPostRequestScript, ...folderLevelTests.reverse(), collectionPostRequestScript].join(EOL);
 
   if (testScript.replaceAll('\n', '').trim().length === 0) {
+    context.callback.testResults(context, []);
     return;
   }
 

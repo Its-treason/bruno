@@ -48,7 +48,7 @@ export const Script: React.FC<ScriptProps> = ({ item, collection }) => {
     <div className={classes.container} data-pre-zoom-on={zoomIn === 'pre'} data-post-zoom-on={zoomIn === 'post'}>
       <div>
         <Group justify="space-between">
-          <Text>Pre Request</Text>
+          <Text size="lg">Pre Request</Text>
           <ActionIcon
             variant={'default'}
             onClick={() => setZoomIn(zoomIn === 'pre' ? null : 'pre')}
@@ -69,7 +69,7 @@ export const Script: React.FC<ScriptProps> = ({ item, collection }) => {
       </div>
       <div>
         <Group justify="space-between">
-          <Text>Post Request</Text>
+          <Text size="lg">Post Request</Text>
           <ActionIcon
             variant={'default'}
             onClick={() => setZoomIn(zoomIn === 'post' ? null : 'post')}

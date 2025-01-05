@@ -12,8 +12,6 @@ import { get } from 'lodash';
 import CodeEditor from 'components/CodeEditor';
 import { IconCode, IconDeviceFloppy, IconSend2 } from '@tabler/icons-react';
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
-import NetworkError from 'components/ResponsePane/NetworkError';
-import toast from 'react-hot-toast';
 import { useState } from 'react';
 import { CodeGeneratorModal } from 'src/feature/code-generator';
 import { useStore } from 'zustand';
@@ -30,12 +28,7 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection, item }
   const [generateCodeItemModalOpen, setGenerateCodeItemModalOpen] = useState(false);
 
   const handleRun = async () => {
-    // @ts-expect-error TS doesn't get that dispatch returns a promise
-    dispatch(sendRequest(item, collection.uid)).catch((err) =>
-      toast.custom((t) => <NetworkError onClose={() => toast.dismiss(t.id)} />, {
-        duration: 5000
-      })
-    );
+    dispatch(sendRequest(item, collection.uid));
   };
 
   const onSave = () => {

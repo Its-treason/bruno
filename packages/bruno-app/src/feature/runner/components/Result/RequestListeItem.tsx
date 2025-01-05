@@ -3,7 +3,6 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import React, { memo, useCallback, useMemo } from 'react';
-import { RunnerResultItem } from '../../types/runner';
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import { findItemInCollection } from 'utils/collections';
 import { Badge, Button, List, Loader, Spoiler, Text } from '@mantine/core';
@@ -11,7 +10,7 @@ import runnerItemStatus from '../../util/runnerItemStatus';
 import { IconCheck, IconCircleCheck, IconCircleX, IconClockPause, IconX } from '@tabler/icons-react';
 import { useStore } from 'zustand';
 import { responseStore } from 'src/store/responseStore';
-import statusCodePhraseMap from 'components/ResponsePane/StatusCode/get-status-code-phrase';
+import { statusCodePhraseMap } from 'utils/common/statusCodePhraseMap';
 
 type RequestListItemProps = {
   itemUid: string;

@@ -1,0 +1,14 @@
+.text {
+  height: 2rem;
+  margin-bottom: var(--mantine-spacing-xs);
+}
+
+.table {
+  table-layout: fixed;
+  width: 100%;
+  word-break: break-all;
+
+  * th:first-child {
+    width: 30%;
+  }
+}

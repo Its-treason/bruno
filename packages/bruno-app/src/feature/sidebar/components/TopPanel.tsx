@@ -4,7 +4,7 @@
  */
 import { ActionIcon, Group, Text, Tooltip, rem } from '@mantine/core';
 import { IconPackageImport, IconFolderOpen, IconPlus } from '@tabler/icons-react';
-import Bruno from 'components/Bruno';
+import { BrunoIcon } from 'components/BrunoIcon';
 import CreateCollection from 'components/Sidebar/CreateCollection';
 import ImportCollection from 'components/Sidebar/ImportCollection';
 import ImportCollectionLocation from 'components/Sidebar/ImportCollectionLocation';
@@ -72,7 +72,7 @@ export const TopPanel: React.FC = () => {
       ) : null}
 
       <Group gap={4} onClick={handleTitleClick}>
-        <Bruno width={30} />
+        <BrunoIcon width={30} />
         <Text>Bruno lazer</Text>
       </Group>
 

@@ -1,10 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
 import find from 'lodash/find';
 import Mousetrap from 'mousetrap';
 import { useSelector, useDispatch } from 'react-redux';
 import SaveRequest from 'components/RequestPane/SaveRequest';
-import NetworkError from 'components/ResponsePane/NetworkError';
 import {
   sendRequest,
   saveRequest,
@@ -93,11 +91,7 @@ export const HotkeysProvider = (props) => {
         if (collection) {
           const item = findItemInCollection(collection, activeTab.uid);
           if (item) {
-            dispatch(sendRequest(item, collection.uid)).catch((err) =>
-              toast.custom((t) => <NetworkError onClose={() => toast.dismiss(t.id)} />, {
-                duration: 5000
-              })
-            );
+            dispatch(sendRequest(item, collection.uid));
           }
         }
       }

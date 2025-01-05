@@ -1,7 +1,7 @@
 import { createStore } from 'zustand';
 import { immer } from 'zustand/middleware/immer';
 import type { RequestContext } from '@usebruno/core';
-import { DebugInfo } from 'components/ResponsePane/Debug';
+import { DebugInfo } from 'src/feature/response-pane/components/debug/Debug';
 
 type Actions = {
   requestQueued: (id: string, requestId: string, data: Partial<Response>) => void;
@@ -36,8 +36,19 @@ export type Response = {
   debug?: DebugInfo;
 
   // assertion-results & test-results
-  assertionResults?: any[];
-  testResults?: any[];
+  testResults?: {
+    status: 'pass' | 'fail';
+    uid: string;
+    description: string;
+    error?: string;
+  }[];
+  assertionResults?: {
+    status: 'pass' | 'fail';
+    uid: string;
+    lhsExpr: string;
+    rhsExpr: string;
+    error?: string;
+  }[];
 };
 
 type ResponseStore = {

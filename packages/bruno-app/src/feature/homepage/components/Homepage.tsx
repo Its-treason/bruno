@@ -4,17 +4,17 @@
  */
 import { Anchor, Blockquote, Container, Group, Space, Stack, Text, Title, rem } from '@mantine/core';
 import { IconCopyleft } from '@tabler/icons-react';
-import Bruno from 'components/Bruno';
 import { CollectionButtons } from './CollectionButtons';
 import { ProjectLinks } from './ProjectLinks';
 import { CollectionStats } from './CollectionStats';
+import { BrunoIcon } from 'components/BrunoIcon';
 
 export const Homepage: React.FC = () => {
   return (
     <Container size={'sm'} w={'100%'}>
       <Stack mt={rem(110)} align={'center'}>
         <Group>
-          <Bruno width={90} />
+          <BrunoIcon width={90} />
           <Title order={1} size={rem(70)}>
             Bruno lazer
           </Title>

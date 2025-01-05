@@ -6,9 +6,11 @@ import { RequestPaneSplit } from './RequestPaneSplit';
 import { RequestUrlBar } from 'src/feature/request-url-bar';
 import { HttpRequestPane } from './panes/http/HttpRequestPane';
 import { GraphqlRequestPane } from './panes/graphql/GraphqlRequestPane';
-import { ResponsePane } from './panes/response/ResponsePane';
 import { Text } from '@mantine/core';
 import { Runner } from 'src/feature/runner';
+import { ResponsePane } from 'src/feature/response-pane';
+import { useDispatch } from 'react-redux';
+import { updateResponsePaneTab } from 'providers/ReduxStore/slices/tabs';
 
 type MainContentProps = {
   collection: CollectionSchema;
@@ -17,6 +19,8 @@ type MainContentProps = {
 };
 
 export const MainContent: React.FC<MainContentProps> = ({ collection, focusedTab, item }) => {
+  const dispatch = useDispatch();
+
   switch (focusedTab.type) {
     case 'collection-runner':
       return <Runner collection={collection} />;
@@ -44,7 +48,21 @@ export const MainContent: React.FC<MainContentProps> = ({ collection, focusedTab
                 <GraphqlRequestPane item={item} collection={collection} activeTab={focusedTab} />
               )
             }
-            right={<ResponsePane item={item} collection={collection} activeTab={focusedTab} />}
+            right={
+              <ResponsePane
+                item={item}
+                collection={collection}
+                activeTab={focusedTab.responsePaneTab}
+                setActiveTab={(responsePaneTab) => {
+                  dispatch(
+                    updateResponsePaneTab({
+                      uid: item.uid,
+                      responsePaneTab
+                    })
+                  );
+                }}
+              />
+            }
           />
         </>
       );
