@@ -53,6 +53,7 @@ export const MainContent: React.FC<MainContentProps> = ({ collection, focusedTab
                 item={item}
                 collection={collection}
                 activeTab={focusedTab.responsePaneTab}
+                selectedRequestIdUid={focusedTab.requestId}
                 setActiveTab={(responsePaneTab) => {
                   dispatch(
                     updateResponsePaneTab({
@@ -61,6 +62,7 @@ export const MainContent: React.FC<MainContentProps> = ({ collection, focusedTab
                     })
                   );
                 }}
+                showHistory
               />
             }
           />

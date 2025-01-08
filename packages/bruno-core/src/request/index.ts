@@ -10,15 +10,13 @@ import { assertions } from './postRequest/assertions';
 import { tests } from './postRequest/tests';
 import { interpolateRequest } from './preRequest/interpolateRequest';
 import { Callbacks, RawCallbacks } from './Callbacks';
-import { nanoid } from 'nanoid';
-import { join } from 'node:path';
-import { rm } from 'node:fs/promises';
 import { makeHttpRequest } from './httpRequest/requestHandler';
 import { CookieJar } from 'tough-cookie';
 import { readResponseBodyAsync } from './runtime/utils';
 import { collectFolderData } from './preRequest/collectFolderData';
 import { applyOAuth2 } from './preRequest/OAuth2/applyOAuth2';
 import { determinePreviewType } from './preRequest/determinePreviewMode';
+import { randomUUID } from 'crypto';
 
 export async function request(
   requestItem: RequestItem,
@@ -69,7 +67,7 @@ export async function request(
   );
 
   const context: RequestContext = {
-    uid: nanoid(),
+    uid: randomUUID(),
     dataDir,
     cancelToken,
     abortController,
@@ -105,9 +103,6 @@ export async function request(
     debug: new DebugLogger()
   };
 
-  const targetPath = join(context.dataDir, context.requestItem.uid);
-  await rm(targetPath, { force: true });
-
   try {
     return await doRequest(context);
   } catch (error) {
@@ -125,6 +120,7 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
   context.debug.addStage('Pre-Request');
 
   context.callback.requestQueued(context);
+  context.callback.folderRequestAdded(context);
 
   // This will only be used for the request runner
   if (context.delay > 0) {

@@ -7,18 +7,18 @@ import React from 'react';
 import { LoadingResponse } from '../LoadingResponse';
 
 type AudioResultViewer = {
-  itemId: string;
+  requestId: string;
   originUrl: string;
 };
 
-export const HtmlResultViewer: React.FC<AudioResultViewer> = ({ itemId, originUrl }) => {
+export const HtmlResultViewer: React.FC<AudioResultViewer> = ({ requestId, originUrl }) => {
   const value = useQuery({
-    queryKey: ['response-body', itemId],
+    queryKey: ['response-body', requestId],
     retry: false,
     gcTime: 0,
     staleTime: 0,
     queryFn: async () => {
-      const data = await fetch(`response-body://${itemId}`);
+      const data = await fetch(`response-body://${requestId}`);
       const text = await data.text();
       return text.replace('<head>', `<head><base href="${originUrl}">`);
     }

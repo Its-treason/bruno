@@ -9,11 +9,11 @@ import { useStore } from 'zustand';
 import classes from './ResponseHeaders.module.scss';
 
 type ResponseHeadersProps = {
-  itemUid: string;
+  requestId: string;
 };
 
-export const ResponseHeaders: React.FC<ResponseHeadersProps> = ({ itemUid }) => {
-  const headers = useStore(responseStore, (state) => state.responses.get(itemUid)?.headers) ?? {};
+export const ResponseHeaders: React.FC<ResponseHeadersProps> = ({ requestId }) => {
+  const headers = useStore(responseStore, (state) => state.responses.get(requestId)?.headers) ?? {};
 
   const rows = useMemo(() => {
     return Object.entries(headers).map(([name, values]) => {

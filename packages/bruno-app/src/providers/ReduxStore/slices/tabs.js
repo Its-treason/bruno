@@ -87,6 +87,12 @@ export const tabsSlice = createSlice({
         tab.responsePaneTab = action.payload.responsePaneTab;
       }
     },
+    updateActiveResponseId: (state, action) => {
+      const tab = find(state.tabs, (t) => t.uid === action.payload.uid);
+      if (tab) {
+        tab.requestId = action.payload.requestId;
+      }
+    },
     closeTabs: (state, action) => {
       const activeTab = find(state.tabs, (t) => t.uid === state.activeTabUid);
       const tabUids = action.payload.tabUids || [];
@@ -133,6 +139,7 @@ export const {
   updateRequestPaneTabWidth,
   updateRequestPaneTab,
   updateResponsePaneTab,
+  updateActiveResponseId,
   closeTabs,
   closeAllCollectionTabs
 } = tabsSlice.actions;

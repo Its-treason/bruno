@@ -43,8 +43,9 @@ app.once('ready', () => {
     const url = new URL(req.url);
     const requestId = url.host;
 
-    // Ensure the request id only contains words and digits but no dots or something
-    if (/^[\w\d]+$/.test(requestId) === false) {
+    // The request id must be an Uuid. Created in bruno-core/src/request/index.ts
+    const regexUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+    if (regexUuid.test(requestId) === false) {
       return new globalThis.Response('Invalid request id', {
         status: 400
       });

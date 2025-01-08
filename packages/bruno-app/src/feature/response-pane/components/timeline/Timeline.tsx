@@ -151,12 +151,12 @@ const TimelineItem: React.FC<{ item: RequestContext['timeline'][0] }> = ({ item 
 };
 
 type TimelineNewProps = {
-  itemUid: string;
+  requestId: string;
 };
 
-export const Timeline: React.FC<TimelineNewProps> = ({ itemUid }) => {
+export const Timeline: React.FC<TimelineNewProps> = ({ requestId }) => {
   const timeline = useStore(responseStore, (state) => {
-    return state.responses.get(itemUid)?.timeline;
+    return state.responses.get(requestId)?.timeline;
   });
 
   if (!timeline) {

@@ -7,8 +7,14 @@ import { IconSend } from '@tabler/icons-react';
 import React, { useMemo } from 'react';
 import { isMacOS } from 'utils/common/platform';
 import classes from './Placeholder.module.scss';
+import { ResponseHistory } from './responseHistory/ResponseHistory';
 
-export const Placeholder: React.FC = () => {
+type PlaceholderProps = {
+  itemUid: string;
+  selectedResponseUid?: string;
+};
+
+export const Placeholder: React.FC<PlaceholderProps> = ({ itemUid, selectedResponseUid }) => {
   const ctrlKey = useMemo(() => {
     return isMacOS() ? <Kbd>⌘</Kbd> : <Kbd>Ctrl</Kbd>;
   }, []);
@@ -33,6 +39,8 @@ export const Placeholder: React.FC = () => {
           {ctrlKey} + <Kbd>E</Kbd>
         </Text>
       </SimpleGrid>
+
+      <ResponseHistory itemUid={itemUid} selectedResponseUid={selectedResponseUid} />
     </Stack>
   );
 };

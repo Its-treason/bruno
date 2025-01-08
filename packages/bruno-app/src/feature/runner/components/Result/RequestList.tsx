@@ -13,5 +13,5 @@ type RequestListProps = {
 };
 
 export const RequestList: React.FC<RequestListProps> = memo(({ items, collection, onFocus }) => {
-  return items.map((item) => <RequestListItem onFocus={onFocus} key={item} itemUid={item} collection={collection} />);
+  return items.map((item) => <RequestListItem onFocus={onFocus} key={item} requestId={item} collection={collection} />);
 });

@@ -21,12 +21,13 @@ import { responseStore } from 'src/store/responseStore';
 
 type ResponsePaneBodyProps = {
   item: RequestItemSchema;
+  requestId: string;
   collectionUid: string;
   disableRun: boolean;
 };
 
-export const ResponseBody: React.FC<ResponsePaneBodyProps> = ({ item, collectionUid, disableRun }) => {
-  const { error, previewModes, size } = useStore(responseStore, (state) => state.responses.get(item.uid)) ?? {};
+export const ResponseBody: React.FC<ResponsePaneBodyProps> = ({ item, collectionUid, requestId, disableRun }) => {
+  const { error, previewModes, size } = useStore(responseStore, (state) => state.responses.get(requestId)) ?? {};
 
   const [mode, setMode] = useState<ResponseMode>(error ? ['error', null] : ['raw', null]);
   const [dismissedSizeWarning, setDismissedSizeWarning] = useState(false);
@@ -54,31 +55,48 @@ export const ResponseBody: React.FC<ResponsePaneBodyProps> = ({ item, collection
 
   const preview = useMemo(() => {
     if (mode[0] === 'raw') {
-      return <TextResultViewer collectionUid={collectionUid} item={item} disableRun={disableRun} />;
+      return (
+        <TextResultViewer collectionUid={collectionUid} item={item} requestId={requestId} disableRun={disableRun} />
+      );
     } else if (mode[0] === 'pretty') {
       //                        Disable the JSON filter if the response is way to large
       if (mode[1] === 'json' && size < 20_000_000) {
-        return <JsonFilterResultViewer collectionUid={collectionUid} item={item} disableRun={disableRun} />;
+        return (
+          <JsonFilterResultViewer
+            collectionUid={collectionUid}
+            item={item}
+            requestId={requestId}
+            disableRun={disableRun}
+          />
+        );
       }
-      return <TextResultViewer collectionUid={collectionUid} item={item} format={mode[1]} disableRun={disableRun} />;
+      return (
+        <TextResultViewer
+          collectionUid={collectionUid}
+          item={item}
+          requestId={requestId}
+          format={mode[1]}
+          disableRun={disableRun}
+        />
+      );
     } else if (mode[0] === 'error') {
       return <ErrorResultViewer error={error!} />;
     }
 
     switch (mode[1]) {
       case 'audio':
-        return <AudioResultViewer itemId={item.uid} />;
+        return <AudioResultViewer requestId={requestId} />;
       case 'html':
         // @ts-expect-error
-        return <HtmlResultViewer itemId={item.uid} originUrl={item.requestSent?.url || ''} />;
+        return <HtmlResultViewer requestId={requestId} originUrl={item.requestSent?.url || ''} />;
       case 'image':
-        return <ImageResultViewer itemId={item.uid} />;
+        return <ImageResultViewer requestId={requestId} />;
       case 'video':
-        return <VideoResultViewer itemId={item.uid} />;
+        return <VideoResultViewer requestId={requestId} />;
       case 'pdf':
-        return <PdfResultViewer itemId={item.uid} />;
+        return <PdfResultViewer requestId={requestId} />;
     }
-  }, [mode, item.uid]);
+  }, [mode, item.uid, requestId]);
 
   if (size > 10_000_000 && !dismissedSizeWarning) {
     return (

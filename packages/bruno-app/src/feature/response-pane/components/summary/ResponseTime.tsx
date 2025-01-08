@@ -8,11 +8,11 @@ import { Text } from '@mantine/core';
 import { useMemo } from 'react';
 
 type ResponseTimeProps = {
-  itemUid: string;
+  requestId: string;
 };
 
-export const ResponseTime: React.FC<ResponseTimeProps> = ({ itemUid }) => {
-  const duration = useStore(responseStore, (state) => state.responses.get(itemUid)?.duration);
+export const ResponseTime: React.FC<ResponseTimeProps> = ({ requestId }) => {
+  const duration = useStore(responseStore, (state) => state.responses.get(requestId)?.duration);
   if (duration === undefined) {
     return null;
   }

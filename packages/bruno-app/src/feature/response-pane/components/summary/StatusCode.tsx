@@ -9,11 +9,11 @@ import React, { useMemo } from 'react';
 import { statusCodePhraseMap } from 'utils/common/statusCodePhraseMap';
 
 type StatusCodeProps = {
-  itemUid: string;
+  requestId: string;
 };
 
-export const StatusCode: React.FC<StatusCodeProps> = ({ itemUid }) => {
-  const status = useStore(responseStore, (state) => state.responses.get(itemUid)?.status);
+export const StatusCode: React.FC<StatusCodeProps> = ({ requestId }) => {
+  const status = useStore(responseStore, (state) => state.responses.get(requestId)?.status);
   if (status === undefined) {
     return null;
   }

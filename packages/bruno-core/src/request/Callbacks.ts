@@ -180,6 +180,7 @@ export class Callbacks {
     this.send('runFolderEvent', context, {
       type: 'request-added',
       itemUid: context.requestItem.uid,
+      requestId: context.uid,
       collectionUid: context.collection.uid
     });
   }

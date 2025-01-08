@@ -10,16 +10,17 @@ import { ResponseActions } from './ResponseActions';
 import { StatusCode } from './StatusCode';
 
 type ResponseSummaryProps = {
+  requestId: string;
   itemUid: string;
 };
 
-export const ResponseSummary: React.FC<ResponseSummaryProps> = ({ itemUid }) => {
+export const ResponseSummary: React.FC<ResponseSummaryProps> = ({ requestId, itemUid }) => {
   return (
     <Group gap={'xs'}>
-      <StatusCode itemUid={itemUid} />
-      <ResponseTime itemUid={itemUid} />
-      <ResponseSize itemUid={itemUid} />
-      <ResponseActions itemUid={itemUid} />
+      <StatusCode requestId={requestId} />
+      <ResponseTime requestId={requestId} />
+      <ResponseSize requestId={requestId} />
+      <ResponseActions requestId={requestId} itemUid={itemUid} />
     </Group>
   );
 };

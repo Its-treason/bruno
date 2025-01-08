@@ -14,10 +14,10 @@ import { Text } from '@mantine/core';
 pdfjs.GlobalWorkerOptions.workerSrc = new URL('pdfjs-dist/build/pdf.worker.min.mjs', import.meta.url).toString();
 
 type PdfResultViewer = {
-  itemId: string;
+  requestId: string;
 };
 
-export const PdfResultViewer: React.FC<PdfResultViewer> = ({ itemId }) => {
+export const PdfResultViewer: React.FC<PdfResultViewer> = ({ requestId }) => {
   const [numPages, setNumPages] = useState(null);
   function onDocumentLoadSuccess({ numPages }) {
     // Only show up to 50 pages, because more will cause lag
@@ -26,7 +26,7 @@ export const PdfResultViewer: React.FC<PdfResultViewer> = ({ itemId }) => {
 
   return (
     <Document
-      file={`response-body://${itemId}`}
+      file={`response-body://${requestId}`}
       onLoadSuccess={onDocumentLoadSuccess}
       loading={<LoadingResponse />}
       className={classes.document}

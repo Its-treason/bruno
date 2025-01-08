@@ -5,9 +5,9 @@
 import React from 'react';
 
 type VideoResultViewer = {
-  itemId: string;
+  requestId: string;
 };
 
-export const VideoResultViewer: React.FC<VideoResultViewer> = ({ itemId }) => {
-  return <audio controls src={`response-body://${itemId}`} />;
+export const VideoResultViewer: React.FC<VideoResultViewer> = ({ requestId }) => {
+  return <audio controls src={`response-body://${requestId}`} />;
 };

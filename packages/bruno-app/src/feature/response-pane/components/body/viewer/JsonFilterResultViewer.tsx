@@ -17,11 +17,17 @@ import { JSONPath } from 'jsonpath-plus';
 
 type JsonFilterResultViewerProps = {
   item: RequestItemSchema;
+  requestId: string;
   collectionUid: string;
   disableRun: boolean;
 };
 
-export const JsonFilterResultViewer: React.FC<JsonFilterResultViewerProps> = ({ collectionUid, item, disableRun }) => {
+export const JsonFilterResultViewer: React.FC<JsonFilterResultViewerProps> = ({
+  collectionUid,
+  item,
+  requestId,
+  disableRun
+}) => {
   const dispatch = useDispatch();
   const [filter, setFilter] = useDebouncedState('', 200);
   const [filterOpened, setFilterOpened] = useState(false);
@@ -33,12 +39,12 @@ export const JsonFilterResultViewer: React.FC<JsonFilterResultViewerProps> = ({ 
   }, []);
 
   const value = useQuery({
-    queryKey: ['response-body', item.uid],
+    queryKey: ['response-body', requestId],
     retry: false,
     staleTime: 0,
     gcTime: 0,
     queryFn: async (ctx) => {
-      const data = await fetch(`response-body://${item.uid}`, { signal: ctx.signal });
+      const data = await fetch(`response-body://${requestId}`, { signal: ctx.signal });
       const text = await data.text();
       return parse(text) as object;
     }

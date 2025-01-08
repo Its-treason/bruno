@@ -230,10 +230,10 @@ export const sendRequest = (item, collectionUid) => async (_dispatch, getState) 
   }
 };
 
-export const cancelRequest = (cancelTokenUid, item) => () => {
+export const cancelRequest = (cancelTokenUid, requestId) => () => {
   cancelNetworkRequest(cancelTokenUid)
     .then(() => {
-      responseStore.getState().cancelResponse(item.uid);
+      responseStore.getState().cancelResponse(requestId);
     })
     .catch((err) => console.error('Could not cancel request', err));
 };

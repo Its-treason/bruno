@@ -5,9 +5,9 @@
 import React from 'react';
 
 type AudioResultViewer = {
-  itemId: string;
+  requestId: string;
 };
 
-export const AudioResultViewer: React.FC<AudioResultViewer> = ({ itemId }) => {
-  return <audio controls src={`response-body://${itemId}`} />;
+export const AudioResultViewer: React.FC<AudioResultViewer> = ({ requestId }) => {
+  return <audio controls src={`response-body://${requestId}`} />;
 };

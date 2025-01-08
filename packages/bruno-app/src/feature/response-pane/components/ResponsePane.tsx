@@ -3,7 +3,7 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { responseStore } from 'src/store/responseStore';
 import { useStore } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
@@ -16,19 +16,30 @@ import { Debug } from './debug/Debug';
 import { Timeline } from './timeline/Timeline';
 import { ResponseHeaders } from './headers/ResponseHeaders';
 import { Tests } from './tests/Tests';
+import { AboveTabsWrapper } from './responseHistory/AboveTabsWrapper';
+import { ResponseHistory } from './responseHistory/ResponseHistory';
 
 type ResponsePane = {
   item: RequestItemSchema;
   collection: CollectionSchema;
   activeTab: string;
+  selectedRequestIdUid: string;
+  showHistory?: boolean;
   setActiveTab: (newTab: string) => void;
 };
 
-export const ResponsePane: React.FC<ResponsePane> = ({ item, collection, activeTab, setActiveTab }) => {
+export const ResponsePane: React.FC<ResponsePane> = ({
+  item,
+  collection,
+  activeTab,
+  selectedRequestIdUid,
+  setActiveTab,
+  showHistory = false
+}) => {
   const [hasResponse, isLoading] = useStore(
     responseStore,
     useShallow((state) => {
-      const response = state.responses.get(item.uid);
+      const response = state.responses.get(selectedRequestIdUid);
       if (response === undefined) {
         return [false, false];
       }
@@ -46,17 +57,24 @@ export const ResponsePane: React.FC<ResponsePane> = ({ item, collection, activeT
         if (isLoading) {
           return;
         }
-        return <ResponseBody item={item} collectionUid={collection.uid} disableRun={isLoading} />;
+        return (
+          <ResponseBody
+            requestId={selectedRequestIdUid}
+            item={item}
+            collectionUid={collection.uid}
+            disableRun={isLoading}
+          />
+        );
       case 'headers':
-        return <ResponseHeaders itemUid={item.uid} />;
+        return <ResponseHeaders requestId={selectedRequestIdUid} />;
       case 'timeline':
-        return <Timeline itemUid={item.uid} />;
+        return <Timeline requestId={selectedRequestIdUid} />;
       case 'tests':
-        return <Tests itemUid={item.uid} />;
+        return <Tests requestId={selectedRequestIdUid} />;
       case 'debug':
-        return <Debug itemUid={item.uid} />;
+        return <Debug requestId={selectedRequestIdUid} />;
     }
-  }, [activeTab, item, isLoading, hasResponse]);
+  }, [activeTab, item, selectedRequestIdUid, isLoading, hasResponse]);
 
   const tabs = useMemo(() => {
     // @ts-expect-error
@@ -76,20 +94,29 @@ export const ResponsePane: React.FC<ResponsePane> = ({ item, collection, activeT
   if (!content) {
     return (
       <>
-        <Placeholder />
-        {isLoading ? <ResponseLoadingOverlay item={item} /> : null}
+        <Placeholder itemUid={item.uid} selectedResponseUid={selectedRequestIdUid} />
+        {isLoading ? <ResponseLoadingOverlay requestId={selectedRequestIdUid} /> : null}
       </>
     );
   }
 
   return (
     <>
-      {isLoading ? <ResponseLoadingOverlay item={item} /> : null}
+      {isLoading ? <ResponseLoadingOverlay requestId={selectedRequestIdUid} /> : null}
       <PaneWrapper
         tabs={tabs}
         activeTab={activeTab}
         onTabChange={setActiveTab}
-        aboveTabs={<ResponseSummary itemUid={item.uid} />}
+        aboveTabs={
+          showHistory ? (
+            <AboveTabsWrapper
+              history={<ResponseHistory itemUid={item.uid} selectedResponseUid={selectedRequestIdUid} />}
+              summary={<ResponseSummary requestId={selectedRequestIdUid} itemUid={item.uid} />}
+            />
+          ) : (
+            <ResponseSummary requestId={selectedRequestIdUid} itemUid={item.uid} />
+          )
+        }
         content={content}
       />
     </>

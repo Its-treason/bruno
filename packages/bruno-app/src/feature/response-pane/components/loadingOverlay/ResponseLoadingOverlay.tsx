@@ -8,25 +8,24 @@ import { StopWatch } from './StopWatch';
 import { Button, Loader, Overlay, Stack } from '@mantine/core';
 import { useStore } from 'zustand';
 import { responseStore } from 'src/store/responseStore';
-import { RequestItemSchema } from '@usebruno/schema';
 
 type ResponseLoadingOverlayProps = {
-  item: RequestItemSchema;
+  requestId: string;
 };
 
-export const ResponseLoadingOverlay: React.FC<ResponseLoadingOverlayProps> = ({ item }) => {
+export const ResponseLoadingOverlay: React.FC<ResponseLoadingOverlayProps> = ({ requestId }) => {
   const dispatch = useDispatch();
 
   const handleCancelRequest = () => {
     const state = responseStore.getState();
-    const cancelTokenUid = state.responses.get(item.uid).cancelTokenUid;
+    const cancelTokenUid = state.responses.get(requestId).cancelTokenUid;
     if (!cancelTokenUid) {
       return;
     }
-    dispatch(cancelRequest(cancelTokenUid, item));
+    dispatch(cancelRequest(cancelTokenUid, requestId));
   };
 
-  const requestSentTimestamp = useStore(responseStore, (state) => state.responses.get(item.uid)?.requestSentTimestamp);
+  const requestSentTimestamp = useStore(responseStore, (state) => state.responses.get(requestId)?.requestSentTimestamp);
 
   return (
     <Overlay backgroundOpacity={0.1} blur={0.5} pt={'xl'}>

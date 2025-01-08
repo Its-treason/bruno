@@ -13,14 +13,17 @@ import { responseStore } from 'src/store/responseStore';
 import { statusCodePhraseMap } from 'utils/common/statusCodePhraseMap';
 
 type RequestListItemProps = {
-  itemUid: string;
+  requestId: string;
   collection: CollectionSchema;
   onFocus: (item: string) => void;
 };
 
-export const RequestListItem: React.FC<RequestListItemProps> = memo(({ itemUid, collection, onFocus }) => {
+export const RequestListItem: React.FC<RequestListItemProps> = memo(({ requestId, collection, onFocus }) => {
+  // IMPORTANT: The response is undefined at first, because the response is first added to the list and then added to the response store
+  const response = useStore(responseStore, (state) => state.responses.get(requestId));
+
   const name = useMemo(() => {
-    const requestItem = findItemInCollection(collection, itemUid) as RequestItemSchema;
+    const requestItem = findItemInCollection(collection, response?.itemId) as RequestItemSchema;
     if (!requestItem) {
       return 'N/A';
     }
@@ -49,10 +52,7 @@ export const RequestListItem: React.FC<RequestListItemProps> = memo(({ itemUid, 
         </Text>
       </>
     );
-  }, [itemUid]);
-
-  // IMPORTANT: The response is undefined at first, because the response is first added to the list and then added to the response store
-  const response = useStore(responseStore, (state) => state.responses.get(itemUid));
+  }, [response?.itemId]);
 
   const resultList = useMemo(() => {
     return (
@@ -111,7 +111,7 @@ export const RequestListItem: React.FC<RequestListItemProps> = memo(({ itemUid, 
 
   const handleClick = useCallback(() => {
     if (response?.requestState === 'received' || response?.requestState === 'cancelled') {
-      onFocus(itemUid);
+      onFocus(requestId);
     }
   }, [response?.requestState]);
 

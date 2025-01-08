@@ -67,7 +67,7 @@ export const Result: React.FC<ResultProps> = ({ collection, onRun }) => {
             <RunAgain onRun={onRun} collectionUid={collection.uid} runnerConfig={runnerResults.runnerConfig} />
           )}
 
-          {resultFocused ? <ResultDetails itemUid={resultFocused} collection={collection} /> : null}
+          {resultFocused ? <ResultDetails requestId={resultFocused} collection={collection} /> : null}
         </div>
       )}
     </AutoSizer>

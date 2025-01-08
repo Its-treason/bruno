@@ -4,19 +4,20 @@ import type { RequestContext } from '@usebruno/core';
 import { DebugInfo } from 'src/feature/response-pane/components/debug/Debug';
 
 type Actions = {
-  requestQueued: (id: string, requestId: string, data: Partial<Response>) => void;
-  requestDelayed: (id: string, requestId: string) => void;
-  requestSent: (id: string, requestId: string, data: Partial<Response>) => void;
-  requestTestResults: (id: string, requestId: string, data: Partial<Response>) => void;
-  requestReceived: (id: string, requestId: string, data: Partial<Response>) => void;
+  requestQueued: (requestId: string, itemId: string, data: Partial<Response>) => void;
+  requestDelayed: (requestId: string) => void;
+  requestSent: (requestId: string, data: Partial<Response>) => void;
+  requestTestResults: (requestId: string, data: Partial<Response>) => void;
+  requestReceived: (requestId: string, data: Partial<Response>) => void;
 
-  cancelResponse: (id: string) => void;
-  responseError: (id: string, error: string) => void;
-  clearResponse: (id: string) => void;
+  cancelResponse: (requestId: string) => void;
+  responseError: (requestId: string, error: string) => void;
+  clearResponse: (requestId: string, itemUd: string) => void;
 };
 
 export type Response = {
   requestId: string;
+  itemId: string;
   requestSentTimestamp: number;
   requestState: 'queued' | 'delayed' | 'sending' | 'received' | 'cancelled';
 
@@ -52,64 +53,71 @@ export type Response = {
 };
 
 type ResponseStore = {
+  // Maps ItemId to responseIds
+  requestResponses: Map<string, string[]>;
   responses: Map<string, Response>;
 };
 
 export const responseStore = createStore(
   immer<ResponseStore & Actions>((set) => ({
+    requestResponses: new Map(),
     responses: new Map(),
 
-    requestQueued: (id: string, requestId: string, data: any) => {
+    requestQueued: (requestId: string, itemId: string, data: any) => {
       set((store) => {
-        store.responses.set(id, {
+        store.responses.set(requestId, {
           ...data,
           requestId,
+          itemId,
           requestSentTimestamp: Date.now(),
           requestState: 'queued'
         });
+
+        const responseList = store.requestResponses.get(itemId) ?? [];
+        responseList.push(requestId);
+        store.requestResponses.set(itemId, responseList);
       });
     },
     // This is only used in the collection runner
-    requestDelayed: (id: string, requestId: string) => {
+    requestDelayed: (requestId: string) => {
       set((store) => {
-        const response = store.responses.get(id);
-        if (response?.requestId !== requestId || response?.requestState === 'cancelled') {
+        const response = store.responses.get(requestId);
+        if (!response || response.requestState === 'cancelled') {
           return;
         }
 
         response.requestState = 'delayed';
       });
     },
-    requestSent: (id: string, requestId: string, data: any) => {
+    requestSent: (requestId: string, data: any) => {
       set((store) => {
-        const response = store.responses.get(id);
-        if (response?.requestId !== requestId || response?.requestState === 'cancelled') {
+        const response = store.responses.get(requestId);
+        if (!response || response.requestState === 'cancelled') {
           return;
         }
 
         const updatedData = {
           ...data,
-          requestId,
           requestState: 'sending'
         } satisfies Response;
 
-        store.responses.set(id, Object.assign(response, updatedData));
+        store.responses.set(requestId, Object.assign(response, updatedData));
       });
     },
-    requestTestResults: (id: string, requestId: string, data: any) => {
+    requestTestResults: (requestId: string, data: any) => {
       set((store) => {
-        const response = store.responses.get(id);
-        if (response?.requestId !== requestId || response?.requestState === 'cancelled') {
+        const response = store.responses.get(requestId);
+        if (!response || response.requestState === 'cancelled') {
           return;
         }
 
-        store.responses.set(id, Object.assign(response, data));
+        store.responses.set(requestId, Object.assign(response, data));
       });
     },
-    requestReceived: (id: string, requestId: string, data: any) => {
+    requestReceived: (requestId: string, data: any) => {
       set((store) => {
-        const response = store.responses.get(id);
-        if (response?.requestId !== requestId || response?.requestState === 'cancelled') {
+        const response = store.responses.get(requestId);
+        if (response?.requestState === 'cancelled') {
           return;
         }
 
@@ -118,22 +126,22 @@ export const responseStore = createStore(
           requestState: 'received'
         };
 
-        store.responses.set(id, Object.assign(response, newData));
+        store.responses.set(requestId, Object.assign(response, newData));
       });
     },
 
-    cancelResponse: (id: string) => {
+    cancelResponse: (requestId: string) => {
       set((store) => {
-        const item = store.responses.get(id);
+        const item = store.responses.get(requestId);
         if (!item) {
           return;
         }
         item.requestState = 'cancelled';
       });
     },
-    responseError: (id: string, error: string) => {
+    responseError: (requestId: string, error: string) => {
       set((store) => {
-        const item = store.responses.get(id);
+        const item = store.responses.get(requestId);
         if (!item) {
           return;
         }
@@ -141,9 +149,15 @@ export const responseStore = createStore(
         item.error = error;
       });
     },
-    clearResponse: (id: string) => {
+    clearResponse: (requestId: string, itemId: string) => {
       set((store) => {
-        store.responses.delete(id);
+        store.responses.delete(requestId);
+
+        const responseList = store.requestResponses.get(itemId) ?? [];
+        store.requestResponses.set(
+          itemId,
+          responseList.filter((value) => value !== requestId)
+        );
       });
     }
   }))
@@ -154,23 +168,23 @@ window.ipcRenderer.on('main:run-request-event', (payload) => {
 
   switch (type) {
     case 'request-queued':
-      responseStore.getState().requestQueued(itemUid, requestUid, data);
+      responseStore.getState().requestQueued(requestUid, itemUid, data);
       break;
     case 'request-delayed':
-      responseStore.getState().requestDelayed(itemUid, requestUid);
+      responseStore.getState().requestDelayed(requestUid);
       break;
     case 'request-sent':
-      responseStore.getState().requestSent(itemUid, requestUid, data);
+      responseStore.getState().requestSent(requestUid, data);
       break;
     case 'assertion-results':
     case 'test-results':
-      responseStore.getState().requestTestResults(itemUid, requestUid, data);
+      responseStore.getState().requestTestResults(requestUid, data);
       break;
     case 'response-received':
-      responseStore.getState().requestReceived(itemUid, requestUid, data);
+      responseStore.getState().requestReceived(requestUid, data);
       break;
     case 'response-error':
-      responseStore.getState().responseError(itemUid, data.error);
+      responseStore.getState().responseError(requestUid, data.error);
       break;
     default:
       throw new Error(`case defined for "${type}" in "main:run-request-event" listener`);

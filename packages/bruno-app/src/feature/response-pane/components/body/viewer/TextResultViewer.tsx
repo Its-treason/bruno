@@ -13,6 +13,7 @@ import { PrettyMode } from '../../../types/preview';
 
 type TextResultViewerProps = {
   item: RequestItemSchema;
+  requestId: string;
   collectionUid: string;
   disableRun: boolean;
   format?: PrettyMode;
@@ -26,7 +27,13 @@ const parseMap: Record<PrettyMode, string> = {
   yaml: 'yaml'
 };
 
-export const TextResultViewer: React.FC<TextResultViewerProps> = ({ collectionUid, item, format, disableRun }) => {
+export const TextResultViewer: React.FC<TextResultViewerProps> = ({
+  collectionUid,
+  item,
+  requestId,
+  format,
+  disableRun
+}) => {
   const dispatch = useDispatch();
 
   const onRun = useCallback(() => {
@@ -36,13 +43,13 @@ export const TextResultViewer: React.FC<TextResultViewerProps> = ({ collectionUi
   }, []);
 
   const value = useQuery({
-    queryKey: ['response-body', item.uid, format],
+    queryKey: ['response-body', requestId, format],
     retry: false,
     staleTime: 0,
     gcTime: 0,
     queryFn: async () => {
       const param = format ? `?format=${parseMap[format]}` : '';
-      const data = await fetch(`response-body://${item.uid}${param}`);
+      const data = await fetch(`response-body://${requestId}${param}`);
       return data.text();
     }
   });

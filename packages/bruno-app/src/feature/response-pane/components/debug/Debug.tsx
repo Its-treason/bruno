@@ -13,18 +13,18 @@ type Logs = { title: string; data: string; date: number }[];
 export type DebugInfo = { stage: string; logs: Logs }[];
 
 type DebugProps = {
-  itemUid: string;
+  requestId: string;
 };
 
-export const Debug: React.FC<DebugProps> = ({ itemUid }) => {
+export const Debug: React.FC<DebugProps> = ({ requestId }) => {
   const debugInfo =
     useStore(responseStore, (state) => {
-      return state.responses.get(itemUid)?.debug;
+      return state.responses.get(requestId)?.debug;
     }) ?? [];
 
   return (
     <Stack w={'100%'} gap={'xl'} h={'100%'} style={{ overflow: 'auto' }}>
-      <ResponseTimings itemUid={itemUid} />
+      <ResponseTimings requestId={requestId} />
       {debugInfo.map(({ stage, logs }) => (
         <div key={stage}>
           <Title key={stage} order={3} mb={'xs'}>

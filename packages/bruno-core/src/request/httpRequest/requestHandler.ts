@@ -190,7 +190,7 @@ async function handleFinalResponse(response: HttpRequestInfo, context: RequestCo
     throw new Error(response.error || 'Server did not return a response');
   }
 
-  const targetPath = join(context.dataDir, context.requestItem.uid);
+  const targetPath = join(context.dataDir, context.uid);
   await writeFile(targetPath, response.responseBody!);
 
   context.response = {

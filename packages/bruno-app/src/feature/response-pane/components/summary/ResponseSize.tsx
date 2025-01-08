@@ -20,11 +20,11 @@ function formatBytes(bytes, decimals = 2) {
 }
 
 type ResponseSizeProps = {
-  itemUid: string;
+  requestId: string;
 };
 
-export const ResponseSize: React.FC<ResponseSizeProps> = ({ itemUid }) => {
-  const size = useStore(responseStore, (state) => state.responses.get(itemUid)?.size);
+export const ResponseSize: React.FC<ResponseSizeProps> = ({ requestId }) => {
+  const size = useStore(responseStore, (state) => state.responses.get(requestId)?.size);
   if (size === undefined) {
     return null;
   }

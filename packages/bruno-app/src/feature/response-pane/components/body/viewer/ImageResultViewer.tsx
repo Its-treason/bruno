@@ -5,9 +5,9 @@
 import React from 'react';
 
 type ImageResultViewer = {
-  itemId: string;
+  requestId: string;
 };
 
-export const ImageResultViewer: React.FC<ImageResultViewer> = ({ itemId }) => {
-  return <img src={`response-body://${itemId}`} />;
+export const ImageResultViewer: React.FC<ImageResultViewer> = ({ requestId }) => {
+  return <img src={`response-body://${requestId}`} />;
 };

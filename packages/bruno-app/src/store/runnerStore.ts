@@ -82,14 +82,14 @@ export const runnerStore = createStore(
       });
     },
 
-    requestAdded: (collectionUid: string, itemUid: string) => {
+    requestAdded: (collectionUid: string, requestId: string) => {
       set((state) => {
         const run = state.runs.get(collectionUid);
         if (!run) {
           return;
         }
 
-        run.items.push(itemUid);
+        run.items.push(requestId);
       });
     }
   }))
@@ -107,7 +107,7 @@ window.ipcRenderer.on('main:run-folder-event', (data) => {
       runnerStore.getState().runEnded(collectionUid, data.error);
       break;
     case 'request-added':
-      runnerStore.getState().requestAdded(collectionUid, data.itemUid);
+      runnerStore.getState().requestAdded(collectionUid, data.requestId);
       break;
   }
 });

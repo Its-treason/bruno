@@ -7,12 +7,12 @@ import { responseStore } from 'src/store/responseStore';
 import { useStore } from 'zustand';
 
 type ResponseTimingsProps = {
-  itemUid: string;
+  requestId: string;
 };
 
-export const ResponseTimings: React.FC<ResponseTimingsProps> = ({ itemUid }) => {
+export const ResponseTimings: React.FC<ResponseTimingsProps> = ({ requestId }) => {
   const timings = useStore(responseStore, (state) => {
-    return state.responses.get(itemUid)?.timings as unknown as Record<string, number>;
+    return state.responses.get(requestId)?.timings as unknown as Record<string, number>;
   });
 
   if (!timings) {

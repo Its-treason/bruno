@@ -4,25 +4,25 @@
  */
 import React from 'react';
 import { TestResults } from './TestResults';
-import { Stack, Text } from '@mantine/core';
+import { Text } from '@mantine/core';
 import { AssertionResults } from './AssertionResults';
 import classes from './Tests.module.scss';
 
 type TestsProps = {
-  itemUid: string;
+  requestId: string;
 };
 
-export const Tests: React.FC<TestsProps> = ({ itemUid }) => {
+export const Tests: React.FC<TestsProps> = ({ requestId }) => {
   return (
     <>
       <Text size="lg" className={classes.title}>
         Tests
       </Text>
-      <TestResults itemUid={itemUid} />
+      <TestResults itemUid={requestId} />
       <Text size="lg" mt={'xl'} className={classes.title}>
         Assertions
       </Text>
-      <AssertionResults itemUid={itemUid} />
+      <AssertionResults itemUid={requestId} />
     </>
   );
 };
