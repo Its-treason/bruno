@@ -9,6 +9,7 @@ import contentDispositionParser from 'content-disposition';
 import mimeTypes from 'mime-types';
 import { Response } from '@usebruno/core';
 import { WorkerManager } from '../worker/manager';
+import { MAIN_WINDOW_PARTITION } from '../createBrowserWindow';
 
 //#region Get response body
 (async () => {
@@ -37,7 +38,7 @@ protocol.registerSchemesAsPrivileged([
   }
 ]);
 app.once('ready', () => {
-  const mainWindowSession = session.fromPartition('persist:main-window');
+  const mainWindowSession = session.fromPartition(MAIN_WINDOW_PARTITION);
 
   mainWindowSession.protocol.handle('response-body', async (req) => {
     const url = new URL(req.url);

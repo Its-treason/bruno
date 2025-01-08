@@ -1,12 +1,13 @@
-const { BrowserWindow, app, Menu } = require('electron');
+const { BrowserWindow, app, Menu, session } = require('electron');
 const { setContentSecurityPolicy } = require('electron-util');
+const { setTimeout } = require('node:timers/promises');
 
 const menuTemplate = require('./app/menu-template');
 const { openCollection } = require('./app/collections');
 require('./ipc/collection');
 require('./ipc/preferences');
 require('./ipc/environments');
-const { createBrowserWindow } = require('./createBrowserWindow');
+const { createBrowserWindow, MAIN_WINDOW_PARTITION } = require('./createBrowserWindow');
 require('./ipc/zustand-store');
 require('./ipc/request');
 require('./ipc/responseBody');
@@ -39,8 +40,28 @@ app.on('ready', async () => {
     return;
   }
 
-  Menu.setApplicationMenu(menu);
+  if (!app.isPackaged) {
+    try {
+      // `electron-devtools-installer` is only a dev dependency
+      const { installExtension, REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS } = await import('electron-devtools-installer');
 
+      const mainSession = session.fromPartition(MAIN_WINDOW_PARTITION);
+      await installExtension([REDUX_DEVTOOLS, REACT_DEVELOPER_TOOLS], {
+        loadExtensionOptions: { allowFileAccess: true },
+        session: mainSession
+      });
+
+      // See: https://github.com/electron/electron/issues/41613#issuecomment-2576307939
+      await setTimeout(1_000);
+      for (const extension of mainSession.getAllExtensions()) {
+        await mainSession.loadExtension(extension.path);
+      }
+    } catch (err) {
+      console.error('An error occurred while loading extensions: ', err);
+    }
+  }
+
+  Menu.setApplicationMenu(menu);
   createBrowserWindow();
 
   app.on('activate', () => {
