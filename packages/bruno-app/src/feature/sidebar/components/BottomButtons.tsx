@@ -9,6 +9,7 @@ import Preferences from 'components/Preferences';
 import { showPreferences } from 'providers/ReduxStore/slices/app';
 import React, { useCallback, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { GlobalEnvironmentSelector } from 'src/feature/environment-editor';
 
 export const BottomButtons: React.FC = () => {
   const dispatch = useDispatch();
@@ -39,6 +40,8 @@ export const BottomButtons: React.FC = () => {
             <IconCookie style={{ width: rem(16) }} stroke={1.5} />
           </ActionIcon>
         </Tooltip>
+
+        <GlobalEnvironmentSelector />
 
         {preferencesOpen && <Preferences onClose={() => togglePreferences(false)} />}
         {cookiesOpen && <Cookies onClose={() => setCookiesOpen(false)} />}

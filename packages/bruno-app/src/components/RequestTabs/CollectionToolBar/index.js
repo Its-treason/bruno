@@ -75,8 +75,6 @@ const CollectionToolBar = ({ collection, activeTabUid }) => {
         <div className="flex flex-1 items-center justify-end">
           <CollectionTabButtons activeTabType={tabType} collectionUid={collection.uid} />
 
-          <GlobalEnvironmentSelector />
-
           <EnvironmentSelector collection={collection} />
         </div>
       </div>
