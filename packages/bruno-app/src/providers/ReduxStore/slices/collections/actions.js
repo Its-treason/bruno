@@ -339,26 +339,20 @@ export const newFolder = (folderName, collectionUid, itemUid) => (dispatch, getS
   });
 };
 
-export const renameItem = (newName, itemUid, collectionUid) => (dispatch, getState) => {
+export const renameItem = (newName, itemUid, collectionUid) => async (_dispatch, getState) => {
   const state = getState();
   const collection = findCollectionByUid(state.collections.collections, collectionUid);
 
-  return new Promise((resolve, reject) => {
-    if (!collection) {
-      return reject(new Error('Collection not found'));
-    }
+  if (!collection) {
+    return reject(new Error('Collection not found'));
+  }
 
-    const collectionCopy = cloneDeep(collection);
-    const item = findItemInCollection(collectionCopy, itemUid);
-    if (!item) {
-      return reject(new Error('Unable to locate item'));
-    }
+  const item = findItemInCollection(collection, itemUid);
+  if (!item) {
+    return reject(new Error('Unable to locate item'));
+  }
 
-    const dirname = getDirectoryName(item.pathname);
-    const { ipcRenderer } = window;
-
-    ipcRenderer.invoke('renderer:rename-item', item.pathname, dirname, newName).then(resolve).catch(reject);
-  });
+  await window.ipcRenderer.invoke('renderer:rename-item', item.pathname, newName);
 };
 
 export const cloneItem = (newName, itemUid, collectionUid) => (dispatch, getState) => {

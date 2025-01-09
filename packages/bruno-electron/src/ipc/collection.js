@@ -466,60 +466,58 @@ ipcMain.handle('renderer:import-collection', async (event, collection, collectio
 //#endRegion
 
 //#region Items
-ipcMain.handle('renderer:rename-item', async (event, oldPathFull, newPath, newName) => {
-  try {
-    if (!fs.existsSync(oldPathFull)) {
-      throw new Error(`Old file "${oldPathFull}" does not exist`);
-    }
+ipcMain.handle('renderer:rename-item', async (event, oldPathFull, newName) => {
+  const oldPathDirname = path.dirname(oldPathFull);
 
-    // if its directory, rename and return
-    if (isDirectory(oldPathFull)) {
-      const bruFilesAtSource = searchForBruFiles(oldPathFull);
-
-      const newPathFull = path.join(newPath, newName);
-      if (fs.existsSync(newPathFull)) {
-        throw new Error(`Directory "${newPathFull}" already exists`);
-      }
-
-      for (let bruFile of bruFilesAtSource) {
-        const newBruFilePath = bruFile.replace(oldPathFull, newPathFull);
-        moveRequestUid(bruFile, newBruFilePath);
-      }
-
-      // Rename directory by moving it around because of https://github.com/paulmillr/chokidar/issues/1031
-      await fsPromises.cp(oldPathFull, newPathFull, { recursive: true });
-      await fsPromises.rm(oldPathFull, { recursive: true });
-      return;
-    }
-
-    const isBru = hasBruExtension(oldPathFull);
-    if (!isBru) {
-      throw new Error(`"${oldPathFull}" is not a bru file`);
-    }
-
-    const newSanitizedPath = path.join(newPath, sanitizeFilename(newName) + '.bru');
-    if (!canRenameFile(newSanitizedPath, oldPathFull)) {
-      throw new Error(`File "${newSanitizedPath}" already exists`);
-    }
-
-    // update name in file and save new copy, then delete old copy
-    const data = fs.readFileSync(oldPathFull, 'utf8');
-    const jsonData = bruToJson(data);
-
-    jsonData.name = newName;
-
-    moveRequestUid(oldPathFull, newSanitizedPath);
-
-    const content = jsonToBru(jsonData);
-
-    // Because of sanitization the name can change but the path stays the same
-    if (newSanitizedPath !== oldPathFull) {
-      fs.unlinkSync(oldPathFull);
-    }
-    await writeFile(newSanitizedPath, content);
-  } catch (error) {
-    return Promise.reject(error);
+  if (!fs.existsSync(oldPathFull)) {
+    throw new Error(`Old file "${oldPathFull}" does not exist`);
   }
+
+  // if its directory, rename and return
+  if (isDirectory(oldPathFull)) {
+    const bruFilesAtSource = searchForBruFiles(oldPathFull);
+
+    const newPathFull = path.join(oldPathDirname, newName);
+    if (fs.existsSync(newPathFull)) {
+      throw new Error(`Directory "${newPathFull}" already exists`);
+    }
+
+    for (const bruFile of bruFilesAtSource) {
+      const newBruFilePath = bruFile.replace(oldPathFull, newPathFull);
+      moveRequestUid(bruFile, newBruFilePath);
+    }
+
+    // Rename directory by moving it around because of https://github.com/paulmillr/chokidar/issues/1031
+    await fsPromises.cp(oldPathFull, newPathFull, { recursive: true });
+    await fsPromises.rm(oldPathFull, { recursive: true });
+    return;
+  }
+
+  const isBru = hasBruExtension(oldPathFull);
+  if (!isBru) {
+    throw new Error(`"${oldPathFull}" is not a bru file`);
+  }
+
+  const newSanitizedPath = path.join(oldPathDirname, sanitizeFilename(newName) + '.bru');
+  if (!canRenameFile(newSanitizedPath, oldPathFull)) {
+    throw new Error(`File "${newSanitizedPath}" already exists`);
+  }
+
+  // update name in file and save new copy, then delete old copy
+  const data = fs.readFileSync(oldPathFull, 'utf8');
+  const jsonData = bruToJson(data);
+
+  jsonData.name = newName;
+
+  moveRequestUid(oldPathFull, newSanitizedPath);
+
+  const content = jsonToBru(jsonData);
+
+  // Because of sanitization the name can change but the path stays the same
+  if (newSanitizedPath !== oldPathFull) {
+    fs.unlinkSync(oldPathFull);
+  }
+  await writeFile(newSanitizedPath, content);
 });
 
 ipcMain.handle('renderer:new-folder', async (event, pathname) => {
