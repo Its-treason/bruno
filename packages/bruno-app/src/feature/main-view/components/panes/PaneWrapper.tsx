@@ -28,7 +28,7 @@ export const PaneWrapper: React.FC<PaneWrapperProps> = ({ aboveTabs, tabs, conte
       </div>
       <div className={classes.pane}>
         <AutoSizer disableWidth>
-          {({ height }) => <section style={{ height, overflow: 'visible' }}>{content}</section>}
+          {({ height }) => <section style={{ height, overflow: 'auto' }}>{content}</section>}
         </AutoSizer>
       </div>
     </div>

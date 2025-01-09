@@ -167,9 +167,5 @@ export const Timeline: React.FC<TimelineNewProps> = ({ requestId }) => {
     return <TimelineItem item={item} key={`${index}-${item.statusCode}`} />;
   });
 
-  return (
-    <Stack gap={'xl'} maw={'100%'}>
-      {items}
-    </Stack>
-  );
+  return <Stack gap={'xl'}>{items}</Stack>;
 };
