@@ -213,7 +213,14 @@ export const sendRequest = (item, collectionUid) => async (_dispatch, getState) 
   const environment = findEnvironmentInCollection(collection, collection.activeEnvironmentUid);
 
   const store = responseStore.getState();
-  store.clearResponse(item.uid);
+  // Prevent a request from being sent, while a request is still running
+  const lastRequestId = store.requestResponses.get(item.uid)?.at(-1);
+  if (lastRequestId) {
+    const response = store.responses.get(lastRequestId);
+    if (response.requestState !== 'received' && response.requestState !== 'cancelled') {
+      return;
+    }
+  }
 
   try {
     await sendNetworkRequest(item, collection, environment);

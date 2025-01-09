@@ -4,7 +4,7 @@
   flex-wrap: wrap;
   gap: var(--mantine-spacing-xs);
 
-  & div {
+  & div:first-child {
     flex: 1;
     min-width: 0;
   }

@@ -32,5 +32,5 @@ export const StopWatch: React.FC<StopWatchProps> = ({ requestTimestamp }) => {
     };
   }, [requestTimestamp]);
 
-  return <Text size="lg" ref={ref} />;
+  return <Text size="lg" ref={ref} mt={'xl'} />;
 };

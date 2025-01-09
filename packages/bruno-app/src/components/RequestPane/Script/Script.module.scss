@@ -8,7 +8,7 @@
 
   display: grid;
   grid-template-columns: 100%;
-  grid-template-rows: calc(50% - var(--mantine-spacing-xs)) calc(50% - var(--mantine-spacing-xs));
+  grid-template-rows: calc(50% - var(--mantine-spacing-xs)) 50%;
   gap: var(--mantine-spacing-xs);
 
   transition: grid-template-rows 0.2s ease-in-out;
@@ -17,10 +17,10 @@
   }
 
   &[data-pre-zoom-on='true'] {
-    grid-template-rows: calc(80% - var(--mantine-spacing-xs)) calc(20% - var(--mantine-spacing-xs));
+    grid-template-rows: 80% calc(20% - var(--mantine-spacing-xs));
   }
   &[data-post-zoom-on='true'] {
-    grid-template-rows: calc(20% - var(--mantine-spacing-xs)) calc(80% - var(--mantine-spacing-xs));
+    grid-template-rows: calc(20% - var(--mantine-spacing-xs)) 80%;
   }
 
   & > div {

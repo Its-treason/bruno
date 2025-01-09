@@ -3,7 +3,6 @@ import { updateActiveResponseId } from 'providers/ReduxStore/slices/tabs';
 import React, { useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { responseStore } from 'src/store/responseStore';
-import { string } from 'zod';
 import { useStore } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -51,7 +50,7 @@ export const ResponseHistory: React.FC<ResponseHistoryProps> = ({ itemUid, selec
   return (
     <Select
       size="xs"
-      w={200}
+      w={250}
       value={selectedResponseUid}
       data={data}
       onChange={(value) => {

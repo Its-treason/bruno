@@ -18,6 +18,7 @@ import { ResponseHeaders } from './headers/ResponseHeaders';
 import { Tests } from './tests/Tests';
 import { AboveTabsWrapper } from './responseHistory/AboveTabsWrapper';
 import { ResponseHistory } from './responseHistory/ResponseHistory';
+import { ResponseLoading } from './loadingOverlay/ResponseLoading';
 
 type ResponsePane = {
   item: RequestItemSchema;
@@ -52,11 +53,12 @@ export const ResponsePane: React.FC<ResponsePane> = ({
       return;
     }
 
+    if (isLoading) {
+      return <ResponseLoading requestId={selectedRequestIdUid} />;
+    }
+
     switch (activeTab) {
       case 'response':
-        if (isLoading) {
-          return;
-        }
         return (
           <ResponseBody
             requestId={selectedRequestIdUid}
@@ -101,24 +103,21 @@ export const ResponsePane: React.FC<ResponsePane> = ({
   }
 
   return (
-    <>
-      {isLoading ? <ResponseLoadingOverlay requestId={selectedRequestIdUid} /> : null}
-      <PaneWrapper
-        tabs={tabs}
-        activeTab={activeTab}
-        onTabChange={setActiveTab}
-        aboveTabs={
-          showHistory ? (
-            <AboveTabsWrapper
-              history={<ResponseHistory itemUid={item.uid} selectedResponseUid={selectedRequestIdUid} />}
-              summary={<ResponseSummary requestId={selectedRequestIdUid} itemUid={item.uid} />}
-            />
-          ) : (
-            <ResponseSummary requestId={selectedRequestIdUid} itemUid={item.uid} />
-          )
-        }
-        content={content}
-      />
-    </>
+    <PaneWrapper
+      tabs={tabs}
+      activeTab={activeTab}
+      onTabChange={setActiveTab}
+      aboveTabs={
+        showHistory ? (
+          <AboveTabsWrapper
+            history={<ResponseHistory itemUid={item.uid} selectedResponseUid={selectedRequestIdUid} />}
+            summary={<ResponseSummary requestId={selectedRequestIdUid} itemUid={item.uid} />}
+          />
+        ) : (
+          <ResponseSummary requestId={selectedRequestIdUid} itemUid={item.uid} />
+        )
+      }
+      content={content}
+    />
   );
 };

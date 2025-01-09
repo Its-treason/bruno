@@ -27,7 +27,8 @@ type ResponsePaneBodyProps = {
 };
 
 export const ResponseBody: React.FC<ResponsePaneBodyProps> = ({ item, collectionUid, requestId, disableRun }) => {
-  const { error, previewModes, size } = useStore(responseStore, (state) => state.responses.get(requestId)) ?? {};
+  const { error, previewModes, size, requestState } =
+    useStore(responseStore, (state) => state.responses.get(requestId)) ?? {};
 
   const [mode, setMode] = useState<ResponseMode>(error ? ['error', null] : ['raw', null]);
   const [dismissedSizeWarning, setDismissedSizeWarning] = useState(false);
