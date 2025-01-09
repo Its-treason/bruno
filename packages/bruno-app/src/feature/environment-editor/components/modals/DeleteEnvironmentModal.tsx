@@ -60,7 +60,7 @@ export const DeleteEnvironmentModal: React.FC = () => {
           variant="filled"
           color="red"
           onClick={() =>
-            deleteMutation.mutate({ environmentId: selectedEnvironment!.id, collectionId: collection?.uid })
+            deleteMutation.mutate({ environmentId: selectedEnvironment?.id, collectionId: collection?.uid })
           }
         >
           Delete

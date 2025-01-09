@@ -79,7 +79,7 @@ export const RenameEnvironmentModal: React.FC = () => {
         onSubmit={renameForm.onSubmit((values) => {
           renameMutation.mutate({
             collectionId: collection?.uid,
-            environmentId: selectedEnvironment!.id,
+            environmentId: selectedEnvironment?.id,
             name: values.name
           });
         })}
