@@ -51,6 +51,8 @@ function determinePreviewByHeader(
 
       case contentType.includes('application/pdf'):
         return { pretty: null, preview: 'pdf' };
+      case contentType.includes('image/svg'):
+        return { pretty: 'xml', preview: 'html' };
       case contentType.includes('image'):
         return { pretty: null, preview: 'image' };
       case contentType.includes('video'):
