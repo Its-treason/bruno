@@ -13,6 +13,7 @@ import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
 import { addMonacoCommands, addMonacoSingleLineActions, BrunoEditorCallbacks } from '../utils/monocoInit';
 
 type MonacoSinglelineProps = {
+  mode?: string;
   readOnly?: boolean;
   value?: string;
   defaultValue?: string;
@@ -30,6 +31,7 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
   onChange,
   onRun,
   onSave,
+  mode = 'plaintext',
   readOnly = false,
   value,
   defaultValue,
@@ -122,7 +124,7 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
           className={classes.editor}
           theme={displayedTheme === 'dark' ? 'bruno-dark' : 'bruno-light'}
           loading={null} // Loading looks weird with singeline editor
-          language={'plaintext'}
+          language={mode}
           value={value}
           defaultValue={defaultValue}
           onMount={onMount}

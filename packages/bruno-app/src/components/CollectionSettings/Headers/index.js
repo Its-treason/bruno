@@ -95,6 +95,7 @@ const Headers = ({ collection }) => {
                           )
                         }
                         autocomplete={headerAutoCompleteList}
+                        mode={'headers'}
                         singleLine
                         withVariables
                       />

@@ -93,6 +93,7 @@ const Headers = ({ collection, folder }) => {
                           )
                         }
                         autocomplete={headerAutoCompleteList}
+                        mode="headers"
                         singleLine
                         withVariables
                       />

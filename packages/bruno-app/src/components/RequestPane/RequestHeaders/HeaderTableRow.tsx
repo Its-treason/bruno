@@ -48,6 +48,7 @@ export const HeaderTableRow: React.FC<EnvironmentTableRowProps> = ({
               name
             });
           }}
+          mode={'headers'}
           withVariables
           singleLine
           asInput

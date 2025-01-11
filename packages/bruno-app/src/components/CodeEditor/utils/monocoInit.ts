@@ -4,6 +4,7 @@
  */
 import { Monaco } from '@monaco-editor/react';
 import { editor } from 'monaco-editor';
+import { headers } from 'know-your-http-well';
 
 type MonacoEditor = editor.IStandaloneCodeEditor;
 
@@ -338,12 +339,41 @@ export const initMonaco = (monaco: Monaco) => {
     }
   });
 
-  // monaco.languages.registerCompletionItemProvider('typescript', {
-  //   provideCompletionItems: () => ({
-  //     // @ts-expect-error `range` is missing here, but is still works
-  //     suggestions: buildSuggestions(monaco)
-  //   })
-  // });
+  monaco.languages.registerCompletionItemProvider('typescript', {
+    provideCompletionItems: () => ({
+      // @ts-expect-error `range` is missing here, but is still works
+      suggestions: buildSuggestions(monaco)
+    })
+  });
+
+  // This is used for Header name inputs
+  monaco.languages.register({ id: 'headers' });
+  monaco.languages.registerCompletionItemProvider('headers', {
+    provideCompletionItems: (model, position) => {
+      const word = model.getWordUntilPosition(position);
+      const range = {
+        startLineNumber: position.lineNumber,
+        endLineNumber: position.lineNumber,
+        startColumn: word.startColumn,
+        endColumn: word.endColumn
+      };
+
+      return {
+        suggestions: headers.map((header: { header: string; description: string }) => ({
+          label: header.header,
+          kind: monaco.languages.CompletionItemKind.Text,
+          insertText: header.header,
+          documentation: {
+            value: header.description,
+            isTrusted: true,
+            supportThemeIcons: true
+          },
+          preselect: true,
+          range
+        }))
+      };
+    }
+  });
 
   // javascript is solely used for the query editor
   // Reference for all codes: https://raw.githubusercontent.com/microsoft/TypeScript/refs/tags/v5.6.2/src/compiler/diagnosticMessages.json
