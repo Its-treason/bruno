@@ -249,7 +249,8 @@ function createProxyAgent(
   proxyConfig: Exclude<BrunoConfig['proxy'], undefined>,
   host: string,
   debug: DebugLogger,
-  tlsOptions: TlsOptions,
+  certOptions: TlsOptions,
+  settings: Preferences,
   signal?: AbortSignal
 ): Agent | null {
   if (proxyConfig.enabled === false) {
@@ -275,6 +276,7 @@ function createProxyAgent(
 
   debug.log('Added ProxyAgent', { proxyUrl });
   return new ProxyAgent({
+    rejectUnauthorized: !settings.request.sslVerification,
     getProxyForUrl: (url) => {
       const mustByPass = proxyConfig.bypassProxy?.split(';').some((byPass) => byPass === '*' || byPass === host);
       if (mustByPass) {
@@ -285,7 +287,7 @@ function createProxyAgent(
       return proxyUrl;
     },
     signal,
-    ...tlsOptions
+    ...certOptions
   });
 }
 
@@ -341,6 +343,7 @@ export async function createHttpRequest(context: RequestContext) {
       urlObject.host,
       context.debug,
       certOptions,
+      context.preferences,
       context.abortController?.signal
     );
     if (agent) {
