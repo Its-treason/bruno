@@ -287,6 +287,7 @@ export type BrunoConfig = {
     };
     flow?: 'sandwich' | 'sequential';
   };
+  h2?: boolean;
 };
 
 // Method, protocol, hostname and path are always set

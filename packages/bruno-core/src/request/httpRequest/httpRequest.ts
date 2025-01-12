@@ -26,6 +26,7 @@ export type HttpRequestInfo = {
 
 export async function execHttpRequest(
   options: BrunoRequestOptions,
+  allowH2: boolean,
   body?: string | Buffer,
   signal?: AbortSignal
 ): Promise<HttpRequestInfo> {
@@ -42,6 +43,7 @@ export async function execHttpRequest(
         ...options,
         signal
       },
+      allowH2,
       body
     );
   } catch (error) {
@@ -52,14 +54,19 @@ export async function execHttpRequest(
   return requestInfo;
 }
 
-async function doExecHttpRequest(info: HttpRequestInfo, options: BrunoRequestOptions, body?: string | Buffer) {
+async function doExecHttpRequest(
+  info: HttpRequestInfo,
+  options: BrunoRequestOptions,
+  allowH2: boolean,
+  body?: string | Buffer
+) {
   if (options.protocol !== 'https:' && options.protocol !== 'http:') {
     throw new Error(`Unsupported protocol: "${options.protocol}", only "https:" & "http:" are supported`);
   }
 
   // HTTP server usually do not support http2
   // I don't think proxy-agents don't work with http2.
-  if (options.protocol === 'http:' || options.agent) {
+  if (options.protocol === 'http:' || options.agent || allowH2 === false) {
     return makeHttp1Request(info, options, body);
   }
 

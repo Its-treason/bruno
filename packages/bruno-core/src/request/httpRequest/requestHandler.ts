@@ -15,6 +15,8 @@ export async function makeHttpRequest(context: RequestContext) {
     context.timeline = new Timeline();
   }
 
+  const allowH2 = context.collection.brunoConfig.h2 === true;
+
   const body = context.httpRequest?.body;
   let requestOptions = context.httpRequest!.options;
 
@@ -34,7 +36,7 @@ export async function makeHttpRequest(context: RequestContext) {
         agent: undefined // agent cannot be stringified
       }
     });
-    const response = await execHttpRequest(requestOptions, body, context.abortController?.signal);
+    const response = await execHttpRequest(requestOptions, allowH2, body, context.abortController?.signal);
 
     const nextRequest = await handleServerResponse(context, requestOptions, response);
     context.timeline?.add(response);
