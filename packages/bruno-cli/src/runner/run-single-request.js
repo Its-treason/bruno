@@ -20,6 +20,7 @@ const { addAwsV4Interceptor, resolveAwsV4Credentials } = require('./awsv4auth-he
 const { shouldUseProxy, PatchedHttpsProxyAgent } = require('../utils/proxy-util');
 const path = require('path');
 const protocolRegex = /^([-+\w]{1,25})(:?\/\/|:)/;
+const { NtlmClient } = require('axios-ntlm');
 
 const runSingleRequest = async function (
   filename,
@@ -178,8 +179,11 @@ const runSingleRequest = async function (
 
     let response, responseTime;
     try {
-      // run request
-      const axiosInstance = makeAxiosInstance();
+      let axiosInstance = makeAxiosInstance();
+      if (request.ntlmConfig) {
+        axiosInstance = NtlmClient(request.ntlmConfig, axiosInstance);
+        delete request.ntlmConfig;
+      }
 
       if (request.awsv4config) {
         // todo: make this happen in prepare-request.js

@@ -27,6 +27,7 @@
     "@usebruno/node-machine-id": "^2.0.0",
     "@usebruno/schema": "workspace:*",
     "about-window": "^1.15.2",
+    "axios": "1.7.5",
     "chai": "^4.3.7",
     "chokidar": "^4.0.1",
     "content-disposition": "^0.5.4",

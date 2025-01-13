@@ -4,7 +4,7 @@ const { outdentString } = require('../../v1/src/utils');
 
 const grammar = ohm.grammar(`Bru {
   BruFile = (meta | query | headers | auth | auths | vars | script | tests | docs)*
-  auths = authawsv4 | authbasic | authbearer | authdigest | authOAuth2 | authwsse | authapikey
+  auths = authawsv4 | authbasic | authbearer | authdigest | authNTLM |authOAuth2 | authwsse | authapikey
 
   nl = "\\r"? "\\n"
   st = " " | "\\t"
@@ -42,6 +42,7 @@ const grammar = ohm.grammar(`Bru {
   authbasic = "auth:basic" dictionary
   authbearer = "auth:bearer" dictionary
   authdigest = "auth:digest" dictionary
+  authNTLM = "auth:ntlm" dictionary
   authOAuth2 = "auth:oauth2" dictionary
   authwsse = "auth:wsse" dictionary
   authapikey = "auth:apikey" dictionary
@@ -245,6 +246,26 @@ const sem = grammar.createSemantics().addAttribute('ast', {
       }
     };
   },
+  authNTLM(_1, dictionary) {
+    const auth = mapPairListToKeyValPairs(dictionary.ast, false);
+    const usernameKey = _.find(auth, { name: 'username' });
+    const passwordKey = _.find(auth, { name: 'password' });
+    const domainKey = _.find(auth, { name: 'domain' });
+
+    const username = usernameKey ? usernameKey.value : '';
+    const password = passwordKey ? passwordKey.value : '';
+    const domain = domainKey ? domainKey.value : '';
+
+    return {
+      auth: {
+        ntlm: {
+          username,
+          password,
+          domain
+        }
+      }
+    };
+  },
   authOAuth2(_1, dictionary) {
     const auth = mapPairListToKeyValPairs(dictionary.ast, false);
     const grantTypeKey = _.find(auth, { name: 'grant_type' });
@@ -272,26 +293,26 @@ const sem = grammar.createSemantics().addAttribute('ast', {
                 scope: scopeKey ? scopeKey.value : ''
               }
             : grantTypeKey?.value && grantTypeKey?.value == 'authorization_code'
-            ? {
-                grantType: grantTypeKey ? grantTypeKey.value : '',
-                callbackUrl: callbackUrlKey ? callbackUrlKey.value : '',
-                authorizationUrl: authorizationUrlKey ? authorizationUrlKey.value : '',
-                accessTokenUrl: accessTokenUrlKey ? accessTokenUrlKey.value : '',
-                clientId: clientIdKey ? clientIdKey.value : '',
-                clientSecret: clientSecretKey ? clientSecretKey.value : '',
-                scope: scopeKey ? scopeKey.value : '',
-                state: stateKey ? stateKey.value : '',
-                pkce: pkceKey ? JSON.parse(pkceKey?.value || false) : false
-              }
-            : grantTypeKey?.value && grantTypeKey?.value == 'client_credentials'
-            ? {
-                grantType: grantTypeKey ? grantTypeKey.value : '',
-                accessTokenUrl: accessTokenUrlKey ? accessTokenUrlKey.value : '',
-                clientId: clientIdKey ? clientIdKey.value : '',
-                clientSecret: clientSecretKey ? clientSecretKey.value : '',
-                scope: scopeKey ? scopeKey.value : ''
-              }
-            : {}
+              ? {
+                  grantType: grantTypeKey ? grantTypeKey.value : '',
+                  callbackUrl: callbackUrlKey ? callbackUrlKey.value : '',
+                  authorizationUrl: authorizationUrlKey ? authorizationUrlKey.value : '',
+                  accessTokenUrl: accessTokenUrlKey ? accessTokenUrlKey.value : '',
+                  clientId: clientIdKey ? clientIdKey.value : '',
+                  clientSecret: clientSecretKey ? clientSecretKey.value : '',
+                  scope: scopeKey ? scopeKey.value : '',
+                  state: stateKey ? stateKey.value : '',
+                  pkce: pkceKey ? JSON.parse(pkceKey?.value || false) : false
+                }
+              : grantTypeKey?.value && grantTypeKey?.value == 'client_credentials'
+                ? {
+                    grantType: grantTypeKey ? grantTypeKey.value : '',
+                    accessTokenUrl: accessTokenUrlKey ? accessTokenUrlKey.value : '',
+                    clientId: clientIdKey ? clientIdKey.value : '',
+                    clientSecret: clientSecretKey ? clientSecretKey.value : '',
+                    scope: scopeKey ? scopeKey.value : ''
+                  }
+                : {}
       }
     };
   },

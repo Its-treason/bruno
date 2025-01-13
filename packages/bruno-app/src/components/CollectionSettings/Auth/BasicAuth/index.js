@@ -1,9 +1,9 @@
 import get from 'lodash/get';
 import { useDispatch } from 'react-redux';
-import SingleLineEditor from 'src/components/CodeEditor';
 import { updateCollectionAuth } from 'providers/ReduxStore/slices/collections';
 import { saveCollectionRoot } from 'providers/ReduxStore/slices/collections/actions';
 import StyledWrapper from './StyledWrapper';
+import CodeEditor from 'src/components/CodeEditor';
 
 const BasicAuth = ({ collection }) => {
   const dispatch = useDispatch();
@@ -40,27 +40,25 @@ const BasicAuth = ({ collection }) => {
 
   return (
     <StyledWrapper className="mt-2 w-full">
-      <label className="block font-medium mb-2">Username</label>
-      <div className="single-line-editor-wrapper mb-2">
-        <SingleLineEditor
-          value={basicAuth.username || ''}
-          onSave={handleSave}
-          onChange={(val) => handleUsernameChange(val)}
-          singleLine
-          withVariables
-        />
-      </div>
+      <CodeEditor
+        label={'Username'}
+        value={basicAuth.username || ''}
+        onSave={handleSave}
+        onChange={(val) => handleUsernameChange(val)}
+        singleLine
+        asInput
+        withVariables
+      />
 
-      <label className="block font-medium mb-2">Password</label>
-      <div className="single-line-editor-wrapper">
-        <SingleLineEditor
-          value={basicAuth.password || ''}
-          onSave={handleSave}
-          onChange={(val) => handlePasswordChange(val)}
-          singleLine
-          withVariables
-        />
-      </div>
+      <CodeEditor
+        label={'Password'}
+        value={basicAuth.password || ''}
+        onSave={handleSave}
+        onChange={(val) => handlePasswordChange(val)}
+        singleLine
+        asInput
+        withVariables
+      />
     </StyledWrapper>
   );
 };

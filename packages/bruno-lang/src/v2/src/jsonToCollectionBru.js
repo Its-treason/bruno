@@ -123,6 +123,17 @@ ${indentString(`password: ${auth.digest.password}`)}
 `;
   }
 
+  if (auth && auth.ntlm) {
+    bru += `auth:ntlm {
+${indentString(`username: ${auth.ntlm.username}`)}
+${indentString(`password: ${auth.ntlm.password}`)}
+${indentString(`domain: ${auth.ntlm.domain}`)}
+
+}
+
+`;
+  }
+
   if (auth && auth.apikey) {
     bru += `auth:apikey {
 ${indentString(`key: ${auth?.apikey?.key || ''}`)}

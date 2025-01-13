@@ -335,6 +335,13 @@ export const transformCollectionToSaveToExportAsFile = (collection, options = {}
               password: get(si.request, 'auth.digest.password', '')
             };
             break;
+          case 'ntlm':
+            di.request.auth.ntlm = {
+              username: get(si.request, 'auth.ntlm.username', ''),
+              password: get(si.request, 'auth.ntlm.password', ''),
+              domain: get(si.request, 'auth.ntlm.domain', '')
+            };
+            break;
           case 'oauth2':
             let grantType = get(si.request, 'auth.oauth2.grantType', '');
             switch (grantType) {
@@ -641,6 +648,10 @@ export const humanizeRequestAuthMode = (mode) => {
     }
     case 'digest': {
       label = 'Digest Auth';
+      break;
+    }
+    case 'ntlm': {
+      label = 'NTLM';
       break;
     }
     case 'oauth2': {
