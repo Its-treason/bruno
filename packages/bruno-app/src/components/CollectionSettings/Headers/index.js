@@ -11,9 +11,6 @@ import {
 import { saveCollectionRoot } from 'providers/ReduxStore/slices/collections/actions';
 import CodeEditor from 'src/components/CodeEditor';
 import StyledWrapper from './StyledWrapper';
-import { headers as StandardHTTPHeaders } from 'know-your-http-well';
-import { MimeTypes } from 'utils/common/autocompleteConstants';
-const headerAutoCompleteList = StandardHTTPHeaders.map((e) => e.header);
 
 const Headers = ({ collection }) => {
   const dispatch = useDispatch();
@@ -94,7 +91,6 @@ const Headers = ({ collection }) => {
                             'name'
                           )
                         }
-                        autocomplete={headerAutoCompleteList}
                         mode={'headers'}
                         singleLine
                         withVariables
@@ -115,7 +111,7 @@ const Headers = ({ collection }) => {
                             'value'
                           )
                         }
-                        autocomplete={MimeTypes}
+                        mode={header.name.toLowerCase() === 'content-type' ? 'content-type' : 'plaintext'}
                         singleLine
                         withVariables
                       />

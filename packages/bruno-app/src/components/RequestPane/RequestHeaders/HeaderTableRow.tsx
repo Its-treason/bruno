@@ -65,6 +65,8 @@ export const HeaderTableRow: React.FC<EnvironmentTableRowProps> = ({
               value
             });
           }}
+          // The 'content-type' mode adds autocomplete for common content-types
+          mode={header.name.toLowerCase() === 'content-type' ? 'content-type' : 'plaintext'}
           withVariables
           singleLine
           asInput

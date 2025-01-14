@@ -6,9 +6,7 @@ import { useDispatch } from 'react-redux';
 import { addFolderHeader, updateFolderHeader, deleteFolderHeader } from 'providers/ReduxStore/slices/collections';
 import { saveFolderRoot } from 'providers/ReduxStore/slices/collections/actions';
 import StyledWrapper from './StyledWrapper';
-import { headers as StandardHTTPHeaders } from 'know-your-http-well';
 import CodeEditor from 'components/CodeEditor';
-const headerAutoCompleteList = StandardHTTPHeaders.map((e) => e.header);
 
 const Headers = ({ collection, folder }) => {
   const dispatch = useDispatch();
@@ -92,7 +90,6 @@ const Headers = ({ collection, folder }) => {
                             'name'
                           )
                         }
-                        autocomplete={headerAutoCompleteList}
                         mode="headers"
                         singleLine
                         withVariables
@@ -113,6 +110,7 @@ const Headers = ({ collection, folder }) => {
                             'value'
                           )
                         }
+                        mode={header.name.toLowerCase() === 'content-type' ? 'content-type' : 'plaintext'}
                         singleLine
                         withVariables
                       />
