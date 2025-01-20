@@ -162,7 +162,7 @@ ipcMain.handle(
         return;
       }
 
-      const { error, nextRequestName } = await executeRequest(
+      const { error, nextRequestName, variables } = await executeRequest(
         item,
         collection as any, // @usebruno/core uses its own type for collection
         globalVariables,
@@ -221,6 +221,22 @@ ipcMain.handle(
         });
         continue;
       }
+
+      // Update variables for the next request in the runner
+      collection.runtimeVariables = variables.runtime;
+      globalVariables = variables.global;
+      environment = {
+        name: environment.name ?? '',
+        uid: '',
+        variables: Object.entries(variables.environment).map(([name, value]) => ({
+          enabled: true,
+          name,
+          value: value as any,
+          secret: false,
+          type: 'text',
+          uid: ''
+        }))
+      };
 
       if (error) {
         webContents.send('main:run-folder-event', {
