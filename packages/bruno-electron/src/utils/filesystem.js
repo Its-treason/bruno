@@ -1,7 +1,6 @@
 const path = require('path');
 const fs = require('fs-extra');
 const { dialog } = require('electron');
-const isValidPathname = require('is-valid-path');
 
 const isSymbolicLink = (filepath) => {
   try {
@@ -145,7 +144,6 @@ const canRenameFile = (newFilePath, oldFilePath) => {
 };
 
 module.exports = {
-  isValidPathname,
   isSymbolicLink,
   isFile,
   isDirectory,
