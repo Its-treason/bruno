@@ -311,10 +311,10 @@ export type RequestContext = {
   readonly delay: number;
 
   requestItem: RequestItem;
-  collection: Collection;
+  readonly collection: Collection;
   readonly preferences: Preferences;
-  cookieJar: CookieJar;
-  variables: {
+  readonly cookieJar: CookieJar;
+  readonly variables: {
     request: Record<string, unknown>;
     runtime: Record<string, unknown>;
     collection: Record<string, unknown>;

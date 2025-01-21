@@ -163,7 +163,7 @@ ipcMain.handle(
       }
 
       const { error, nextRequestName, variables } = await executeRequest(
-        item,
+        structuredClone(item),
         collection as any, // @usebruno/core uses its own type for collection
         globalVariables,
         getPreferences(),
