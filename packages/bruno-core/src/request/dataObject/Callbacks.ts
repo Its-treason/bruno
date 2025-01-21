@@ -1,6 +1,6 @@
-import { RequestContext } from './types';
+import { RequestContext } from '../types';
 import { Cookie, CookieJar } from 'tough-cookie';
-import { cleanJson } from './runtime/utils';
+import { cleanJson } from '../runtime/utils';
 
 type Callback = (payload: any) => void;
 export type RawCallbacks = {
@@ -113,11 +113,11 @@ export class Callbacks {
     });
   }
 
-  updateScriptEnvironment(context: RequestContext, envVariables: any, runtimeVariables: any, globalVariables: any) {
+  updateScriptEnvironment(context: RequestContext) {
     this.send('updateScriptEnvironment', context, {
-      envVariables,
-      runtimeVariables,
-      globalVariables,
+      envVariables: context.variables.getEnvironmentVariables(),
+      runtimeVariables: context.variables.getRuntimeVariables(),
+      globalVariables: context.variables.getGlobalVariables(),
       requestUid: context.requestItem.uid,
       collectionUid: context.collection.uid
     });

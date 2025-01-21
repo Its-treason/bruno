@@ -15,11 +15,11 @@ export function postRequestVars(context: RequestContext, folderData: FolderData[
     return;
   }
 
-  const before = structuredClone(context.variables.collection);
+  const before = structuredClone(context.variables.getRuntimeVariables());
 
   const varsRuntime = new VarsRuntime();
   // This will update context.variables.collection by reference inside the 'Bru' class
-  const varsResult = varsRuntime.runPostResponseVars(
+  varsRuntime.runPostResponseVars(
     postRequestVars,
     context.requestItem,
     context.response!,
@@ -30,9 +30,7 @@ export function postRequestVars(context: RequestContext, folderData: FolderData[
     context.environmentName
   );
 
-  if (varsResult) {
-    context.callback.updateScriptEnvironment(context, null, varsResult.runtimeVariables, null);
-  }
+  context.callback.updateScriptEnvironment(context);
 
-  context.debug.log('Post request variables evaluated', { before, after: context.variables.collection });
+  context.debug.log('Post request variables evaluated', { before, after: context.variables.getRuntimeVariables() });
 }

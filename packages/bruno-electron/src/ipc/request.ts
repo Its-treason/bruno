@@ -223,12 +223,12 @@ ipcMain.handle(
       }
 
       // Update variables for the next request in the runner
-      collection.runtimeVariables = variables.runtime;
-      globalVariables = variables.global;
+      collection.runtimeVariables = variables.getRuntimeVariables();
+      globalVariables = variables.getGlobalVariables();
       environment = {
-        name: environment.name ?? '',
+        name: environment?.name ?? '',
         uid: '',
-        variables: Object.entries(variables.environment).map(([name, value]) => ({
+        variables: Object.entries(variables.getEnvironmentVariables()).map(([name, value]) => ({
           enabled: true,
           name,
           value: value as any,

@@ -1,4 +1,5 @@
 import { interpolate } from '@usebruno/common';
+import { VariablesContext } from '../../dataObject/VariablesContext';
 
 const variableNameRegex = /^[\w-.]*$/;
 
@@ -6,27 +7,13 @@ export class Bru {
   _nextRequest?: string;
 
   constructor(
-    public envVariables: any,
-    public runtimeVariables: any,
-    public requestVariables: Record<string, unknown>,
-    public folderVariables: Record<string, unknown>,
-    public collectionVariables: Record<string, unknown>,
-    public globalVariables: Record<string, unknown>,
-    public processEnvVars: any,
+    private variables: VariablesContext,
     private collectionPath: string,
     private environmentName?: string
   ) {}
 
   interpolate(target: unknown): string | unknown {
-    return interpolate(target, {
-      ...this.globalVariables,
-      ...this.collectionVariables,
-      ...this.envVariables,
-      ...this.folderVariables,
-      ...this.requestVariables,
-      ...this.runtimeVariables,
-      ...this.processEnvVars
-    });
+    return interpolate(target, this.variables.merge());
   }
 
   cwd() {
@@ -38,15 +25,15 @@ export class Bru {
   }
 
   getProcessEnv(key: string): unknown {
-    return this.processEnvVars.process.env[key];
+    return this.variables.getProcessEnvVariables().process.env[key];
   }
 
   hasEnvVar(key: string) {
-    return Object.hasOwn(this.envVariables, key);
+    return Object.hasOwn(this.variables.getEnvironmentVariables(), key);
   }
 
   getEnvVar(key: string) {
-    return interpolate(this.envVariables[key], this.processEnvVars);
+    return interpolate(this.variables.getEnvironmentVariables()[key]);
   }
 
   setEnvVar(key: string, value: unknown) {
@@ -54,22 +41,22 @@ export class Bru {
       throw new Error('Creating a env variable without specifying a name is not allowed.');
     }
 
-    this.envVariables[key] = value;
+    this.variables.setEnvironmentVariable(key, value);
   }
 
   getGlobalEnvVar(key: string) {
-    return this.interpolate(this.globalVariables[key]);
+    return this.interpolate(this.variables.getGlobalVariables()[key]);
   }
 
   setGlobalEnvVar(key: string, value: unknown) {
     if (!key) {
       throw new Error('Creating a env variable without specifying a name is not allowed.');
     }
-    this.globalVariables[key] = value;
+    this.variables.setGlobalVariable(key, value);
   }
 
   hasVar(key: string) {
-    return Object.hasOwn(this.runtimeVariables, key);
+    return Object.hasOwn(this.variables.getRuntimeVariables(), key);
   }
 
   setVar(key: string, value: unknown) {
@@ -84,7 +71,7 @@ export class Bru {
       );
     }
 
-    this.runtimeVariables[key] = value;
+    this.variables.setRuntimeVariable(key, value);
   }
 
   getVar(key: string): unknown {
@@ -95,29 +82,31 @@ export class Bru {
       );
     }
 
-    return this.interpolate(this.runtimeVariables[key]);
+    return this.interpolate(this.variables.getRuntimeVariables()[key]);
   }
 
   deleteVar(key: string) {
-    delete this.runtimeVariables[key];
+    delete this.variables.getRuntimeVariables()[key];
   }
 
   getCollectionVar(key: string) {
-    if (!this.collectionVariables[key]) {
+    const variables = this.variables.getCollectionVariables();
+    if (!variables[key]) {
       return undefined;
     }
-    return this.interpolate(this.collectionVariables[key]);
+    return this.interpolate(variables[key]);
   }
 
   getFolderVar(key: string) {
-    if (!this.folderVariables[key]) {
+    const variables = this.variables.getFolderVariables();
+    if (!variables[key]) {
       return undefined;
     }
-    return this.interpolate(this.folderVariables[key]);
+    return this.interpolate(variables[key]);
   }
 
   getRequestVar(key: string): unknown {
-    return this.interpolate(this.requestVariables[key] as string);
+    return this.interpolate(this.variables.getRequestVariables()[key] as string);
   }
 
   setNextRequest(nextRequest: string) {

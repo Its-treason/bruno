@@ -9,7 +9,7 @@ import qs from 'qs';
 import FormData from 'form-data';
 import { Agent } from 'node:http';
 import { ProxyAgent } from 'proxy-agent';
-import { DebugLogger } from '../DebugLogger';
+import { DebugLogger } from '../dataObject/DebugLogger';
 import { TlsOptions, rootCertificates } from 'node:tls';
 import { createHash, randomBytes } from 'node:crypto';
 

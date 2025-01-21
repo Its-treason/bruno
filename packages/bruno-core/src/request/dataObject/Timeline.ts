@@ -1,4 +1,4 @@
-import { HttpRequestInfo } from './httpRequest/httpRequest';
+import { HttpRequestInfo } from '../httpRequest/httpRequest';
 
 export class Timeline extends Array<HttpRequestInfo> {
   public add(request: HttpRequestInfo) {

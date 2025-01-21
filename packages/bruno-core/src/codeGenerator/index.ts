@@ -1,15 +1,16 @@
 import { nanoid } from 'nanoid';
 import { CookieJar } from 'tough-cookie';
 import { Collection, CollectionEnvironment, Preferences, RequestContext, RequestItem } from '../request/types';
-import { Callbacks } from '../request/Callbacks';
-import { DebugLogger } from '../request/DebugLogger';
-import { Timings } from '../request/Timings';
+import { Callbacks } from '../request/dataObject/Callbacks';
+import { DebugLogger } from '../request/dataObject/DebugLogger';
+import { Timings } from '../request/dataObject/Timings';
 import { applyCollectionSettings } from '../request/preRequest/applyCollectionSettings';
 import { interpolateRequest } from '../request/preRequest/interpolateRequest';
 import { preRequestScript } from '../request/preRequest/preRequestScript';
 import { collectFolderData } from '../request/preRequest/collectFolderData';
 import { HTTPSnippet } from '@readme/httpsnippet';
 import { createHar } from './createHar';
+import { VariablesContext } from '../request/dataObject/VariablesContext';
 
 type GenerateCodeOptions = {
   targetId: string;
@@ -35,22 +36,34 @@ export async function generateCode(
     return acc;
   }, {});
 
-  const collectionVariables = (collection.root?.request?.vars?.req || []).reduce((acc, variable) => {
-    if (variable.enabled) {
-      acc[variable.name] = variable.value;
-    }
-    return acc;
-  }, {} as Record<string, unknown>);
+  const collectionVariables = (collection.root?.request?.vars?.req || []).reduce(
+    (acc, variable) => {
+      if (variable.enabled) {
+        acc[variable.name] = variable.value;
+      }
+      return acc;
+    },
+    {} as Record<string, unknown>
+  );
 
-  const requestVariables = (requestItem.request?.vars?.req || []).reduce((acc, variable) => {
-    if (variable.enabled) {
-      acc[variable.name] = variable.value;
-    }
-    return acc;
-  }, {} as Record<string, unknown>);
+  const requestVariables = (requestItem.request?.vars?.req || []).reduce(
+    (acc, variable) => {
+      if (variable.enabled) {
+        acc[variable.name] = variable.value;
+      }
+      return acc;
+    },
+    {} as Record<string, unknown>
+  );
+
+  const variables = new VariablesContext(collection, requestItem, globalVariables, environment);
 
   const context: RequestContext = {
     uid: nanoid(),
+    dataDir: '', // Not used here
+    brunoVersion: '', // Not used here
+    cancelToken: '', // Not used here
+    delay: 0, // Not used here
 
     executionMode: 'standalone',
 
@@ -58,22 +71,7 @@ export async function generateCode(
     collection,
     preferences,
     cookieJar,
-    variables: {
-      process: {
-        process: {
-          // @ts-expect-error `process.env` is a dict with weird typings
-          env: {
-            ...process.env,
-            ...collection.processEnvVariables
-          }
-        }
-      },
-      environment: environmentVariableRecord,
-      collection: collectionVariables,
-      request: requestVariables,
-      global: globalVariables,
-      runtime: collection.runtimeVariables
-    },
+    variables,
 
     callback: new Callbacks({}, fetchAuthorizationCode),
     timings: new Timings(),
@@ -87,7 +85,7 @@ async function doGenerateCode(context: RequestContext, options: GenerateCodeOpti
   context.debug.addStage('Generate code');
 
   const [folderData, folderVariables] = collectFolderData(context.collection, context.requestItem.uid);
-  context.variables.folder = folderVariables;
+  context.variables.setFolderVariables(folderVariables);
 
   // Folder Headers are also applied here
   applyCollectionSettings(context, folderData);

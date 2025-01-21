@@ -20,28 +20,12 @@ export class VarsRuntime {
       return;
     }
 
-    const bru = new Bru(
-      variables.environment,
-      variables.runtime,
-      variables.request,
-      variables.folder,
-      variables.collection,
-      variables.global,
-      variables.process,
-      collectionPath,
-      environmentName
-    );
+    const bru = new Bru(variables, collectionPath, environmentName);
     const req = new BrunoRequest(request, true, executionMode);
     const res = createResponseParser(response, responseBody);
 
     const context = {
-      ...variables.global,
-      ...variables.collection,
-      ...variables.environment,
-      ...variables.folder,
-      ...variables.request,
-      ...variables.runtime,
-      ...variables.process,
+      ...variables.merge(),
       bru,
       req,
       res
@@ -52,9 +36,5 @@ export class VarsRuntime {
       // This will update the runtimeVariables
       bru.setVar(postRequestVar.name, value);
     });
-
-    return {
-      runtimeVariables: bru.runtimeVariables
-    };
   }
 }

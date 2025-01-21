@@ -1,11 +1,12 @@
-import { Timings } from './Timings';
-import { DebugLogger } from './DebugLogger';
-import { Timeline } from './Timeline';
-import { Callbacks } from './Callbacks';
+import { Timings } from './dataObject/Timings';
+import { DebugLogger } from './dataObject/DebugLogger';
+import { Timeline } from './dataObject/Timeline';
+import { Callbacks } from './dataObject/Callbacks';
 import { RequestOptions } from 'node:http';
 import { TlsOptions } from 'node:tls';
 import { CookieJar } from 'tough-cookie';
 import { RequestAuthSchema } from '@usebruno/schema';
+import { VariablesContext } from './dataObject/VariablesContext';
 
 export type RequestType = 'http-request' | 'graphql-request';
 
@@ -314,19 +315,7 @@ export type RequestContext = {
   readonly collection: Collection;
   readonly preferences: Preferences;
   readonly cookieJar: CookieJar;
-  readonly variables: {
-    request: Record<string, unknown>;
-    runtime: Record<string, unknown>;
-    collection: Record<string, unknown>;
-    folder: Record<string, unknown>;
-    environment: Record<string, unknown>;
-    global: Record<string, unknown>;
-    process: {
-      process: {
-        env: Record<string, string>;
-      };
-    };
-  };
+  readonly variables: VariablesContext;
 
   readonly callback: Callbacks;
   readonly timings: Timings;

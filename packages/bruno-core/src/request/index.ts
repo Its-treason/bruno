@@ -1,5 +1,5 @@
-import { DebugLogger } from './DebugLogger';
-import { Timings } from './Timings';
+import { DebugLogger } from './dataObject/DebugLogger';
+import { Timings } from './dataObject/Timings';
 import { Collection, CollectionEnvironment, Preferences, RequestContext, RequestItem } from './types';
 import { preRequestScript } from './preRequest/preRequestScript';
 import { applyCollectionSettings } from './preRequest/applyCollectionSettings';
@@ -9,7 +9,7 @@ import { postRequestScript } from './postRequest/postRequestScript';
 import { assertions } from './postRequest/assertions';
 import { tests } from './postRequest/tests';
 import { interpolateRequest } from './preRequest/interpolateRequest';
-import { Callbacks, RawCallbacks } from './Callbacks';
+import { Callbacks, RawCallbacks } from './dataObject/Callbacks';
 import { makeHttpRequest } from './httpRequest/requestHandler';
 import { CookieJar } from 'tough-cookie';
 import { readResponseBodyAsync } from './runtime/utils';
@@ -17,6 +17,7 @@ import { collectFolderData } from './preRequest/collectFolderData';
 import { applyOAuth2 } from './preRequest/OAuth2/applyOAuth2';
 import { determinePreviewType } from './preRequest/determinePreviewMode';
 import { randomUUID } from 'crypto';
+import { VariablesContext } from './dataObject/VariablesContext';
 
 export async function request(
   requestItem: RequestItem,
@@ -34,37 +35,9 @@ export async function request(
   rawCallbacks: Partial<RawCallbacks> = {},
   delay: number = 0
 ) {
-  // Convert the EnvVariables into a Record
-  const environmentVariableRecord = (environment?.variables ?? []).reduce<Record<string, unknown>>((acc, env) => {
-    if (env.enabled) {
-      acc[env.name] = env.value;
-    }
-    return acc;
-  }, {});
-
   if (requestItem.draft) {
     requestItem.request = requestItem.draft.request;
   }
-
-  const collectionVariables = (collection.root?.request?.vars?.req || []).reduce(
-    (acc, variable) => {
-      if (variable.enabled) {
-        acc[variable.name] = variable.value;
-      }
-      return acc;
-    },
-    {} as Record<string, unknown>
-  );
-
-  const requestVariables = (requestItem.request?.vars?.req || []).reduce(
-    (acc, variable) => {
-      if (variable.enabled) {
-        acc[variable.name] = variable.value;
-      }
-      return acc;
-    },
-    {} as Record<string, unknown>
-  );
 
   const context: RequestContext = {
     uid: randomUUID(),
@@ -80,23 +53,7 @@ export async function request(
     collection,
     preferences,
     cookieJar,
-    variables: {
-      process: {
-        process: {
-          // @ts-expect-error `process.env` is a dict with weird typings
-          env: {
-            ...process.env,
-            ...collection.processEnvVariables
-          }
-        }
-      },
-      environment: environmentVariableRecord,
-      collection: collectionVariables,
-      global: globalVariables,
-      request: requestVariables,
-      // Runtime variables are stored inside the collection.
-      runtime: collection.runtimeVariables
-    },
+    variables: new VariablesContext(collection, requestItem, globalVariables, environment),
 
     callback: new Callbacks(rawCallbacks, fetchAuthorizationCode),
     timings: new Timings(),
@@ -133,7 +90,7 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
   }
 
   const [folderData, folderVariables] = collectFolderData(context.collection, context.requestItem.uid);
-  context.variables.folder = folderVariables;
+  context.variables.setFolderVariables(folderVariables);
 
   // Folder Headers are also applied here
   applyCollectionSettings(context, folderData);

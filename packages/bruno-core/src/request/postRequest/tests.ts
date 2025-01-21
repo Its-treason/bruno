@@ -51,17 +51,9 @@ export async function tests(context: RequestContext, folderData: FolderData[]) {
   }
 
   context.callback.testResults(context, scriptResult.results);
-  context.callback.updateScriptEnvironment(
-    context,
-    scriptResult.envVariables,
-    scriptResult.runtimeVariables,
-    scriptResult.globalVariables
-  );
+  context.callback.updateScriptEnvironment(context);
 
   context.debug.log('Test script finished', {
-    envVariables: scriptResult.envVariables,
-    runtimeVariables: scriptResult.runtimeVariables,
-    globalVariables: scriptResult.globalVariables,
     results: scriptResult.results
   });
 }

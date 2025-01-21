@@ -1,4 +1,4 @@
-import { cleanJson } from './runtime/utils';
+import { cleanJson } from '../runtime/utils';
 
 type Logs = { title: string; data: unknown; date: number }[];
 type LogStages = { stage: string; logs: Logs };

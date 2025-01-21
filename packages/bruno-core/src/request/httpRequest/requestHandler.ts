@@ -2,13 +2,13 @@ import { BrunoRequestOptions, RequestContext, RequestItem } from '../types';
 import { handleDigestAuth } from './digestAuth';
 import { addAwsAuthHeader } from './awsSig4vAuth';
 import { HttpRequestInfo, execHttpRequest } from './httpRequest';
-import { Timeline } from '../Timeline';
+import { Timeline } from '../dataObject/Timeline';
 import { writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { CookieJar } from 'tough-cookie';
 import { URL } from 'node:url';
 import { decodeServerResponse } from './decodeResponseBody';
-import { DebugLogger } from '../DebugLogger';
+import { DebugLogger } from '../dataObject/DebugLogger';
 
 export async function makeHttpRequest(context: RequestContext) {
   if (context.timeline === undefined) {

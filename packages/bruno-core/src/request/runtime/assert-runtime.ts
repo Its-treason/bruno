@@ -7,6 +7,7 @@ import { BrunoRequest } from './dataObject/BrunoRequest';
 import { evaluateJsTemplateLiteral, evaluateJsExpression, createResponseParser } from './utils';
 import { interpolate } from '@usebruno/common';
 import { RequestContext, RequestItem } from '../types';
+import { VariablesContext } from '../dataObject/VariablesContext';
 
 use(chaiString);
 use(function (chai, utils) {
@@ -214,7 +215,7 @@ export class AssertRuntime {
     request: RequestItem,
     response: any,
     responseBody: any,
-    variables: RequestContext['variables'],
+    variables: VariablesContext,
     collectionPath: string,
     executionMode: string,
     environmentName?: string
@@ -224,28 +225,12 @@ export class AssertRuntime {
       return [];
     }
 
-    const bru = new Bru(
-      variables.environment,
-      variables.runtime,
-      variables.request,
-      variables.folder,
-      variables.collection,
-      variables.global,
-      variables.process,
-      collectionPath,
-      environmentName
-    );
+    const bru = new Bru(variables, collectionPath, environmentName);
     const req = new BrunoRequest(request, true, executionMode);
     const res = createResponseParser(response, responseBody);
 
     const context = {
-      ...variables.global,
-      ...variables.collection,
-      ...variables.environment,
-      ...variables.folder,
-      ...variables.request,
-      ...variables.runtime,
-      ...variables.process,
+      ...variables.merge(),
       bru,
       req,
       res
