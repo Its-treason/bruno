@@ -6,10 +6,12 @@ import { Response } from 'src/store/responseStore';
 
 // This converts the internal status into a Status for the UI
 // Also checks tests & assertions
-export default function runnerItemStatus(item: Response): 'passed' | 'failed' | 'running' | 'delayed' {
+export default function runnerItemStatus(item: Response): 'passed' | 'failed' | 'running' | 'delayed' | 'skipped' {
   switch (item.requestState) {
     case 'delayed':
       return 'delayed';
+    case 'skipped':
+      return 'skipped';
     case 'queued':
     case 'sending':
       return 'running';

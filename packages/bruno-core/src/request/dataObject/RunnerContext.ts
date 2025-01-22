@@ -15,7 +15,7 @@ export class RunnerContext {
     return this.stopExecution;
   }
   public stopRunnerExecution() {
-    this.stopExecution = false;
+    this.stopExecution = true;
   }
 
   // This will only be checked after the pre-request-script
@@ -23,6 +23,6 @@ export class RunnerContext {
     return this.skipRequest;
   }
   public skipThisRequest() {
-    this.stopExecution = false;
+    this.skipRequest = true;
   }
 }

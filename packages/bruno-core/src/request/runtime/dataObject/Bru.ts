@@ -1,12 +1,12 @@
 import { interpolate } from '@usebruno/common';
 import { VariablesContext } from '../../dataObject/VariablesContext';
+import { Runner } from './Runner';
 
 const variableNameRegex = /^[\w-.]*$/;
 
 export class Bru {
-  _nextRequest?: string;
-
   constructor(
+    public runner: Runner,
     private variables: VariablesContext,
     private collectionPath: string,
     private environmentName?: string
@@ -110,7 +110,7 @@ export class Bru {
   }
 
   setNextRequest(nextRequest: string) {
-    this._nextRequest = nextRequest;
+    this.runner.setNextRequest(nextRequest);
   }
 
   sleep(ms: number): Promise<void> {

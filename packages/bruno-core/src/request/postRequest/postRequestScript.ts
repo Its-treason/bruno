@@ -28,6 +28,7 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
       context.requestItem,
       context.response!,
       context.responseBody,
+      context.runner,
       context.variables,
       context.environmentName,
       false,
@@ -55,6 +56,4 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
     context.debug.log('Response body was overwritten');
     context.responseBody = scriptResult.responseBody;
   }
-
-  context.nextRequestName = scriptResult.nextRequestName;
 }

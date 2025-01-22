@@ -6,6 +6,7 @@ import { DebugInfo } from 'src/feature/response-pane/components/debug/Debug';
 type Actions = {
   requestQueued: (requestId: string, itemId: string, data: Partial<Response>) => void;
   requestDelayed: (requestId: string) => void;
+  requestSkipped: (requestId: string) => void;
   requestSent: (requestId: string, data: Partial<Response>) => void;
   requestTestResults: (requestId: string, data: Partial<Response>) => void;
   requestReceived: (requestId: string, data: Partial<Response>) => void;
@@ -19,7 +20,7 @@ export type Response = {
   requestId: string;
   itemId: string;
   requestSentTimestamp: number;
-  requestState: 'queued' | 'delayed' | 'sending' | 'received' | 'cancelled';
+  requestState: 'queued' | 'delayed' | 'skipped' | 'sending' | 'received' | 'cancelled';
 
   error?: string;
 
@@ -87,6 +88,16 @@ export const responseStore = createStore(
         }
 
         response.requestState = 'delayed';
+      });
+    },
+    requestSkipped: (requestId: string) => {
+      set((store) => {
+        const response = store.responses.get(requestId);
+        if (!response || response.requestState === 'cancelled') {
+          return;
+        }
+
+        response.requestState = 'skipped';
       });
     },
     requestSent: (requestId: string, data: any) => {
@@ -172,6 +183,9 @@ window.ipcRenderer.on('main:run-request-event', (payload) => {
       break;
     case 'request-delayed':
       responseStore.getState().requestDelayed(requestUid);
+      break;
+    case 'request-skipped':
+      responseStore.getState().requestSkipped(requestUid);
       break;
     case 'request-sent':
       responseStore.getState().requestSent(requestUid, data);

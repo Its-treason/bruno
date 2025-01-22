@@ -7,6 +7,7 @@ import { TlsOptions } from 'node:tls';
 import { CookieJar } from 'tough-cookie';
 import { RequestAuthSchema } from '@usebruno/schema';
 import { VariablesContext } from './dataObject/VariablesContext';
+import { RunnerContext } from './dataObject/RunnerContext';
 
 export type RequestType = 'http-request' | 'graphql-request';
 
@@ -303,7 +304,6 @@ export type BrunoRequestOptions = Omit<RequestOptions, 'host'> & {
 export type RequestContext = {
   readonly uid: string;
   readonly dataDir: string;
-  nextRequestName?: string;
   readonly abortController?: AbortController;
   readonly cancelToken: string;
   readonly brunoVersion: string;
@@ -316,6 +316,7 @@ export type RequestContext = {
   readonly preferences: Preferences;
   readonly cookieJar: CookieJar;
   readonly variables: VariablesContext;
+  readonly runner: RunnerContext;
 
   readonly callback: Callbacks;
   readonly timings: Timings;

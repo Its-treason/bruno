@@ -8,6 +8,8 @@ import { evaluateJsTemplateLiteral, evaluateJsExpression, createResponseParser }
 import { interpolate } from '@usebruno/common';
 import { RequestContext, RequestItem } from '../types';
 import { VariablesContext } from '../dataObject/VariablesContext';
+import { RunnerContext } from '../dataObject/RunnerContext';
+import { Runner } from './dataObject/Runner';
 
 use(chaiString);
 use(function (chai, utils) {
@@ -215,6 +217,7 @@ export class AssertRuntime {
     request: RequestItem,
     response: any,
     responseBody: any,
+    runnerContext: RunnerContext,
     variables: VariablesContext,
     collectionPath: string,
     executionMode: string,
@@ -225,7 +228,7 @@ export class AssertRuntime {
       return [];
     }
 
-    const bru = new Bru(variables, collectionPath, environmentName);
+    const bru = new Bru(new Runner(runnerContext), variables, collectionPath, environmentName);
     const req = new BrunoRequest(request, true, executionMode);
     const res = createResponseParser(response, responseBody);
 

@@ -25,6 +25,7 @@ export async function preRequestScript(context: RequestContext, folderData: Fold
       context.requestItem,
       null,
       null,
+      context.runner,
       context.variables,
       context.environmentName,
       false,
@@ -44,6 +45,4 @@ export async function preRequestScript(context: RequestContext, folderData: Fold
   context.callback.updateScriptEnvironment(context);
 
   context.debug.log('Pre request script finished', scriptResult);
-
-  context.nextRequestName = scriptResult.nextRequestName;
 }

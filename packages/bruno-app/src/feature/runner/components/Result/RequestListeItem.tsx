@@ -7,7 +7,7 @@ import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import { findItemInCollection } from 'utils/collections';
 import { Badge, Button, List, Loader, Spoiler, Text } from '@mantine/core';
 import runnerItemStatus from '../../util/runnerItemStatus';
-import { IconCheck, IconCircleCheck, IconCircleX, IconClockPause, IconX } from '@tabler/icons-react';
+import { IconCheck, IconCircleCheck, IconCircleOff, IconCircleX, IconClockPause, IconX } from '@tabler/icons-react';
 import { useStore } from 'zustand';
 import { responseStore } from 'src/store/responseStore';
 import { statusCodePhraseMap } from 'utils/common/statusCodePhraseMap';
@@ -92,6 +92,10 @@ export const RequestListItem: React.FC<RequestListItemProps> = memo(({ requestId
         icon = <IconClockPause />;
         color = 'gray';
         break;
+      case 'skipped':
+        icon = <IconCircleOff />;
+        color = 'gray';
+        break;
       case 'running':
         icon = <Loader size={'sm'} color="orange" w={24} />;
         color = 'gray';
@@ -127,6 +131,11 @@ export const RequestListItem: React.FC<RequestListItemProps> = memo(({ requestId
         {status === 'passed' ? (
           <Badge ml={'sm'} color="teal">
             {response.status} {statusCodePhraseMap[response.status] ?? 'Unknown'}
+          </Badge>
+        ) : null}
+        {status === 'skipped' ? (
+          <Badge ml={'sm'} color="gray">
+            Skipped in pre-request script
           </Badge>
         ) : null}
         {status === 'failed' ? (

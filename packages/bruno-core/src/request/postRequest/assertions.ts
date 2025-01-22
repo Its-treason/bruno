@@ -14,6 +14,7 @@ export function assertions(context: RequestContext) {
     context.requestItem,
     context.response,
     context.responseBody,
+    context.runner,
     context.variables,
     context.collection.pathname,
     context.executionMode,

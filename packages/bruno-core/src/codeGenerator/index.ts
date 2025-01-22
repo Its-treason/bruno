@@ -11,6 +11,7 @@ import { collectFolderData } from '../request/preRequest/collectFolderData';
 import { HTTPSnippet } from '@readme/httpsnippet';
 import { createHar } from './createHar';
 import { VariablesContext } from '../request/dataObject/VariablesContext';
+import { RunnerContext } from '../request/dataObject/RunnerContext';
 
 type GenerateCodeOptions = {
   targetId: string;
@@ -72,6 +73,7 @@ export async function generateCode(
     preferences,
     cookieJar,
     variables,
+    runner: new RunnerContext(),
 
     callback: new Callbacks({}, fetchAuthorizationCode),
     timings: new Timings(),

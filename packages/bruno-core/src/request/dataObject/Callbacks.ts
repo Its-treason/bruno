@@ -46,6 +46,15 @@ export class Callbacks {
     });
   }
 
+  requestSkipped(context: RequestContext) {
+    this.send('requestEvent', context, {
+      type: 'request-skipped',
+      requestUid: context.uid,
+      collectionUid: context.collection.uid,
+      itemUid: context.requestItem.uid
+    });
+  }
+
   requestSend(context: RequestContext) {
     this.send('requestEvent', context, {
       type: 'request-sent',

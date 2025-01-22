@@ -30,6 +30,7 @@ export async function tests(context: RequestContext, folderData: FolderData[]) {
       context.requestItem,
       context.response!,
       context.responseBody,
+      context.runner,
       context.variables,
       context.environmentName,
       true,
@@ -44,10 +45,6 @@ export async function tests(context: RequestContext, folderData: FolderData[]) {
     throw error;
   } finally {
     context.timings.stopMeasure('test');
-  }
-
-  if (scriptResult.nextRequestName) {
-    context.nextRequestName = scriptResult.nextRequestName;
   }
 
   context.callback.testResults(context, scriptResult.results);

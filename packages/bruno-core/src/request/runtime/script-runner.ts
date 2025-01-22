@@ -8,9 +8,11 @@ import chai from 'chai';
 import { BrunoResponse } from './dataObject/BrunoResponse';
 import { TestResults } from './dataObject/TestResults';
 import { Test } from './dataObject/Test';
-import { BrunoConfig, RequestContext, RequestItem, Response } from '../types';
+import { BrunoConfig, RequestItem, Response } from '../types';
 import { UserScriptError } from './dataObject/UserScriptError';
 import { VariablesContext } from '../dataObject/VariablesContext';
+import { Runner } from './dataObject/Runner';
+import { RunnerContext } from '../dataObject/RunnerContext';
 
 // Save the original require inside an "alias" variable so the "vite-plugin-commonjs" does not complain about the
 // intentional dynamic require
@@ -21,6 +23,7 @@ export async function runScript(
   request: RequestItem,
   response: Response | null,
   responseBody: any | null,
+  runnerContext: RunnerContext,
   variables: VariablesContext,
   environmentName: string | undefined,
   useTests: boolean,
@@ -33,6 +36,7 @@ export async function runScript(
     request,
     response,
     responseBody,
+    runnerContext,
     variables,
     environmentName,
     useTests,
@@ -68,7 +72,6 @@ export async function runScript(
   }
 
   return {
-    nextRequestName: scriptContext.bru._nextRequest,
     responseBody: scriptContext.res?.body,
     results: scriptContext.brunoTestResults ? cleanJson(scriptContext.brunoTestResults.getResults()) : null
   };
@@ -78,6 +81,7 @@ function buildScriptContext(
   request: RequestItem,
   response: Response | null,
   responseBody: any | null,
+  runnerContext: RunnerContext,
   variables: VariablesContext,
   environmentName: string | undefined,
   useTests: boolean,
@@ -101,7 +105,7 @@ function buildScriptContext(
     console: createCustomConsole(onConsoleLog),
     req: new BrunoRequest(request, response !== null, executionMode),
     res: null,
-    bru: new Bru(variables, collectionPath, environmentName),
+    bru: new Bru(new Runner(runnerContext), variables, collectionPath, environmentName),
     expect: null,
     assert: null,
     brunoTestResults: null,

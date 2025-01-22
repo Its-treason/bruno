@@ -18,6 +18,7 @@ import { applyOAuth2 } from './preRequest/OAuth2/applyOAuth2';
 import { determinePreviewType } from './preRequest/determinePreviewMode';
 import { randomUUID } from 'crypto';
 import { VariablesContext } from './dataObject/VariablesContext';
+import { RunnerContext } from './dataObject/RunnerContext';
 
 export async function request(
   requestItem: RequestItem,
@@ -54,6 +55,7 @@ export async function request(
     preferences,
     cookieJar,
     variables: new VariablesContext(collection, requestItem, globalVariables, environment),
+    runner: new RunnerContext(),
 
     callback: new Callbacks(rawCallbacks, fetchAuthorizationCode),
     timings: new Timings(),
@@ -95,6 +97,10 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
   // Folder Headers are also applied here
   applyCollectionSettings(context, folderData);
   await preRequestScript(context, folderData);
+  if (context.runner.shouldSkipRequest() && context.executionMode === 'runner') {
+    context.callback.requestSkipped(context);
+    return context;
+  }
   interpolateRequest(context);
   if (context.requestItem.request.auth.mode === 'oauth2') {
     await applyOAuth2(context);

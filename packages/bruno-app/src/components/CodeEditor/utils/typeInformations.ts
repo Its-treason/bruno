@@ -98,6 +98,21 @@ declare const bru: {
    * This is not yet implemented in lazer!
    */
   visualize(type: 'table'|'html', config: any): void;
+
+  runner: {
+    /**
+     * Sets the next request to execute withing the request runner.
+     */
+    setNextRequest(nextRequestName: string): void;
+    /**
+     * Skips the current request in a test run. Only works in the pre-request script.
+     */
+    skipRequest(): void;
+    /**
+     * Stops the runner after the current request.
+     */
+    stopExecution(): void;
+  }
 };
 `;
 

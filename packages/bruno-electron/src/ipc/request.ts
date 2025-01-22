@@ -162,7 +162,7 @@ ipcMain.handle(
         return;
       }
 
-      const { error, nextRequestName, variables } = await executeRequest(
+      const { error, runner, variables } = await executeRequest(
         structuredClone(item),
         collection as any, // @usebruno/core uses its own type for collection
         globalVariables,
@@ -249,6 +249,12 @@ ipcMain.handle(
         });
       }
 
+      if (runner.mustStopExecution()) {
+        // Testrun was stopped by user
+        break;
+      }
+
+      const nextRequestName = runner.getNextRequest();
       if (typeof nextRequestName !== 'string') {
         currentRequestIndex++;
         continue;
