@@ -1,7 +1,6 @@
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import CollectionSettings from 'components/CollectionSettings';
 import FolderSettings from 'components/FolderSettings';
-import VariablesEditor from 'components/VariablesEditor';
 import { RequestPaneSplit } from './RequestPaneSplit';
 import { RequestUrlBar } from 'src/feature/request-url-bar';
 import { HttpRequestPane } from './panes/http/HttpRequestPane';
@@ -11,6 +10,7 @@ import { Runner } from 'src/feature/runner';
 import { ResponsePane } from 'src/feature/response-pane';
 import { useDispatch } from 'react-redux';
 import { updateResponsePaneTab } from 'providers/ReduxStore/slices/tabs';
+import { VariablesViewer } from 'src/feature/variables-viewer';
 
 type MainContentProps = {
   collection: CollectionSchema;
@@ -25,7 +25,7 @@ export const MainContent: React.FC<MainContentProps> = ({ collection, focusedTab
     case 'collection-runner':
       return <Runner collection={collection} />;
     case 'variables':
-      return <VariablesEditor collection={collection} />;
+      return <VariablesViewer collection={collection} />;
     case 'collection-settings':
       return <CollectionSettings collection={collection} />;
     case 'folder-settings':

@@ -825,7 +825,7 @@ export const getAllVariables = (collection, item) => {
 
 export const maskInputValue = (value) => {
   if (!value || typeof value !== 'string') {
-    return '';
+    return `***** (typeof ${typeof value})`;
   }
 
   return value
