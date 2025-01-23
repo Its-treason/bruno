@@ -297,7 +297,7 @@ declare const res: {
    * Overwrites the response body. Useful if you want to transform the server response to better view it.
    */
   setBody(newBody: unknown): void;
-};
+} & ((path: string) => any);
 `;
 
 let chaiTypeInfo = '';

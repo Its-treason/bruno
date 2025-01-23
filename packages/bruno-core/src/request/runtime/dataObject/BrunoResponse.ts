@@ -1,19 +1,36 @@
 import { writeFileSync } from 'node:fs';
 import { Response } from '../../types';
 import { stringify } from 'lossless-json';
+import { get } from '@usebruno/query';
+
+const res = Symbol('internalResponse');
 
 export class BrunoResponse {
-  constructor(private _res: Response, public body: any) {}
+  private [res]: Response;
+
+  constructor(
+    response: Response,
+    public body: any
+  ) {
+    this[res] = response;
+
+    // Make the instance callable
+    const callable = (path: string, ...fns: any[]) => get(this.body, path, fns);
+    Object.setPrototypeOf(callable, this.constructor.prototype);
+    Object.assign(callable, this);
+    // @ts-expect-error This is a hack to make BrunoResponse callable
+    return callable;
+  }
 
   get status() {
     return this.getStatus();
   }
   getStatus(): number {
-    return this._res.statusCode;
+    return this[res].statusCode;
   }
 
   getHeader(name: string): string | undefined {
-    const header = this._res.headers[name];
+    const header = this[res].headers[name];
 
     return Array.isArray(header) ? header[0] : header;
   }
@@ -22,10 +39,13 @@ export class BrunoResponse {
     return this.getHeaders();
   }
   getHeaders() {
-    return Object.entries(this._res.headers).reduce((acc, [name, value]) => {
-      acc[name] = Array.isArray(value) ? value[0] : value;
-      return acc;
-    }, {} as Record<string, string | undefined>);
+    return Object.entries(this[res].headers).reduce(
+      (acc, [name, value]) => {
+        acc[name] = Array.isArray(value) ? value[0] : value;
+        return acc;
+      },
+      {} as Record<string, string | undefined>
+    );
   }
 
   getBody() {
@@ -36,7 +56,7 @@ export class BrunoResponse {
     return this.getResponseTime();
   }
   getResponseTime() {
-    return this._res.responseTime;
+    return this[res].responseTime;
   }
 
   setBody(newBody: unknown) {
@@ -50,6 +70,6 @@ export class BrunoResponse {
       stringifiedBody = newBody;
     }
 
-    writeFileSync(this._res.path, stringifiedBody);
+    writeFileSync(this[res].path, stringifiedBody);
   }
 }
