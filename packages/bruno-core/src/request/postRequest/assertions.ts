@@ -13,12 +13,10 @@ export function assertions(context: RequestContext) {
     assertions,
     context.requestItem,
     context.response,
+    context,
     context.responseBody,
-    context.runner,
     context.variables,
-    context.collection.pathname,
-    context.executionMode,
-    context.environmentName
+    context.executionMode
   );
 
   context.callback.assertionResults(context, results);

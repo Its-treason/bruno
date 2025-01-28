@@ -1,39 +1,47 @@
 import { interpolate } from '@usebruno/common';
-import { VariablesContext } from '../../dataObject/VariablesContext';
+import { RequestContext } from '../../types';
+import path from 'node:path';
+import { findInItems } from '../utils';
+import { request } from '../..';
+import { Timeline } from '../../dataObject/Timeline';
+import { STATUS_CODES } from 'node:http';
+import { RunnerContext } from '../../dataObject/RunnerContext';
 import { Runner } from './Runner';
 
 const variableNameRegex = /^[\w-.]*$/;
+const ctx = Symbol('internalContext');
 
 export class Bru {
-  constructor(
-    public runner: Runner,
-    private variables: VariablesContext,
-    private collectionPath: string,
-    private environmentName?: string
-  ) {}
+  private [ctx]: RequestContext;
+  public runner: Runner;
+
+  constructor(context: RequestContext) {
+    this[ctx] = context;
+    this.runner = new Runner(context.runner);
+  }
 
   interpolate(target: unknown): string | unknown {
-    return interpolate(target, this.variables.merge());
+    return interpolate(target, this[ctx].variables.merge());
   }
 
   cwd() {
-    return this.collectionPath;
+    return this[ctx].collection.pathname;
   }
 
   getEnvName() {
-    return this.environmentName;
+    return this[ctx].environmentName;
   }
 
   getProcessEnv(key: string): unknown {
-    return this.variables.getProcessEnvVariables().process.env[key];
+    return this[ctx].variables.getProcessEnvVariables().process.env[key];
   }
 
   hasEnvVar(key: string) {
-    return Object.hasOwn(this.variables.getEnvironmentVariables(), key);
+    return Object.hasOwn(this[ctx].variables.getEnvironmentVariables(), key);
   }
 
   getEnvVar(key: string) {
-    return interpolate(this.variables.getEnvironmentVariables()[key]);
+    return interpolate(this[ctx].variables.getEnvironmentVariables()[key]);
   }
 
   setEnvVar(key: string, value: unknown) {
@@ -41,22 +49,22 @@ export class Bru {
       throw new Error('Creating a env variable without specifying a name is not allowed.');
     }
 
-    this.variables.setEnvironmentVariable(key, value);
+    this[ctx].variables.setEnvironmentVariable(key, value);
   }
 
   getGlobalEnvVar(key: string) {
-    return this.interpolate(this.variables.getGlobalVariables()[key]);
+    return this.interpolate(this[ctx].variables.getGlobalVariables()[key]);
   }
 
   setGlobalEnvVar(key: string, value: unknown) {
     if (!key) {
       throw new Error('Creating a env variable without specifying a name is not allowed.');
     }
-    this.variables.setGlobalVariable(key, value);
+    this[ctx].variables.setGlobalVariable(key, value);
   }
 
   hasVar(key: string) {
-    return Object.hasOwn(this.variables.getRuntimeVariables(), key);
+    return Object.hasOwn(this[ctx].variables.getRuntimeVariables(), key);
   }
 
   setVar(key: string, value: unknown) {
@@ -71,7 +79,7 @@ export class Bru {
       );
     }
 
-    this.variables.setRuntimeVariable(key, value);
+    this[ctx].variables.setRuntimeVariable(key, value);
   }
 
   getVar(key: string): unknown {
@@ -82,15 +90,15 @@ export class Bru {
       );
     }
 
-    return this.interpolate(this.variables.getRuntimeVariables()[key]);
+    return this.interpolate(this[ctx].variables.getRuntimeVariables()[key]);
   }
 
   deleteVar(key: string) {
-    delete this.variables.getRuntimeVariables()[key];
+    delete this[ctx].variables.getRuntimeVariables()[key];
   }
 
   getCollectionVar(key: string) {
-    const variables = this.variables.getCollectionVariables();
+    const variables = this[ctx].variables.getCollectionVariables();
     if (!variables[key]) {
       return undefined;
     }
@@ -98,7 +106,7 @@ export class Bru {
   }
 
   getFolderVar(key: string) {
-    const variables = this.variables.getFolderVariables();
+    const variables = this[ctx].variables.getFolderVariables();
     if (!variables[key]) {
       return undefined;
     }
@@ -106,11 +114,59 @@ export class Bru {
   }
 
   getRequestVar(key: string): unknown {
-    return this.interpolate(this.variables.getRequestVariables()[key] as string);
+    return this.interpolate(this[ctx].variables.getRequestVariables()[key] as string);
   }
 
   setNextRequest(nextRequest: string) {
-    this.runner.setNextRequest(nextRequest);
+    this[ctx].runner.setNextRequest(nextRequest);
+  }
+
+  async runRequest(relativePath: string) {
+    if (!relativePath.endsWith('.bru')) {
+      relativePath = relativePath + '.bru';
+    }
+    const absolutePath = path.join(this[ctx].collection.pathname, relativePath);
+
+    const item = findInItems(this[ctx].collection.items, absolutePath);
+    if (!item) {
+      throw new Error(`No request item found for path: "${absolutePath}"`);
+    }
+
+    const environment = this[ctx].environmentName
+      ? this[ctx].variables.toCollectionEnvironment(this[ctx].environmentName)
+      : undefined;
+
+    const context = await request(
+      structuredClone(item),
+      this[ctx].collection,
+      this[ctx].variables.getGlobalVariables(),
+      this[ctx].preferences,
+      this[ctx].cookieJar,
+      this[ctx].dataDir,
+      this[ctx].cancelToken,
+      this[ctx].abortController,
+      this[ctx].brunoVersion,
+      this[ctx].executionMode,
+      this[ctx].callback.fetchAuthorizationCode,
+      environment,
+      {},
+      0
+    );
+
+    this[ctx].variables.setEnvironmentVariables(context.variables.getEnvironmentVariables());
+    this[ctx].variables.setGlobalVariables(context.variables.getGlobalVariables());
+    this[ctx].variables.setRuntimeVariables(context.variables.getRuntimeVariables());
+
+    this[ctx].timeline = (this[ctx].timeline ?? new Timeline()).merge(context.timeline ?? new Timeline());
+
+    return {
+      status: context.response?.statusCode,
+      statusText: STATUS_CODES[context.response?.statusCode ?? 0] ?? '',
+      headers: context.response?.headers,
+      data: context.responseBody,
+      size: context.response?.size,
+      duration: context.response?.responseTime
+    };
   }
 
   sleep(ms: number): Promise<void> {

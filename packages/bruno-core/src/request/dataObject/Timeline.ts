@@ -9,4 +9,9 @@ export class Timeline extends Array<HttpRequestInfo> {
     }
     this.push(structuredClone(unref));
   }
+
+  public merge(other: Timeline) {
+    this.push(...other);
+    return this;
+  }
 }

@@ -89,6 +89,18 @@ declare const bru: {
    */
   setNextRequest(nextRequest: string): void;
   /**
+   * Executes a request from the current collection. Path must be relative from to collection root.
+   * Throws an error if the request does not exist.
+   */
+  runRequest(requestPath: string): Promise<{
+    data: any;
+    headers: Record<string, string>;
+    duration: number;
+    size: number;
+    status: number;
+    statusText: string;
+  }>;
+  /**
    * Returns a Promise that will resolve after the given time is over.
    * The promise must be awaited, for the sleep to take effect.
    */

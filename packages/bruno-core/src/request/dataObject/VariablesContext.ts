@@ -83,15 +83,39 @@ export class VariablesContext {
     return this.process;
   }
 
+  public toCollectionEnvironment(name: string): CollectionEnvironment {
+    return {
+      name,
+      uid: '',
+      variables: Object.entries(this.environment).map(([name, value]) => ({
+        enabled: true,
+        name,
+        value: value as any,
+        secret: false,
+        type: 'text',
+        uid: ''
+      }))
+    };
+  }
+
   // Only these three are allowed to be updated at runtime.
   public setRuntimeVariable(key: string, value: any) {
     this.runtime[key] = value;
   }
+  public setRuntimeVariables(variables: Record<string, any>) {
+    this.runtime = variables;
+  }
   public setEnvironmentVariable(key: string, value: any) {
     this.environment[key] = value;
   }
+  public setEnvironmentVariables(variables: Record<string, any>) {
+    this.environment = variables;
+  }
   public setGlobalVariable(key: string, value: any) {
     this.global[key] = value;
+  }
+  public setGlobalVariables(variables: Record<string, any>) {
+    this.global = variables;
   }
 
   public merge(): Record<string, any> {

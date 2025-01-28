@@ -304,7 +304,7 @@ export type BrunoRequestOptions = Omit<RequestOptions, 'host'> & {
 export type RequestContext = {
   readonly uid: string;
   readonly dataDir: string;
-  readonly abortController?: AbortController;
+  readonly abortController: AbortController;
   readonly cancelToken: string;
   readonly brunoVersion: string;
   readonly environmentName?: string;

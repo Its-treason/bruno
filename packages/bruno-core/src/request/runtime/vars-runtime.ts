@@ -3,8 +3,6 @@ import { Bru } from './dataObject/Bru';
 import { BrunoRequest } from './dataObject/BrunoRequest';
 import { evaluateJsExpression, createResponseParser } from './utils';
 import { RequestContext, RequestItem, RequestVariable, Response } from '../types';
-import { Runner } from './dataObject/Runner';
-import { RunnerContext } from '../dataObject/RunnerContext';
 
 export class VarsRuntime {
   runPostResponseVars(
@@ -12,23 +10,20 @@ export class VarsRuntime {
     request: RequestItem,
     response: Response,
     responseBody: any,
-    runnerContext: RunnerContext,
-    variables: RequestContext['variables'],
-    collectionPath: string,
-    executionMode: string,
-    environmentName?: string
+    requestContext: RequestContext,
+    executionMode: string
   ) {
     const enabledVars = _.filter(vars, (v) => v.enabled);
     if (!enabledVars.length) {
       return;
     }
 
-    const bru = new Bru(new Runner(runnerContext), variables, collectionPath, environmentName);
+    const bru = new Bru(requestContext);
     const req = new BrunoRequest(request, true, executionMode);
     const res = createResponseParser(response, responseBody);
 
     const context = {
-      ...variables.merge(),
+      ...requestContext.variables.merge(),
       bru,
       req,
       res

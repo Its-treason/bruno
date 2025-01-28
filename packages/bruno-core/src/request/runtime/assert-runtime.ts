@@ -216,19 +216,17 @@ export class AssertRuntime {
     assertions: any[],
     request: RequestItem,
     response: any,
+    requestContext: RequestContext,
     responseBody: any,
-    runnerContext: RunnerContext,
     variables: VariablesContext,
-    collectionPath: string,
-    executionMode: string,
-    environmentName?: string
+    executionMode: string
   ) {
     const enabledAssertions = _.filter(assertions, (a) => a.enabled);
     if (!enabledAssertions.length) {
       return [];
     }
 
-    const bru = new Bru(new Runner(runnerContext), variables, collectionPath, environmentName);
+    const bru = new Bru(requestContext);
     const req = new BrunoRequest(request, true, executionMode);
     const res = createResponseParser(response, responseBody);
 

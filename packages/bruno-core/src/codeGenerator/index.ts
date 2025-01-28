@@ -65,6 +65,7 @@ export async function generateCode(
     brunoVersion: '', // Not used here
     cancelToken: '', // Not used here
     delay: 0, // Not used here
+    abortController: new AbortController(),
 
     executionMode: 'standalone',
 

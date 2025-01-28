@@ -1,8 +1,9 @@
 import { get } from '@usebruno/query';
 import { stringify, parse, LosslessNumber } from 'lossless-json';
 import jsonQuery from 'json-query';
-import { Response } from '../types';
+import { FolderItem, RequestItem, Response } from '../types';
 import { readFile } from 'node:fs/promises';
+import { CollectionSchema } from 'packages/bruno-schema/dist';
 
 const JS_KEYWORDS = `
   break case catch class const continue debugger default delete do
@@ -169,4 +170,22 @@ export async function readResponseBodyAsync(path: string): Promise<any> {
   } catch {}
 
   return bodyData;
+}
+
+export function findInItems(items: (RequestItem | FolderItem)[], pathname: string): RequestItem | null {
+  for (const item of items) {
+    if (item.type === 'folder') {
+      const recursiveFound = findInItems(item.items, pathname);
+      if (recursiveFound) {
+        return recursiveFound;
+      }
+      continue;
+    }
+
+    if (item.pathname === pathname) {
+      return item;
+    }
+  }
+
+  return null;
 }

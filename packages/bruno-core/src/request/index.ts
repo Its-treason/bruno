@@ -86,7 +86,7 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
     context.callback.requestDelayed(context);
 
     await new Promise<void>((resolve) => {
-      context.abortController?.signal.addEventListener('abort', () => resolve());
+      context.abortController.signal.addEventListener('abort', () => resolve());
       setTimeout(() => resolve(), context.delay);
     });
   }
