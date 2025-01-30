@@ -226,7 +226,6 @@ const importPostmanV2CollectionItem = (brunoParent, item, parentAuth, options) =
 
       brunoParent.items.push(brunoFolderItem);
       folderMap[folderName] = brunoFolderItem;
-
     } else {
       if (i.request) {
         const baseRequestName = i.name;
@@ -421,7 +420,7 @@ const importPostmanV2CollectionItem = (brunoParent, item, parentAuth, options) =
             brunoRequestItem.request.auth.mode = 'apikey';
             brunoRequestItem.request.auth.apikey = {
               key: authValues.key,
-              value: authValues.value,
+              value: authValues.value?.toString(), // Convert the value to a string as Postman's schema does not rigidly define the type of it,
               placement: 'header' //By default we are placing the apikey values in headers!
             };
           }
@@ -507,7 +506,7 @@ const importPostmanV2Collection = (collection, options) => {
     importScriptsFromEvents(collection.event, brunoCollection.root.request, options, pushTranslationLog);
   }
 
-  if (collection?.variable){
+  if (collection?.variable) {
     importCollectionLevelVariables(collection.variable, brunoCollection.root.request);
   }
 
