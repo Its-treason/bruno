@@ -23,7 +23,11 @@ const replacements = {
   // deprecated translations
   'postman\\.setEnvironmentVariable\\(': 'bru.setEnvVar(',
   'postman\\.getEnvironmentVariable\\(': 'bru.getEnvVar(',
-  'postman\\.clearEnvironmentVariable\\(': 'bru.deleteEnvVar('
+  'postman\\.clearEnvironmentVariable\\(': 'bru.deleteEnvVar(',
+  'pm\\.execution\\.skipRequest\\(\\)': 'bru.runner.skipRequest()',
+  'pm\\.execution\\.skipRequest': 'bru.runner.skipRequest',
+  'pm\\.execution\\.setNextRequest\\(null\\)': 'bru.runner.stopExecution()',
+  "pm\\.execution\\.setNextRequest\\('null'\\)": 'bru.runner.stopExecution()'
 };
 
 const extendedReplacements = Object.keys(replacements).reduce((acc, key) => {
