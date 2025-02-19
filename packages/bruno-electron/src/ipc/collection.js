@@ -28,7 +28,16 @@ const {
 const { openCollectionDialog } = require('../app/collections');
 const { generateUidBasedOnHash, stringifyJson, safeParseJSON, safeStringifyJSON } = require('../utils/common');
 const { moveRequestUid, deleteRequestUid } = require('../cache/requestUids');
-const { deleteCookiesForDomain, getDomainsWithCookies, cookieJar } = require('../utils/cookies');
+const {
+  deleteCookiesForDomain,
+  getDomainsWithCookies,
+  cookieJar,
+  addCookieForDomain,
+  modifyCookieForDomain,
+  parseCookieString,
+  createCookieString,
+  deleteCookie
+} = require('../utils/cookies');
 const EnvironmentSecretsStore = require('../store/env-secrets');
 const { getPreferences } = require('../store/preferences');
 const { getRequestFromCurlCommand } = require('../utils/curl');
@@ -730,6 +739,60 @@ ipcMain.handle('renderer:load-gql-schema-file', async (event) => {
     return safeParseJSON(jsonData);
   } catch (err) {
     return Promise.reject(new Error('Failed to load GraphQL schema file'));
+  }
+});
+
+ipcMain.handle('renderer:delete-cookie', async (event, domain, path, cookieKey) => {
+  try {
+    await deleteCookie(domain, path, cookieKey);
+    const domainsWithCookies = await getDomainsWithCookies();
+
+    const mainWindow = BrowserWindow.fromWebContents(event.sender);
+    mainWindow.webContents.send('main:cookies-update', safeParseJSON(safeStringifyJSON(domainsWithCookies)));
+  } catch (error) {
+    return Promise.reject(error);
+  }
+});
+
+// add cookie
+ipcMain.handle('renderer:add-cookie', async (event, domain, cookie) => {
+  try {
+    await addCookieForDomain(domain, cookie);
+    const domainsWithCookies = await getDomainsWithCookies();
+
+    const mainWindow = BrowserWindow.fromWebContents(event.sender);
+    mainWindow.webContents.send('main:cookies-update', safeParseJSON(safeStringifyJSON(domainsWithCookies)));
+  } catch (error) {
+    return Promise.reject(error);
+  }
+});
+
+// modify cookie
+ipcMain.handle('renderer:modify-cookie', async (event, domain, oldCookie, cookie) => {
+  try {
+    await modifyCookieForDomain(domain, oldCookie, cookie);
+    const domainsWithCookies = await getDomainsWithCookies();
+
+    const mainWindow = BrowserWindow.fromWebContents(event.sender);
+    mainWindow.webContents.send('main:cookies-update', safeParseJSON(safeStringifyJSON(domainsWithCookies)));
+  } catch (error) {
+    return Promise.reject(error);
+  }
+});
+
+ipcMain.handle('renderer:get-parsed-cookie', async (event, cookieStr) => {
+  try {
+    return parseCookieString(cookieStr);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+});
+
+ipcMain.handle('renderer:create-cookie-string', async (event, cookie) => {
+  try {
+    return createCookieString(cookie);
+  } catch (error) {
+    return Promise.reject(error);
   }
 });
 

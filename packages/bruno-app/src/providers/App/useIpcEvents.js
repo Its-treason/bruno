@@ -141,6 +141,7 @@ const useIpcEvents = () => {
     });
 
     const removeCookieUpdateListener = ipcRenderer.on('main:cookies-update', (val) => {
+      console.log(val);
       dispatch(updateCookies(val));
     });
 
