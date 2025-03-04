@@ -16,10 +16,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "zod": "^3.23.8"
+    "zod": "^3.24.2"
   },
   "devDependencies": {
     "rimraf": "^5.0.5",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
   }
 }

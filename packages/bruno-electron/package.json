@@ -53,12 +53,12 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
-    "electron": "^34.0.0",
+    "electron": "^35.0.0",
     "electron-builder": "^25.1.8",
     "electron-devtools-installer": "^4.0.0",
     "electron-icon-maker": "^0.0.5",
     "rimraf": "^5.0.5",
-    "typescript": "^5.7.3",
+    "typescript": "^5.8.2",
     "vite": "^5.4.3",
     "vite-plugin-commonjs": "^0.10.1"
   }

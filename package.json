@@ -13,7 +13,7 @@
     "pretty-quick": "^4.0.0",
     "randomstring": "^1.2.2",
     "ts-jest": "^29.0.5",
-    "typescript": "^5.7.3"
+    "typescript": "^5.8.2"
   },
   "scripts": {
     "dev": "pnpm run --parallel --recursive --if-present dev",
