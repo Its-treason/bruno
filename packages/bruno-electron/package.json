@@ -54,7 +54,7 @@
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
     "electron": "^35.0.0",
-    "electron-builder": "^25.1.8",
+    "electron-builder": "^26.0.10",
     "electron-devtools-installer": "^4.0.0",
     "electron-icon-maker": "^0.0.5",
     "rimraf": "^5.0.5",
