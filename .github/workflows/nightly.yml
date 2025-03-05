@@ -54,17 +54,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get short SHA
-        id: slug
-        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: Fetch dependencies
         run: |
           npm i -g pnpm
           pnpm i
       - name: Make
-        env:
-          COMMIT_SHORT_SHA: ${{ steps.slug.outputs.SHORT_SHA }}
         run: |
           pnpm run make
 
@@ -85,18 +79,12 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get short SHA
-        id: slug
-        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: Fetch dependencies
         run: |
           npm i -g pnpm
           pnpm i
           brew install python-setuptools
       - name: Make
-        env:
-          COMMIT_SHORT_SHA: ${{ steps.slug.outputs.SHORT_SHA }}
         run: |
           pnpm run make
 
@@ -119,17 +107,11 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - name: Get short SHA
-        id: slug
-        run: echo "SHORT_SHA=$(git rev-parse --short HEAD)" >> $GITHUB_OUTPUT
-
       - name: Fetch dependencies
         run: |
           npm i -g pnpm
           pnpm i
       - name: Make
-        env:
-          COMMIT_SHORT_SHA: ${{ steps.slug.outputs.SHORT_SHA }}
         run: |
           pnpm run make
           ls ./packages/bruno-electron/out/

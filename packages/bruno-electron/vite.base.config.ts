@@ -13,7 +13,12 @@ export const external = [
 // Get the latest commit hash
 const getLatestCommitHash = () => {
   try {
-    return process.env.COMMIT_SHORT_SHA || execSync('git rev-parse --short HEAD').toString().trim();
+    // https://docs.github.com/en/actions/writing-workflows/choosing-what-your-workflow-does/store-information-in-variables#default-environment-variables
+    if (process.env.GITHUB_SHA) {
+      return process.env.GITHUB_SHA.slice(0, 7);
+    }
+
+    return execSync('git rev-parse --short HEAD').toString().trim();
   } catch (error) {
     console.warn('Failed to get git commit hash', error);
     return 'Unknown';
