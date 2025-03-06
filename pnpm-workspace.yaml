@@ -1,3 +1,10 @@
 packages:
-  - 'packages/electron'
-  - 'packages/**'
+  - packages/electron
+  - packages/**
+onlyBuiltDependencies:
+  - canvas
+  - core-js
+  - electron
+  - esbuild
+  - native-reg
+  - phantomjs-prebuilt
