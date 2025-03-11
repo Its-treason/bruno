@@ -8,20 +8,58 @@ const AES256_ALGO = '01';
 
 // AES-256 encryption and decryption functions
 function aes256Encrypt(data) {
-  const key = machineIdSync();
-  const cipher = crypto.createCipher('aes-256-cbc', key);
+  const key = crypto.createHash('sha256').update(machineIdSync()).digest();
+  const iv = crypto.randomBytes(16);
+  const cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
   let encrypted = cipher.update(data, 'utf8', 'hex');
   encrypted += cipher.final('hex');
+  return iv.toString('hex') + ':' + encrypted;
+}
 
-  return encrypted;
+// Since the upgrade of Electron 35 / Node version 22. This is a fallback for decrypting old string.
+// Based off: https://github.com/nodejs/help/issues/1673#issuecomment-503222925
+function legacy256Decrypt(data) {
+  // Parameters for aes-128-ctr.
+  const keySize = 32;
+  const ivSize = 16;
+
+  // Simulate EVP_BytesToKey.
+  const bytes = Buffer.alloc(keySize + ivSize);
+  let lastHash = null,
+    nBytes = 0;
+  while (nBytes < keySize + ivSize) {
+    const hash = crypto.createHash('md5');
+    if (lastHash) {
+      hash.update(lastHash);
+    }
+    hash.update(machineIdSync());
+    lastHash = hash.digest();
+    lastHash.copy(bytes, nBytes);
+    nBytes += lastHash.length;
+  }
+
+  // Use these for decryption.
+  const key = bytes.subarray(0, keySize);
+  const iv = bytes.subarray(keySize, keySize + ivSize);
+
+  const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+  let decrypted = decipher.update(data, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
+  return decrypted;
 }
 
 function aes256Decrypt(data) {
-  const key = machineIdSync();
-  const decipher = crypto.createDecipher('aes-256-cbc', key);
-  let decrypted = decipher.update(data, 'hex', 'utf8');
-  decrypted += decipher.final('utf8');
+  // Check if the data contains an IV (new format with ':')
+  if (!data.includes(':')) {
+    return legacy256Decrypt(data);
+  }
 
+  const [ivHex, encryptedData] = data.split(':');
+  const key = crypto.createHash('sha256').update(machineIdSync()).digest();
+  const iv = Buffer.from(ivHex, 'hex');
+  const decipher = crypto.createDecipheriv('aes-256-cbc', key, iv);
+  let decrypted = decipher.update(encryptedData, 'hex', 'utf8');
+  decrypted += decipher.final('utf8');
   return decrypted;
 }
 
