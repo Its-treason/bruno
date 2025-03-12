@@ -16,16 +16,8 @@ export const RequestHeaders: React.FC<RequestHeadersProps> = ({ item, collection
   const [bulkEdit, setBulkEdit] = useState(false);
 
   return bulkEdit ? (
-    <BulkEditEditor
-      collection={collection}
-      item={item}
-      onUpdateMode={() => setBulkEdit(false)}
-    />
+    <BulkEditEditor collection={collection} item={item} onUpdateMode={() => setBulkEdit(false)} />
   ) : (
-    <HeaderTable
-      collection={collection}
-      item={item}
-      onUpdateMode={() => setBulkEdit(true)}
-    />
-  )
+    <HeaderTable collection={collection} item={item} onUpdateMode={() => setBulkEdit(true)} />
+  );
 };

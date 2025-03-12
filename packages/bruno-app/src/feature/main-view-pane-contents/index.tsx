@@ -1,1 +1,1 @@
-export * from './components/body/BodyPane';
+export * from './components/body';

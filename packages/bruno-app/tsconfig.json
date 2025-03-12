@@ -21,7 +21,8 @@
       "api/*": ["src/api/*"],
       "pageComponents/*": ["src/pageComponents/*"],
       "providers/*": ["src/providers/*"],
-      "utils/*": ["src/utils/*"]
+      "utils/*": ["src/utils/*"],
+      "feature/*": ["src/feature/*"]
     },
     "baseUrl": "./"
   },

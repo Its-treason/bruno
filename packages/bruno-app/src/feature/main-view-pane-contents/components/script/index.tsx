@@ -91,5 +91,3 @@ export const Script: React.FC<ScriptProps> = ({ item, collection }) => {
     </div>
   );
 };
-
-export default Script;

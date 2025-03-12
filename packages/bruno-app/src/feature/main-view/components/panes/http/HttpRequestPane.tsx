@@ -4,17 +4,16 @@ import { useMemo } from 'react';
 import QueryParams from 'components/RequestPane/QueryParams';
 import Documentation from 'components/Documentation';
 import Tests from 'components/RequestPane/Tests';
-import Script from 'components/RequestPane/Script';
 import Assertions from 'components/RequestPane/Assertions';
 import Vars from 'components/RequestPane/Vars';
 import Auth from 'components/RequestPane/Auth';
-import { RequestHeaders } from 'components/RequestPane/RequestHeaders';
 import { updateRequestPaneTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch } from 'react-redux';
-import { BodyPane } from 'src/feature/main-view-pane-contents';
-import { Button } from '@mantine/core';
+import { Body } from 'feature/main-view-pane-contents';
+import { RequestHeaders } from 'feature/main-view-pane-contents/components/headers';
+import { Script } from 'feature/main-view-pane-contents/components/script';
 
-const CONTENT_INDICATOR = '\u25CF';
+const CONTENT_INDICATOR = '\u25CF'; // ●
 
 type HttpRequestPaneProps = {
   item: RequestItemSchema;
@@ -30,7 +29,7 @@ export const HttpRequestPane: React.FC<HttpRequestPaneProps> = ({ item, collecti
       case 'params':
         return <QueryParams item={item} collection={collection} />;
       case 'body':
-        return <BodyPane item={item} collection={collection} />;
+        return <Body item={item} collection={collection} />;
       case 'headers':
         return <RequestHeaders item={item} collection={collection} />;
       case 'auth':

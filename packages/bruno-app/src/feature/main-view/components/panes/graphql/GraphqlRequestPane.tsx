@@ -1,14 +1,11 @@
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import { PaneWrapper } from '../PaneWrapper';
 import { useMemo, useState } from 'react';
-import QueryParams from 'components/RequestPane/QueryParams';
 import Documentation from 'components/Documentation';
 import Tests from 'components/RequestPane/Tests';
-import Script from 'components/RequestPane/Script';
 import Assertions from 'components/RequestPane/Assertions';
 import Vars from 'components/RequestPane/Vars';
 import Auth from 'components/RequestPane/Auth';
-import { RequestHeaders } from 'components/RequestPane/RequestHeaders';
 import { updateRequestPaneTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch } from 'react-redux';
 import { DocExplorerWrapper } from 'src/feature/main-view/components/panes/graphql/DocExplorerWrapper';
@@ -18,6 +15,8 @@ import { get } from 'lodash';
 import { updateRequestGraphqlQuery } from 'providers/ReduxStore/slices/collections';
 import CodeEditor from 'components/CodeEditor';
 import { saveRequest, sendRequest } from 'providers/ReduxStore/slices/collections/actions';
+import { RequestHeaders } from 'feature/main-view-pane-contents/components/headers';
+import { Script } from 'feature/main-view-pane-contents/components/script';
 
 const CONTENT_INDICATOR = '\u25CF';
 

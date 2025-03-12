@@ -10,7 +10,6 @@
     "build": "vite build -c vite.main.config.ts && vite build -c vite.preload.config.ts && vite build -c vite.worker.config.ts",
     "predev": "pnpm run build",
     "dev": "vite build -c vite.main.config.ts --watch",
-    "preelectron": "pnpm run build",
     "electron": "electron --inspect .",
     "dist": "electron-builder --config electron-builder-config.js",
     "clean": "rimraf out web .vite",
