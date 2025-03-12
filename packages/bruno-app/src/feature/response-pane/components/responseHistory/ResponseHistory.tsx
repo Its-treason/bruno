@@ -3,6 +3,7 @@ import { updateActiveResponseId } from 'providers/ReduxStore/slices/tabs';
 import React, { useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 import { responseStore } from 'src/store/responseStore';
+import { formatDate, formatMilliseconds } from 'utils/common/formatting';
 import { useStore } from 'zustand';
 import { useShallow } from 'zustand/react/shallow';
 
@@ -35,12 +36,26 @@ export const ResponseHistory: React.FC<ResponseHistoryProps> = ({ itemUid, selec
     })
   );
 
-  // TODO: Refactor to combobox with custom render stuff
   const data: ComboboxItem[] = useMemo(() => {
-    return responses.map((response) => ({
-      value: response.requestId,
-      label: `${new Date(response.requestSentTimestamp).toLocaleString()}`
-    }));
+    return responses.map((response) => {
+      const formattedDate = formatDate(new Date(response.requestSentTimestamp));
+      const formattedDuration = response.duration ? formatMilliseconds(response.duration) : 'N/A';
+
+      let status = '🟡';
+      switch (response.requestState) {
+        case 'cancelled':
+        case 'skipped':
+          status = '⚪';
+          break;
+        case 'received':
+          status = response.status >= 200 && response.status < 400 ? '🟢' : '🔴';
+      }
+
+      return {
+        value: response.requestId,
+        label: `${status} ${formattedDate} (${formattedDuration})`
+      };
+    });
   }, [responses]);
 
   if (responseList.length === 0) {

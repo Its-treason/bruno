@@ -6,6 +6,7 @@ import { useStore } from 'zustand';
 import { responseStore } from 'src/store/responseStore';
 import { Text } from '@mantine/core';
 import { useMemo } from 'react';
+import { formatMilliseconds } from 'utils/common/formatting';
 
 type ResponseTimeProps = {
   requestId: string;
@@ -17,16 +18,7 @@ export const ResponseTime: React.FC<ResponseTimeProps> = ({ requestId }) => {
     return null;
   }
 
-  const displayDuration = useMemo(() => {
-    if (duration < 1000) {
-      return `${duration} ms`;
-    }
-
-    // duration greater than a second
-    const seconds = Math.floor(duration / 1000);
-    const decimal = ((duration % 1000) / 1000) * 100;
-    return seconds + '.' + decimal.toFixed(0) + ' s';
-  }, [duration]);
+  const displayDuration = useMemo(() => formatMilliseconds(duration), [duration]);
 
   return <Text size="sm">{displayDuration}</Text>;
 };
