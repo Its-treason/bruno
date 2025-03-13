@@ -1,7 +1,6 @@
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import { PaneWrapper } from '../PaneWrapper';
 import { useMemo } from 'react';
-import QueryParams from 'components/RequestPane/QueryParams';
 import Documentation from 'components/Documentation';
 import Tests from 'components/RequestPane/Tests';
 import Assertions from 'components/RequestPane/Assertions';
@@ -12,6 +11,7 @@ import { useDispatch } from 'react-redux';
 import { Body } from 'feature/main-view-pane-contents';
 import { RequestHeaders } from 'feature/main-view-pane-contents/components/headers';
 import { Script } from 'feature/main-view-pane-contents/components/script';
+import { Params } from 'feature/main-view-pane-contents/components/params';
 
 const CONTENT_INDICATOR = '\u25CF'; // ●
 
@@ -27,7 +27,7 @@ export const HttpRequestPane: React.FC<HttpRequestPaneProps> = ({ item, collecti
   const content = useMemo(() => {
     switch (activeTab.requestPaneTab) {
       case 'params':
-        return <QueryParams item={item} collection={collection} />;
+        return <Params item={item} collection={collection} />;
       case 'body':
         return <Body item={item} collection={collection} />;
       case 'headers':
