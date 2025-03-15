@@ -29,33 +29,9 @@ export async function generateCode(
   environment?: CollectionEnvironment,
   globalVariables: Record<string, unknown> = {}
 ) {
-  // Convert the EnvVariables into a Record
-  const environmentVariableRecord = (environment?.variables ?? []).reduce<Record<string, unknown>>((acc, env) => {
-    if (env.enabled) {
-      acc[env.name] = env.value;
-    }
-    return acc;
-  }, {});
-
-  const collectionVariables = (collection.root?.request?.vars?.req || []).reduce(
-    (acc, variable) => {
-      if (variable.enabled) {
-        acc[variable.name] = variable.value;
-      }
-      return acc;
-    },
-    {} as Record<string, unknown>
-  );
-
-  const requestVariables = (requestItem.request?.vars?.req || []).reduce(
-    (acc, variable) => {
-      if (variable.enabled) {
-        acc[variable.name] = variable.value;
-      }
-      return acc;
-    },
-    {} as Record<string, unknown>
-  );
+  if (requestItem.draft) {
+    requestItem.request = requestItem.draft.request;
+  }
 
   const variables = new VariablesContext(collection, requestItem, globalVariables, environment);
 
@@ -96,6 +72,10 @@ async function doGenerateCode(context: RequestContext, options: GenerateCodeOpti
     await preRequestScript(context, folderData);
   }
   interpolateRequest(context);
+
+  if (options.targetId === 'url-only') {
+    return context.requestItem.request.url;
+  }
 
   const harRequest = await createHar(context);
   const code = new HTTPSnippet(harRequest).convert(options.targetId as any, options.clientId);
