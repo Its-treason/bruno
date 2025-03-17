@@ -11,6 +11,7 @@ import { Paper, Text } from '@mantine/core';
 import classes from './MonacoSingleline.module.scss';
 import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
 import { addMonacoCommands, addMonacoSingleLineActions, BrunoEditorCallbacks } from '../utils/monocoInit';
+import { useDebouncedCallback } from '@mantine/hooks';
 
 type MonacoSinglelineProps = {
   mode?: string;
@@ -53,12 +54,9 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
     callbackRefs.current.onChange = onChange;
   }, [onRun, onSave, onChange]);
 
-  const debounceChanges = debounce((newValue) => {
+  const handleEditorChange = useDebouncedCallback((newValue: string) => {
     onChange(newValue);
-  }, 500);
-  const handleEditorChange = (value: string | undefined) => {
-    debounceChanges(value);
-  };
+  }, 200);
 
   const registerEditorVariables = useContext(CodeEditorVariableContext);
   const onMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {

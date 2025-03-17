@@ -11,6 +11,7 @@ import classes from './Monaco.module.scss';
 import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
 import { addMonacoCommands, BrunoEditorCallbacks } from '../utils/monocoInit';
 import { getExtraLibraries, TypeInfoTargets } from '../utils/typeInformations';
+import { useDebouncedCallback } from '@mantine/hooks';
 
 const languages: Record<string, string> = {
   'graphql-query': 'graphql',
@@ -62,12 +63,9 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
     callbackRefs.current.onChange = onChange;
   }, [onRun, onSave, onChange]);
 
-  const debounceChanges = debounce((newValue) => {
+  const handleEditorChange = useDebouncedCallback((newValue: string) => {
     onChange(newValue);
-  }, 300);
-  const handleEditorChange = (value: string | undefined) => {
-    debounceChanges(value);
-  };
+  }, 200);
 
   const registerEditorVariables = useContext(CodeEditorVariableContext);
   const onMount = (editor: editor.IStandaloneCodeEditor, mountMonaco: Monaco) => {
