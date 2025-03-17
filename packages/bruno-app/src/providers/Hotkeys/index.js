@@ -232,7 +232,7 @@ export const HotkeysProvider = (props) => {
           onClose={() => setShowEnvSettingsModal(false)}
         />
       ) : null}
-      <Modal opened={showNewRequestModal} onClose={() => setShowNewRequestModal(false)} title="New request">
+      <Modal opened={showNewRequestModal} onClose={() => setShowNewRequestModal(false)} title="New request" size={'lg'}>
         <NewRequestModalContent
           brunoConfig={getCurrentCollection()?.brunoConfig}
           collectionUid={getCurrentCollection()?.uid}

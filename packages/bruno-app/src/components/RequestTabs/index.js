@@ -137,7 +137,7 @@ const RequestTabs = () => {
           }}
         />
       )}
-      <Modal opened={newRequestModalOpen} onClose={() => setNewRequestModalOpen(false)} title="New Request">
+      <Modal opened={newRequestModalOpen} onClose={() => setNewRequestModalOpen(false)} title="New Request" size={'lg'}>
         <NewRequestModalContent
           brunoConfig={activeCollection.brunoConfig}
           collectionUid={activeCollection.uid}

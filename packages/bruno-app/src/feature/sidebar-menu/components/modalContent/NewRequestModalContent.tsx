@@ -167,7 +167,7 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
           }}
         />
       ) : (
-        <Group gap={'xs'} grow preventGrowOverflow={false}>
+        <Group gap={'xs'} grow preventGrowOverflow={false} wrap="nowrap">
           <MethodSelector {...newRequestForm.getInputProps('method')} label={'Method'} withBorder maw={rem(110)} />
           <CodeEditor label="Url" singleLine asInput withVariables {...newRequestForm.getInputProps('url')} />
         </Group>

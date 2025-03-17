@@ -282,6 +282,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
     <SidebarActionContext.Provider value={contextData}>
       <Modal
         opened={modalContent !== null}
+        size={activeAction?.type === 'new-request' ? 'lg' : undefined}
         title={modalTitleMap[activeAction?.type]}
         onClose={() => setActiveActionState(null)}
       >

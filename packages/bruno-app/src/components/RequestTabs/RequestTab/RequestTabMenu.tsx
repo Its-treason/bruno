@@ -72,7 +72,7 @@ export const RequestTabMenu: React.FC<RequestTabMenuProps> = ({
     <Menu shadow="md" opened={opened} onClose={onClose} position="bottom-start" offset={4}>
       {item ? (
         <>
-          <Modal opened={newRequestModalOpened} onClose={() => setNewRequestModalOpened(false)}>
+          <Modal opened={newRequestModalOpened} onClose={() => setNewRequestModalOpened(false)} size={'lg'}>
             <NewRequestModalContent
               onClose={() => setNewRequestModalOpened(false)}
               brunoConfig={collection?.brunoConfig}
