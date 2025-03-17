@@ -9,7 +9,8 @@ import { shallowEqual } from '@mantine/hooks';
 import { flattenVariables, highlightSpecificWords } from './utils/placeholderDecorator';
 import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
 import { useStore } from 'zustand';
-import { useShallow } from 'zustand/react/shallow'
+import { useShallow } from 'zustand/react/shallow';
+import { mockVariables } from './utils/staticMockVariables';
 
 type CodeEditorVariableProviderProps = {
   children: ReactNode;
@@ -25,7 +26,10 @@ export const CodeEditorVariableProvider: React.FC<CodeEditorVariableProviderProp
   const tabs = useSelector<any>((state) => state.tabs.tabs) as any[];
   const collections = useSelector<any>((state) => state.collections.collections);
   const activeTabUid = useSelector<any>((state) => state.tabs.activeTabUid);
-  const globalVariableList = useStore(globalEnvironmentStore, useShallow((state) => state.environments.get(state.activeEnvironment)?.variables ?? []));
+  const globalVariableList = useStore(
+    globalEnvironmentStore,
+    useShallow((state) => state.environments.get(state.activeEnvironment)?.variables ?? [])
+  );
 
   const currentVariables = useRef({});
 
@@ -53,9 +57,10 @@ export const CodeEditorVariableProvider: React.FC<CodeEditorVariableProviderProp
     const newVariables = getAllVariables(collection, item);
     const flattened = Object.fromEntries(
       flattenVariables({
+        ...mockVariables,
         ...globalVariables,
-        ...newVariables.variables,
-      }),
+        ...newVariables.variables
+      })
     );
 
     // Don't update if both are still equal

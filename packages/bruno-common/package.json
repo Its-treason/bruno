@@ -18,6 +18,9 @@
     "prebuild": "npm run clean",
     "prepack": "npm run test && npm run build"
   },
+  "dependencies": {
+    "@faker-js/faker": "^9.6.0"
+  },
   "devDependencies": {
     "rimraf": "^5.0.5",
     "typescript": "^5.8.2",

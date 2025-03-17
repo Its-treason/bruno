@@ -21,7 +21,7 @@ export function highlightSpecificWords(editor: editor.IStandaloneCodeEditor, wor
   const text = model.getValue();
   const decorations: { range: Range; options: editor.IModelDecorationOptions }[] = [];
 
-  const regex = /{{[\w-\.]+}}/g;
+  const regex = /{{[$\w-\.]+}}/g;
   let match;
   while ((match = regex.exec(text)) !== null) {
     const startPosition = model.getPositionAt(match.index);
@@ -29,6 +29,8 @@ export function highlightSpecificWords(editor: editor.IStandaloneCodeEditor, wor
 
     let inlineClassName = 'brunoPlaceholderHighlightInvalid';
     let hoverMessage = { value: '**Variable not found**', trusted: true };
+
+    console.log(wordsToHighlight, match[0].slice(2, -2));
 
     const value = wordsToHighlight[match[0].slice(2, -2)];
     if (value) {

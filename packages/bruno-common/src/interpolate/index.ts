@@ -11,8 +11,8 @@
  * Output: Hello, my name is Bruno and I am 4 years old
  */
 
-import { Set } from 'typescript';
 import { flattenObject } from '../utils';
+import { getMockData } from './getMockData';
 
 function serializeObject(obj: Object) {
   // Check if the object has a `toString` method like `Moment`
@@ -31,8 +31,28 @@ function serializeObject(obj: Object) {
   return JSON.stringify(obj);
 }
 
+function doInterpolate(str: string, obj: Record<string, any>) {
+  const patternRegex = /\{\{([^}]+)\}\}/g;
+  const flattenedObj = flattenObject(obj);
+  return str.replace(patternRegex, (match, placeholder) => {
+    const replacement = flattenedObj[placeholder] || obj[placeholder] || getMockData(placeholder);
+    // Return the original string so nothing gets replaced
+    if (replacement === undefined) {
+      return match;
+    }
+
+    // Objects must be either JSON encoded or convert to a String via `toString`
+    if (typeof replacement === 'object') {
+      return serializeObject(replacement);
+    }
+
+    return replacement;
+  });
+}
+
 const interpolate = (str: string, obj: Record<string, any>): string => {
-  if (!str || typeof str !== 'string' || !obj || typeof obj !== 'object') {
+  // `str` can be passed in from user input inside scripts
+  if (typeof str !== 'string' || !obj || typeof obj !== 'object') {
     return str;
   }
 
@@ -48,24 +68,5 @@ const interpolate = (str: string, obj: Record<string, any>): string => {
   }
   return last;
 };
-
-function doInterpolate(str: string, obj: Record<string, any>) {
-  const patternRegex = /\{\{([^}]+)\}\}/g;
-  const flattenedObj = flattenObject(obj);
-  return str.replace(patternRegex, (match, placeholder) => {
-    const replacement = flattenedObj[placeholder] || obj[placeholder];
-    // Return the original string so nothing gets replaced
-    if (replacement === undefined) {
-      return match;
-    }
-
-    // Objects must be either JSON encoded or convert to a String via `toString`
-    if (typeof replacement === 'object') {
-      return serializeObject(replacement);
-    }
-
-    return replacement;
-  });
-}
 
 export default interpolate;
