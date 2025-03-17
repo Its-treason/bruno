@@ -431,41 +431,7 @@ export const collectionsSlice = createSlice({
             item.draft = cloneDeep(item);
           }
 
-          item.draft.request.auth = item.draft.request.auth || {};
-          switch (action.payload.mode) {
-            case 'awsv4':
-              item.draft.request.auth.mode = 'awsv4';
-              item.draft.request.auth.awsv4 = action.payload.content;
-              break;
-            case 'bearer':
-              item.draft.request.auth.mode = 'bearer';
-              item.draft.request.auth.bearer = action.payload.content;
-              break;
-            case 'basic':
-              item.draft.request.auth.mode = 'basic';
-              item.draft.request.auth.basic = action.payload.content;
-              break;
-            case 'digest':
-              item.draft.request.auth.mode = 'digest';
-              item.draft.request.auth.digest = action.payload.content;
-              break;
-            case 'ntlm':
-              item.draft.request.auth.mode = 'ntlm';
-              item.draft.request.auth.ntlm = action.payload.content;
-              break;
-            case 'oauth2':
-              item.draft.request.auth.mode = 'oauth2';
-              item.draft.request.auth.oauth2 = action.payload.content;
-              break;
-            case 'wsse':
-              item.draft.request.auth.mode = 'wsse';
-              item.draft.request.auth.wsse = action.payload.content;
-              break;
-            case 'apikey':
-              item.draft.request.auth.mode = 'apikey';
-              item.draft.request.auth.apikey = action.payload.content;
-              break;
-          }
+          item.draft.request.auth = action.payload.auth;
         }
       }
     },
@@ -1084,46 +1050,11 @@ export const collectionsSlice = createSlice({
         }
       }
     },
-    updateCollectionAuthMode: (state, action) => {
-      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
-
-      if (collection) {
-        set(collection, 'root.request.auth', {});
-        set(collection, 'root.request.auth.mode', action.payload.mode);
-      }
-    },
     updateCollectionAuth: (state, action) => {
       const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
 
       if (collection) {
-        set(collection, 'root.request.auth', {});
-        set(collection, 'root.request.auth.mode', action.payload.mode);
-        switch (action.payload.mode) {
-          case 'awsv4':
-            set(collection, 'root.request.auth.awsv4', action.payload.content);
-            break;
-          case 'bearer':
-            set(collection, 'root.request.auth.bearer', action.payload.content);
-            break;
-          case 'basic':
-            set(collection, 'root.request.auth.basic', action.payload.content);
-            break;
-          case 'digest':
-            set(collection, 'root.request.auth.digest', action.payload.content);
-            break;
-          case 'ntlm':
-            set(collection, 'root.request.auth.ntlm', action.payload.content);
-            break;
-          case 'oauth2':
-            set(collection, 'root.request.auth.oauth2', action.payload.content);
-            break;
-          case 'wsse':
-            set(collection, 'root.request.auth.wsse', action.payload.content);
-            break;
-          case 'apikey':
-            set(collection, 'root.request.auth.apikey', action.payload.content);
-            break;
-        }
+        set(collection, 'root.request.auth', action.payload.auth);
       }
     },
     updateCollectionRequestScript: (state, action) => {
@@ -1672,7 +1603,6 @@ export const {
   addCollectionVar,
   updateCollectionVar,
   deleteCollectionVar,
-  updateCollectionAuthMode,
   updateCollectionAuth,
   updateCollectionRequestScript,
   updateCollectionResponseScript,

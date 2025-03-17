@@ -5,7 +5,6 @@ import Documentation from 'components/Documentation';
 import Tests from 'components/RequestPane/Tests';
 import Assertions from 'components/RequestPane/Assertions';
 import Vars from 'components/RequestPane/Vars';
-import Auth from 'components/RequestPane/Auth';
 import { updateRequestPaneTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch } from 'react-redux';
 import { DocExplorerWrapper } from 'src/feature/main-view/components/panes/graphql/DocExplorerWrapper';
@@ -17,6 +16,7 @@ import CodeEditor from 'components/CodeEditor';
 import { saveRequest, sendRequest } from 'providers/ReduxStore/slices/collections/actions';
 import { RequestHeaders } from 'feature/main-view-pane-contents/components/headers';
 import { Script } from 'feature/main-view-pane-contents/components/script';
+import { Auth } from 'feature/main-view-pane-contents/components/auth';
 
 const CONTENT_INDICATOR = '\u25CF';
 
@@ -72,7 +72,7 @@ export const GraphqlRequestPane: React.FC<GraphqlRequestPaneProps> = ({ item, co
       case 'headers':
         return <RequestHeaders item={item} collection={collection} />;
       case 'auth':
-        return <Auth item={item} collection={collection} />;
+        return <Auth item={item} collectionUid={collection.uid} />;
       case 'vars':
         return <Vars item={item} collection={collection} />;
       case 'assert':

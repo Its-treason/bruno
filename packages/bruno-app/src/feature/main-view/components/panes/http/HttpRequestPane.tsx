@@ -5,13 +5,13 @@ import Documentation from 'components/Documentation';
 import Tests from 'components/RequestPane/Tests';
 import Assertions from 'components/RequestPane/Assertions';
 import Vars from 'components/RequestPane/Vars';
-import Auth from 'components/RequestPane/Auth';
 import { updateRequestPaneTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch } from 'react-redux';
 import { Body } from 'feature/main-view-pane-contents';
 import { RequestHeaders } from 'feature/main-view-pane-contents/components/headers';
 import { Script } from 'feature/main-view-pane-contents/components/script';
 import { Params } from 'feature/main-view-pane-contents/components/params';
+import { Auth } from 'feature/main-view-pane-contents/components/auth';
 
 const CONTENT_INDICATOR = '\u25CF'; // ●
 
@@ -33,7 +33,7 @@ export const HttpRequestPane: React.FC<HttpRequestPaneProps> = ({ item, collecti
       case 'headers':
         return <RequestHeaders item={item} collection={collection} />;
       case 'auth':
-        return <Auth item={item} collection={collection} />;
+        return <Auth item={item} collectionUid={collection.uid} />;
       case 'vars':
         return <Vars item={item} collection={collection} />;
       case 'assert':
