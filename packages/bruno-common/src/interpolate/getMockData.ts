@@ -240,7 +240,5 @@ export function getMockData(placeholder: string) {
       return faker.lorem.slug();
     case '$randomLoremLines':
       return faker.lorem.lines();
-    default:
-      return null;
   }
 }
