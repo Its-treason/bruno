@@ -17,7 +17,6 @@ export function createBrowserWindow(loadState = true): BrowserWindow {
     minHeight: 640,
     show: false,
     webPreferences: {
-      nodeIntegration: true,
       preload: path.join(__dirname, 'preload.js'),
       webviewTag: true,
       spellcheck: false,

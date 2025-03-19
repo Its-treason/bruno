@@ -1334,6 +1334,9 @@ export const collectionsSlice = createSlice({
         if (folderItem) {
           folderItem.root = file.data;
           folderItem.seq = file.data.meta.seq;
+          if (file.data.meta.name) {
+            folderItem.name = file.data.meta.name;
+          }
         }
         return;
       }
@@ -1344,11 +1347,12 @@ export const collectionsSlice = createSlice({
         let currentPath = collection.pathname;
         let currentSubItems = collection.items;
         for (const directoryName of subDirectories) {
-          let childItem = currentSubItems.find((f) => f.type === 'folder' && f.name === directoryName);
+          const pathname = `${currentPath}${PATH_SEPARATOR}${directoryName}`;
+          let childItem = currentSubItems.find((f) => f.type === 'folder' && f.pathname === pathname);
           if (!childItem) {
             childItem = {
               uid: uuid(),
-              pathname: `${currentPath}${PATH_SEPARATOR}${directoryName}`,
+              pathname,
               name: directoryName,
               collapsed: true,
               type: 'folder',
@@ -1399,11 +1403,12 @@ export const collectionsSlice = createSlice({
         let currentPath = collection.pathname;
         let currentSubItems = collection.items;
         for (const directoryName of subDirectories) {
-          let childItem = currentSubItems.find((f) => f.type === 'folder' && f.name === directoryName);
+          const pathname = `${currentPath}${PATH_SEPARATOR}${directoryName}`;
+          let childItem = currentSubItems.find((f) => f.type === 'folder' && f.pathname === pathname);
           if (!childItem) {
             childItem = {
               uid: uuid(),
-              pathname: `${currentPath}${PATH_SEPARATOR}${directoryName}`,
+              pathname,
               name: directoryName,
               collapsed: true,
               type: 'folder',

@@ -7,6 +7,7 @@ const {
   collectionBruToJson: _collectionBruToJson,
   jsonToCollectionBru: _jsonToCollectionBru
 } = require('@usebruno/lang');
+const fs = require('node:fs');
 
 const collectionBruToJson = (bru) => {
   try {
@@ -200,11 +201,30 @@ const jsonToBru = (json) => {
   return jsonToBruV2(bruJson);
 };
 
+const updateFolderMetadata = (metadataPath, name, seq) => {
+  let jsonData = { meta: { seq, name } };
+  if (fs.existsSync(metadataPath)) {
+    const bruContent = fs.readFileSync(metadataPath, 'utf8');
+    jsonData = collectionBruToJson(bruContent);
+  }
+
+  if (name) {
+    jsonData.meta.name = name;
+  }
+  if (seq !== undefined) {
+    jsonData.meta.seq = seq;
+  }
+
+  const content = jsonToCollectionBru(jsonData, true);
+  fs.writeFileSync(metadataPath, content);
+};
+
 module.exports = {
   bruToJson,
   jsonToBru,
   bruToEnvJson,
   envJsonToBru,
   collectionBruToJson,
-  jsonToCollectionBru
+  jsonToCollectionBru,
+  updateFolderMetadata
 };

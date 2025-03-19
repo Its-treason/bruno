@@ -263,6 +263,9 @@ const add = async (win, pathname, collectionUid, collectionPath) => {
       let bruContent = fs.readFileSync(pathname, 'utf8');
 
       file.data = collectionBruToJson(bruContent);
+      if (file.data.meta?.name) {
+        file.meta.name = file.data.meta?.name;
+      }
 
       hydrateBruCollectionFileWithUuid(file.data);
       win.webContents.send('main:collection-tree-updated', 'addFile', file);
@@ -388,6 +391,9 @@ const change = async (win, pathname, collectionUid, collectionPath) => {
       let bruContent = fs.readFileSync(pathname, 'utf8');
 
       file.data = collectionBruToJson(bruContent);
+      if (file.data.meta?.name) {
+        file.meta.name = file.data.meta?.name;
+      }
 
       hydrateBruCollectionFileWithUuid(file.data);
       win.webContents.send('main:collection-tree-updated', 'addFile', file);

@@ -9,7 +9,7 @@ const {
   bruToJson,
   jsonToBru,
   jsonToCollectionBru,
-  collectionBruToJson
+  updateFolderMetadata
 } = require('../bru');
 const { generateCode } = require('@usebruno/core');
 
@@ -477,8 +477,8 @@ ipcMain.handle('renderer:rename-item', async (event, oldPathFull, newName) => {
   if (isDirectory(oldPathFull)) {
     const bruFilesAtSource = searchForBruFiles(oldPathFull);
 
-    const newPathFull = path.join(oldPathDirname, newName);
-    if (fs.existsSync(newPathFull)) {
+    const newPathFull = path.join(oldPathDirname, sanitizeFilename(newName));
+    if (fs.existsSync(newPathFull) && newPathFull !== oldPathFull) {
       throw new Error(`Directory "${newPathFull}" already exists`);
     }
 
@@ -487,9 +487,16 @@ ipcMain.handle('renderer:rename-item', async (event, oldPathFull, newName) => {
       moveRequestUid(bruFile, newBruFilePath);
     }
 
-    // Rename directory by moving it around because of https://github.com/paulmillr/chokidar/issues/1031
-    await fsPromises.cp(oldPathFull, newPathFull, { recursive: true });
-    await fsPromises.rm(oldPathFull, { recursive: true });
+    // The user might only renamed the "visible" path or tried to rename this without changing anything
+    if (oldPathFull !== newPathFull) {
+      // Rename directory by moving it around because of https://github.com/paulmillr/chokidar/issues/1031
+      await fsPromises.cp(oldPathFull, newPathFull, { recursive: true });
+      await fsPromises.rm(oldPathFull, { recursive: true });
+    }
+
+    const metadataPath = path.join(newPathFull, 'folder.bru');
+    updateFolderMetadata(metadataPath, newName);
+
     return;
   }
 
@@ -629,17 +636,7 @@ ipcMain.handle('renderer:resequence-items', async (event, itemsToResequence) => 
       } else {
         const metadataPath = path.join(item.pathname, 'folder.bru');
 
-        let jsonData = { meta: { seq: -1, name: item.name } };
-        if (fs.existsSync(metadataPath)) {
-          const bruContent = fs.readFileSync(metadataPath, 'utf8');
-          jsonData = collectionBruToJson(bruContent);
-        }
-
-        if (jsonData.meta.seq != item.seq) {
-          jsonData.meta.seq = item.seq;
-          const content = jsonToCollectionBru(jsonData);
-          await writeFile(metadataPath, content);
-        }
+        updateFolderMetadata(metadataPath, item.name, item.seq);
       }
     }
   } catch (error) {
