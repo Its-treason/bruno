@@ -17,6 +17,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@parcel/watcher": "^2.1.1",
     "@usebruno/common": "workspace:*",
     "@usebruno/schema": "workspace:*",
     "@usebruno/query": "workspace:*",
@@ -32,6 +33,7 @@
     "json-query": "^2.2.2",
     "lodash": "^4.17.21",
     "lossless-json": "^4.0.2",
+    "minimatch": "^10.0.1",
     "moment": "^2.30.1",
     "nanoid": "3.3.4",
     "node-vault": "0.10.2",
