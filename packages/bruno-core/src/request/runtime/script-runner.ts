@@ -137,7 +137,10 @@ const defaultModuleWhiteList = [
   'axios',
   'chai',
   'crypto-js',
-  'node-vault'
+  'node-vault',
+  'xml2js',
+  'cheerio',
+  'jsonwebtoken'
 ];
 
 function createCustomRequire(scriptingConfig: BrunoConfig['scripts'], collectionPath: string) {
