@@ -5,6 +5,7 @@ import { Buffer } from 'node:buffer';
 import { BrunoRequestOptions } from '../types';
 import tls, { TLSSocket } from 'node:tls';
 import { collectSslInfo, RequestSslInfo } from './collectSslInfo';
+import { createWriteStream } from 'node:fs';
 
 export type HttpRequestInfo = {
   // RequestInfo
@@ -117,6 +118,13 @@ async function checkIfHttp2IsSupported(info: HttpRequestInfo, options: BrunoRequ
       resolve(tlsSocket);
     });
 
+    tlsSocket.on('keylog', (line) => {
+      if (options.sslKeylogFile) {
+        const logFile = createWriteStream(options.sslKeylogFile, { flags: 'a' });
+        logFile.write(line);
+      }
+    });
+
     tlsSocket.on('error', reject);
   });
 
@@ -154,6 +162,13 @@ async function makeHttp1Request(info: HttpRequestInfo, options: BrunoRequestOpti
             `${info.sslInfo.authorizationError} (This can be ignore in app preferences: "SSL/TLS Certificate Verification")`
           )
         );
+      }
+    });
+
+    socket.on('keylog', (line) => {
+      if (options.sslKeylogFile) {
+        const logFile = createWriteStream(options.sslKeylogFile, { flags: 'a' });
+        logFile.write(line);
       }
     });
   });

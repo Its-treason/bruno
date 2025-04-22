@@ -11,6 +11,7 @@ const { get } = require('lodash');
 const defaultPreferences = {
   request: {
     sslVerification: true,
+    sslKeylogFile: '',
     customCaCertificate: {
       enabled: false,
       filePath: null
@@ -43,6 +44,7 @@ const defaultPreferences = {
 const preferencesSchema = Yup.object().shape({
   request: Yup.object().shape({
     sslVerification: Yup.boolean(),
+    sslKeylogFile: Yup.string().optional(),
     customCaCertificate: Yup.object({
       enabled: Yup.boolean(),
       filePath: Yup.string().nullable()

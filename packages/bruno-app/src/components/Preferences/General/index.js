@@ -9,6 +9,7 @@ import toast from 'react-hot-toast';
 import path from 'path';
 import slash from 'utils/common/slash';
 import { IconTrash } from '@tabler/icons-react';
+import { TextInput } from '@mantine/core';
 
 const General = ({ close }) => {
   const preferences = useSelector((state) => state.app.preferences);
@@ -17,6 +18,7 @@ const General = ({ close }) => {
 
   const preferencesSchema = Yup.object().shape({
     sslVerification: Yup.boolean(),
+    sslKeylogFile: Yup.string().optional(),
     customCaCertificate: Yup.object({
       enabled: Yup.boolean(),
       filePath: Yup.string().nullable()
@@ -42,6 +44,7 @@ const General = ({ close }) => {
   const formik = useFormik({
     initialValues: {
       sslVerification: preferences.request.sslVerification,
+      sslKeylogFile: preferences.request.sslKeylogFile,
       customCaCertificate: {
         enabled: get(preferences, 'request.customCaCertificate.enabled', false),
         filePath: get(preferences, 'request.customCaCertificate.filePath', null)
@@ -70,6 +73,7 @@ const General = ({ close }) => {
         ...preferences,
         request: {
           sslVerification: newPreferences.sslVerification,
+          sslKeylogFile: newPreferences.sslKeylogFile,
           customCaCertificate: {
             enabled: newPreferences.customCaCertificate.enabled,
             filePath: newPreferences.customCaCertificate.filePath
@@ -115,6 +119,18 @@ const General = ({ close }) => {
           <label className="block ml-2 select-none" htmlFor="sslVerification">
             SSL/TLS Certificate Verification
           </label>
+        </div>
+        <div className="flex items-center mt-2">
+          <TextInput
+            label="SSL Keylog file"
+            description="All keylog Events will be written to this file for usage with Wireshark etc."
+            id="sslKeylogFile"
+            type="input"
+            name="sslKeylogFile"
+            checked={formik.values.sslKeylogFile}
+            defaultValue={preferences.request.sslKeylogFile}
+            onChange={formik.handleChange}
+          />
         </div>
         <div className="flex items-center mt-2">
           <input

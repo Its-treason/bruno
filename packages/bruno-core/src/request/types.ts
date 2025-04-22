@@ -228,6 +228,7 @@ export type Collection = {
 export type Preferences = {
   request: {
     sslVerification: boolean;
+    sslKeylogFile?: string;
     customCaCertificate: {
       enabled: boolean;
       filePath: string | null;
@@ -299,6 +300,7 @@ export type BrunoRequestOptions = Omit<RequestOptions, 'host'> & {
   hostname: string;
   path: string;
   abortOnInvalidSsl: boolean;
+  sslKeylogFile?: string;
 } & TlsOptions;
 
 export type RequestContext = {

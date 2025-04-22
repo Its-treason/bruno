@@ -331,8 +331,9 @@ export async function createHttpRequest(context: RequestContext) {
       path: `${urlObject.pathname}${urlObject.search}${urlObject.hash}`,
       headers: getRequestHeaders(context, extraHeaders),
       timeout: context.preferences.request.timeout,
-      rejectUnauthorized: false, // We handle SSL errors ourself suing abortOnInvalidSsl
+      rejectUnauthorized: false, // We handle SSL errors ourself using abortOnInvalidSsl
       abortOnInvalidSsl: context.preferences.request.sslVerification,
+      sslKeylogFile: context.preferences.request.sslKeylogFile,
       ...certOptions
     }
   };
