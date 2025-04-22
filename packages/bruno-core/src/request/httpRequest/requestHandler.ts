@@ -17,7 +17,7 @@ export async function makeHttpRequest(context: RequestContext) {
 
   const allowH2 = context.collection.brunoConfig.h2 === true;
 
-  const body = context.httpRequest?.body;
+  let body = context.httpRequest?.body;
   let requestOptions = context.httpRequest!.options;
 
   while (true) {
@@ -38,11 +38,16 @@ export async function makeHttpRequest(context: RequestContext) {
     });
     const response = await execHttpRequest(requestOptions, allowH2, body, context.abortController?.signal);
 
-    const nextRequest = await handleServerResponse(context, requestOptions, response);
+    const nextRequest = await handleServerResponse(context, structuredClone(requestOptions), response);
     context.timeline?.add(response);
     if (nextRequest === false) {
       await handleFinalResponse(response, context);
       break;
+    }
+
+    // See -> `handleRedirect` function
+    if (requestOptions.method !== 'GET' && nextRequest.method === 'GET') {
+      body = undefined;
     }
 
     requestOptions = nextRequest;
@@ -134,7 +139,7 @@ async function handleServerResponse(
   return false;
 }
 
-// This is basically copied from: https://github.com/nodejs/undici/blob/main/lib/handler/redirect-handler.js#L91
+// This is based on: https://github.com/nodejs/undici/blob/main/lib/handler/redirect-handler.js#L93
 function handleRedirect(request: BrunoRequestOptions, response: HttpRequestInfo): boolean {
   // Should only be counted with one of these status codes
   if (response.statusCode === undefined || ![300, 301, 302, 303, 307, 308].includes(response.statusCode)) {
@@ -159,6 +164,21 @@ function handleRedirect(request: BrunoRequestOptions, response: HttpRequestInfo)
         `"${newLocation}", old path: "${request.path}" & old base: "${request.protocol}//${request.hostname}". ` +
         `Original error: ${error}`
     );
+  }
+
+  if (
+    // https://tools.ietf.org/html/rfc7231#section-6.4.2 & https://datatracker.ietf.org/doc/html/rfc7231#section-6.4.3
+    ((response.statusCode === 301 || response.statusCode === 302) && request.method === 'POST') ||
+    // https://datatracker.ietf.org/doc/html/rfc7231#section-6.4.4
+    (response.statusCode === 303 && request.method !== 'HEAD')
+  ) {
+    request.method = 'GET';
+
+    for (const headerName in request.headers) {
+      if (headerName.startsWith('content-')) {
+        delete request.headers[headerName];
+      }
+    }
   }
 
   request.hostname = newLocationUrl.hostname;
