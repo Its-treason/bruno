@@ -1,26 +1,26 @@
 const KeyMapping = {
-  save: { mac: 'command+s', windows: 'ctrl+s', name: 'Save' },
-  sendRequest: { mac: 'command+enter', windows: 'ctrl+enter', name: 'Send Request' },
-  editEnvironment: { mac: 'command+e', windows: 'ctrl+e', name: 'Edit Environment' },
-  newRequest: { mac: 'command+b', windows: 'ctrl+b', name: 'New Request' },
-  closeTab: { mac: 'command+w', windows: 'ctrl+w', name: 'Close Tab' },
-  openPreferences: { mac: 'command+,', windows: 'ctrl+,', name: 'Open Preferences' },
+  save: { mac: 'Command+s', windows: 'Ctrl+S', name: 'Save' },
+  sendRequest: { mac: 'Command+Enter', windows: 'Ctrl+Enter', name: 'Send Request' },
+  editEnvironment: { mac: 'command+E', windows: 'Ctrl+e', name: 'Edit Environment' },
+  newRequest: { mac: 'Command+B', windows: 'Ctrl+B', name: 'New Request' },
+  closeTab: { mac: 'Command+W', windows: 'Ctrl+W', name: 'Close Tab' },
+  openPreferences: { mac: 'Command+,', windows: 'Ctrl+,', name: 'Open Preferences' },
   minimizeWindow: {
-    mac: 'command+Shift+Q',
-    windows: 'control+Shift+Q',
+    mac: 'Command+Shift+Q',
+    windows: 'Control+Shift+Q',
     name: 'Minimize Window'
   },
   switchToPreviousTab: {
-    mac: 'command+pageup',
-    windows: 'ctrl+pageup',
+    mac: 'Command+Pageup',
+    windows: 'Ctrl+Pageup',
     name: 'Switch to Previous Tab'
   },
   switchToNextTab: {
-    mac: 'command+pagedown',
-    windows: 'ctrl+pagedown',
+    mac: 'Command+Pagedown',
+    windows: 'Ctrl+Pagedown',
     name: 'Switch to Next Tab'
   },
-  closeAllTabs: { mac: 'command+shift+w', windows: 'ctrl+shift+w', name: 'Close All Tabs' }
+  closeAllTabs: { mac: 'Command+Shift+W', windows: 'Ctrl+Shift+W', name: 'Close All Tabs' }
 };
 
 /**

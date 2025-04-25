@@ -7,7 +7,6 @@ import fs from 'node:fs/promises';
 import { ipcMain, app, BrowserWindow, protocol, dialog, session } from 'electron';
 import contentDispositionParser from 'content-disposition';
 import mimeTypes from 'mime-types';
-import { Response } from '@usebruno/core';
 import { WorkerManager } from '../worker/manager';
 import { MAIN_WINDOW_PARTITION } from '../createBrowserWindow';
 

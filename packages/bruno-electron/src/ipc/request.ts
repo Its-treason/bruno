@@ -11,9 +11,9 @@ import {
   clearElectronOAuthSession,
   handleAuthorizationCodeInElectron
 } from '../utils/handleAuthorizationCodeInElectron';
+import { getPreferences } from '../store/preferences';
 const { uuid, safeStringifyJSON } = require('../utils/common');
 const { cookieJar } = require('../utils/cookies');
-const { getPreferences } = require('../store/preferences');
 
 const getAllRequestsInFolderRecursively = (items: any[] = []) => {
   // This is the sort function from useRequestList.tsx
@@ -54,7 +54,7 @@ ipcMain.handle('send-http-request', async (event, item, collection, environment,
     item,
     collection,
     globalVariables,
-    getPreferences(),
+    await getPreferences(),
     cookieJar,
     responseDataDir,
     cancelToken,
@@ -166,7 +166,7 @@ ipcMain.handle(
         structuredClone(item),
         collection as any, // @usebruno/core uses its own type for collection
         globalVariables,
-        getPreferences(),
+        await getPreferences(),
         cookieJar,
         responseDataDir,
         cancelToken,
@@ -331,7 +331,7 @@ ipcMain.handle(
       item,
       collection,
       globalVariables,
-      getPreferences(),
+      await getPreferences(),
       cookieJar,
       responseDataDir,
       cancelToken,
@@ -416,7 +416,7 @@ ipcMain.handle('send-collection-oauth2-request', async (event, collection, envir
     item,
     collection,
     globalVariables,
-    getPreferences(),
+    await getPreferences(),
     cookieJar,
     responseDataDir,
     cancelToken,

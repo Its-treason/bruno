@@ -1,10 +1,5 @@
 import { useEffect } from 'react';
-import {
-  showPreferences,
-  updateCookies,
-  updatePreferences,
-  updateSystemProxyEnvVariables
-} from 'providers/ReduxStore/slices/app';
+import { updateCookies, updateSystemProxyEnvVariables } from 'providers/ReduxStore/slices/app';
 import {
   brunoConfigUpdateEvent,
   collectionAddDirectoryEvent,
@@ -128,20 +123,11 @@ const useIpcEvents = () => {
       dispatch(brunoConfigUpdateEvent(val))
     );
 
-    const removeShowPreferencesListener = ipcRenderer.on('main:open-preferences', () => {
-      dispatch(showPreferences(true));
-    });
-
-    const removePreferencesUpdatesListener = ipcRenderer.on('main:load-preferences', (val) => {
-      dispatch(updatePreferences(val));
-    });
-
     const removeSystemProxyEnvUpdatesListener = ipcRenderer.on('main:load-system-proxy-env', (val) => {
       dispatch(updateSystemProxyEnvVariables(val));
     });
 
     const removeCookieUpdateListener = ipcRenderer.on('main:cookies-update', (val) => {
-      console.log(val);
       dispatch(updateCookies(val));
     });
 
@@ -155,8 +141,6 @@ const useIpcEvents = () => {
       removeProcessEnvUpdatesListener();
       removeConsoleLogListener();
       removeConfigUpdatesListener();
-      removeShowPreferencesListener();
-      removePreferencesUpdatesListener();
       removeCookieUpdateListener();
       removeSystemProxyEnvUpdatesListener();
     };

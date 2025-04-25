@@ -5,21 +5,13 @@
 import { ActionIcon, Group, Text, Tooltip, rem } from '@mantine/core';
 import { IconSettings, IconCookie } from '@tabler/icons-react';
 import Cookies from 'components/Cookies';
-import Preferences from 'components/Preferences';
-import { showPreferences } from 'providers/ReduxStore/slices/app';
-import React, { useCallback, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { AppPreferencesDrawer } from 'feature/preferences';
+import React, { useState } from 'react';
 import { GlobalEnvironmentSelector } from 'src/feature/environment-editor';
 
 export const BottomButtons: React.FC = () => {
-  const dispatch = useDispatch();
-
   const [cookiesOpen, setCookiesOpen] = useState(false);
-
-  const preferencesOpen = useSelector((state: any) => state.app.showPreferences) as boolean;
-  const togglePreferences = useCallback((opened: boolean) => {
-    dispatch(showPreferences(opened));
-  }, []);
+  const [preferencesOpen, setPreferencesOpen] = useState(false);
 
   return (
     <Group
@@ -30,7 +22,7 @@ export const BottomButtons: React.FC = () => {
     >
       <ActionIcon.Group mr={'auto'}>
         <Tooltip label="Preferences" openDelay={250}>
-          <ActionIcon variant="default" size={'md'} aria-label={'Preferences'} onClick={() => togglePreferences(true)}>
+          <ActionIcon variant="default" size={'md'} aria-label={'Preferences'} onClick={() => setPreferencesOpen(true)}>
             <IconSettings style={{ width: rem(16) }} stroke={1.5} />
           </ActionIcon>
         </Tooltip>
@@ -43,7 +35,7 @@ export const BottomButtons: React.FC = () => {
 
         <GlobalEnvironmentSelector />
 
-        {preferencesOpen && <Preferences onClose={() => togglePreferences(false)} />}
+        <AppPreferencesDrawer opened={preferencesOpen} onClose={() => setPreferencesOpen(false)} />
         {cookiesOpen && <Cookies onClose={() => setCookiesOpen(false)} />}
       </ActionIcon.Group>
 

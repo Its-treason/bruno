@@ -7,24 +7,7 @@ const initialState = {
   leftSidebarWidth: 222,
   screenWidth: 500,
   showHomePage: false,
-  showPreferences: false,
   isEnvironmentSettingsModalOpen: false,
-  preferences: {
-    request: {
-      sslVerification: true,
-      customCaCertificate: {
-        enabled: false,
-        filePath: null
-      },
-      keepDefaultCaCertificates: {
-        enabled: true
-      },
-      timeout: 0
-    },
-    font: {
-      codeFont: 'default'
-    }
-  },
   cookies: [],
   taskQueue: [],
   systemProxyEnvVariables: {}
@@ -52,12 +35,6 @@ export const appSlice = createSlice({
     hideHomePage: (state) => {
       state.showHomePage = false;
     },
-    showPreferences: (state, action) => {
-      state.showPreferences = action.payload;
-    },
-    updatePreferences: (state, action) => {
-      state.preferences = action.payload;
-    },
     updateCookies: (state, action) => {
       state.cookies = action.payload;
     },
@@ -83,31 +60,12 @@ export const {
   updateEnvironmentSettingsModalVisibility,
   showHomePage,
   hideHomePage,
-  showPreferences,
-  updatePreferences,
   updateCookies,
   insertTaskIntoQueue,
   removeTaskFromQueue,
   removeAllTasksFromQueue,
   updateSystemProxyEnvVariables
 } = appSlice.actions;
-
-export const savePreferences = (preferences) => (dispatch, getState) => {
-  return new Promise((resolve, reject) => {
-    const { ipcRenderer } = window;
-
-    ipcRenderer
-      .invoke('renderer:save-preferences', preferences)
-      .then(() => toast.success('Preferences saved successfully'))
-      .then(() => dispatch(updatePreferences(preferences)))
-      .then(resolve)
-      .catch((err) => {
-        toast.error('An error occurred while saving preferences');
-        console.error(err);
-        reject(err);
-      });
-  });
-};
 
 export const deleteCookiesForDomain = (domain) => (dispatch, getState) => {
   return new Promise((resolve, reject) => {

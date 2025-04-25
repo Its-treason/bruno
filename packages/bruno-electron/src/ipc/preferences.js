@@ -1,19 +1,21 @@
 const { ipcMain, BrowserWindow } = require('electron');
-const { getPreferences, savePreferences, preferencesUtil } = require('../store/preferences');
+const { getPreferences, savePreferences } = require('../store/preferences');
 const { isDirectory } = require('../utils/filesystem');
 const { openCollection } = require('../app/collections');
 const LastOpenedCollection = require('../store/last-opened-collections');
 
 ipcMain.handle('renderer:ready', async (event) => {
-  // load preferences
-  const preferences = getPreferences();
+  const preferences = await getPreferences();
 
   const mainWindow = BrowserWindow.fromWebContents(event.sender);
   mainWindow.webContents.send('main:load-preferences', preferences);
 
-  const systemProxyVars = preferencesUtil.getSystemProxyEnvVariables();
-  const { http_proxy, https_proxy, no_proxy } = systemProxyVars || {};
-  mainWindow.webContents.send('main:load-system-proxy-env', { http_proxy, https_proxy, no_proxy });
+  const { http_proxy, HTTP_PROXY, https_proxy, HTTPS_PROXY, no_proxy, NO_PROXY } = process.env;
+  mainWindow.webContents.send('main:load-system-proxy-env', {
+    http_proxy: http_proxy || HTTP_PROXY,
+    https_proxy: https_proxy || HTTPS_PROXY,
+    no_proxy: no_proxy || NO_PROXY
+  });
 
   // reload last opened collections
   const lastOpenedCollections = LastOpenedCollection.getInstance();

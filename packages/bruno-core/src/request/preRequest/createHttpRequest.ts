@@ -1,5 +1,5 @@
 import { platform, arch } from 'node:os';
-import { BrunoConfig, Preferences, RequestBody, RequestContext, RequestItem } from '../types';
+import { BrunoConfig, RequestBody, RequestContext, RequestItem } from '../types';
 import { parse, stringify } from 'lossless-json';
 import { URL } from 'node:url';
 import fs from 'node:fs/promises';
@@ -12,6 +12,7 @@ import { ProxyAgent } from 'proxy-agent';
 import { DebugLogger } from '../dataObject/DebugLogger';
 import { TlsOptions, rootCertificates } from 'node:tls';
 import { createHash, randomBytes } from 'node:crypto';
+import { Preferences } from '@usebruno/schema';
 
 function generateWSSEHeader(username: string, password: string): string {
   const nonce = randomBytes(24).toString('hex');

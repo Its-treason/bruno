@@ -64,6 +64,33 @@ ipcMain.handle('renderer:browse-files', async (event, pathname, request, filters
   return await browseFiles(mainWindow, filters);
 });
 
+ipcMain.handle('renderer:show-open-dialog', async (event, filters, properties) => {
+  const mainWindow = BrowserWindow.fromWebContents(event.sender);
+  const { filePaths, canceled } = await dialog.showOpenDialog(mainWindow, {
+    properties,
+    filters
+  });
+
+  const realFilePaths = [];
+  try {
+    for (const filePath of filePaths) {
+      realFilePaths.push(fs.realpathSync(filePath));
+    }
+  } catch (error) {
+    return {
+      canceled: true,
+      filePaths: [],
+      error: String(error)
+    };
+  }
+
+  return {
+    canceled,
+    filePaths: realFilePaths,
+    error: null
+  };
+});
+
 ipcMain.handle(
   'renderer:create-collection',
   async (event, collectionName, collectionFolderName, collectionLocation) => {
@@ -812,7 +839,7 @@ ipcMain.handle('renderer:generate-code', async (event, item, collection, environ
   return await generateCode(
     item,
     collection,
-    getPreferences(),
+    await getPreferences(),
     cookieJar,
     options,
     handleAuthorizationCodeInElectron,

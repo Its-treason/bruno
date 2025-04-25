@@ -1,6 +1,6 @@
 import { DebugLogger } from './dataObject/DebugLogger';
 import { Timings } from './dataObject/Timings';
-import { Collection, CollectionEnvironment, Preferences, RequestContext, RequestItem } from './types';
+import { Collection, CollectionEnvironment, RequestContext, RequestItem } from './types';
 import { preRequestScript } from './preRequest/preRequestScript';
 import { applyCollectionSettings } from './preRequest/applyCollectionSettings';
 import { createHttpRequest } from './preRequest/createHttpRequest';
@@ -19,6 +19,7 @@ import { determinePreviewType } from './preRequest/determinePreviewMode';
 import { randomUUID } from 'crypto';
 import { VariablesContext } from './dataObject/VariablesContext';
 import { RunnerContext } from './dataObject/RunnerContext';
+import type { Preferences } from '@usebruno/schema';
 
 export async function request(
   requestItem: RequestItem,
