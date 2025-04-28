@@ -46,6 +46,14 @@ class LastOpenedCollections {
   removeAll() {
     return this.store.set('lastOpenedCollections', []);
   }
+
+  reorder(sourceCollectionPath, targetCollectionPath) {
+    const withoutSource = this.store.get('lastOpenedCollections').filter((path) => path !== sourceCollectionPath);
+
+    const targetIndex = withoutSource.indexOf(targetCollectionPath);
+
+    this.store.set('lastOpenedCollections', withoutSource.toSpliced(targetIndex, 0, sourceCollectionPath));
+  }
 }
 
 module.exports = LastOpenedCollections;

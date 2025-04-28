@@ -8,8 +8,14 @@ import { CollectionMenu, FolderMenu, RequestMenu } from 'src/feature/sidebar-men
 import { useSidebarActions } from 'src/feature/sidebar-menu/hooks/useSidebarActions';
 import { useDrag, useDrop } from 'react-dnd';
 import { useDispatch } from 'react-redux';
-import { moveItem, moveItemToRootOfCollection } from 'providers/ReduxStore/slices/collections/actions';
+import {
+  changeCollectionOrder,
+  moveItem,
+  moveItemToRootOfCollection
+} from 'providers/ReduxStore/slices/collections/actions';
 import { DropIndicatorPositions, getDropIndicator } from '../../util/dragAndDropUtils';
+
+type SidebarDragItem = { uid: string; type: 'item' | 'collection' };
 
 type RequestItemWrapperProps = {
   uid?: string;
@@ -43,8 +49,8 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
   const menu = useMemo(() => {
     const menuProps = {
       onChange: () => setMenuOpened(!menuOpened),
-      opened: menuOpened,
-    }  as const;
+      opened: menuOpened
+    } as const;
     switch (type) {
       case 'collection':
         return <CollectionMenu collectionUid={collectionUid} {...menuProps} />;
@@ -55,15 +61,19 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
     }
   }, [type, menuOpened]);
 
-  const [, drag] = useDrag({
-    type: `COLLECTION_ITEM_${collectionUid}`,
-    item: { uid: uid ?? collectionUid }
+  const [, drag] = useDrag<SidebarDragItem>({
+    type: uid ? `COLLECTION_ITEM_${collectionUid}` : 'COLLECTION',
+    item: { uid: uid ?? collectionUid, type: uid ? 'item' : 'collection' }
   });
 
-  const [{ isOverCurrent }, drop] = useDrop({
-    accept: `COLLECTION_ITEM_${collectionUid}`,
-    // Defined in useDrag
-    drop: (draggedItem: { uid: string }) => {
+  const [{ isOverCurrent }, drop] = useDrop<SidebarDragItem, unknown, { isOverCurrent: boolean }>({
+    accept: uid ? [`COLLECTION_ITEM_${collectionUid}`] : [`COLLECTION_ITEM_${collectionUid}`, 'COLLECTION'],
+    drop: (draggedItem) => {
+      if (draggedItem.type === 'collection' && draggedItem.uid !== collectionUid) {
+        dispatch(changeCollectionOrder(draggedItem.uid, collectionUid));
+        return;
+      }
+
       if (draggedItem.uid !== uid && draggedItem.uid !== collectionUid) {
         if (uid) {
           const operation = wrapperRef.current.dataset.dropIndicator as DropIndicatorPositions;
@@ -88,8 +98,10 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
     };
     document.addEventListener('dragover', listener);
     return () => {
-      wrapperRef.current.dataset.dropIndicator = 'none';
       document.removeEventListener('dragover', listener);
+      if (wrapperRef.current) {
+        wrapperRef.current.dataset.dropIndicator = 'none';
+      }
     };
   }, [isOverCurrent]);
 

@@ -499,6 +499,11 @@ ipcMain.handle('renderer:import-collection', async (event, collection, collectio
     return Promise.reject(error);
   }
 });
+
+ipcMain.handle('renderer:change-collection-path-order', async (event, sourceCollectionPath, targetCollectionPath) => {
+  const lastOpenedCollections = LastOpenedCollection.getInstance();
+  lastOpenedCollections.reorder(sourceCollectionPath, targetCollectionPath);
+});
 //#endRegion
 
 //#region Items

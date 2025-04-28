@@ -18,9 +18,11 @@ import {
 import { parsePathParams, parseQueryParams, splitOnFirst, stringifyQueryParams } from 'utils/url';
 import { getDirectoryName, getSubdirectoriesFromRoot, PATH_SEPARATOR } from 'utils/common/platform';
 import toast from 'react-hot-toast';
+import { StatTimer } from 'pdfjs-dist/types/src/display/display_utils';
 
 const initialState = {
   collections: [],
+  collectionCustomOrder: [],
   collectionSortOrder: 'default',
   collectionFilter: ''
 };
@@ -30,8 +32,12 @@ export const collectionsSlice = createSlice({
   initialState,
   reducers: {
     createCollection: (state, action) => {
-      const collectionUids = map(state.collections, (c) => c.uid);
       const collection = action.payload;
+
+      const collectionUids = map(state.collections, (c) => c.uid);
+      if (collectionUids.includes(collection.uid)) {
+        return;
+      }
 
       collection.settingsSelectedTab = 'headers';
 
@@ -48,9 +54,8 @@ export const collectionsSlice = createSlice({
 
       collapseCollection(collection);
       addDepth(collection.items);
-      if (!collectionUids.includes(collection.uid)) {
-        state.collections.push(collection);
-      }
+      state.collections.push(collection);
+      state.collectionCustomOrder.push(collection.uid);
     },
     brunoConfigUpdateEvent: (state, action) => {
       const { collectionUid, brunoConfig } = action.payload;
@@ -72,17 +77,18 @@ export const collectionsSlice = createSlice({
     },
     sortCollections: (state, action) => {
       state.collectionSortOrder = action.payload.order;
-      switch (action.payload.order) {
-        case 'default':
-          state.collections = state.collections.sort((a, b) => a.importedAt - b.importedAt);
-          break;
-        case 'alphabetical':
-          state.collections = state.collections.sort((a, b) => a.name.localeCompare(b.name));
-          break;
-        case 'reverseAlphabetical':
-          state.collections = state.collections.sort((a, b) => b.name.localeCompare(a.name));
-          break;
+    },
+    changeCollectionCustomOrder: (state, action) => {
+      const { sourceCollectionUid, targetCollectionUid } = action.payload;
+
+      const withoutSource = state.collectionCustomOrder.filter((uid) => uid !== sourceCollectionUid);
+
+      const targetIndex = withoutSource.indexOf(targetCollectionUid);
+      if (targetIndex === -1) {
+        throw new Error(`Could not find collectionUid "${targetCollectionUid}" in collectionCustomOrder`);
       }
+
+      state.collectionCustomOrder = withoutSource.toSpliced(targetIndex, 0, sourceCollectionUid);
     },
     filterCollections: (state, action) => {
       state.collectionFilter = action.payload.filter;
@@ -1550,6 +1556,7 @@ export const {
   renameCollection,
   removeCollection,
   sortCollections,
+  changeCollectionCustomOrder,
   filterCollections,
   updateLastAction,
   updateSettingsSelectedTab,
