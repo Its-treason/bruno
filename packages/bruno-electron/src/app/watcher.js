@@ -263,6 +263,12 @@ const add = async (win, pathname, collectionUid, collectionPath) => {
       let bruContent = fs.readFileSync(pathname, 'utf8');
 
       file.data = collectionBruToJson(bruContent);
+
+      // Check if the name is just "undefined", see: https://github.com/Its-treason/bruno/issues/15
+      if (file.data.meta?.name === 'undefined') {
+        file.data.meta.name = path.basename(file.meta.pathname);
+      }
+
       if (file.data.meta?.name) {
         file.meta.name = file.data.meta?.name;
       }
@@ -391,6 +397,12 @@ const change = async (win, pathname, collectionUid, collectionPath) => {
       let bruContent = fs.readFileSync(pathname, 'utf8');
 
       file.data = collectionBruToJson(bruContent);
+
+      // Check if the name is just "undefined", see: https://github.com/Its-treason/bruno/issues/15
+      if (file.data.meta?.name === 'undefined') {
+        file.data.meta.name = path.basename(file.meta.pathname);
+      }
+
       if (file.data.meta?.name) {
         file.meta.name = file.data.meta?.name;
       }
