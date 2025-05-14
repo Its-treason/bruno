@@ -54,10 +54,6 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
     callbackRefs.current.onChange = onChange;
   }, [onRun, onSave, onChange]);
 
-  const handleEditorChange = useDebouncedCallback((newValue: string) => {
-    onChange(newValue);
-  }, 200);
-
   const registerEditorVariables = useContext(CodeEditorVariableContext);
   const onMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
     editor.onDidFocusEditorText(() => {
@@ -126,7 +122,7 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
           value={value}
           defaultValue={defaultValue}
           onMount={onMount}
-          onChange={!readOnly ? handleEditorChange : () => {}}
+          onChange={!readOnly ? onChange : () => {}}
           height={height}
         />
       </Paper>
