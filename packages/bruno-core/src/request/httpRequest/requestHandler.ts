@@ -38,7 +38,7 @@ export async function makeHttpRequest(context: RequestContext) {
     });
     const response = await execHttpRequest(requestOptions, allowH2, body, context.abortController?.signal);
 
-    const nextRequest = await handleServerResponse(context, structuredClone(requestOptions), response);
+    const nextRequest = await handleServerResponse(context, requestOptions, response);
     context.timeline?.add(response);
     if (nextRequest === false) {
       await handleFinalResponse(response, context);
@@ -89,9 +89,15 @@ async function addCookieHeader(
 
 async function handleServerResponse(
   context: RequestContext,
-  request: BrunoRequestOptions,
+  originalRequest: BrunoRequestOptions,
   response: HttpRequestInfo
 ): Promise<BrunoRequestOptions | false> {
+  const request = {
+    // Agent cannot be cloned
+    ...structuredClone({ ...originalRequest, agent: undefined }),
+    agent: originalRequest.agent
+  };
+
   // We did not get a response / an error occurred
   if (response.statusCode === undefined) {
     return false;
