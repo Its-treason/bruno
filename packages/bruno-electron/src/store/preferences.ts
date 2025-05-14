@@ -7,7 +7,7 @@ const preferencesPath = path.join(app.getPath('userData'), 'appPreferences.json'
 let currentPreferences: null | Preferences = null;
 
 export async function savePreferences(newPreferences: unknown): Promise<void> {
-  const currentPreferences = preferencesSchema.parse(newPreferences);
+  currentPreferences = preferencesSchema.parse(newPreferences);
   await fs.writeFile(preferencesPath, JSON.stringify(currentPreferences), 'utf-8');
 }
 
