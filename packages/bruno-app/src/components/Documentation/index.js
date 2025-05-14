@@ -56,7 +56,7 @@ const Documentation = ({ item, collection }) => {
 
       {isEditing ? (
         wysiwyg === 'true' ? (
-          <MarkdownEditor value={docs ?? ''} onChange={onEdit} />
+          <MarkdownEditor key={item.uid} value={docs ?? ''} onChange={onEdit} />
         ) : (
           <CodeEditor value={docs || ''} onChange={onEdit} onSave={onSave} mode="markdown" height={'100%'} />
         )
