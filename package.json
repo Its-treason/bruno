@@ -13,8 +13,12 @@
     "pretty-quick": "^4.0.0",
     "randomstring": "^1.2.2",
     "ts-jest": "^29.0.5",
-    "typescript": "^5.8.2",
-    "node-abi": "3.74.0"
+    "typescript": "^5.8.2"
+  },
+  "pnpm": {
+    "overrides": {
+      "node-abi": "3.75.0"
+    }
   },
   "scripts": {
     "dev": "pnpm run --parallel --recursive --if-present dev",
