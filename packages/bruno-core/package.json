@@ -39,7 +39,7 @@
     "node-vault": "0.10.2",
     "proxy-agent": "^6.4.0",
     "qs": "^6.13.0",
-    "tough-cookie": "^5.0.0",
+    "tough-cookie": "^5.1.2",
     "uuid": "^9.0.0",
     "xml2js": "^0.6.2"
   },
@@ -51,6 +51,6 @@
     "@types/node": "^20.11.25",
     "@types/qs": "^6.9.14",
     "rimraf": "^5.0.5",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   }
 }
