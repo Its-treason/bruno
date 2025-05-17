@@ -97,7 +97,7 @@ export const AuthSelector: React.FC<AuthSelectorProps> = ({
         size="xs"
         w={rem(170)}
         data={showInherit ? selectDataWithInherit : selectData}
-        value={auth.mode}
+        value={auth.mode || 'none'}
         allowDeselect={false}
         onChange={onModeChange}
       />
