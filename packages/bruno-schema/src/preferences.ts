@@ -1,5 +1,20 @@
 import { z } from 'zod';
 
+export const hotkeysSchema = z.object({
+  save: z.string(),
+  sendRequest: z.string(),
+  editEnvironment: z.string(),
+  newRequest: z.string(),
+  closeTab: z.string(),
+  openPreferences: z.string(),
+  openCookies: z.string(),
+  minimizeWindow: z.string(),
+  switchToPreviousTab: z.string(),
+  switchToNextTab: z.string(),
+  closeAllTabs: z.string()
+});
+export type HotkeysSchema = z.infer<typeof hotkeysSchema>;
+
 export const preferencesSchema = z.object({
   request: z
     .object({
@@ -30,6 +45,7 @@ export const preferencesSchema = z.object({
       codeFontSize: z.number().min(8).max(32).default(14)
     })
     .default({} as any),
+  hotkeysOverwrite: hotkeysSchema.partial().default({}),
   proxy: z
     .object({
       mode: z.enum(['off', 'on', 'system']).default('system'),

@@ -1,15 +1,11 @@
-import React from 'react';
-import { Switch } from '@mantine/core';
-import { useLocalStorage } from '@mantine/hooks';
 import { uuid } from 'utils/common';
-import { IconFiles, IconRun, IconEye, IconSettings } from '@tabler/icons-react';
+import { IconFiles } from '@tabler/icons-react';
 import { EnvironmentSelector } from 'src/feature/environment-editor/components/EnvironmentSelector';
 import { addTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch, useSelector } from 'react-redux';
 import StyledWrapper from './StyledWrapper';
 import { findItemInCollection } from 'utils/collections';
 import { CollectionTabButtons } from './CollectionTabButtons';
-import { GlobalEnvironmentSelector } from 'src/feature/environment-editor';
 
 const CollectionToolBar = ({ collection, activeTabUid }) => {
   const dispatch = useDispatch();

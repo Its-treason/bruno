@@ -6,12 +6,13 @@ import { ActionIcon, Group, Text, Tooltip, rem } from '@mantine/core';
 import { IconSettings, IconCookie } from '@tabler/icons-react';
 import Cookies from 'components/Cookies';
 import { AppPreferencesDrawer } from 'feature/preferences';
-import React, { useState } from 'react';
+import React from 'react';
 import { GlobalEnvironmentSelector } from 'src/feature/environment-editor';
+import { appStore } from 'src/store/appStore';
+import { useStore } from 'zustand';
 
 export const BottomButtons: React.FC = () => {
-  const [cookiesOpen, setCookiesOpen] = useState(false);
-  const [preferencesOpen, setPreferencesOpen] = useState(false);
+  const { cookiesOpen, preferencesOpen, setCookiesOpen, setPreferencesOpen } = useStore(appStore);
 
   return (
     <Group

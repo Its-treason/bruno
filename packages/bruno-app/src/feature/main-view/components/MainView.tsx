@@ -9,6 +9,7 @@ import { Homepage } from 'src/feature/homepage';
 import { findItemInCollection } from 'utils/collections';
 import { MainContent } from './MainContent';
 import classes from './MainContent.module.scss';
+import { CollectionHotkeys } from './CollectionHotkeys';
 
 type ReduxStore = {
   tabs: {
@@ -52,6 +53,8 @@ export const MainView: React.FC = () => {
 
   return (
     <div className={classes.main}>
+      <CollectionHotkeys collection={collection} activeTab={focusedTab} item={item} tabs={tabs} />
+
       <CollectionToolBar activeTabUid={activeTabUid} collection={collection} />
 
       {!hideTabs ? <RequestTabs /> : null}

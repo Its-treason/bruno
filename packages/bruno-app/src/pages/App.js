@@ -79,9 +79,7 @@ export function App({ children }) {
           <Provider store={ReduxStore}>
             <ThemeProvider>
               <ToastProvider>
-                <AppProvider>
-                  <HotkeysProvider>{children}</HotkeysProvider>
-                </AppProvider>
+                <AppProvider>{children}</AppProvider>
               </ToastProvider>
             </ThemeProvider>
           </Provider>

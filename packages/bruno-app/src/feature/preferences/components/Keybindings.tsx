@@ -1,19 +1,19 @@
 import { Kbd, Table } from '@mantine/core';
-import { getKeyBindingsForOS } from 'providers/Hotkeys/keyMappings';
 import React, { ReactNode, useMemo } from 'react';
+import { defaultHotkeys, defaultHotkeysMac, hotkeyDisplayNames } from 'src/common/defaultHotkeys';
 import { isMacOS } from 'utils/common/platform';
 
 export const Keybindings: React.FC = () => {
-  const keyMapping = getKeyBindingsForOS(isMacOS() ? 'mac' : 'windows') as Record<
-    string,
-    { keys: string; name: string }
-  >;
+  const hotkeys = isMacOS() ? defaultHotkeysMac : defaultHotkeys;
 
   const bindings = useMemo(() => {
-    return Object.values(keyMapping).map(({ name, keys }) => {
-      return [name, keys.split('+').map((key) => <Kbd mr={'xs'}>{key}</Kbd>)] as ReactNode[];
+    return Object.keys(hotkeys).map((hotkeyKey) => {
+      return [
+        hotkeyDisplayNames[hotkeyKey],
+        hotkeys[hotkeyKey].split('+').map((key) => <Kbd mr={'xs'}>{key}</Kbd>) as ReactNode[]
+      ];
     });
-  }, [keyMapping]);
+  }, [hotkeys]);
 
   return (
     <Table
