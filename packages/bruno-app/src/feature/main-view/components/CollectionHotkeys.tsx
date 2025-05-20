@@ -51,7 +51,7 @@ export const CollectionHotkeys: React.FC<CollectionHotkeys> = ({ collection, act
             dispatch(saveCollectionRoot(collection.uid));
             break;
           case 'request':
-            dispatch(saveRequest(collection.uid, item.uid));
+            dispatch(saveRequest(item.uid, collection.uid));
             break;
         }
       }
