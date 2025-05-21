@@ -36,6 +36,11 @@ export const preferencesSchema = z.object({
       timeout: z.number().min(0).max(3_600_000).default(30_000)
     })
     .default({} as any),
+  display: z
+    .object({
+      hideTabs: z.boolean().default(false)
+    })
+    .default({} as any),
   font: z
     .object({
       codeFont: z

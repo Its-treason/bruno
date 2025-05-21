@@ -1,4 +1,4 @@
-import { Group, NumberInput, Radio, Stack, TextInput, Title } from '@mantine/core';
+import { Group, NumberInput, Radio, Stack, Switch, TextInput, Title } from '@mantine/core';
 import { UseFormReturnType } from '@mantine/form';
 import { Preferences } from '@usebruno/schema';
 import { useTheme } from 'providers/Theme';
@@ -20,6 +20,12 @@ export const DisplayPreferences: React.FC<DisplayPreferencesProps> = ({ form }) 
           <Radio value="system" label="System" />
         </Group>
       </Radio.Group>
+
+      <Switch
+        {...form.getInputProps('display.hideTabs', { type: 'checkbox' })}
+        label="Hide Tabs"
+        description="This will also increase the apps performance"
+      />
 
       <Stack mt={'md'}>
         <Title order={3}>Code editor</Title>
