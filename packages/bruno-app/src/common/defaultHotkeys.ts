@@ -7,7 +7,7 @@ export const defaultHotkeys: HotkeysSchema = {
   newRequest: 'ctrl+b',
   minimizeWindow: 'ctrl+shift+q',
   openPreferences: 'ctrl+,',
-  openCookies: 'ctrl+c',
+  openCookies: 'ctrl+alt+c',
 
   closeTab: 'ctrl+w',
   closeAllTabs: 'ctrl+shift+w',
@@ -16,18 +16,18 @@ export const defaultHotkeys: HotkeysSchema = {
 };
 
 export const defaultHotkeysMac: HotkeysSchema = {
-  save: 'command+s',
-  sendRequest: 'command+enter',
-  editEnvironment: 'command+e',
-  newRequest: 'command+b',
-  minimizeWindow: 'command+shift+q',
-  openPreferences: 'command+,',
-  openCookies: 'command+c',
+  save: 'mod+s',
+  sendRequest: 'mod+enter',
+  editEnvironment: 'mod+e',
+  newRequest: 'mod+b',
+  minimizeWindow: 'mod+shift+q',
+  openPreferences: 'mod+,',
+  openCookies: 'mod+alt+c',
 
-  closeTab: 'command+w',
-  closeAllTabs: 'command+shift+w',
-  switchToPreviousTab: 'command+pageup',
-  switchToNextTab: 'command+pagedown'
+  closeTab: 'mod+w',
+  closeAllTabs: 'mod+shift+w',
+  switchToPreviousTab: 'mod+pageup',
+  switchToNextTab: 'mod+pagedown'
 };
 
 export const hotkeyDisplayNames: HotkeysSchema = {

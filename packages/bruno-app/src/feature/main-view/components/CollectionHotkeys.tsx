@@ -11,7 +11,7 @@ import {
   sendRequest
 } from 'providers/ReduxStore/slices/collections/actions';
 import { closeTabs, switchTab } from 'providers/ReduxStore/slices/tabs';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { appStore } from 'src/store/appStore';
 import { useStore } from 'zustand';
