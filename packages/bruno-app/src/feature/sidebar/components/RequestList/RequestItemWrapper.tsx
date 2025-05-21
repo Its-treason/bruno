@@ -26,6 +26,7 @@ type RequestItemWrapperProps = {
   className?: string;
   active?: boolean;
   collapsed?: boolean;
+  toggleFolders?: boolean;
   style?: CSSProperties;
 };
 
@@ -38,6 +39,7 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
   className,
   active = false,
   collapsed = true,
+  toggleFolders,
   style
 }) => {
   const dispatch = useDispatch();
@@ -124,7 +126,7 @@ export const RequestItemWrapper: React.FC<RequestItemWrapperProps> = ({
       className={classes.box}
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      onClick={() => itemClicked(collectionUid, uid)}
+      onClick={() => itemClicked(collectionUid, uid, toggleFolders)}
       onContextMenu={() => setMenuOpened(!menuOpened)}
       onDoubleClick={() => {
         if (uid) {

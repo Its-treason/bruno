@@ -92,11 +92,44 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
     dispatch(shellOpenCollectionPath(collection.pathname, true, true));
   }, []);
 
-  const itemClicked = useCallback((collectionUid: string, itemUid?: string) => {
+  const openCollectionSettings = useCallback((collectionUid: string) => {
+    dispatch(
+      addTab({
+        uid: collectionUid,
+        collectionUid,
+        type: 'collection-settings'
+      })
+    );
+    dispatch(
+      focusTab({
+        uid: collectionUid
+      })
+    );
+  }, []);
+  const openFolderSettings = useCallback((collectionUid: string, folderUid: string) => {
+    dispatch(
+      addTab({
+        uid: folderUid,
+        collectionUid,
+        folderUid,
+        type: 'folder-settings'
+      })
+    );
+    dispatch(
+      focusTab({
+        uid: folderUid
+      })
+    );
+  }, []);
+  const itemClicked = useCallback((collectionUid: string, itemUid?: string, toggleFolders: boolean = true) => {
     const [collection, item] = getCollectionAndItem(collectionsRef.current, collectionUid, itemUid);
 
     if (!item) {
-      dispatch(collectionClicked(collection.uid));
+      if (toggleFolders) {
+        dispatch(collectionClicked(collection.uid));
+      } else {
+        openCollectionSettings(collection.uid);
+      }
 
       // TODO: This should happen on the collection open event
       // if collection doesn't have any active environment
@@ -135,36 +168,17 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
       dispatch(focusTab({ uid: item.uid }));
       return;
     }
-    dispatch(
-      collectionFolderClicked({
-        itemUid: item.uid,
-        collectionUid: collection.uid
-      })
-    );
-  }, []);
-  const openCollectionSettings = useCallback((collectionUid: string) => {
-    dispatch(
-      addTab({
-        uid: uuid(),
-        collectionUid,
-        type: 'collection-settings'
-      })
-    );
-  }, []);
-  const openFolderSettings = useCallback((collectionUid: string, folderUid: string) => {
-    dispatch(
-      addTab({
-        uid: folderUid,
-        collectionUid,
-        folderUid,
-        type: 'folder-settings'
-      })
-    );
-    dispatch(
-      focusTab({
-        uid: folderUid
-      })
-    );
+
+    if (toggleFolders) {
+      dispatch(
+        collectionFolderClicked({
+          itemUid: item.uid,
+          collectionUid: collection.uid
+        })
+      );
+    } else {
+      openFolderSettings(collection.uid, item.uid);
+    }
   }, []);
   const openRunner = useCallback((collectionUid: string, itemUid?: string) => {
     dispatch(

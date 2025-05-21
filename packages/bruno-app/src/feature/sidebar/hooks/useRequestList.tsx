@@ -82,7 +82,8 @@ export const useRequestList = (): RequestListItem[] => {
                 name: requestItem.name,
                 uid: requestItem.uid,
                 parentUid,
-                collapsed
+                collapsed,
+                active: activeTabUid === requestItem.uid
               });
               newItems.push(...folderItems);
             }
@@ -100,7 +101,8 @@ export const useRequestList = (): RequestListItem[] => {
         type: 'collection',
         collapsed: collection.collapsed,
         name: collection.name,
-        uid: collection.uid
+        uid: collection.uid,
+        active: activeTabUid === collection.uid
       });
 
       const filter = collectionFilter.trim().length > 0 ? collectionFilter.toLowerCase() : null;
