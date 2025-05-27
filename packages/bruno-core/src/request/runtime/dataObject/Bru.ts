@@ -28,6 +28,10 @@ export class Bru {
     return this[ctx].collection.pathname;
   }
 
+  getCollectionName(): string {
+    return this[ctx].collection.name;
+  }
+
   getEnvName() {
     return this[ctx].environmentName;
   }
