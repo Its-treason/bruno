@@ -123,7 +123,7 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
         }
         switch (item.type) {
           case 'text':
-            formData.append(item.name, item.value);
+            formData.append(item.name, item.value, { contentType: item.contentType });
             break;
           case 'file':
             for (let targetPath of item.value) {
@@ -132,14 +132,9 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
                 targetPath = path.join(collectionPath, targetPath);
               }
 
-              let contentType;
-              if (item.contentType) {
-                contentType = item.contentType;
-              }
-
               const filename = path.basename(targetPath);
               const fileData = await fs.readFile(targetPath);
-              formData.append(item.name, fileData, { filename, contentType });
+              formData.append(item.name, fileData, { filename, contentType: item.contentType });
             }
             break;
         }
