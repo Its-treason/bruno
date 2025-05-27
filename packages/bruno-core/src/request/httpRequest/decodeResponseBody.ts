@@ -39,4 +39,6 @@ export async function decodeServerResponse(response: HttpRequestInfo): Promise<s
 
       return 'msgpack';
   }
+
+  return null;
 }
