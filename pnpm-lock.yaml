@@ -387,6 +387,9 @@ importers:
 
   packages/bruno-core:
     dependencies:
+      '@msgpack/msgpack':
+        specifier: ^3.1.1
+        version: 3.1.2
       '@readme/httpsnippet':
         specifier: ^11.0.0
         version: 11.0.0
@@ -2380,6 +2383,11 @@ packages:
       monaco-editor: '>= 0.25.0 < 1'
       react: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
       react-dom: ^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
+
+  '@msgpack/msgpack@3.1.2':
+    resolution:
+      { integrity: sha512-JEW4DEtBzfe8HvUYecLU9e6+XJnKDlUAIve8FvPzF3Kzs6Xo/KuZkZJsDH0wJXl/qEZbeeE7edxDNY3kMs39hQ== }
+    engines: { node: '>= 18' }
 
   '@n1ru4l/push-pull-async-iterable-iterator@3.2.0':
     resolution:
@@ -12456,6 +12464,8 @@ snapshots:
       monaco-editor: 0.50.0
       react: 19.1.0
       react-dom: 19.1.0(react@19.1.0)
+
+  '@msgpack/msgpack@3.1.2': {}
 
   '@n1ru4l/push-pull-async-iterable-iterator@3.2.0': {}
 

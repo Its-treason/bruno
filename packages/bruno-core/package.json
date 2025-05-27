@@ -17,6 +17,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@msgpack/msgpack": "^3.1.1",
     "@usebruno/common": "workspace:*",
     "@usebruno/schema": "workspace:*",
     "@usebruno/query": "workspace:*",

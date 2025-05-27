@@ -37,6 +37,7 @@ function determinePreviewByHeader(
     switch (true) {
       case contentType.includes('application/json'):
       case contentType.includes('application/ld+json'):
+      case contentType.includes('msgpack'): // Is Decoded inside `decodeResponseBody` to JSON
         return { pretty: 'json', preview: null };
       case contentType.includes('text/html'):
       case contentType.includes('application/xhtml+xml'):
