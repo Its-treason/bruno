@@ -15,7 +15,7 @@ import { CookieJar } from 'tough-cookie';
 import { readResponseBodyAsync } from './runtime/utils';
 import { collectFolderData } from './preRequest/collectFolderData';
 import { applyOAuth2 } from './preRequest/OAuth2/applyOAuth2';
-import { determinePreviewType } from './preRequest/determinePreviewMode';
+import { determinePreviewType } from './postRequest/determinePreviewMode';
 import { randomUUID } from 'crypto';
 import { VariablesContext } from './dataObject/VariablesContext';
 import { RunnerContext } from './dataObject/RunnerContext';
