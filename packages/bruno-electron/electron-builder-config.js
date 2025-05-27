@@ -36,7 +36,7 @@ const config = {
   },
   win: {
     target: ['nsis', 'portable'],
-    artifactName: 'bruno-lazer_nightly_${arch}_win.${ext}',
+    artifactName: 'bruno-lazer_nightly_${arch}_${target}_win.${ext}',
     icon: 'resources/icons/png'
   },
   nsis: {
