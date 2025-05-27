@@ -84,6 +84,18 @@ export const requestBodySchema = z.discriminatedUnion('mode', [
       mode: z.literal('sparql'),
       sparql: z.string().default('')
     })
+    .passthrough(),
+  z
+    .object({
+      mode: z.literal('file'),
+      file: z.array(
+        z.object({
+          contentType: z.string(),
+          filePath: z.string(),
+          selected: z.boolean()
+        })
+      )
+    })
     .passthrough()
 ]);
 export type RequestBodySchema = z.infer<typeof requestBodySchema>;

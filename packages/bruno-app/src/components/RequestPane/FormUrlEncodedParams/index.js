@@ -15,7 +15,6 @@ import StyledWrapper from './StyledWrapper';
 
 const FormUrlEncodedParams = ({ item, collection }) => {
   const dispatch = useDispatch();
-  const { storedTheme } = useTheme();
   const params = item.draft ? get(item, 'draft.request.body.formUrlEncoded') : get(item, 'request.body.formUrlEncoded');
 
   const addParam = () => {

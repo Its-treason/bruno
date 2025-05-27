@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import get from 'lodash/get';
 import FormUrlEncodedParams from 'components/RequestPane/FormUrlEncodedParams';
 import MultipartFormParams from 'components/RequestPane/MultipartFormParams';
@@ -8,6 +8,7 @@ import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collection
 import CodeEditor from 'components/CodeEditor';
 import { Text } from '@mantine/core';
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
+import { TextBodyEditor } from './editors/TextBodyEditor';
 
 type BodyEditorProps = {
   item: RequestItemSchema;
@@ -19,39 +20,20 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({ item, collection }) => {
   const body = item.draft ? get(item, 'draft.request.body') : get(item, 'request.body');
   const bodyMode = item.draft ? get(item, 'draft.request.body.mode') : get(item, 'request.body.mode');
 
+  const onRun = useCallback(() => {}, []);
+
   switch (bodyMode) {
     case 'json':
     case 'xml':
     case 'text':
     case 'sparql':
-      const onEdit = (value) => {
-        dispatch(
-          updateRequestBody({
-            content: value,
-            itemUid: item.uid,
-            collectionUid: collection.uid
-          })
-        );
-      };
-
-      const onRun = () => dispatch(sendRequest(item, collection.uid));
-      const onSave = () => dispatch(saveRequest(item.uid, collection.uid));
-
-      return (
-        <CodeEditor
-          value={(body[bodyMode] as string) || ''}
-          onChange={onEdit}
-          onRun={onRun}
-          onSave={onSave}
-          mode={bodyMode}
-          height={'100%'}
-          withVariables
-        />
-      );
+      return <TextBodyEditor collectionUid={collection.uid} item={item} />;
     case 'formUrlEncoded':
       return <FormUrlEncodedParams item={item} collection={collection} />;
     case 'multipartForm':
       return <MultipartFormParams item={item} collection={collection} />;
+    case 'file':
+      return 'file fun';
     default:
       return <Text ta={'center'}>No body</Text>;
   }
