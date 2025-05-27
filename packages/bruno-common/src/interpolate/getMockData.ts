@@ -5,9 +5,9 @@ export function getMockData(placeholder: string) {
     case '$guid':
       return faker.string.uuid();
     case '$timestamp':
-      return faker.date.anytime().getTime().toString();
+      return Math.floor(Date.now() / 1000).toString();
     case '$isoTimestamp':
-      return faker.date.anytime().toISOString();
+      return new Date().toISOString();
     case '$randomUUID':
       return faker.string.uuid();
     case '$randomAlphaNumeric':
