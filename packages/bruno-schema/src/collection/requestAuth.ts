@@ -29,23 +29,39 @@ export type DigestAuthSchema = z.infer<typeof digestAuthSchema>;
 
 export const passwordGrantSchema = z.object({
   grantType: z.literal('password'),
+  accessTokenUrl: z.string().default(''),
+  refreshTokenUrl: z.string().default(''),
   username: z.string().default(''),
   password: z.string().default(''),
-  accessTokenUrl: z.string().default(''),
   clientId: z.string().default(''),
   clientSecret: z.string().default(''),
-  scope: z.string().default('')
+  scope: z.string().default(''),
+
+  credentialsPlacement: z.string().default('body'),
+  credentialsId: z.string().default('credentials'),
+  tokenPlacement: z.string().default('header'),
+  tokenHeaderPrefix: z.string().default('Bearer'),
+  tokenQueryKey: z.string().default('access_token'),
+  autoFetchToken: z.boolean().default(true),
+  autoRefreshToke: z.boolean().default(false)
 });
 export type PasswordGrantSchema = z.infer<typeof passwordGrantSchema>;
 
 export const clientCredentialsGrantSchema = z.object({
   grantType: z.literal('client_credentials'),
-  username: z.string().default(''),
-  password: z.string().default(''),
   accessTokenUrl: z.string().default(''),
+  refreshTokenUrl: z.string().default(''),
   clientId: z.string().default(''),
   clientSecret: z.string().default(''),
-  scope: z.string().default('')
+  scope: z.string().default(''),
+
+  credentialsPlacement: z.string().default('body'),
+  credentialsId: z.string().default('credentials'),
+  tokenPlacement: z.string().default('header'),
+  tokenHeaderPrefix: z.string().default('Bearer'),
+  tokenQueryKey: z.string().default('access_token'),
+  autoFetchToken: z.boolean().default(true),
+  autoRefreshToke: z.boolean().default(false)
 });
 export type ClientCredentialsGrantSchema = z.infer<typeof clientCredentialsGrantSchema>;
 
@@ -54,11 +70,20 @@ export const authorizationCodeGrantSchema = z.object({
   callbackUrl: z.string().default(''),
   authorizationUrl: z.string().default(''),
   accessTokenUrl: z.string().default(''),
+  refreshTokenUrl: z.string().default(''),
   clientId: z.string().default(''),
   clientSecret: z.string().default(''),
   scope: z.string().default(''),
   state: z.string().default(''),
-  pkce: z.boolean().default(false)
+  pkce: z.boolean().default(false),
+
+  credentialsPlacement: z.string().default('body'),
+  credentialsId: z.string().default('credentials'),
+  tokenPlacement: z.string().default('header'),
+  tokenHeaderPrefix: z.string().default('Bearer'),
+  tokenQueryKey: z.string().default('access_token'),
+  autoFetchToken: z.boolean().default(true),
+  autoRefreshToke: z.boolean().default(false)
 });
 export type AuthorizationCodeGrantSchema = z.infer<typeof authorizationCodeGrantSchema>;
 

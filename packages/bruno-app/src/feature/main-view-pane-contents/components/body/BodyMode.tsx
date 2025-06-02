@@ -1,13 +1,18 @@
 import get from 'lodash/get';
-import { IconWand } from '@tabler/icons-react';
+import { IconPlus, IconWand } from '@tabler/icons-react';
 import { useDispatch } from 'react-redux';
-import { updateRequestBodyMode } from 'providers/ReduxStore/slices/collections';
+import {
+  addFormUrlEncodedParam,
+  addMultipartFormParam,
+  updateRequestBodyMode
+} from 'providers/ReduxStore/slices/collections';
 import { updateRequestBody } from 'providers/ReduxStore/slices/collections/index';
 import { toastError } from 'utils/common/error';
 import { format, applyEdits } from 'jsonc-parser';
 import xmlFormat from 'xml-formatter';
 import { Button, Group, rem, Select } from '@mantine/core';
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
+import { useCallback } from 'react';
 
 const bodyModeSelectData = [
   {
@@ -24,7 +29,8 @@ const bodyModeSelectData = [
       { value: 'json', label: 'JSON' },
       { value: 'xml', label: 'XML' },
       { value: 'sparql', label: 'SPARQL' },
-      { value: 'text', label: 'Text' }
+      { value: 'text', label: 'Text' },
+      { value: 'file', label: 'File' }
     ]
   },
 
@@ -41,17 +47,20 @@ export const BodyMode: React.FC<BodyModeProps> = ({ item, collection }) => {
   const body = item.draft ? get(item, 'draft.request.body') : get(item, 'request.body');
   const bodyMode = body?.mode;
 
-  const onModeChange = (value) => {
-    dispatch(
-      updateRequestBodyMode({
-        itemUid: item.uid,
-        collectionUid: collection.uid,
-        mode: value
-      })
-    );
-  };
+  const onModeChange = useCallback(
+    (value) => {
+      dispatch(
+        updateRequestBodyMode({
+          itemUid: item.uid,
+          collectionUid: collection.uid,
+          mode: value
+        })
+      );
+    },
+    [item.uid, collection.uid]
+  );
 
-  const onPrettify = () => {
+  const onPrettify = useCallback(() => {
     if (body?.json && bodyMode === 'json') {
       try {
         const edits = format(body.json, undefined, { tabSize: 2, insertSpaces: true });
@@ -80,7 +89,7 @@ export const BodyMode: React.FC<BodyModeProps> = ({ item, collection }) => {
         toastError(new Error('Unable to prettify. Invalid XML format.'));
       }
     }
-  };
+  }, [item.uid, body]);
 
   return (
     <Group justify="space-between">

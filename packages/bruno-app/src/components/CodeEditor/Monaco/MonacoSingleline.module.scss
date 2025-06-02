@@ -5,8 +5,9 @@
 .paper {
   height: fit-content; /* Monaco will auto set the height */
   width: 100%;
+  position: relative;
   min-width: 0;
-  // This ensures corrent shrinking / expanding https://github.com/microsoft/monaco-editor/issues/3393
+  // This ensures correct shrinking / expanding https://github.com/microsoft/monaco-editor/issues/3393
   display: grid;
   grid-template-columns: minmax(0px, auto);
   grid-template-rows: 100%;
@@ -27,15 +28,26 @@
 
 .paperHidden {
   width: 100%;
+  position: relative;
   height: fit-content; /* Monaco will auto set the height */
   min-width: 0;
 
   background-color: transparent !important;
 
-  // This ensures corrent shrinking / expanding https://github.com/microsoft/monaco-editor/issues/3393
+  // This ensures correct shrinking / expanding https://github.com/microsoft/monaco-editor/issues/3393
   display: grid;
   grid-template-columns: minmax(0px, auto);
   grid-template-rows: 100%;
+}
+
+.placeholder {
+  position: absolute;
+  width: 100%;
+  color: var(--mantine-color-dimmed);
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  padding: calc(var(--mantine-spacing-xs) - 2px);
 }
 
 .editor {
