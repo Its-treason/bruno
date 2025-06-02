@@ -355,8 +355,9 @@ ${indentString(body.sparql)}
   }
 
   if (body && body.file && body.file.length) {
+    const files = body.file;
+
     bru += `body:file {`;
-    const files = enabled(body.file, 'selected').concat(disabled(body.file, 'selected'));
 
     if (files.length) {
       bru += `\n${indentString(

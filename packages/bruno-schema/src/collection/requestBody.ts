@@ -37,6 +37,14 @@ export const graphqlBodySchema = z.object({
 });
 export type GraphqlBodySchema = z.infer<typeof graphqlBodySchema>;
 
+export const fileBodySchema = z.object({
+  uid: z.string(),
+  contentType: z.string(),
+  filePath: z.string(),
+  selected: z.boolean()
+});
+export type FileBodySchema = z.infer<typeof fileBodySchema>;
+
 export const requestBodySchema = z.discriminatedUnion('mode', [
   z
     .object({
@@ -88,13 +96,7 @@ export const requestBodySchema = z.discriminatedUnion('mode', [
   z
     .object({
       mode: z.literal('file'),
-      file: z.array(
-        z.object({
-          contentType: z.string(),
-          filePath: z.string(),
-          selected: z.boolean()
-        })
-      )
+      file: z.array(fileBodySchema)
     })
     .passthrough()
 ]);

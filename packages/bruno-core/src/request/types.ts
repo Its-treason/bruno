@@ -61,6 +61,15 @@ export type RequestBody =
       }[];
     }
   | {
+      mode: 'file';
+      file: {
+        filePath: string;
+        contentType: string;
+        selected: boolean;
+        uid: string;
+      }[];
+    }
+  | {
       mode: 'xml';
       xml: string;
     }

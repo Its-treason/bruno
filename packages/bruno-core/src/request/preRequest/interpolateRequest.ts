@@ -106,29 +106,42 @@ function interpolateAuth(context: RequestContext, i: InterpolationShorthandFunct
     case 'oauth2':
       switch (auth.oauth2.grantType) {
         case 'authorization_code':
+          auth.oauth2.callbackUrl = i(auth.oauth2.callbackUrl, 'OAuth2 Callback URL');
+          auth.oauth2.authorizationUrl = i(auth.oauth2.authorizationUrl, 'OAuth2 Authorization URL');
           auth.oauth2.accessTokenUrl = i(auth.oauth2.accessTokenUrl, 'OAuth2 Access Token Url');
-          auth.oauth2.authorizationUrl = i(auth.oauth2.authorizationUrl, 'OAuth2 Authorization Url');
-          auth.oauth2.callbackUrl = i(auth.oauth2.callbackUrl, 'OAuth2 Callback Url');
-          auth.oauth2.clientId = i(auth.oauth2.clientId, 'OAuth2 Client Id');
-          auth.oauth2.clientSecret = i(auth.oauth2.clientSecret, 'OAuth2 Client secret');
+          auth.oauth2.refreshTokenUrl = i(auth.oauth2.refreshTokenUrl, 'OAuth2 Refresh Token Url');
+          auth.oauth2.clientId = i(auth.oauth2.clientId, 'OAuth2 ClientId');
+          auth.oauth2.clientSecret = i(auth.oauth2.clientSecret, 'OAuth2 Client Secret');
           auth.oauth2.scope = i(auth.oauth2.scope, 'OAuth2 Scope');
           auth.oauth2.state = i(auth.oauth2.state, 'OAuth2 State');
+
+          auth.oauth2.credentialsId = i(auth.oauth2.credentialsId, 'OAuth2 CredentialsId');
+          auth.oauth2.tokenHeaderPrefix = i(auth.oauth2.tokenHeaderPrefix, 'OAuth2 Token Header Prefix');
+          auth.oauth2.tokenQueryKey = i(auth.oauth2.tokenQueryKey, 'OAuth2 Token Query Key');
           break;
         case 'client_credentials':
           auth.oauth2.accessTokenUrl = i(auth.oauth2.accessTokenUrl, 'OAuth2 Access Token Url');
-          auth.oauth2.clientId = i(auth.oauth2.clientId, 'OAuth2 Client Id');
-          auth.oauth2.clientSecret = i(auth.oauth2.clientSecret, 'OAuth2 Client secret');
-          auth.oauth2.password = i(auth.oauth2.password, 'OAuth2 Password');
-          auth.oauth2.username = i(auth.oauth2.username, 'OAuth2 Username');
+          auth.oauth2.refreshTokenUrl = i(auth.oauth2.refreshTokenUrl, 'OAuth2 Refresh Token Url');
+          auth.oauth2.clientId = i(auth.oauth2.clientId, 'OAuth2 ClientId');
+          auth.oauth2.clientSecret = i(auth.oauth2.clientSecret, 'OAuth2 Client Secret');
           auth.oauth2.scope = i(auth.oauth2.scope, 'OAuth2 Scope');
+
+          auth.oauth2.credentialsId = i(auth.oauth2.credentialsId, 'OAuth2 CredentialsId');
+          auth.oauth2.tokenHeaderPrefix = i(auth.oauth2.tokenHeaderPrefix, 'OAuth2 Token Header Prefix');
+          auth.oauth2.tokenQueryKey = i(auth.oauth2.tokenQueryKey, 'OAuth2 Token Query Key');
           break;
         case 'password':
           auth.oauth2.accessTokenUrl = i(auth.oauth2.accessTokenUrl, 'OAuth2 Access Token Url');
-          auth.oauth2.clientId = i(auth.oauth2.clientId, 'OAuth2 Client Id');
-          auth.oauth2.clientSecret = i(auth.oauth2.clientSecret, 'OAuth2 Client Secret');
-          auth.oauth2.password = i(auth.oauth2.password, 'OAuth2 Password');
+          auth.oauth2.refreshTokenUrl = i(auth.oauth2.refreshTokenUrl, 'OAuth2 Refresh Token Url');
           auth.oauth2.username = i(auth.oauth2.username, 'OAuth2 Username');
+          auth.oauth2.password = i(auth.oauth2.password, 'OAuth2 Password');
+          auth.oauth2.clientId = i(auth.oauth2.clientId, 'OAuth2 ClientId');
+          auth.oauth2.clientSecret = i(auth.oauth2.clientSecret, 'OAuth2 Client Secret');
           auth.oauth2.scope = i(auth.oauth2.scope, 'OAuth2 Scope');
+
+          auth.oauth2.credentialsId = i(auth.oauth2.credentialsId, 'OAuth2 CredentialsId');
+          auth.oauth2.tokenHeaderPrefix = i(auth.oauth2.tokenHeaderPrefix, 'OAuth2 Token Header Prefix');
+          auth.oauth2.tokenQueryKey = i(auth.oauth2.tokenQueryKey, 'OAuth2 Token Query Key');
           break;
       }
   }
@@ -175,6 +188,15 @@ function interpolateBody(context: RequestContext, i: InterpolationShorthandFunct
         pos++;
         item.value = i(item.value, `Form field value #${pos}`);
         item.name = i(item.name, `Form field name #${pos}`);
+      }
+      break;
+    }
+    case 'file': {
+      let pos = 0;
+      for (const item of body.file) {
+        pos++;
+        item.filePath = i(item.filePath, `FilePath at #${pos}`);
+        item.contentType = i(item.contentType, `Content-Type at #${pos}`);
       }
       break;
     }

@@ -36,6 +36,7 @@ export const passwordGrantSchema = z.object({
   clientId: z.string().default(''),
   clientSecret: z.string().default(''),
   scope: z.string().default(''),
+
   credentialsPlacement: z.string().default('body'),
   credentialsId: z.string().default('credentials'),
   tokenPlacement: z.string().default('header'),

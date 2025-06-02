@@ -64,6 +64,7 @@ const bodyContentTypeMap: Record<RequestBody['mode'], string | undefined> = {
   xml: 'application/xml',
   text: 'text/plain',
   sparql: 'application/sparql-query',
+  file: undefined,
   none: undefined
 };
 
@@ -171,6 +172,23 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
       break;
     case 'sparql':
       bodyData = body.sparql;
+      break;
+    case 'file':
+      for (const file of body.file) {
+        if (!file.selected) {
+          continue;
+        }
+
+        bodyData = await fs.readFile(file.filePath);
+        if (file.contentType) {
+          extraHeaders['content-type'] = file.contentType;
+        }
+      }
+
+      if (bodyData === undefined) {
+        throw new Error('No file was selected in request body');
+      }
+
       break;
     case 'none':
       bodyData = undefined;

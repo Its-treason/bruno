@@ -91,110 +91,28 @@ export const BodyMode: React.FC<BodyModeProps> = ({ item, collection }) => {
     }
   }, [item.uid, body]);
 
-  const onAddFormUrlParam = useCallback(() => {
-    dispatch(
-      addFormUrlEncodedParam({
-        itemUid: item.uid,
-        collectionUid: collection.uid
-      })
-    );
-  }, [dispatch, item.uid]);
-
-  const onAddMultipartFormParam = useCallback(() => {
-    dispatch(
-      addMultipartFormParam({
-        itemUid: item.uid,
-        collectionUid: collection.uid,
-        type: 'text',
-        value: ''
-      })
-    );
-  }, [item.uid, dispatch]);
-
-  const onAddMultipartFormFile = useCallback(() => {
-    dispatch(
-      addMultipartFormParam({
-        itemUid: item.uid,
-        collectionUid: collection.uid,
-        type: 'file',
-        value: []
-      })
-    );
-  }, [item.uid, dispatch]);
-
-  const onAddFile = useCallback(() => {
-    alert('todo');
-  }, [item.uid, dispatch]);
-
   return (
     <Group justify="space-between">
-      <Group>
-        <Select
-          size="xs"
-          w={rem(170)}
-          value={bodyMode}
-          onChange={(newBodyMode) => onModeChange(newBodyMode)}
-          data={bodyModeSelectData}
-          maxDropdownHeight={300}
-          allowDeselect={false}
-        />
+      <Select
+        size="xs"
+        w={rem(170)}
+        value={bodyMode}
+        onChange={(newBodyMode) => onModeChange(newBodyMode)}
+        data={bodyModeSelectData}
+        maxDropdownHeight={300}
+        allowDeselect={false}
+      />
 
-        {bodyMode === 'formUrlEncoded' ? (
-          <Button
-            variant="subtle"
-            onClick={onAddFormUrlParam}
-            leftSection={<IconPlus style={{ width: rem(18) }} />}
-            size="compact-md"
-          >
-            Add parameter
-          </Button>
-        ) : null}
-
-        {bodyMode === 'multipartForm' ? (
-          <>
-            <Button
-              variant="subtle"
-              onClick={onAddMultipartFormParam}
-              leftSection={<IconPlus style={{ width: rem(18) }} />}
-              size="compact-md"
-            >
-              Add parameter
-            </Button>
-            <Button
-              variant="subtle"
-              onClick={onAddMultipartFormFile}
-              leftSection={<IconPlus style={{ width: rem(18) }} />}
-              size="compact-md"
-            >
-              Add file
-            </Button>
-          </>
-        ) : null}
-
-        {bodyMode === 'file' ? (
-          <Button
-            variant="subtle"
-            onClick={onAddFile}
-            leftSection={<IconPlus style={{ width: rem(18) }} />}
-            size="compact-md"
-          >
-            Add file
-          </Button>
-        ) : null}
-      </Group>
-
-      <Group justify="flex-end">
-        {bodyMode === 'json' || bodyMode === 'xml' ? (
-          <Button
-            variant="subtle"
-            onClick={onPrettify}
-            leftSection={<IconWand style={{ width: rem(18) }} />}
-            size="compact-md"
-          >
-            Format body
-          </Button>
-        ) : null}
-      </Group>
+      {bodyMode === 'json' || bodyMode === 'xml' ? (
+        <Button
+          variant="subtle"
+          onClick={onPrettify}
+          leftSection={<IconWand style={{ width: rem(18) }} />}
+          size="compact-md"
+        >
+          Format body
+        </Button>
+      ) : null}
     </Group>
   );
 };

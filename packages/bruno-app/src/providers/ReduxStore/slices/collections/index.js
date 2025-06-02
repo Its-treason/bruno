@@ -18,7 +18,6 @@ import {
 import { parsePathParams, parseQueryParams, splitOnFirst, stringifyQueryParams } from 'utils/url';
 import { getDirectoryName, getSubdirectoriesFromRoot, PATH_SEPARATOR } from 'utils/common/platform';
 import toast from 'react-hot-toast';
-import { StatTimer } from 'pdfjs-dist/types/src/display/display_utils';
 
 const initialState = {
   collections: [],
@@ -645,7 +644,8 @@ export const collectionsSlice = createSlice({
             name: '',
             value: '',
             description: '',
-            enabled: true
+            enabled: true,
+            ...(action.payload.default ?? {})
           });
         }
       }
@@ -700,12 +700,13 @@ export const collectionsSlice = createSlice({
           item.draft.request.body.multipartForm = item.draft.request.body.multipartForm || [];
           item.draft.request.body.multipartForm.push({
             uid: uuid(),
-            type: action.payload.type,
+            type: 'text',
             name: '',
-            value: action.payload.value,
+            value: '',
             description: '',
             contentType: '',
-            enabled: true
+            enabled: true,
+            ...action.payload.default
           });
         }
       }
@@ -748,6 +749,72 @@ export const collectionsSlice = createSlice({
           );
         }
       }
+    },
+    addFile: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+
+      if (collection) {
+        const item = findItemInCollection(collection, action.payload.itemUid);
+
+        if (item && isItemARequest(item)) {
+          if (!item.draft) {
+            item.draft = cloneDeep(item);
+          }
+          item.draft.request.body.file.push({
+            uid: uuid(),
+            contentType: '',
+            filePath: '',
+            selected: false,
+            ...(action.payload.default ?? {})
+          });
+        }
+      }
+    },
+    updateFile: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      if (!collection) {
+        return;
+      }
+
+      const item = findItemInCollection(collection, action.payload.itemUid);
+      if (!item || !isItemARequest(item) || item.request.body.mode !== 'file') {
+        return;
+      }
+
+      if (!item.draft) {
+        item.draft = cloneDeep(item);
+      }
+
+      const file = find(item.draft.request.body.file, (p) => p.uid === action.payload.file.uid);
+      if (file) {
+        file.contentType = action.payload.file.contentType;
+        file.filePath = action.payload.file.filePath;
+        file.selected = action.payload.file.selected;
+
+        if (file.selected) {
+          item.draft.request.body.file.forEach((file) => {
+            if (file.uid !== action.payload.file.uid) {
+              file.selected = false;
+            }
+          });
+        }
+      }
+    },
+    deleteFile: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      if (!collection) {
+        return;
+      }
+
+      const item = findItemInCollection(collection, action.payload.itemUid);
+      if (!item || !isItemARequest(item) || item.request.body.mode !== 'file') {
+        return;
+      }
+
+      if (!item.draft) {
+        item.draft = cloneDeep(item);
+      }
+      item.draft.request.body.file = filter(item.draft.request.body.file, (p) => p.uid !== action.payload.uid);
     },
     updateRequestAuthMode: (state, action) => {
       const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
@@ -1591,6 +1658,9 @@ export const {
   addMultipartFormParam,
   updateMultipartFormParam,
   deleteMultipartFormParam,
+  addFile,
+  updateFile,
+  deleteFile,
   updateRequestAuthMode,
   updateRequestBodyMode,
   updateRequestBody,

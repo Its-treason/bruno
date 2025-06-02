@@ -1,10 +1,10 @@
 import { Anchor, TextInput, TextInputProps, rem } from '@mantine/core';
-import React, { ChangeEvent, useCallback, useRef } from 'react';
+import React, { useCallback, useRef } from 'react';
 import toast from 'react-hot-toast';
 import { ShowFileDialogFilter, ShowFileDialogProperties, showOpenDialog } from 'utils/ipcWrapper';
 
 type FilePickerProps = Omit<TextInputProps, 'rightSection' | 'rightSectionPointerEvents' | 'onChange'> & {
-  onChange: (change: ChangeEvent | string) => void;
+  onChange: (change: string) => void;
   properties: ShowFileDialogProperties;
   filters: ShowFileDialogFilter[];
 };
@@ -32,6 +32,9 @@ export const FilePicker: React.FC<FilePickerProps> = (props) => {
   return (
     <TextInput
       {...props}
+      onChange={(evt) => {
+        props.onChange(evt.currentTarget.value);
+      }}
       ref={inputRef}
       rightSection={
         <Anchor size="sm" onClick={onBrowse}>

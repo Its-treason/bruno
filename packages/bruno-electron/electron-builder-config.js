@@ -35,8 +35,8 @@ const config = {
     target: ['AppImage', 'deb', 'snap', 'rpm']
   },
   win: {
-    target: ['nsis', 'portable'],
-    artifactName: 'bruno-lazer_nightly_${arch}_${target}_win.${ext}',
+    target: ['nsis'],
+    artifactName: 'bruno-lazer_nightly_${arch}_win.${ext}',
     icon: 'resources/icons/png'
   },
   nsis: {

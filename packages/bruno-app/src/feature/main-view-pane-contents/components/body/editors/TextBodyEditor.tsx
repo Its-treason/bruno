@@ -1,7 +1,5 @@
-import { RequestItemSchema } from '@usebruno/schema';
 import CodeEditor from 'components/CodeEditor';
 import { updateRequestBody } from 'providers/ReduxStore/slices/collections';
-import { sendRequest, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import { useCallback } from 'react';
 import { useDispatch } from 'react-redux';
 
