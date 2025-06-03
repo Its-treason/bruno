@@ -93,6 +93,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
   }, []);
 
   const openCollectionSettings = useCallback((collectionUid: string) => {
+    dispatch(hideHomePage());
     dispatch(
       addTab({
         uid: collectionUid,
@@ -107,6 +108,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
     );
   }, []);
   const openFolderSettings = useCallback((collectionUid: string, folderUid: string) => {
+    dispatch(hideHomePage());
     dispatch(
       addTab({
         uid: folderUid,
@@ -181,6 +183,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
     }
   }, []);
   const openRunner = useCallback((collectionUid: string, itemUid?: string) => {
+    dispatch(hideHomePage());
     dispatch(
       addTab({
         uid: uuid(),
