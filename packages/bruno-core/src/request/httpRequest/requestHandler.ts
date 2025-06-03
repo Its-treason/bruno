@@ -9,6 +9,7 @@ import { CookieJar } from 'tough-cookie';
 import { URL } from 'node:url';
 import { decodeServerResponse } from './decodeResponseBody';
 import { DebugLogger } from '../dataObject/DebugLogger';
+import { BrunoRequestError } from '../dataObject/Errors';
 
 export async function makeHttpRequest(context: RequestContext) {
   if (context.timeline === undefined) {
@@ -215,7 +216,7 @@ async function storeCookies(
 
 async function handleFinalResponse(response: HttpRequestInfo, context: RequestContext) {
   if (response.error || response.statusCode === undefined) {
-    throw new Error(response.error || 'Server did not return a response');
+    throw new BrunoRequestError(response.error || 'Server did not return a response');
   }
 
   const targetPath = join(context.dataDir, context.uid);

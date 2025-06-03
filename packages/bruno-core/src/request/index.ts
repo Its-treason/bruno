@@ -67,7 +67,7 @@ export async function request(
     return await doRequest(context);
   } catch (error) {
     context.error = error instanceof Error ? error : new Error(String(error));
-    context.callback.responseError(context, context.error.message);
+    context.callback.responseError(context, `${context.error.name}: ${context.error.message}`);
   } finally {
     context.timings.stopAll();
   }

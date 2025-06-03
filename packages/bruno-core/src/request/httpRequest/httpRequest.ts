@@ -49,6 +49,9 @@ export async function execHttpRequest(
     );
   } catch (error) {
     requestInfo.error = String(error);
+    if (error instanceof Error) {
+      requestInfo.error = error.name === 'Error' ? error.message : `${error.name}: ${error.message}`;
+    }
   }
   requestInfo.responseTime = Math.round(performance.now() - startTime);
 
@@ -197,10 +200,10 @@ async function makeHttp1Request(info: HttpRequestInfo, options: BrunoRequestOpti
   });
 
   req.on('error', (err) => {
-    info.error = String(err);
+    info.error = err.name === 'Error' ? err.message : `${err.name}: ${err.message}`;
     if (err.name === 'AggregateError') {
       // @ts-expect-error
-      info.error = err.errors.map(String).join('\n');
+      info.error = err.errors.map((err) => `${err.name}: ${err.message}`).join('\n');
     }
     resolve();
   });
