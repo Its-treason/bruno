@@ -117,7 +117,10 @@ export class Callbacks {
       requestUid: context.uid,
       collectionUid: context.collection.uid,
       data: {
-        error
+        error,
+        debug: context.debug.getClean(),
+        timeline: context.timeline,
+        timings: context.timings.getAll()
       }
     });
   }

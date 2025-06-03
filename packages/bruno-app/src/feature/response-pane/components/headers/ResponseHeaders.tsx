@@ -26,6 +26,10 @@ export const ResponseHeaders: React.FC<ResponseHeadersProps> = ({ requestId }) =
     });
   }, [headers]);
 
+  if (rows.length === 0) {
+    return <div>No response headers available</div>;
+  }
+
   return (
     <>
       <Text size="lg" className={classes.text}>
