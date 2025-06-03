@@ -11,8 +11,8 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
       ipcRenderer.removeListener(channel, subscription);
     };
   },
-  getFilePath (file) {
-    const path = webUtils.getPathForFile(file)
+  getFilePath(file) {
+    const path = webUtils.getPathForFile(file);
     return path;
   }
 });
@@ -26,3 +26,4 @@ contextBridge.exposeInMainWorld('process', {
 // Defined in vite.base.config.ts
 contextBridge.exposeInMainWorld('BRUNO_VERSION', BRUNO_VERSION);
 contextBridge.exposeInMainWorld('BRUNO_COMMIT', BRUNO_COMMIT);
+contextBridge.exposeInMainWorld('BRUNO_BUILD_TIMESTAMP', BRUNO_BUILD_TIMESTAMP);

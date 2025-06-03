@@ -8,6 +8,7 @@ import { CollectionButtons } from './CollectionButtons';
 import { ProjectLinks } from './ProjectLinks';
 import { CollectionStats } from './CollectionStats';
 import { BrunoIcon } from 'components/BrunoIcon';
+import { UpdateInfo } from './UpdateInfo';
 
 export const Homepage: React.FC = () => {
   return (
@@ -23,6 +24,8 @@ export const Homepage: React.FC = () => {
       </Stack>
 
       <Space h={rem(50)} />
+
+      <UpdateInfo />
 
       <CollectionButtons />
 
