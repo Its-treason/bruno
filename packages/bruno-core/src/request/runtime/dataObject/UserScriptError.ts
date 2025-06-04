@@ -1,17 +1,31 @@
 export class UserScriptError extends Error {
   constructor(originalError: unknown, script: string) {
-    const formattedError = originalError instanceof Error ? originalError.stack : String(originalError);
+    let formattedError = String(originalError);
+    if (originalError instanceof Error) {
+      const stack = originalError.stack?.split('\n');
+      if (stack) {
+        formattedError = '';
+        for (const line of stack) {
+          formattedError += `${line}\n`;
+          // "LAZER_SCRIPT_WRAPPER" is the function wrapping the user script.
+          // Everything after that, will be unessacry for the user.
+          if (line.includes('LAZER_SCRIPT_WRAPPER')) {
+            break;
+          }
+        }
+      }
+    }
 
     const fullMessage = `
 UserScriptError: This error occurred inside your script!
 
-=== Begin of orignal error ===
-${formattedError}
-=== End of orignal error ===
+=== Error ===
+${formattedError.trim()}
+=== Error ===
 
-=== Begin of user script ===
+=== Script ===
 ${script.trim()}
-=== End of user script ===
+=== Script ===
         `.trim();
 
     super(fullMessage);
