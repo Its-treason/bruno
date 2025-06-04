@@ -8,6 +8,7 @@ export type RequestListItem =
       name: string;
       uid: string;
       collapsed: boolean;
+      active: boolean;
     }
   | {
       type: 'folder';
@@ -17,6 +18,7 @@ export type RequestListItem =
       collectionUid: string;
       collapsed: boolean;
       indent: number;
+      active: boolean;
     }
   | {
       type: 'request';

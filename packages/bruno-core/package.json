@@ -18,6 +18,7 @@
   },
   "dependencies": {
     "@parcel/watcher": "^2.1.1",
+    "@msgpack/msgpack": "^3.1.1",
     "@usebruno/common": "workspace:*",
     "@usebruno/schema": "workspace:*",
     "@usebruno/query": "workspace:*",
@@ -27,10 +28,12 @@
     "axios": "^1.7.7",
     "chai": "^4.3.7",
     "chai-string": "^1.5.0",
+    "cheerio": "^1.0.0",
     "crypto-js": "^4.2.0",
     "decomment": "^0.9.5",
     "form-data": "^4.0.0",
     "json-query": "^2.2.2",
+    "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "lossless-json": "^4.0.2",
     "minimatch": "^10.0.1",
@@ -39,8 +42,9 @@
     "node-vault": "0.10.2",
     "proxy-agent": "^6.4.0",
     "qs": "^6.13.0",
-    "tough-cookie": "^5.0.0",
-    "uuid": "^9.0.0"
+    "tough-cookie": "^5.1.2",
+    "uuid": "^9.0.0",
+    "xml2js": "^0.6.2"
   },
   "devDependencies": {
     "@types/chai": "^4.3.14",
@@ -50,6 +54,6 @@
     "@types/node": "^20.11.25",
     "@types/qs": "^6.9.14",
     "rimraf": "^5.0.5",
-    "typescript": "^5.8.2"
+    "typescript": "^5.8.3"
   }
 }

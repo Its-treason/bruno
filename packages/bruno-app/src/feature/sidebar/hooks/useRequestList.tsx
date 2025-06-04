@@ -6,12 +6,14 @@ import { useSelector } from 'react-redux';
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import { RequestListItem } from '../types/requestList';
 import { useMemo } from 'react';
+import { sortCollections } from '../util/sortCollections';
 
 type ReduxState = {
   collections: {
-    collectionSortOrder: 'default' | 'asc' | 'desc';
+    collectionSortOrder: 'default' | 'alphabetical' | 'reverseAlphabetical';
     collectionFilter: string;
     collections: CollectionSchema[];
+    collectionCustomOrder: string[];
   };
   tabs: {
     activeTabUid: string | undefined;
@@ -19,7 +21,9 @@ type ReduxState = {
 };
 
 export const useRequestList = (): RequestListItem[] => {
-  const { collections, collectionSortOrder, collectionFilter } = useSelector((state: ReduxState) => state.collections);
+  const { collections, collectionSortOrder, collectionFilter, collectionCustomOrder } = useSelector(
+    (state: ReduxState) => state.collections
+  );
   const activeTabUid = useSelector((state: ReduxState) => state.tabs.activeTabUid);
 
   return useMemo(() => {
@@ -32,7 +36,7 @@ export const useRequestList = (): RequestListItem[] => {
       parentUid: string | null,
       filter: string | null
     ): RequestListItem[] => {
-      const sorted = [...requestItems].sort((a, b) => {
+      const sorted = requestItems.toSorted((a, b) => {
         if (a.seq === undefined && b.seq !== undefined) {
           return -1;
         } else if (a.seq !== undefined && b.seq === undefined) {
@@ -78,7 +82,8 @@ export const useRequestList = (): RequestListItem[] => {
                 name: requestItem.name,
                 uid: requestItem.uid,
                 parentUid,
-                collapsed
+                collapsed,
+                active: activeTabUid === requestItem.uid
               });
               newItems.push(...folderItems);
             }
@@ -90,12 +95,14 @@ export const useRequestList = (): RequestListItem[] => {
       return newItems;
     };
 
-    for (const collection of collections) {
+    const sortedCollections = sortCollections(collections, collectionSortOrder, collectionCustomOrder);
+    for (const collection of sortedCollections) {
       items.push({
         type: 'collection',
         collapsed: collection.collapsed,
         name: collection.name,
-        uid: collection.uid
+        uid: collection.uid,
+        active: activeTabUid === collection.uid
       });
 
       const filter = collectionFilter.trim().length > 0 ? collectionFilter.toLowerCase() : null;
@@ -105,5 +112,5 @@ export const useRequestList = (): RequestListItem[] => {
     }
 
     return items;
-  }, [collections, collectionSortOrder, collectionFilter, activeTabUid]);
+  }, [collections, collectionSortOrder, collectionFilter, collectionCustomOrder, activeTabUid]);
 };

@@ -16,7 +16,7 @@ export const brunoConfigSchema = z
       .default({ moduleWhitelist: [] }),
     proxy: z
       .object({
-        enabled: z.boolean().default(false),
+        enabled: z.boolean().or(z.literal('global')).default('global'),
         protocol: z.enum(['http', 'https', 'socks4', 'socks5']).default('https'),
         hostname: z.string().default(''),
         port: z.number().or(z.string()).nullable(),
@@ -28,7 +28,7 @@ export const brunoConfigSchema = z
         bypassProxy: z.string().default('')
       })
       .default({
-        enabled: false,
+        enabled: 'global',
         protocol: 'http',
         hostname: '',
         port: 0,

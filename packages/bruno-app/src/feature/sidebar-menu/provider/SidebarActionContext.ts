@@ -24,7 +24,7 @@ export type SidebarActionContextData = {
   openInEditor: (collectionUid: string, itemUid: string) => void;
   editBrunoJson: (collectionUid: string) => void;
 
-  itemClicked: (collectionUid: string, itemUid?: string) => void;
+  itemClicked: (collectionUid: string, itemUid?: string, toggleFolder?: boolean) => void;
   openCollectionSettings: (collectionUid: string) => void;
   openFolderSettings: (collectionUid: string, folderUid: string) => void;
   openRunner: (collectionUid: string, itemUid?: string) => void;

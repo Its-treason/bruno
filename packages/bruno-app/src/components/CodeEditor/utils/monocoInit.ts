@@ -478,6 +478,7 @@ const createEditorAction = (id: string, keybindings: number[], label: string, ru
 
 export type BrunoEditorCallbacks = {
   onChange?: (newValue: string) => void;
+  onBlur?: (currentValue: string) => void;
   onSave?: () => void;
   onRun?: () => void;
 };
@@ -503,6 +504,10 @@ export const addMonacoCommands = (
     })
   ];
   editorActions.forEach((action) => editor.addAction(action));
+
+  editor.onDidBlurEditorText(() => {
+    callbacks.onBlur && callbacks.onBlur(editor.getValue());
+  });
 };
 
 export const addMonacoSingleLineActions = (

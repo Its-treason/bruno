@@ -1,6 +1,6 @@
 import { nanoid } from 'nanoid';
 import { CookieJar } from 'tough-cookie';
-import { Collection, CollectionEnvironment, Preferences, RequestContext, RequestItem } from '../request/types';
+import { Collection, CollectionEnvironment, RequestContext, RequestItem } from '../request/types';
 import { Callbacks } from '../request/dataObject/Callbacks';
 import { DebugLogger } from '../request/dataObject/DebugLogger';
 import { Timings } from '../request/dataObject/Timings';
@@ -12,6 +12,7 @@ import { HTTPSnippet } from '@readme/httpsnippet';
 import { createHar } from './createHar';
 import { VariablesContext } from '../request/dataObject/VariablesContext';
 import { RunnerContext } from '../request/dataObject/RunnerContext';
+import { Preferences } from '@usebruno/schema';
 
 type GenerateCodeOptions = {
   targetId: string;

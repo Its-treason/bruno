@@ -1,8 +1,7 @@
-import { app, BrowserWindow, ipcMain, shell, Session, session } from 'electron';
+import { app, BrowserWindow, ipcMain, shell } from 'electron';
 import path from 'node:path';
 import http from 'node:http';
 import fs from 'node:fs';
-import { setTimeout } from 'node:timers/promises';
 const { loadWindowState, saveBounds, saveMaximized } = require('./utils/window');
 
 export const MAIN_WINDOW_PARTITION = 'persist:main-window';

@@ -12,7 +12,7 @@
   position: relative;
 
   &[data-active='true'] {
-    background-color: var(--mantine-primary-color-filled);
+    background-color: var(--mantine-primary-color-light-hover);
   }
 
   &[data-drop-indicator='above']::after {

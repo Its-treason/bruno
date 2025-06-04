@@ -5,7 +5,7 @@ import { Callbacks } from './dataObject/Callbacks';
 import { RequestOptions } from 'node:http';
 import { TlsOptions } from 'node:tls';
 import { CookieJar } from 'tough-cookie';
-import { RequestAuthSchema } from '@usebruno/schema';
+import { Preferences, RequestAuthSchema } from '@usebruno/schema';
 import { VariablesContext } from './dataObject/VariablesContext';
 import { RunnerContext } from './dataObject/RunnerContext';
 
@@ -57,6 +57,15 @@ export type RequestBody =
         name: string;
         value: string;
         enabled: boolean;
+        uid: string;
+      }[];
+    }
+  | {
+      mode: 'file';
+      file: {
+        filePath: string;
+        contentType: string;
+        selected: boolean;
         uid: string;
       }[];
     }
@@ -224,38 +233,6 @@ export type Collection = {
   };
 };
 
-// This should always be equal to `preferences.js` in bruno-electron
-export type Preferences = {
-  request: {
-    sslVerification: boolean;
-    customCaCertificate: {
-      enabled: boolean;
-      filePath: string | null;
-    };
-    keepDefaultCaCertificates: {
-      enabled: boolean;
-    };
-    storeCookies: boolean;
-    sendCookies: boolean;
-    timeout: number;
-  };
-  font: {
-    codeFont: string | null;
-  };
-  proxy: {
-    mode: 'on' | 'off' | 'system';
-    protocol: 'http' | 'https' | 'socks4' | 'socks5';
-    hostname: string;
-    port: number | null;
-    auth?: {
-      enabled: boolean;
-      username: string;
-      password: string;
-    };
-    bypassProxy?: string;
-  };
-};
-
 export type BrunoConfig = {
   version: '1';
   name: string;
@@ -265,7 +242,7 @@ export type BrunoConfig = {
     enabled: 'global' | true | false;
     protocol: 'https' | 'http' | 'socks4' | 'socks5';
     hostname: string;
-    port: number | null;
+    port?: number;
     auth?: {
       enabled: boolean;
       username: string;
@@ -299,6 +276,7 @@ export type BrunoRequestOptions = Omit<RequestOptions, 'host'> & {
   hostname: string;
   path: string;
   abortOnInvalidSsl: boolean;
+  sslKeylogFile?: string;
 } & TlsOptions;
 
 export type RequestContext = {

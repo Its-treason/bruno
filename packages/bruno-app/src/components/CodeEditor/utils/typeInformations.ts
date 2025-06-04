@@ -21,6 +21,10 @@ declare const bru: {
    */
   cwd(): string;
   /**
+   * Returns the name of the current collection.
+   */
+  getCollectionName(): string;
+  /**
    * Returns the name of the currently selected environment. Null if no environment is selected.
    */
   getEnvName(): string | null;
@@ -163,6 +167,10 @@ declare const req: {
    * Timeout for a request in milliseconds
    */
   readonly timeout: number;
+  /**
+   * Returns the name of the current request.
+   */
+  getName(): string;
   /**
    * Returns the url of the request.
    */

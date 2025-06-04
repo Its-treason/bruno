@@ -4,14 +4,12 @@
  */
 import { Editor, Monaco } from '@monaco-editor/react';
 import { useContext, useEffect, useRef, useState } from 'react';
-import { debounce } from 'lodash';
 import { useTheme } from 'providers/Theme';
 import { editor } from 'monaco-editor';
 import { Paper, Text } from '@mantine/core';
 import classes from './MonacoSingleline.module.scss';
 import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
 import { addMonacoCommands, addMonacoSingleLineActions, BrunoEditorCallbacks } from '../utils/monocoInit';
-import { useDebouncedCallback } from '@mantine/hooks';
 
 type MonacoSinglelineProps = {
   mode?: string;
@@ -22,14 +20,17 @@ type MonacoSinglelineProps = {
   allowLinebreaks?: boolean;
   asInput?: boolean;
   label?: string;
+  placeholder?: string;
 
   onChange?: (newValue: string) => void;
+  onBlur?: (newValue: string) => void;
   onRun?: () => void;
   onSave?: () => void;
 };
 
 export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
   onChange,
+  onBlur,
   onRun,
   onSave,
   mode = 'plaintext',
@@ -39,12 +40,14 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
   withVariables = false,
   allowLinebreaks = false,
   asInput = false,
-  label
+  label,
+  placeholder
 }) => {
   const { displayedTheme } = useTheme();
   const callbackRefs = useRef<BrunoEditorCallbacks>({});
   const [height, setHeight] = useState(22);
   const [focused, setFocused] = useState(false);
+  const [canShowPlaceholder, setCanShowPlaceholder] = useState(false);
 
   useEffect(() => {
     // Save the reference to the callback so the callbacks always update
@@ -52,11 +55,8 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
     callbackRefs.current.onRun = onRun;
     callbackRefs.current.onSave = onSave;
     callbackRefs.current.onChange = onChange;
+    callbackRefs.current.onBlur = onBlur;
   }, [onRun, onSave, onChange]);
-
-  const handleEditorChange = useDebouncedCallback((newValue: string) => {
-    onChange(newValue);
-  }, 200);
 
   const registerEditorVariables = useContext(CodeEditorVariableContext);
   const onMount = (editor: editor.IStandaloneCodeEditor, monaco: Monaco) => {
@@ -74,6 +74,8 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
       setFocused(false);
     });
 
+    setCanShowPlaceholder(editor.getValue().length === 0);
+
     if (withVariables) {
       registerEditorVariables(editor);
     }
@@ -86,6 +88,7 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
     <div>
       {label ? <Text size="sm">{label}</Text> : null}
       <Paper className={asInput ? classes.paper : classes.paperHidden} data-focused={focused}>
+        {placeholder && canShowPlaceholder ? <div className={classes.placeholder}>{placeholder}</div> : null}
         <Editor
           options={{
             readOnly: readOnly,
@@ -98,7 +101,8 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
             automaticLayout: true,
             scrollbar: {
               vertical: allowLinebreaks ? 'auto' : 'hidden',
-              horizontal: 'hidden'
+              horizontal: 'hidden',
+              alwaysConsumeMouseWheel: false
             },
             folding: false,
             renderLineHighlight: 'none',
@@ -126,7 +130,14 @@ export const MonacoSingleline: React.FC<MonacoSinglelineProps> = ({
           value={value}
           defaultValue={defaultValue}
           onMount={onMount}
-          onChange={!readOnly ? handleEditorChange : () => {}}
+          onChange={
+            !readOnly
+              ? (val) => {
+                  setCanShowPlaceholder(val.length === 0);
+                  onChange && onChange(val);
+                }
+              : () => {}
+          }
           height={height}
         />
       </Paper>

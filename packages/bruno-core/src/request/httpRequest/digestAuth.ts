@@ -33,9 +33,20 @@ export function handleDigestAuth(
   const wwwAuth = Array.isArray(headers['www-authenticate'])
     ? headers['www-authenticate'][0]
     : headers['www-authenticate'];
-  const authDetails = String(wwwAuth)
-    .split(', ')
-    .map((v) => v.split('=').map((str) => str.replace(/"/g, '')))
+  const authDetails = wwwAuth
+    .split(',')
+    .map((line) => {
+      // See: https://github.com/usebruno/bruno/issues/4513 on why `.split("=")` does not work here.
+      const index = line.indexOf('=');
+      if (index === -1) {
+        // -1 -> No `=` found
+        return [line, ''] as const;
+      }
+      return [
+        line.substring(0, index).trim(), // Key
+        line.substring(index + 1).trim() // Value
+      ] as const;
+    })
     .reduce((acc, [key, value]) => ({ ...acc, [key]: value }), {}) as DigestAuthDetails;
 
   const nonceCount = '00000001';

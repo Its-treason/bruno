@@ -28,7 +28,16 @@ const {
 const { openCollectionDialog } = require('../app/collections');
 const { generateUidBasedOnHash, stringifyJson, safeParseJSON, safeStringifyJSON } = require('../utils/common');
 const { moveRequestUid, deleteRequestUid } = require('../cache/requestUids');
-const { deleteCookiesForDomain, getDomainsWithCookies, cookieJar } = require('../utils/cookies');
+const {
+  deleteCookiesForDomain,
+  getDomainsWithCookies,
+  cookieJar,
+  addCookieForDomain,
+  modifyCookieForDomain,
+  parseCookieString,
+  createCookieString,
+  deleteCookie
+} = require('../utils/cookies');
 const EnvironmentSecretsStore = require('../store/env-secrets');
 const { getPreferences } = require('../store/preferences');
 const { getRequestFromCurlCommand } = require('../utils/curl');
@@ -53,6 +62,33 @@ ipcMain.handle('renderer:browse-directory', async (event, pathname, request) => 
 ipcMain.handle('renderer:browse-files', async (event, pathname, request, filters) => {
   const mainWindow = BrowserWindow.fromWebContents(event.sender);
   return await browseFiles(mainWindow, filters);
+});
+
+ipcMain.handle('renderer:show-open-dialog', async (event, filters, properties) => {
+  const mainWindow = BrowserWindow.fromWebContents(event.sender);
+  const { filePaths, canceled } = await dialog.showOpenDialog(mainWindow, {
+    properties,
+    filters
+  });
+
+  const realFilePaths = [];
+  try {
+    for (const filePath of filePaths) {
+      realFilePaths.push(fs.realpathSync(filePath));
+    }
+  } catch (error) {
+    return {
+      canceled: true,
+      filePaths: [],
+      error: String(error)
+    };
+  }
+
+  return {
+    canceled,
+    filePaths: realFilePaths,
+    error: null
+  };
 });
 
 ipcMain.handle(
@@ -463,6 +499,11 @@ ipcMain.handle('renderer:import-collection', async (event, collection, collectio
     return Promise.reject(error);
   }
 });
+
+ipcMain.handle('renderer:change-collection-path-order', async (event, sourceCollectionPath, targetCollectionPath) => {
+  const lastOpenedCollections = LastOpenedCollection.getInstance();
+  lastOpenedCollections.reorder(sourceCollectionPath, targetCollectionPath);
+});
 //#endRegion
 
 //#region Items
@@ -733,6 +774,60 @@ ipcMain.handle('renderer:load-gql-schema-file', async (event) => {
   }
 });
 
+ipcMain.handle('renderer:delete-cookie', async (event, domain, path, cookieKey) => {
+  try {
+    await deleteCookie(domain, path, cookieKey);
+    const domainsWithCookies = await getDomainsWithCookies();
+
+    const mainWindow = BrowserWindow.fromWebContents(event.sender);
+    mainWindow.webContents.send('main:cookies-update', safeParseJSON(safeStringifyJSON(domainsWithCookies)));
+  } catch (error) {
+    return Promise.reject(error);
+  }
+});
+
+// add cookie
+ipcMain.handle('renderer:add-cookie', async (event, domain, cookie) => {
+  try {
+    await addCookieForDomain(domain, cookie);
+    const domainsWithCookies = await getDomainsWithCookies();
+
+    const mainWindow = BrowserWindow.fromWebContents(event.sender);
+    mainWindow.webContents.send('main:cookies-update', safeParseJSON(safeStringifyJSON(domainsWithCookies)));
+  } catch (error) {
+    return Promise.reject(error);
+  }
+});
+
+// modify cookie
+ipcMain.handle('renderer:modify-cookie', async (event, domain, oldCookie, cookie) => {
+  try {
+    await modifyCookieForDomain(domain, oldCookie, cookie);
+    const domainsWithCookies = await getDomainsWithCookies();
+
+    const mainWindow = BrowserWindow.fromWebContents(event.sender);
+    mainWindow.webContents.send('main:cookies-update', safeParseJSON(safeStringifyJSON(domainsWithCookies)));
+  } catch (error) {
+    return Promise.reject(error);
+  }
+});
+
+ipcMain.handle('renderer:get-parsed-cookie', async (event, cookieStr) => {
+  try {
+    return parseCookieString(cookieStr);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+});
+
+ipcMain.handle('renderer:create-cookie-string', async (event, cookie) => {
+  try {
+    return createCookieString(cookie);
+  } catch (error) {
+    return Promise.reject(error);
+  }
+});
+
 ipcMain.handle('renderer:delete-cookies-for-domain', async (event, domain) => {
   try {
     await deleteCookiesForDomain(domain);
@@ -749,7 +844,7 @@ ipcMain.handle('renderer:generate-code', async (event, item, collection, environ
   return await generateCode(
     item,
     collection,
-    getPreferences(),
+    await getPreferences(),
     cookieJar,
     options,
     handleAuthorizationCodeInElectron,

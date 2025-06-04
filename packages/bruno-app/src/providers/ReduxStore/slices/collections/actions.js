@@ -29,7 +29,8 @@ import {
   selectEnvironment as _selectEnvironment,
   sortCollections as _sortCollections,
   filterCollections as _filterCollections,
-  updateLastAction
+  updateLastAction,
+  changeCollectionCustomOrder
 } from './index';
 
 import { each } from 'lodash';
@@ -631,6 +632,21 @@ export const moveItemToRootOfCollection = (collectionUid, draggedItemUid) => (di
         .catch((error) => reject(error));
     }
   });
+};
+
+export const changeCollectionOrder = (sourceCollectionUid, targetCollectionUid) => async (dispatch, getState) => {
+  const sortOrder = getState().collections.collectionSortOrder;
+  if (sortOrder !== 'default') {
+    return;
+  }
+
+  dispatch(changeCollectionCustomOrder({ sourceCollectionUid, targetCollectionUid }));
+
+  const collections = getState().collections.collections;
+  const sourceCollectionPath = collections.find((collection) => collection.uid === sourceCollectionUid).pathname;
+  const targetCollectionPath = collections.find((collection) => collection.uid === targetCollectionUid).pathname;
+
+  await window.ipcRenderer.invoke('renderer:change-collection-path-order', sourceCollectionPath, targetCollectionPath);
 };
 
 export const newHttpRequest = (params) => (dispatch, getState) => {

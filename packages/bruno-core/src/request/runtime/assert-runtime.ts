@@ -8,8 +8,6 @@ import { evaluateJsTemplateLiteral, evaluateJsExpression, createResponseParser }
 import { interpolate } from '@usebruno/common';
 import { RequestContext, RequestItem } from '../types';
 import { VariablesContext } from '../dataObject/VariablesContext';
-import { RunnerContext } from '../dataObject/RunnerContext';
-import { Runner } from './dataObject/Runner';
 
 use(chaiString);
 use(function (chai, utils) {

@@ -30,8 +30,6 @@ export function highlightSpecificWords(editor: editor.IStandaloneCodeEditor, wor
     let inlineClassName = 'brunoPlaceholderHighlightInvalid';
     let hoverMessage = { value: '**Variable not found**', trusted: true };
 
-    console.log(wordsToHighlight, match[0].slice(2, -2));
-
     const value = wordsToHighlight[match[0].slice(2, -2)];
     if (value) {
       inlineClassName = 'brunoPlaceholderHighlightValid';

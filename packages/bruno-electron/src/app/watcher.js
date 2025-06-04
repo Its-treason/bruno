@@ -51,6 +51,7 @@ const hydrateRequestWithUuid = (request, pathname) => {
   const assertions = _.get(request, 'request.assertions', []);
   const bodyFormUrlEncoded = _.get(request, 'request.body.formUrlEncoded', []);
   const bodyMultipartForm = _.get(request, 'request.body.multipartForm', []);
+  const bodyFile = _.get(request, 'request.body.file', []);
 
   params.forEach((param) => (param.uid = uuid()));
   headers.forEach((header) => (header.uid = uuid()));
@@ -59,6 +60,7 @@ const hydrateRequestWithUuid = (request, pathname) => {
   assertions.forEach((assertion) => (assertion.uid = uuid()));
   bodyFormUrlEncoded.forEach((param) => (param.uid = uuid()));
   bodyMultipartForm.forEach((param) => (param.uid = uuid()));
+  bodyFile.forEach((param) => (param.uid = uuid()));
 
   return request;
 };
@@ -263,6 +265,12 @@ const add = async (win, pathname, collectionUid, collectionPath) => {
       let bruContent = fs.readFileSync(pathname, 'utf8');
 
       file.data = collectionBruToJson(bruContent);
+
+      // Check if the name is just "undefined", see: https://github.com/Its-treason/bruno/issues/15
+      if (file.data.meta?.name === 'undefined') {
+        file.data.meta.name = path.basename(file.meta.pathname);
+      }
+
       if (file.data.meta?.name) {
         file.meta.name = file.data.meta?.name;
       }
@@ -391,6 +399,12 @@ const change = async (win, pathname, collectionUid, collectionPath) => {
       let bruContent = fs.readFileSync(pathname, 'utf8');
 
       file.data = collectionBruToJson(bruContent);
+
+      // Check if the name is just "undefined", see: https://github.com/Its-treason/bruno/issues/15
+      if (file.data.meta?.name === 'undefined') {
+        file.data.meta.name = path.basename(file.meta.pathname);
+      }
+
       if (file.data.meta?.name) {
         file.meta.name = file.data.meta?.name;
       }

@@ -9,12 +9,20 @@ export class BrunoRequest {
   public headers: Record<string, string>;
   public timeout: number;
 
-  constructor(private _req: RequestItem, private readonly: boolean, private executionMode: string) {
+  constructor(
+    private _req: RequestItem,
+    private readonly: boolean,
+    private executionMode: string
+  ) {
     this.url = _req.request.url;
     this.method = _req.request.method;
     this.body = this.getBody();
     this.headers = this.getHeaders();
     this.timeout = _req.request.timeout;
+  }
+
+  getName(): string {
+    return this._req.name;
   }
 
   getUrl() {
@@ -42,12 +50,15 @@ export class BrunoRequest {
   getHeaders(): Record<string, string> {
     const rawHeaders = this._req.request.headers;
 
-    return rawHeaders.reduce((acc, curr) => {
-      if (curr.enabled) {
-        acc[curr.name] = curr.value;
-      }
-      return acc;
-    }, {} as Record<string, string>);
+    return rawHeaders.reduce(
+      (acc, curr) => {
+        if (curr.enabled) {
+          acc[curr.name] = curr.value;
+        }
+        return acc;
+      },
+      {} as Record<string, string>
+    );
   }
   setHeaders(headers: Record<string, string>) {
     if (this.readonly) {

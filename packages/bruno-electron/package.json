@@ -43,7 +43,7 @@
     "mime-types": "^2.1.35",
     "prettier": "^3.4.2",
     "query-string": "^7.0.1",
-    "tough-cookie": "^5.0.0",
+    "tough-cookie": "^5.1.2",
     "yargs-parser": "^21.1.1",
     "yup": "^0.32.11"
   },
@@ -53,12 +53,12 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.1.1",
     "@typescript-eslint/parser": "^7.1.1",
-    "electron": "^35.0.0",
+    "electron": "^36.2.0",
     "electron-builder": "^26.0.10",
     "electron-devtools-installer": "^4.0.0",
     "electron-icon-maker": "^0.0.5",
     "rimraf": "^5.0.5",
-    "typescript": "^5.8.2",
+    "typescript": "^5.8.3",
     "vite": "^5.4.3",
     "vite-plugin-commonjs": "^0.10.1"
   }

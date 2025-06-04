@@ -31,7 +31,8 @@ export function getBuildConfig(env: ConfigEnv): UserConfig {
   return {
     define: {
       BRUNO_VERSION: JSON.stringify(pkg.version || ''), // from ./package.json
-      BRUNO_COMMIT: JSON.stringify(getLatestCommitHash()) // latest commit hash
+      BRUNO_COMMIT: JSON.stringify(getLatestCommitHash()), // latest commit hash
+      BRUNO_BUILD_TIMESTAMP: Date.now().toString()
     },
     mode,
     build: {

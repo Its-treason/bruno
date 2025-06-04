@@ -1,4 +1,4 @@
-const { ipcRenderer, contextBridge } = require('electron');
+const { ipcRenderer, contextBridge, webUtils } = require('electron');
 
 contextBridge.exposeInMainWorld('ipcRenderer', {
   invoke: (channel, ...args) => ipcRenderer.invoke(channel, ...args),
@@ -10,6 +10,10 @@ contextBridge.exposeInMainWorld('ipcRenderer', {
     return () => {
       ipcRenderer.removeListener(channel, subscription);
     };
+  },
+  getFilePath(file) {
+    const path = webUtils.getPathForFile(file);
+    return path;
   }
 });
 // This is used by the 'path' package
@@ -22,3 +26,4 @@ contextBridge.exposeInMainWorld('process', {
 // Defined in vite.base.config.ts
 contextBridge.exposeInMainWorld('BRUNO_VERSION', BRUNO_VERSION);
 contextBridge.exposeInMainWorld('BRUNO_COMMIT', BRUNO_COMMIT);
+contextBridge.exposeInMainWorld('BRUNO_BUILD_TIMESTAMP', BRUNO_BUILD_TIMESTAMP);

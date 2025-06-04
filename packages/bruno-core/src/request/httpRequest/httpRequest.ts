@@ -5,6 +5,7 @@ import { Buffer } from 'node:buffer';
 import { BrunoRequestOptions } from '../types';
 import tls, { TLSSocket } from 'node:tls';
 import { collectSslInfo, RequestSslInfo } from './collectSslInfo';
+import { createWriteStream } from 'node:fs';
 
 export type HttpRequestInfo = {
   // RequestInfo
@@ -48,6 +49,9 @@ export async function execHttpRequest(
     );
   } catch (error) {
     requestInfo.error = String(error);
+    if (error instanceof Error) {
+      requestInfo.error = error.name === 'Error' ? error.message : `${error.name}: ${error.message}`;
+    }
   }
   requestInfo.responseTime = Math.round(performance.now() - startTime);
 
@@ -117,6 +121,13 @@ async function checkIfHttp2IsSupported(info: HttpRequestInfo, options: BrunoRequ
       resolve(tlsSocket);
     });
 
+    tlsSocket.on('keylog', (line) => {
+      if (options.sslKeylogFile) {
+        const logFile = createWriteStream(options.sslKeylogFile, { flags: 'a' });
+        logFile.write(line);
+      }
+    });
+
     tlsSocket.on('error', reject);
   });
 
@@ -156,6 +167,13 @@ async function makeHttp1Request(info: HttpRequestInfo, options: BrunoRequestOpti
         );
       }
     });
+
+    socket.on('keylog', (line) => {
+      if (options.sslKeylogFile) {
+        const logFile = createWriteStream(options.sslKeylogFile, { flags: 'a' });
+        logFile.write(line);
+      }
+    });
   });
 
   req.on('response', (response) => {
@@ -182,10 +200,10 @@ async function makeHttp1Request(info: HttpRequestInfo, options: BrunoRequestOpti
   });
 
   req.on('error', (err) => {
-    info.error = String(err);
+    info.error = err.name === 'Error' ? err.message : `${err.name}: ${err.message}`;
     if (err.name === 'AggregateError') {
       // @ts-expect-error
-      info.error = err.errors.map(String).join('\n');
+      info.error = err.errors.map((err) => `${err.name}: ${err.message}`).join('\n');
     }
     resolve();
   });

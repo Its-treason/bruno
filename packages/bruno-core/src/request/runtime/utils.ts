@@ -3,7 +3,6 @@ import { stringify, parse, LosslessNumber } from 'lossless-json';
 import jsonQuery from 'json-query';
 import { FolderItem, RequestItem, Response } from '../types';
 import { readFile } from 'node:fs/promises';
-import { CollectionSchema } from 'packages/bruno-schema/dist';
 
 const JS_KEYWORDS = `
   break case catch class const continue debugger default delete do

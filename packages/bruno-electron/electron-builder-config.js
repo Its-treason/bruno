@@ -35,9 +35,16 @@ const config = {
     target: ['AppImage', 'deb', 'snap', 'rpm']
   },
   win: {
-    target: ['msi', 'portable'],
+    target: ['nsis'],
     artifactName: 'bruno-lazer_nightly_${arch}_win.${ext}',
     icon: 'resources/icons/png'
+  },
+  nsis: {
+    oneClick: false,
+    allowToChangeInstallationDirectory: true,
+    allowElevation: true,
+    createDesktopShortcut: true,
+    createStartMenuShortcut: true
   },
   publish: []
 };

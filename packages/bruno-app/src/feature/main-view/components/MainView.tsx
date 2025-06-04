@@ -9,6 +9,9 @@ import { Homepage } from 'src/feature/homepage';
 import { findItemInCollection } from 'utils/collections';
 import { MainContent } from './MainContent';
 import classes from './MainContent.module.scss';
+import { CollectionHotkeys } from './CollectionHotkeys';
+import { useStore } from 'zustand';
+import { appStore } from 'src/store/appStore';
 
 type ReduxStore = {
   tabs: {
@@ -29,7 +32,7 @@ export const MainView: React.FC = () => {
   const tabs = useSelector((state: ReduxStore) => state.tabs.tabs) as any[];
   const activeTabUid = useSelector((state: ReduxStore) => state.tabs.activeTabUid);
   const collections = useSelector((state: ReduxStore) => state.collections.collections);
-  const hideTabs = useSelector((state: ReduxStore) => get(state.app.preferences, 'hideTabs', false));
+  const hideTabs = useStore(appStore, (store) => store.preferences.display.hideTabs);
 
   const focusedTab = useMemo(() => {
     return tabs.find((tab) => tab.uid === activeTabUid);
@@ -52,6 +55,8 @@ export const MainView: React.FC = () => {
 
   return (
     <div className={classes.main}>
+      <CollectionHotkeys collection={collection} activeTab={focusedTab} item={item} tabs={tabs} />
+
       <CollectionToolBar activeTabUid={activeTabUid} collection={collection} />
 
       {!hideTabs ? <RequestTabs /> : null}

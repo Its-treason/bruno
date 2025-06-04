@@ -1,5 +1,5 @@
 import { platform, arch } from 'node:os';
-import { BrunoConfig, Preferences, RequestBody, RequestContext, RequestItem } from '../types';
+import { BrunoConfig, RequestBody, RequestContext, RequestItem } from '../types';
 import { parse, stringify } from 'lossless-json';
 import { URL } from 'node:url';
 import fs from 'node:fs/promises';
@@ -12,6 +12,7 @@ import { ProxyAgent } from 'proxy-agent';
 import { DebugLogger } from '../dataObject/DebugLogger';
 import { TlsOptions, rootCertificates } from 'node:tls';
 import { createHash, randomBytes } from 'node:crypto';
+import { Preferences } from '@usebruno/schema';
 
 function generateWSSEHeader(username: string, password: string): string {
   const nonce = randomBytes(24).toString('hex');
@@ -63,6 +64,7 @@ const bodyContentTypeMap: Record<RequestBody['mode'], string | undefined> = {
   xml: 'application/xml',
   text: 'text/plain',
   sparql: 'application/sparql-query',
+  file: undefined,
   none: undefined
 };
 
@@ -122,7 +124,7 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
         }
         switch (item.type) {
           case 'text':
-            formData.append(item.name, item.value);
+            formData.append(item.name, item.value, { contentType: item.contentType });
             break;
           case 'file':
             for (let targetPath of item.value) {
@@ -131,14 +133,9 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
                 targetPath = path.join(collectionPath, targetPath);
               }
 
-              let contentType;
-              if (item.contentType) {
-                contentType = item.contentType;
-              }
-
               const filename = path.basename(targetPath);
               const fileData = await fs.readFile(targetPath);
-              formData.append(item.name, fileData, { filename, contentType });
+              formData.append(item.name, fileData, { filename, contentType: item.contentType });
             }
             break;
         }
@@ -175,6 +172,23 @@ async function getRequestBody(context: RequestContext): Promise<[string | Buffer
       break;
     case 'sparql':
       bodyData = body.sparql;
+      break;
+    case 'file':
+      for (const file of body.file) {
+        if (!file.selected) {
+          continue;
+        }
+
+        bodyData = await fs.readFile(file.filePath);
+        if (file.contentType) {
+          extraHeaders['content-type'] = file.contentType;
+        }
+      }
+
+      if (bodyData === undefined) {
+        throw new Error('No file was selected in request body');
+      }
+
       break;
     case 'none':
       bodyData = undefined;
@@ -331,8 +345,9 @@ export async function createHttpRequest(context: RequestContext) {
       path: `${urlObject.pathname}${urlObject.search}${urlObject.hash}`,
       headers: getRequestHeaders(context, extraHeaders),
       timeout: context.preferences.request.timeout,
-      rejectUnauthorized: false, // We handle SSL errors ourself suing abortOnInvalidSsl
+      rejectUnauthorized: false, // We handle SSL errors ourself using abortOnInvalidSsl
       abortOnInvalidSsl: context.preferences.request.sslVerification,
+      sslKeylogFile: context.preferences.request.sslKeylogFile,
       ...certOptions
     }
   };

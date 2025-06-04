@@ -21,6 +21,7 @@ import toast from 'react-hot-toast';
 
 const initialState = {
   collections: [],
+  collectionCustomOrder: [],
   collectionSortOrder: 'default',
   collectionFilter: ''
 };
@@ -30,8 +31,12 @@ export const collectionsSlice = createSlice({
   initialState,
   reducers: {
     createCollection: (state, action) => {
-      const collectionUids = map(state.collections, (c) => c.uid);
       const collection = action.payload;
+
+      const collectionUids = map(state.collections, (c) => c.uid);
+      if (collectionUids.includes(collection.uid)) {
+        return;
+      }
 
       collection.settingsSelectedTab = 'headers';
 
@@ -48,9 +53,8 @@ export const collectionsSlice = createSlice({
 
       collapseCollection(collection);
       addDepth(collection.items);
-      if (!collectionUids.includes(collection.uid)) {
-        state.collections.push(collection);
-      }
+      state.collections.push(collection);
+      state.collectionCustomOrder.push(collection.uid);
     },
     brunoConfigUpdateEvent: (state, action) => {
       const { collectionUid, brunoConfig } = action.payload;
@@ -72,17 +76,18 @@ export const collectionsSlice = createSlice({
     },
     sortCollections: (state, action) => {
       state.collectionSortOrder = action.payload.order;
-      switch (action.payload.order) {
-        case 'default':
-          state.collections = state.collections.sort((a, b) => a.importedAt - b.importedAt);
-          break;
-        case 'alphabetical':
-          state.collections = state.collections.sort((a, b) => a.name.localeCompare(b.name));
-          break;
-        case 'reverseAlphabetical':
-          state.collections = state.collections.sort((a, b) => b.name.localeCompare(a.name));
-          break;
+    },
+    changeCollectionCustomOrder: (state, action) => {
+      const { sourceCollectionUid, targetCollectionUid } = action.payload;
+
+      const withoutSource = state.collectionCustomOrder.filter((uid) => uid !== sourceCollectionUid);
+
+      const targetIndex = withoutSource.indexOf(targetCollectionUid);
+      if (targetIndex === -1) {
+        throw new Error(`Could not find collectionUid "${targetCollectionUid}" in collectionCustomOrder`);
       }
+
+      state.collectionCustomOrder = withoutSource.toSpliced(targetIndex, 0, sourceCollectionUid);
     },
     filterCollections: (state, action) => {
       state.collectionFilter = action.payload.filter;
@@ -639,7 +644,8 @@ export const collectionsSlice = createSlice({
             name: '',
             value: '',
             description: '',
-            enabled: true
+            enabled: true,
+            ...(action.payload.default ?? {})
           });
         }
       }
@@ -694,12 +700,13 @@ export const collectionsSlice = createSlice({
           item.draft.request.body.multipartForm = item.draft.request.body.multipartForm || [];
           item.draft.request.body.multipartForm.push({
             uid: uuid(),
-            type: action.payload.type,
+            type: 'text',
             name: '',
-            value: action.payload.value,
+            value: '',
             description: '',
             contentType: '',
-            enabled: true
+            enabled: true,
+            ...action.payload.default
           });
         }
       }
@@ -742,6 +749,72 @@ export const collectionsSlice = createSlice({
           );
         }
       }
+    },
+    addFile: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+
+      if (collection) {
+        const item = findItemInCollection(collection, action.payload.itemUid);
+
+        if (item && isItemARequest(item)) {
+          if (!item.draft) {
+            item.draft = cloneDeep(item);
+          }
+          item.draft.request.body.file.push({
+            uid: uuid(),
+            contentType: '',
+            filePath: '',
+            selected: false,
+            ...(action.payload.default ?? {})
+          });
+        }
+      }
+    },
+    updateFile: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      if (!collection) {
+        return;
+      }
+
+      const item = findItemInCollection(collection, action.payload.itemUid);
+      if (!item || !isItemARequest(item) || item.request.body.mode !== 'file') {
+        return;
+      }
+
+      if (!item.draft) {
+        item.draft = cloneDeep(item);
+      }
+
+      const file = find(item.draft.request.body.file, (p) => p.uid === action.payload.file.uid);
+      if (file) {
+        file.contentType = action.payload.file.contentType;
+        file.filePath = action.payload.file.filePath;
+        file.selected = action.payload.file.selected;
+
+        if (file.selected) {
+          item.draft.request.body.file.forEach((file) => {
+            if (file.uid !== action.payload.file.uid) {
+              file.selected = false;
+            }
+          });
+        }
+      }
+    },
+    deleteFile: (state, action) => {
+      const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
+      if (!collection) {
+        return;
+      }
+
+      const item = findItemInCollection(collection, action.payload.itemUid);
+      if (!item || !isItemARequest(item) || item.request.body.mode !== 'file') {
+        return;
+      }
+
+      if (!item.draft) {
+        item.draft = cloneDeep(item);
+      }
+      item.draft.request.body.file = filter(item.draft.request.body.file, (p) => p.uid !== action.payload.uid);
     },
     updateRequestAuthMode: (state, action) => {
       const collection = findCollectionByUid(state.collections, action.payload.collectionUid);
@@ -1442,6 +1515,12 @@ export const collectionsSlice = createSlice({
           // we don't want to lose the draft in this case
           if (areItemsTheSameExceptSeqUpdate(item, file.data)) {
             item.seq = file.data.seq;
+            if (item?.draft) {
+              item.draft.seq = file.data.seq;
+            }
+            if (item?.draft && areItemsTheSameExceptSeqUpdate(item?.draft, file.data)) {
+              item.draft = null;
+            }
           } else {
             item.name = file.data.name;
             item.type = file.data.type;
@@ -1544,6 +1623,7 @@ export const {
   renameCollection,
   removeCollection,
   sortCollections,
+  changeCollectionCustomOrder,
   filterCollections,
   updateLastAction,
   updateSettingsSelectedTab,
@@ -1578,6 +1658,9 @@ export const {
   addMultipartFormParam,
   updateMultipartFormParam,
   deleteMultipartFormParam,
+  addFile,
+  updateFile,
+  deleteFile,
   updateRequestAuthMode,
   updateRequestBodyMode,
   updateRequestBody,

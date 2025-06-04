@@ -117,7 +117,10 @@ export class Callbacks {
       requestUid: context.uid,
       collectionUid: context.collection.uid,
       data: {
-        error
+        error,
+        debug: context.debug.getClean(),
+        timeline: context.timeline,
+        timings: context.timings.getAll()
       }
     });
   }
@@ -135,6 +138,10 @@ export class Callbacks {
   cookieUpdated(cookieJar: CookieJar) {
     // @ts-expect-error Not sure why the store is not included in the type
     cookieJar.store.getAllCookies((err: Error, cookies: Cookie[]) => {
+      if (!this.rawCallbacks.cookieUpdated) {
+        return;
+      }
+
       if (err) {
         throw err;
       }
@@ -158,7 +165,7 @@ export class Callbacks {
       for (const domain of domains) {
         const cookies = domainCookieMap[domain];
         const validCookies = cookies.filter(
-          (cookie) => cookie.expires === 'Infinity' || (cookie.expires?.getTime() || 0) > Date.now()
+          (cookie) => !cookie.expires || cookie.expires === 'Infinity' || cookie.expires > new Date()
         );
 
         if (validCookies.length) {
@@ -170,9 +177,6 @@ export class Callbacks {
         }
       }
 
-      if (!this.rawCallbacks.cookieUpdated) {
-        return;
-      }
       this.rawCallbacks.cookieUpdated(cleanJson(domainsWithCookies));
     });
   }

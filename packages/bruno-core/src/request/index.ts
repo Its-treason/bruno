@@ -1,6 +1,6 @@
 import { DebugLogger } from './dataObject/DebugLogger';
 import { Timings } from './dataObject/Timings';
-import { Collection, CollectionEnvironment, Preferences, RequestContext, RequestItem } from './types';
+import { Collection, CollectionEnvironment, RequestContext, RequestItem } from './types';
 import { preRequestScript } from './preRequest/preRequestScript';
 import { applyCollectionSettings } from './preRequest/applyCollectionSettings';
 import { createHttpRequest } from './preRequest/createHttpRequest';
@@ -15,10 +15,11 @@ import { CookieJar } from 'tough-cookie';
 import { readResponseBodyAsync } from './runtime/utils';
 import { collectFolderData } from './preRequest/collectFolderData';
 import { applyOAuth2 } from './preRequest/OAuth2/applyOAuth2';
-import { determinePreviewType } from './preRequest/determinePreviewMode';
+import { determinePreviewType } from './postRequest/determinePreviewMode';
 import { randomUUID } from 'crypto';
 import { VariablesContext } from './dataObject/VariablesContext';
 import { RunnerContext } from './dataObject/RunnerContext';
+import type { Preferences } from '@usebruno/schema';
 
 export async function request(
   requestItem: RequestItem,
@@ -66,7 +67,7 @@ export async function request(
     return await doRequest(context);
   } catch (error) {
     context.error = error instanceof Error ? error : new Error(String(error));
-    context.callback.responseError(context, context.error.message);
+    context.callback.responseError(context, `${context.error.name}: ${context.error.message}`);
   } finally {
     context.timings.stopAll();
   }

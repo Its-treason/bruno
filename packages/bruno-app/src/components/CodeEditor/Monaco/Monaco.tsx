@@ -63,10 +63,6 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
     callbackRefs.current.onChange = onChange;
   }, [onRun, onSave, onChange]);
 
-  const handleEditorChange = useDebouncedCallback((newValue: string) => {
-    onChange(newValue);
-  }, 200);
-
   const registerEditorVariables = useContext(CodeEditorVariableContext);
   const onMount = (editor: editor.IStandaloneCodeEditor, mountMonaco: Monaco) => {
     if ((languages[mode] ?? mode) === 'typescript') {
@@ -121,7 +117,7 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
       language={languages[mode] ?? mode}
       value={value}
       onMount={onMount}
-      onChange={!readOnly ? handleEditorChange : null}
+      onChange={!readOnly ? onChange : null}
     />
   );
 };

@@ -6,6 +6,8 @@ import { IconChevronDown } from '@tabler/icons-react';
 import { RequestItemWrapper } from './RequestItemWrapper';
 import classes from './Item.module.scss';
 import { CSSProperties } from 'react';
+import { ActionIcon } from '@mantine/core';
+import { useSidebarActions } from 'feature/sidebar-menu';
 
 type FolderItemProps = {
   type: 'folder';
@@ -14,10 +16,22 @@ type FolderItemProps = {
   collectionUid: string;
   collapsed: boolean;
   indent: number;
+  active?: boolean;
   style: CSSProperties;
 };
 
-export const FolderItem: React.FC<FolderItemProps> = ({ collapsed, name, type, uid, collectionUid, indent, style }) => {
+export const FolderItem: React.FC<FolderItemProps> = ({
+  collapsed,
+  name,
+  type,
+  uid,
+  collectionUid,
+  indent,
+  style,
+  active
+}) => {
+  const { itemClicked } = useSidebarActions();
+
   return (
     <RequestItemWrapper
       uid={uid}
@@ -27,8 +41,19 @@ export const FolderItem: React.FC<FolderItemProps> = ({ collapsed, name, type, u
       className={classes.wrapper}
       style={style}
       collapsed={collapsed}
+      toggleFolders={false}
+      active={active}
     >
-      <IconChevronDown className={classes.icon} data-collapsed={collapsed} />
+      <ActionIcon
+        variant="transparent"
+        onClick={(evt) => {
+          evt.stopPropagation();
+          itemClicked(collectionUid, uid, true);
+        }}
+        color="white"
+      >
+        <IconChevronDown className={classes.icon} data-collapsed={collapsed} />
+      </ActionIcon>
       <div className={classes.text}>{name}</div>
     </RequestItemWrapper>
   );

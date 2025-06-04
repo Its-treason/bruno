@@ -12,7 +12,7 @@ type Actions = {
   requestReceived: (requestId: string, data: Partial<Response>) => void;
 
   cancelResponse: (requestId: string) => void;
-  responseError: (requestId: string, error: string) => void;
+  responseError: (requestId: string, data: Partial<Response>) => void;
   clearResponse: (requestId: string, itemUd: string) => void;
 };
 
@@ -150,14 +150,18 @@ export const responseStore = createStore(
         item.requestState = 'cancelled';
       });
     },
-    responseError: (requestId: string, error: string) => {
+    responseError: (requestId: string, data: any) => {
       set((store) => {
-        const item = store.responses.get(requestId);
-        if (!item) {
+        const response = store.responses.get(requestId);
+        if (!response) {
           return;
         }
-        item.requestState = 'received';
-        item.error = error;
+
+        const newData = {
+          ...data,
+          requestState: 'received'
+        };
+        store.responses.set(requestId, Object.assign(response, newData));
       });
     },
     clearResponse: (requestId: string, itemId: string) => {
@@ -198,7 +202,7 @@ window.ipcRenderer.on('main:run-request-event', (payload) => {
       responseStore.getState().requestReceived(requestUid, data);
       break;
     case 'response-error':
-      responseStore.getState().responseError(requestUid, data.error);
+      responseStore.getState().responseError(requestUid, data);
       break;
     default:
       throw new Error(`case defined for "${type}" in "main:run-request-event" listener`);

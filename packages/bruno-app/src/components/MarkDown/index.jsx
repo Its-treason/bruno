@@ -14,7 +14,7 @@ const Markdown = ({ collectionPath, onDoubleClick, content }) => {
     const md = new MarkdownIt(markdownItOptions).use(MarkdownItReplaceLink);
 
     return md.render(content || '');
-  });
+  }, [collectionPath, content]);
 
   const handleClick = (event) => {
     if (event.target.href) {

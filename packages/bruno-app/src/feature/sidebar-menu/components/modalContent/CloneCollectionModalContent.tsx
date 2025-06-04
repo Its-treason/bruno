@@ -9,14 +9,13 @@ import { useDispatch } from 'react-redux';
 import { cloneCollection } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { IconAlertCircle, IconHelp } from '@tabler/icons-react';
-import { DirectoryPicker } from 'components/inputs/DirectoryPicker';
 import { z } from 'zod';
 import { useEffect } from 'react';
 import { fileNameSchema } from '@usebruno/schema';
+import { FilePicker } from 'components/inputs/FilePicker';
 
 const cloneCollectionFormSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(255),
-  // @ts-expect-error
   folder: fileNameSchema,
   location: z.string().trim().min(1, 'Location is required')
 });
@@ -77,12 +76,14 @@ export const CloneCollectionModalContent: React.FC<CloneCollectionModalContentPr
         data-autofocus
       />
 
-      <DirectoryPicker
+      <FilePicker
         {...cloneForm.getInputProps('location')}
         key={cloneForm.key('location')}
         label={'Location'}
         placeholder={'Path to collection'}
         my={'md'}
+        filters={[]}
+        properties={['openDirectory']}
       />
 
       <TextInput

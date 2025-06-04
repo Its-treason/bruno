@@ -13,6 +13,7 @@ declare global {
     };
     BRUNO_VERSION: string;
     BRUNO_COMMIT: string;
+    BRUNO_BUILD_TIMESTAMP: string;
   }
 }
 
