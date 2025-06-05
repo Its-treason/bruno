@@ -2,7 +2,6 @@ import { Divider } from '@mantine/core';
 import { CollectionSchema } from '@usebruno/schema';
 import RequestTabs from 'components/RequestTabs';
 import CollectionToolBar from 'components/RequestTabs/CollectionToolBar';
-import { get } from 'lodash';
 import { useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { Homepage } from 'src/feature/homepage';

@@ -11,6 +11,16 @@ import { Test } from './dataObject/Test';
 import { BrunoConfig, RequestContext, RequestItem, Response } from '../types';
 import { UserScriptError } from './dataObject/UserScriptError';
 
+// Hack for: https://github.com/Its-treason/bruno/issues/17
+// This adds the path to Electrons node modules to the global node process
+const electronNodeModules = require
+  .resolve('axios')
+  .match(/^(.+[\\\/]node_modules)[\\\/]/)
+  ?.at(1);
+process.env.NODE_PATH = `${process.env.NODE_PATH};${electronNodeModules}`;
+console.log(process.env.NODE_PATH.split(';'));
+require('module').Module._initPaths();
+
 // Save the original require inside an "alias" variable so the "vite-plugin-commonjs" does not complain about the
 // intentional dynamic require
 const dynamicRequire = require;
