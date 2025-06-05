@@ -13,14 +13,13 @@ import { UserScriptError } from './dataObject/UserScriptError';
 
 // Hack for: https://github.com/Its-treason/bruno/issues/17
 // This adds the path to Electrons node modules to the global node process
-console.log(require.resolve('axios'));
-const electronNodeModules = require
-  .resolve('axios')
-  .match(/^(.+[\\\/]node_modules)[\\\/]/)
-  ?.at(1);
-console.log(electronNodeModules);
-process.env.NODE_PATH = `${process.env.NODE_PATH};${electronNodeModules}`;
-console.log(process.env.NODE_PATH.split(';'));
+const electronNodeModules = require.resolve('axios').match(/^(.+?[\\\/]node_modules)[\\\/]/)?.[1];
+if (process.env.NODE_PATH) {
+  const nodePathSeparator = process.platform === 'win32' ? ';' : ':';
+  process.env.NODE_PATH = `${process.env.NODE_PATH}${nodePathSeparator}${electronNodeModules}`;
+} else {
+  process.env.NODE_PATH = electronNodeModules;
+}
 require('module').Module._initPaths();
 
 // Save the original require inside an "alias" variable so the "vite-plugin-commonjs" does not complain about the
