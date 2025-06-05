@@ -50,6 +50,8 @@ export async function runScript(
     onConsoleLog
   );
 
+  const originalConsole = globalThis.console;
+
   try {
     await vm.runInThisContext(`
       // Only overwrite require and console in this context, so it doesn't break other packages
@@ -57,7 +59,13 @@ export async function runScript(
         // Assign all bruno variables to the global context, so they can be accessed in external scripts
         // See: https://github.com/Its-treason/bruno/issues/6
         // This will pollute the global context. But i don't a better solution
-        Object.assign(global, brunoContext);
+        Object.assign(global, {
+          ...brunoContext,
+          console: {
+             ...globalThis.console,
+             ...console
+          }
+        });
         ${script}
       });
     `)(scriptContext);
@@ -71,7 +79,8 @@ export async function runScript(
       bru: undefined,
       test: undefined,
       expect: undefined,
-      assert: undefined
+      assert: undefined,
+      console: originalConsole
     });
   }
 
