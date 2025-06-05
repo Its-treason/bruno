@@ -50,7 +50,6 @@ export const FolderItem: React.FC<FolderItemProps> = ({
           evt.stopPropagation();
           itemClicked(collectionUid, uid, true);
         }}
-        color="white"
       >
         <IconChevronDown className={classes.icon} data-collapsed={collapsed} />
       </ActionIcon>
