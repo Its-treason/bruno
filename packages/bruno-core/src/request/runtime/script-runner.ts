@@ -13,10 +13,12 @@ import { UserScriptError } from './dataObject/UserScriptError';
 
 // Hack for: https://github.com/Its-treason/bruno/issues/17
 // This adds the path to Electrons node modules to the global node process
+console.log(require.resolve('axios'));
 const electronNodeModules = require
   .resolve('axios')
   .match(/^(.+[\\\/]node_modules)[\\\/]/)
   ?.at(1);
+console.log(electronNodeModules);
 process.env.NODE_PATH = `${process.env.NODE_PATH};${electronNodeModules}`;
 console.log(process.env.NODE_PATH.split(';'));
 require('module').Module._initPaths();
