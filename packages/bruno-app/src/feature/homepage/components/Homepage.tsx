@@ -20,7 +20,7 @@ export const Homepage: React.FC = () => {
             Bruno lazer
           </Title>
         </Group>
-        <Text>Opensource IDE for exploring and testing APIs.</Text>
+        <Text>Lightweight client for testing and documenting API's.</Text>
       </Stack>
 
       <Space h={rem(50)} />
