@@ -61,4 +61,8 @@
     min-width: 0;
     overflow: hidden;
   }
+
+  :global .mantine-ActionIcon-icon {
+    color: var(--mantine-color-text);
+  }
 }

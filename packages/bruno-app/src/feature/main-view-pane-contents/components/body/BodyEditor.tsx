@@ -33,7 +33,7 @@ export const BodyEditor: React.FC<BodyEditorProps> = ({ item, collection }) => {
       return (
         <TextBodyEditor
           collectionUid={collection.uid}
-          body={String(body[body.mode])}
+          body={String(body[body.mode] ?? '')}
           itemUid={item.uid}
           mode={body.mode}
           onRun={onRun}

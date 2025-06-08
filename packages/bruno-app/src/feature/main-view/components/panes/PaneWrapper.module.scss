@@ -10,8 +10,11 @@
   position: sticky;
   top: 0;
   width: 100%;
-  background-color: var(--mantine-color-dark-filled);
+  background-color: var(--mantine-color-body);
   z-index: 1;
+  [data-mantine-color-scheme='dark'] & {
+    background-color: var(--mantine-color-dark-filled);
+  }
 }
 
 .aboveTabs {
