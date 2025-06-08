@@ -4,7 +4,7 @@
  */
 import path from 'node:path';
 import fs from 'node:fs/promises';
-import { ipcMain, app, BrowserWindow, protocol, dialog, session } from 'electron';
+import { ipcMain, app, BrowserWindow, protocol, dialog, session, clipboard } from 'electron';
 import contentDispositionParser from 'content-disposition';
 import mimeTypes from 'mime-types';
 import { WorkerManager } from '../worker/manager';
@@ -115,8 +115,15 @@ function getFileNameBasedOnContentTypeHeader(headers: Record<string, string[]>):
 }
 
 ipcMain.handle(
-  'renderer:save-response-to-file',
-  async (event, itemUid: string, headers: Record<string, string[]>, url: string) => {
+  'renderer:save-response',
+  async (event, requestId: string, target: 'clipboard' | 'file', headers: Record<string, string[]>, url: string) => {
+    const responsePath = path.join(app.getPath('userData'), 'responseCache', requestId);
+
+    if (target === 'clipboard') {
+      clipboard.writeText(await fs.readFile(responsePath, 'utf-8'));
+      return;
+    }
+
     const defaultPath =
       getFileNameFromContentDispositionHeader(headers) ||
       getFileNameFromUrlPath(url) ||
@@ -128,7 +135,6 @@ ipcMain.handle(
     });
 
     if (filePath) {
-      const responsePath = path.join(app.getPath('userData'), 'responseCache', itemUid);
       await fs.copyFile(responsePath, filePath);
     }
   }
