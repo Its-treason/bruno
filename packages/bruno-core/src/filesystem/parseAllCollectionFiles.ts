@@ -3,17 +3,20 @@ import path from 'node:path';
 import { minimatch } from 'minimatch';
 import { ParsedFile } from './types';
 import { parseCollectionFile } from './parseCollectionFile';
+import { realpathSync } from 'node:fs';
 
 export async function parseAllCollectionFiles(collectionDir: string) {
-  const ignore = await readIgnoreList(collectionDir);
+  const collectionRealPath = realpathSync(collectionDir, { encoding: 'utf-8' });
 
-  const allFiles = await readFilePathsRecursive(collectionDir, ignore);
+  const ignore = await readIgnoreList(collectionRealPath);
+
+  const allFiles = await readFilePathsRecursive(collectionRealPath, ignore);
 
   const results: ParsedFile[] = [];
   for (const file of allFiles) {
     let result;
     try {
-      result = await parseCollectionFile(file, collectionDir);
+      result = await parseCollectionFile(file, collectionRealPath);
     } catch (error) {
       // TODO: Pass this to the UI
       console.error('Could not parse collection file!', file, error);

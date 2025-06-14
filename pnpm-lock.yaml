@@ -399,6 +399,9 @@ importers:
       '@usebruno/common':
         specifier: workspace:*
         version: link:../bruno-common
+      '@usebruno/lang':
+        specifier: workspace:*
+        version: link:../bruno-lang
       '@usebruno/query':
         specifier: workspace:*
         version: link:../bruno-query
@@ -764,6 +767,9 @@ importers:
 
   packages/bruno-schema:
     dependencies:
+      '@usebruno/common':
+        specifier: workspace:*
+        version: link:../bruno-common
       zod:
         specifier: ^3.24.4
         version: 3.24.4

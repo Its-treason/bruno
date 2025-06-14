@@ -4,9 +4,10 @@ export const environmentVariableSchema = z.object({
   uid: z.string(),
   name: z.string(),
   value: z.string(),
-  type: z.enum(['text']),
+  type: z.enum(['text']).default('text'),
   enabled: z.boolean(),
-  secret: z.boolean()
+  secret: z.boolean(),
+  contentHash: z.string()
 });
 export type EnvironmentVariableSchema = z.infer<typeof environmentVariableSchema>;
 

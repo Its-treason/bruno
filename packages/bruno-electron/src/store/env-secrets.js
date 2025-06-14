@@ -27,6 +27,14 @@ class EnvironmentSecretsStore {
     });
   }
 
+  static instance;
+  static getInstance() {
+    if (!EnvironmentSecretsStore.instance) {
+      EnvironmentSecretsStore.instance = new EnvironmentSecretsStore();
+    }
+    return EnvironmentSecretsStore.instance;
+  }
+
   isValidValue(val) {
     return typeof val === 'string' && val.length >= 0;
   }

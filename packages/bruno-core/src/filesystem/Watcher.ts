@@ -2,12 +2,12 @@ import { subscribe, getEventsSince, writeSnapshot, AsyncSubscription, Event } fr
 import path from 'node:path';
 import { randomUUID } from 'node:crypto';
 
-export class Watcher {
+export class CollectionWatcher {
   private subscription: AsyncSubscription | null = null;
   private lastSnapshotPath: string | null = null;
 
   constructor(
-    private dir: string,
+    private collectionDir: string,
     private ignore: string[], // GlobPattern or FilePath
     private tmpDir: string,
     private callback: (events: Event[]) => void,
@@ -16,7 +16,7 @@ export class Watcher {
 
   public async start() {
     this.subscription = await subscribe(
-      this.dir,
+      this.collectionDir,
       (err, events) => {
         if (err) {
           this.errCallback(err);
@@ -31,7 +31,7 @@ export class Watcher {
 
   public async suspend() {
     this.lastSnapshotPath = path.join(this.tmpDir, `parcel_snapshot_${randomUUID()}`);
-    await writeSnapshot(this.dir, this.lastSnapshotPath, { ignore: this.ignore });
+    await writeSnapshot(this.collectionDir, this.lastSnapshotPath, { ignore: this.ignore });
 
     await this.subscription?.unsubscribe();
   }
@@ -41,7 +41,7 @@ export class Watcher {
       throw new Error('No "lastSnapshotPath" set! Call suspend() first.');
     }
 
-    const events = await getEventsSince(this.dir, this.lastSnapshotPath, { ignore: this.ignore });
+    const events = await getEventsSince(this.collectionDir, this.lastSnapshotPath, { ignore: this.ignore });
     this.callback(events);
     this.lastSnapshotPath = null;
 
