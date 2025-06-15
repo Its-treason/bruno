@@ -1,5 +1,7 @@
 import React, { MouseEvent as ReactMouseEvent, ReactNode, useEffect, useRef, useState } from 'react';
 import classes from './RequestPaneSplit.module.scss';
+import { useStore } from 'zustand';
+import { appStore } from 'src/store/appStore';
 
 type ReactPaneSplitProps = {
   left: ReactNode;
@@ -7,6 +9,8 @@ type ReactPaneSplitProps = {
 };
 
 export const RequestPaneSplit: React.FC<ReactPaneSplitProps> = ({ left, right }) => {
+  const horizontalLayout = useStore(appStore, (store) => store.preferences.display.horizontalLayout);
+
   const [splitting, setSplitting] = useState(false);
   const [splitPosition, setSplitPosition] = useState(50);
   const containerRef = useRef(null);
@@ -23,12 +27,13 @@ export const RequestPaneSplit: React.FC<ReactPaneSplitProps> = ({ left, right })
   const handleMouseMove = (evt: MouseEvent) => {
     if (splitting && containerRef.current) {
       const containerRect = containerRef.current.getBoundingClientRect();
-      const containerWidth = containerRect.width;
-      const mouseX = evt.clientX - containerRect.left;
-      const newSplitPosition = (mouseX / containerWidth) * 100;
+      const containerSize = horizontalLayout ? containerRect.height : containerRect.width;
+      const mousePosition = horizontalLayout ? evt.clientY - containerRect.top : evt.clientX - containerRect.left;
+      const newSplitPosition = (mousePosition / containerSize) * 100;
 
-      // Ensure each side is at least 300px wide
-      const minSplitPosition = (350 / containerWidth) * 100;
+      // Ensure each side is at least 350px
+      const minSize = horizontalLayout ? 200 : 350;
+      const minSplitPosition = (minSize / containerSize) * 100;
       const maxSplitPosition = 100 - minSplitPosition;
 
       setSplitPosition(Math.max(minSplitPosition, Math.min(newSplitPosition, maxSplitPosition)));
@@ -46,13 +51,15 @@ export const RequestPaneSplit: React.FC<ReactPaneSplitProps> = ({ left, right })
     };
   }, [splitting]);
 
+  const key = horizontalLayout ? 'height' : 'width';
+
   return (
-    <div className={classes.wrapper} ref={containerRef}>
-      <div className={classes.pane} style={{ width: `${splitPosition}%` }}>
+    <div className={classes.wrapper} ref={containerRef} data-horizontal={horizontalLayout}>
+      <div className={classes.pane} style={{ [key]: `${splitPosition}%` }}>
         {left}
       </div>
       <div className={classes.split} onMouseDown={handleMouseDown} />
-      <div className={classes.pane} style={{ width: `${100 - splitPosition}%` }}>
+      <div className={classes.pane} style={{ [key]: `${100 - splitPosition}%` }}>
         {right}
       </div>
     </div>

@@ -27,6 +27,8 @@ export const DisplayPreferences: React.FC<DisplayPreferencesProps> = ({ form }) 
         description="This will also increase the apps performance"
       />
 
+      <Switch {...form.getInputProps('display.horizontalLayout', { type: 'checkbox' })} label="Horizontal layout" />
+
       <Stack mt={'md'}>
         <Title order={3}>Code editor</Title>
 

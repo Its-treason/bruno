@@ -38,7 +38,8 @@ export const preferencesSchema = z.object({
     .default({} as any),
   display: z
     .object({
-      hideTabs: z.boolean().default(false)
+      hideTabs: z.boolean().default(false),
+      horizontalLayout: z.boolean().default(false)
     })
     .default({} as any),
   font: z
