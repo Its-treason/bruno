@@ -610,10 +610,10 @@ ipcMain.handle('renderer:delete-item', async (event, pathname, type) => {
   }
 });
 
-ipcMain.handle('renderer:clone-folder', async (event, itemFolder, collectionPath) => {
+ipcMain.handle('renderer:clone-folder', async (event, itemFolder, newFolderPath) => {
   try {
-    if (fs.existsSync(collectionPath)) {
-      throw new Error(`folder: ${collectionPath} already exists`);
+    if (fs.existsSync(newFolderPath)) {
+      throw new Error(`folder: ${newFolderPath} already exists`);
     }
 
     // Recursive function to parse the folder and create files/folders
@@ -644,19 +644,24 @@ ipcMain.handle('renderer:clone-folder', async (event, itemFolder, collectionPath
       });
     };
 
-    await createDirectory(collectionPath);
+    await createDirectory(newFolderPath);
 
     // If initial folder has a root element, then I should write its folder.bru file
     if (itemFolder.root) {
+      // Update Folder metadata
+      if (itemFolder.root.meta) {
+        itemFolder.root.meta.name = path.basename(newFolderPath);
+      }
+
       const folderContent = jsonToCollectionBru(itemFolder.root, true);
       if (folderContent) {
-        const bruFolderPath = path.join(collectionPath, `folder.bru`);
+        const bruFolderPath = path.join(newFolderPath, `folder.bru`);
         fs.writeFileSync(bruFolderPath, folderContent);
       }
     }
 
     // create folder and files based on another folder
-    await parseCollectionItems(itemFolder.items, collectionPath);
+    await parseCollectionItems(itemFolder.items, newFolderPath);
   } catch (error) {
     return Promise.reject(error);
   }
