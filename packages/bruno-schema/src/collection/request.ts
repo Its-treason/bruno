@@ -114,17 +114,17 @@ export const requestItemSchema = baseRequestItemSchema.extend({
 export const requestSchema = z.object({
   meta: z.object({
     type: z.enum(['http', 'graphql']),
-    seq: z.number(),
+    seq: z.coerce.number().default(1),
     name: z.string()
   }),
   http: z.object({
     method: z.string(),
     url: z.string()
   }),
-  headers: z.array(headerSchema),
-  params: z.array(paramSchema),
-  body: requestBodySchema,
-  auth: requestAuthSchema,
+  headers: z.array(headerSchema).default([]),
+  params: z.array(paramSchema).default([]),
+  body: requestBodySchema.default({ mode: 'none' }),
+  auth: requestAuthSchema.default({ mode: 'none' }),
 
   script: z
     .object({
@@ -132,12 +132,14 @@ export const requestSchema = z.object({
       res: z.string().default('')
     })
     .default({}),
-  vars: z.object({
-    req: z.array(requestVarSchema).default([]),
-    res: z.array(requestVarSchema).default([])
-  }),
-  assertions: z.array(assertionSchema),
-  tests: z.string(),
+  vars: z
+    .object({
+      req: z.array(requestVarSchema).default([]),
+      res: z.array(requestVarSchema).default([])
+    })
+    .default({}),
+  assertions: z.array(assertionSchema).default([]),
+  tests: z.string().default(''),
   docs: z.string().default(''),
   contentHash: z.string()
 });

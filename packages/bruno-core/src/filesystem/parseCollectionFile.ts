@@ -125,6 +125,10 @@ async function parseMetadataBru(filePath: string): Promise<CollectionMetadataSch
   const unknownData = collectionBruToJson(contents.toString('utf-8'));
   unknownData.contentHash = createFileContentHash(contents);
 
+  if (!unknownData.name || unknownData.name === 'undefined') {
+    unknownData.name = basename(dirname(filePath));
+  }
+
   return await collectionMetadataSchema.parseAsync(unknownData);
 }
 
@@ -142,6 +146,9 @@ async function parseEnvironmentBru(filePath: string, collectionPath: string): Pr
 
   const unknownData = bruToEnvJsonV2(contents.toString('utf-8'));
   unknownData.contentHash = createFileContentHash(contents);
+  // Get the filename without the `.bru` extension as name
+  const filename = basename(filePath);
+  unknownData.name = filename.substring(0, filename.length - 4);
 
   const environment = await environmentSchema.parseAsync(unknownData);
 

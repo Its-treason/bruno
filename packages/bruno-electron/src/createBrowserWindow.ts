@@ -64,8 +64,8 @@ export function createBrowserWindow(loadState = true): BrowserWindow {
         console.error(`Error: Failed to load URL: "${url}" (Electron shows a blank screen because of this).`);
         console.error('Original message:', reason);
         console.error(
-          'If you are using an official production build: the above error is most likely a bug! ' +
-            ' Please report this under: https://github.com/usebruno/bruno/issues'
+          'If you are using an official production build: the above error is most likely a bug!' +
+            ' Please report this under: https://github.com/its-treason/bruno/issues'
         );
         mainWindow.loadURL(`data:text/html;charset=utf,Failed to load: ${reason}`);
         launchFailed = true;
@@ -78,7 +78,7 @@ export function createBrowserWindow(loadState = true): BrowserWindow {
       );
       console.error('Original message:', reason);
       console.error(
-        'Could not connect to Next.Js dev server, is it running?' +
+        'Could not connect to rspack dev server, is it running?' +
           ' Start the dev server using "npm run dev:web" and restart electron'
       );
       mainWindow.loadURL(`data:text/html;charset=utf,Failed to load: ${reason}`);

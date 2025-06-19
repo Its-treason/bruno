@@ -80,17 +80,17 @@ export type CollectionSchema = z.infer<typeof collectionSchema>;
 
 export const collectionMetadataSchema = z.object({
   name: z.string(),
-  seq: z.number().nullable().default(null),
+  seq: z.coerce.number().nullable().default(null),
 
   headers: z.array(headerSchema).default([]),
-  auth: requestAuthSchema,
+  auth: requestAuthSchema.default({ mode: 'none' }),
   script: z
     .object({
       req: z.string().default(''),
       res: z.string().default('')
     })
     .default({}),
-  vars: z.array(requestVarSchema),
+  vars: z.array(requestVarSchema).default([]),
   tests: z.string().default(''),
   docs: z.string().default(''),
   contentHash: z.string()

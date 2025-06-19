@@ -1,5 +1,5 @@
 import { readFileSync, writeFileSync } from 'node:fs';
-import { generateId } from 'packages/bruno-common/dist';
+import { generateId } from '@usebruno/common';
 
 export class ItemIdStore {
   // Pathname -> Id

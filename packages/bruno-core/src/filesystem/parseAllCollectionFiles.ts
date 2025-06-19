@@ -19,13 +19,15 @@ export async function parseAllCollectionFiles(collectionDir: string) {
       result = await parseCollectionFile(file, collectionRealPath);
     } catch (error) {
       // TODO: Pass this to the UI
-      console.error('Could not parse collection file!', file, error);
+      // console.error('Could not parse collection file!', file, error);
     }
 
     if (result) {
       results.push(result);
     }
   }
+
+  return results;
 }
 
 const DEFAULT_IGNORE_LIST = ['node_modules', '.git'];
@@ -55,7 +57,7 @@ async function readFilePathsRecursive(currentDir: string, ignore: string[]): Pro
 
     results.push(itemPath);
     if (item.isDirectory()) {
-      results.push(...(await readFilePathsRecursive(item.name, ignore)));
+      results.push(...(await readFilePathsRecursive(itemPath, ignore)));
     }
   }
 

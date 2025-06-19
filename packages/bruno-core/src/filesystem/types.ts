@@ -38,6 +38,13 @@ export type ParsedFile =
       meta: FileMetaSchema;
     }
   | {
+      type: 'parsingError';
+      error: string;
+      id: string;
+      parentId?: string;
+      meta: FileMetaSchema;
+    }
+  | {
       type: 'brunoJson';
       data: BrunoConfigSchema;
     };

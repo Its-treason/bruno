@@ -11,7 +11,7 @@ const {
   jsonToCollectionBru,
   updateFolderMetadata
 } = require('../bru');
-const { generateCode } = require('@usebruno/core');
+const { generateCode, parseAllCollectionFiles } = require('@usebruno/core');
 
 const {
   writeFile,
@@ -868,12 +868,17 @@ ipcMain.on('main:open-docs', () => {
   shell.openExternal(docsURL);
 });
 
-ipcMain.on('main:collection-opened', (win, pathname, uid, brunoConfig) => {
+ipcMain.on('main:collection-opened', async (win, pathname, uid, brunoConfig) => {
+  /** @var {BrowserWindow} win */
   const watcher = Watcher.getInstance();
   watcher.addWatcher(win, pathname, uid, brunoConfig);
   const lastOpenedCollections = LastOpenedCollection.getInstance();
   lastOpenedCollections.add(pathname);
   app.addRecentDocument(pathname);
+
+  const now = Date.now();
+  const items = await parseAllCollectionFiles(pathname);
+  win.webContents.send('collection:items-updated', uid, items, Date.now() - now);
 });
 
 // The app listen for this event and allows the user to save unsaved requests before closing the app
