@@ -1,5 +1,9 @@
 require('dotenv').config({ path: process.env.DOTENV_PATH });
 
+/**
+ * @type {import('electron-builder').Configuration}
+ * @see https://www.electron.build/configuration/configuration
+ */
 const config = {
   appId: 'com.usebruno-lazer.app',
   productName: 'Bruno lazer',
@@ -32,7 +36,9 @@ const config = {
     artifactName: 'bruno-lazer_nightly_${arch}_linux.${ext}',
     icon: 'resources/icons/png',
     executableName: 'bruno-lazer',
-    target: ['AppImage', 'deb', 'snap', 'rpm'],
+    target: ['AppImage', 'deb', 'snap', 'rpm']
+  },
+  snap: {
     compression: 'lzo'
   },
   win: {
