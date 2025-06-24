@@ -7,6 +7,7 @@ import { stringify } from 'lossless-json';
 const gunzipAsync = promisify(zlib.gunzip);
 const brotliDecompressAsync = promisify(zlib.brotliDecompress);
 const inflateAsync = promisify(zlib.inflate);
+const zstdDecompressAsync = promisify(zlib.zstdDecompress);
 
 /**
  * Decodes the response body if an content-encoding header is set. Updates the body in place.
@@ -27,6 +28,9 @@ export async function decodeServerResponse(response: HttpRequestInfo): Promise<s
     case 'deflate':
       response.responseBody = await inflateAsync(response.responseBody!);
       return 'deflate';
+    case 'zstd':
+      response.responseBody = await zstdDecompressAsync(response.responseBody!);
+      return 'zstd';
   }
 
   const contentTypeHeaders = response.headers!['content-type'] ?? [];
