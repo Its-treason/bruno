@@ -10,6 +10,7 @@ import { URL } from 'node:url';
 import { decodeServerResponse } from './decodeResponseBody';
 import { DebugLogger } from '../dataObject/DebugLogger';
 import { BrunoRequestError } from '../dataObject/Errors';
+import { OutgoingHttpHeaders } from 'node:http';
 
 export async function makeHttpRequest(context: RequestContext) {
   if (context.timeline === undefined) {
@@ -56,15 +57,17 @@ export async function makeHttpRequest(context: RequestContext) {
 }
 
 function addMandatoryHeader(requestOptions: BrunoRequestOptions, body?: string | Buffer) {
+  const requestHeaders = requestOptions.headers as OutgoingHttpHeaders;
+
   let hostHeader = requestOptions.hostname;
   if (requestOptions.port) {
     hostHeader += `:${requestOptions.port}`;
   }
-  requestOptions.headers!['host'] = hostHeader;
+  requestHeaders['host'] = hostHeader;
 
   if (body !== undefined) {
     const length = Buffer.isBuffer(body) ? body.length : Buffer.byteLength(body);
-    requestOptions.headers!['content-length'] = String(length);
+    requestHeaders['content-length'] = String(length);
   }
 }
 
@@ -76,14 +79,15 @@ async function addCookieHeader(
   const currentUrl = urlFromRequestOptions(requestOptions);
   const cookieHeader = await cookieJar.getCookieString(currentUrl.href);
   if (cookieHeader) {
-    requestOptions.headers!['cookie'] = [cookieHeader];
+    const requestHeaders = requestOptions.headers as OutgoingHttpHeaders;
+    requestHeaders['cookie'] = [cookieHeader];
 
     // Append all user defined cookie headers: https://github.com/usebruno/bruno/issues/2102
     const originalCookieHeaders = originalRequest.request.headers.filter(
       (header) => header.name.toLowerCase() === 'cookie' && header.enabled
     );
     for (const originalCookieHeader of originalCookieHeaders) {
-      requestOptions.headers!['cookie'].push(originalCookieHeader.value);
+      requestHeaders['cookie'].push(originalCookieHeader.value);
     }
   }
 }
@@ -183,7 +187,7 @@ function handleRedirect(request: BrunoRequestOptions, response: HttpRequestInfo)
 
     for (const headerName in request.headers) {
       if (headerName.startsWith('content-')) {
-        delete request.headers[headerName];
+        delete (request.headers as OutgoingHttpHeaders)[headerName];
       }
     }
   }

@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import { URL } from 'node:url';
 import { RequestOptions } from 'http';
 import { RequestAuthSchema } from 'packages/bruno-schema/dist';
+import { OutgoingHttpHeaders } from 'node:http';
 
 type DigestAuthDetails = {
   algorithm?: string;
@@ -20,12 +21,13 @@ export function handleDigestAuth(
   originalRequest: RequestOptions,
   auth: RequestAuthSchema
 ): boolean {
+  const requestHeaders = originalRequest.headers as OutgoingHttpHeaders;
+
   if (
     auth.mode !== 'digest' || // Only execute if user configured digest as auth mode
     statusCode !== 401 || // Only Apply auth if we really are unauthorized
     !headers['www-authenticate'] || // Check if the Server returned the Auth details
-    // @ts-expect-error This header object is set up us, by the type for it is more broad
-    !!originalRequest.headers['authorization'] // Check if we already sent the Authorization header
+    !!requestHeaders['authorization'] // Check if we already sent the Authorization header
   ) {
     return false;
   }
@@ -78,7 +80,7 @@ export function handleDigestAuth(
     authorizationHeader += `,opaque="${authDetails.opaque}"`;
   }
 
-  originalRequest.headers!['authorization'] = authorizationHeader;
+  requestHeaders['authorization'] = authorizationHeader;
 
   return true;
 }
