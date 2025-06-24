@@ -32,7 +32,8 @@ const config = {
     artifactName: 'bruno-lazer_nightly_${arch}_linux.${ext}',
     icon: 'resources/icons/png',
     executableName: 'bruno-lazer',
-    target: ['AppImage', 'deb', 'snap', 'rpm']
+    target: ['AppImage', 'deb', 'snap', 'rpm'],
+    compression: 'lzo'
   },
   win: {
     target: ['nsis'],
