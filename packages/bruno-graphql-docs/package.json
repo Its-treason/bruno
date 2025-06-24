@@ -23,17 +23,17 @@
     "clean": "rimraf dist"
   },
   "dependencies": {
-    "graphql": "^16.9.0",
+    "graphql": "^16.11.0",
     "markdown-it": "^13.0.1"
   },
   "peerDependencies": {
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@types/markdown-it": "^12.2.3",
-    "@types/react": "^18.0.25",
-    "graphql": "^16.9.0",
+    "@types/react": "^19.1.8",
+    "graphql": "^16.11.0",
     "markdown-it": "^13.0.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
