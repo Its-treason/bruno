@@ -876,9 +876,10 @@ ipcMain.on('main:collection-opened', async (win, pathname, uid, brunoConfig) => 
   lastOpenedCollections.add(pathname);
   app.addRecentDocument(pathname);
 
-  const now = Date.now();
+  win.webContents.send('collection:load-started', uid);
+
   const items = await parseAllCollectionFiles(pathname);
-  win.webContents.send('collection:items-updated', uid, items, Date.now() - now);
+  win.webContents.send('collection:load-finished', uid, items);
 });
 
 // The app listen for this event and allows the user to save unsaved requests before closing the app
