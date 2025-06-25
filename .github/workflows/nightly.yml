@@ -67,6 +67,7 @@ jobs:
           name: build-windows
           path: |
             ./packages/bruno-electron/out/bruno-*
+            !./packages/bruno-electron/out/*.blockmap
           retention-days: 1
           if-no-files-found: error
 
@@ -93,16 +94,18 @@ jobs:
           name: build-macos
           path: |
             ./packages/bruno-electron/out/bruno-*
+            !./packages/bruno-electron/out/*.blockmap
           retention-days: 1
           if-no-files-found: error
 
   linux:
     runs-on: ubuntu-latest
-    container: node:20.11
+    container: node:22.16
     needs: tagname
     env:
       RELEASE_TAG_NAME: ${{ needs.tagname.outputs.tag_name }}
       DEBIAN_FRONTEND: noninteractive
+      USE_SYSTEM_MKSQUASHFS: 1
 
     steps:
       - uses: actions/checkout@v3
@@ -111,6 +114,8 @@ jobs:
         run: |
           npm i -g pnpm
           pnpm i
+          apt update
+          apt install squashfs-tools -y
       - name: Make
         run: |
           pnpm run make
@@ -121,6 +126,7 @@ jobs:
           name: build-linux
           path: |
             ./packages/bruno-electron/out/bruno-*
+            !./packages/bruno-electron/out/*.blockmap
           retention-days: 1
           if-no-files-found: error
 
