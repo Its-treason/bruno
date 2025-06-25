@@ -67,6 +67,7 @@ jobs:
           name: build-windows
           path: |
             ./packages/bruno-electron/out/bruno-*
+            !./packages/bruno-electron/out/*.blockmap
           retention-days: 1
           if-no-files-found: error
 
@@ -93,6 +94,7 @@ jobs:
           name: build-macos
           path: |
             ./packages/bruno-electron/out/bruno-*
+            !./packages/bruno-electron/out/*.blockmap
           retention-days: 1
           if-no-files-found: error
 
@@ -124,6 +126,7 @@ jobs:
           name: build-linux
           path: |
             ./packages/bruno-electron/out/bruno-*
+            !./packages/bruno-electron/out/*.blockmap
           retention-days: 1
           if-no-files-found: error
 
