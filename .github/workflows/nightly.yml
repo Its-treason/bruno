@@ -112,7 +112,8 @@ jobs:
         run: |
           npm i -g pnpm
           pnpm i
-          apt install squashfs-tools
+          apt update
+          apt install squashfs-tools -y
       - name: Make
         run: |
           pnpm run make
