@@ -42,19 +42,18 @@ export const preferencesSchema = z.object({
       horizontalLayout: z.boolean().default(false)
     })
     .default({} as any),
-  font: z
+  editor: z
     .object({
-      codeFont: z
-        .string()
-        .optional()
-        .transform((value) => (value === '' ? undefined : value)),
-      codeFontSize: z.number().min(8).max(32).default(14)
+      minimap: z.boolean().default(true),
+      lineWrap: z.boolean().default(false),
+      fontSize: z.number().default(16),
+      fontFamily: z.string().default('')
     })
     .default({} as any),
   hotkeysOverwrite: hotkeysSchema.partial().default({}),
   proxy: z
     .object({
-      mode: z.enum(['off', 'on', 'system']).default('system'),
+      mode: z.enum(['off', 'on', 'system']).default('off'),
       protocol: z.enum(['http', 'https', 'socks4', 'socks5']).default('socks5'),
       hostname: z.string().max(1024).default(''),
       port: z.number().min(1).max(65535).optional(),

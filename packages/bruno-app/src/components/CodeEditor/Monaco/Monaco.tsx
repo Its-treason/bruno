@@ -12,6 +12,8 @@ import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
 import { addMonacoCommands, BrunoEditorCallbacks } from '../utils/monocoInit';
 import { getExtraLibraries, TypeInfoTargets } from '../utils/typeInformations';
 import { useDebouncedCallback } from '@mantine/hooks';
+import { useStore } from 'zustand';
+import { appStore } from 'src/store/appStore';
 
 const languages: Record<string, string> = {
   'graphql-query': 'graphql',
@@ -54,6 +56,7 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
 }) => {
   const { displayedTheme } = useTheme();
   const callbackRefs = useRef<BrunoEditorCallbacks>({});
+  const { fontFamily, fontSize, lineWrap, minimap } = useStore(appStore, (store) => store.preferences.editor);
 
   useEffect(() => {
     // Save the reference to the callback so the callbacks always update
@@ -95,7 +98,7 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
     <Editor
       options={{
         readOnly: readOnly,
-        wordWrap: 'off',
+        wordWrap: lineWrap ? 'on' : 'off',
         wrappingIndent: 'indent',
         autoIndent: 'keep',
         formatOnType: true,
@@ -103,13 +106,16 @@ export const MonacoEditor: React.FC<MonacoProps> = ({
         scrollBeyondLastLine: false,
         automaticLayout: true,
         minimap: {
-          enabled: !hideMinimap
+          enabled: !hideMinimap && minimap
         },
         scrollbar: {
           vertical: 'hidden',
           horizontal: 'hidden'
         },
-        renderLineHighlight: 'none'
+        renderLineHighlight: 'none',
+
+        fontSize,
+        fontFamily: fontFamily.trim().length === 0 ? undefined : fontFamily
       }}
       height={height}
       theme={displayedTheme === 'dark' ? 'bruno-dark' : 'bruno-light'}

@@ -3,6 +3,7 @@ import { UseFormReturnType } from '@mantine/form';
 import { Preferences } from '@usebruno/schema';
 import { useTheme } from 'providers/Theme';
 import React from 'react';
+import { CodeEditorPreferences } from './CodeEditorPreferences';
 
 type DisplayPreferencesProps = {
   form: UseFormReturnType<Preferences>;
@@ -29,21 +30,7 @@ export const DisplayPreferences: React.FC<DisplayPreferencesProps> = ({ form }) 
 
       <Switch {...form.getInputProps('display.horizontalLayout', { type: 'checkbox' })} label="Horizontal layout" />
 
-      <Stack mt={'md'}>
-        <Title order={3}>Code editor</Title>
-
-        <TextInput {...form.getInputProps('font.codeFont')} label="Font family" />
-
-        <NumberInput
-          {...form.getInputProps('font.codeFontSize')}
-          min={8}
-          max={32}
-          suffix=" px"
-          allowDecimal={false}
-          step={2}
-          label={'Font size'}
-        />
-      </Stack>
+      <CodeEditorPreferences form={form} />
     </Stack>
   );
 };
