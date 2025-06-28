@@ -190,7 +190,7 @@ declare const req: {
    */
   setMethod(method: string): void;
   /**
-   * Returns the value of an header. Will return "null" if the header does not exist.
+   * Returns the value of a header. Will return "null" if the header does not exist.
    */
   getHeader(name: string): string | null;
   /**
@@ -200,7 +200,7 @@ declare const req: {
   getHeaders(): Record<string, string>;
   /**
    * Updates the value of one header. Will create a new header, if no header with the name exists.
-   * The header name is case insensitive.
+   * The header name is case-insensitive.
    * @throws If called after the request was sent
    */
   setHeader(name: string, value: string): void;
@@ -238,7 +238,7 @@ declare const req: {
    */
   setMaxRedirects(maxRedirects: number): void;
   /**
-   * Returns the timeout for a request in milliseconds (1 seconds is 1000 milliseconds).
+   * Returns the timeout for a request in milliseconds (1 second is 1000 milliseconds).
    */
   getTimeout(): number;
   /**
@@ -247,7 +247,7 @@ declare const req: {
    */
   setTimeout(timeout: number): void;
   /**
-   * Disables parsing of the response, if its a JSON response. The \`res.body\` will then be a string. 
+   * Disables parsing of the response, if it's a JSON response. The \`res.body\` will then be a string. 
    * 
    * This was implemented into Bruno to prevent issues with JSON parsing, e.g. with BigInts and other edge cases.
    * All of those problem are fixed within Bruno Lazer, so this function is not needed in lazer.
@@ -259,6 +259,11 @@ declare const req: {
    * "runner" if the request was called within a runner execution.
    */
   getExecutionMode(): 'standalone' | 'runner';
+  /**
+   * Callback for handling request errors. This will be called if the request fails and getting no response.
+   * Important: Exact error messages will be different from Bruno's errors.
+   */
+  onFail(callback: (error: Error) => void): void;
 };
 `;
 

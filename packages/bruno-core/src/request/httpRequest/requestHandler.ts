@@ -12,7 +12,23 @@ import { DebugLogger } from '../dataObject/DebugLogger';
 import { BrunoRequestError } from '../dataObject/Errors';
 import { OutgoingHttpHeaders } from 'node:http';
 
+// Wrapper function to execute the users onFail function
 export async function makeHttpRequest(context: RequestContext) {
+  try {
+    await doMakeHttpRequest(context);
+  } catch (error) {
+    if (context.failHandler) {
+      try {
+        await context.failHandler(error instanceof Error ? error : new Error(String(error)));
+      } catch (error) {
+        context.callback.consoleLog('error', ['Error in your req.onFail callback', error]);
+      }
+    }
+    throw error;
+  }
+}
+
+async function doMakeHttpRequest(context: RequestContext) {
   if (context.timeline === undefined) {
     context.timeline = new Timeline();
   }
