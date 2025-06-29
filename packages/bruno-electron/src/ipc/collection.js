@@ -40,10 +40,10 @@ const {
 } = require('../utils/cookies');
 const EnvironmentSecretsStore = require('../store/env-secrets');
 const { getPreferences } = require('../store/preferences');
-const { getRequestFromCurlCommand } = require('../utils/curl');
 const Watcher = require('../app/watcher');
 const LastOpenedCollection = require('../store/last-opened-collections');
 const { handleAuthorizationCodeInElectron } = require('../utils/handleAuthorizationCodeInElectron');
+const { parseCurlCommand } = require('../common/parseCurlCommand');
 
 const environmentSecretsStore = new EnvironmentSecretsStore();
 
@@ -859,7 +859,7 @@ ipcMain.handle('renderer:generate-code', async (event, item, collection, environ
 });
 
 ipcMain.handle('renderer:curl-to-request', async (event, curlString) => {
-  return getRequestFromCurlCommand(curlString);
+  return await parseCurlCommand(curlString);
 });
 //#endRegion
 

@@ -75,6 +75,7 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
             requestType: values.type,
             requestUrl: request.url,
             requestMethod: request.method,
+            auth: request.auth,
             collectionUid,
             itemUid,
             headers: request.headers,
