@@ -1,5 +1,9 @@
 require('dotenv').config({ path: process.env.DOTENV_PATH });
 
+/**
+ * @type {import('electron-builder').Configuration}
+ * @see https://www.electron.build/configuration/configuration
+ */
 const config = {
   appId: 'com.usebruno-lazer.app',
   productName: 'Bruno lazer',
@@ -9,6 +13,7 @@ const config = {
   },
   afterSign: 'notarize.js',
   afterPack: './linux-sandbox-fix.js',
+  compression: 'maximum',
   mac: {
     artifactName: 'bruno-lazer_nightly_${arch}_${os}.${ext}',
     category: 'public.app-category.developer-tools',
@@ -32,7 +37,15 @@ const config = {
     artifactName: 'bruno-lazer_nightly_${arch}_linux.${ext}',
     icon: 'resources/icons/png',
     executableName: 'bruno-lazer',
-    target: ['AppImage', 'deb', 'snap', 'rpm']
+    target: ['AppImage', 'deb', 'snap', 'rpm'],
+    category: 'Development',
+    synopsis: 'Lightweight client for testing and documenting API'
+  },
+  snap: {
+    compression: 'lzo'
+  },
+  snap: {
+    compression: 'lzo'
   },
   win: {
     target: ['nsis'],
@@ -43,8 +56,10 @@ const config = {
     oneClick: false,
     allowToChangeInstallationDirectory: true,
     allowElevation: true,
-    createDesktopShortcut: true,
-    createStartMenuShortcut: true
+    createDesktopShortcut: false,
+    createStartMenuShortcut: false,
+    runAfterFinish: true,
+    deleteAppDataOnUninstall: true
   },
   publish: []
 };

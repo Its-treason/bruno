@@ -5,7 +5,6 @@ import { findInItems } from '../utils';
 import { request } from '../..';
 import { Timeline } from '../../dataObject/Timeline';
 import { STATUS_CODES } from 'node:http';
-import { RunnerContext } from '../../dataObject/RunnerContext';
 import { Runner } from './Runner';
 
 const variableNameRegex = /^[\w-.]*$/;

@@ -40,6 +40,10 @@ export async function preRequestScript(context: RequestContext, folderData: Fold
     context.timings.stopMeasure('preScript');
   }
 
+  if (scriptResult.failHandler) {
+    context.failHandler = scriptResult.failHandler;
+  }
+
   context.callback.updateScriptEnvironment(context);
 
   context.debug.log('Pre request script finished', scriptResult);

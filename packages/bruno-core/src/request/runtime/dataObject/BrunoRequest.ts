@@ -9,6 +9,8 @@ export class BrunoRequest {
   public headers: Record<string, string>;
   public timeout: number;
 
+  public _failHandler?: (error: Error) => void;
+
   constructor(
     private _req: RequestItem,
     private readonly: boolean,
@@ -180,5 +182,11 @@ export class BrunoRequest {
 
   getExecutionMode() {
     return this.executionMode;
+  }
+
+  onFail(handler: (error: Error) => void) {
+    if (!this.readonly) {
+      this._failHandler = handler;
+    }
   }
 }

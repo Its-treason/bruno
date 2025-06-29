@@ -295,6 +295,7 @@ export type RequestContext = {
   readonly cookieJar: CookieJar;
   readonly variables: VariablesContext;
   readonly runner: RunnerContext;
+  failHandler?: (error: Error) => void | Promise<void>;
 
   readonly callback: Callbacks;
   readonly timings: Timings;

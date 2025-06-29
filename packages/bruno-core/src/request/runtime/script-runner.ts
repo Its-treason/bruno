@@ -85,6 +85,7 @@ export async function runScript(
   }
 
   return {
+    failHandler: scriptContext.req._failHandler,
     responseBody: scriptContext.res?.body,
     results: scriptContext.brunoTestResults ? cleanJson(scriptContext.brunoTestResults.getResults()) : null
   };
