@@ -20,7 +20,8 @@ export type CollectionInfo = {
   openedDate: number;
   loadFinishedDate?: number;
 
-  children: unknown[];
+  children: Set<string>;
+  processEnvVariables: Record<string, string>;
 };
 
 export type ItemInfo = {
@@ -43,7 +44,7 @@ export type ItemInfo = {
 
 type Actions = {
   collectionLoadStarted: (collectionId: string, dirMeta: DirMetaSchema) => void;
-  collectionLoadFinished: (collectionId: string, parsedFile: ParsedFile) => void;
+  collectionLoadFinished: (collectionId: string, parsedFile: ParsedFile[]) => void;
 
   collectionItemsChanged: (collectionId: string, parsedFile: ParsedFile) => void;
 };
@@ -65,21 +66,24 @@ export const collectionStore = createStore(
         }
 
         state.collections.set(collectionId, {
-          children: [],
+          children: new Set(),
           dirMeta,
           id: collectionId,
           initialLoaded: false,
-          openedDate: Date.now()
+          openedDate: Date.now(),
+          processEnvVariables: {}
         });
       });
     },
-    collectionLoadFinished: (collectionId: string, parsedFile: ParsedFile) => {
+    collectionLoadFinished: (collectionId: string, parsedFile: ParsedFile[]) => {
       set((state) => {
         if (!state.collections.has(collectionId)) {
           throw new Error(`Collection with Id: "${collectionId}" does not exists!`);
         }
 
-        state.collectionItemsChanged(collectionId, parsedFile);
+        for (const file of parsedFile) {
+          state.collectionItemsChanged(collectionId, file);
+        }
 
         const collection = state.collections.get(collectionId);
         collection.initialLoaded = true;
@@ -103,7 +107,38 @@ export const collectionStore = createStore(
 
           const oldParentItem = state.items.get(item.parentId!);
           if (oldParentItem.type === 'dir') {
-            // oldParentItem.
+            oldParentItem.children.delete(id);
+          }
+
+          const newParentItem = state.items.get(newParentId);
+          if (newParentItem.type === 'dir') {
+            newParentItem.children.add(id);
+          }
+        };
+
+        const ensureParentExists = (id: string, parentId?: string) => {
+          if (parentId === null) {
+            collection.children.add(id);
+            return;
+          }
+
+          const newParentItem = state.items.get(parentId);
+          if (newParentItem === null) {
+            state.items.set(parentId, {
+              id: parentId,
+              type: 'dir',
+              children: new Set().add(id) as Set<string>,
+              meta: {
+                basename: '',
+                dirname: '',
+                path: ''
+              }
+            });
+            return;
+          }
+
+          if (newParentItem.type === 'dir') {
+            newParentItem.children.add(id);
           }
         };
 
@@ -115,7 +150,54 @@ export const collectionStore = createStore(
             if (collection.data?.contentHash !== parsedFile.data.contentHash) {
               collection.data = parsedFile.data;
             }
+            break;
           case 'dir':
+          case 'dirMeta':
+            const existingDir = state.items.get(parsedFile.id);
+            if (!existingDir) {
+              state.items.set(parsedFile.id, {
+                type: 'dir',
+                children: new Set(),
+                id: parsedFile.id,
+                meta: parsedFile.meta,
+                data: parsedFile.type === 'dirMeta' ? parsedFile.data : null,
+                parentId: parsedFile.parentId
+              });
+              ensureParentExists(parsedFile.id, parsedFile.parentId);
+              break;
+            }
+
+            fixParentId(parsedFile.id, parsedFile.parentId);
+            existingDir.meta = parsedFile.meta;
+            if (parsedFile.type === 'dirMeta') {
+              if (parsedFile.data.contentHash !== existingDir.data?.contentHash) {
+                existingDir.data = parsedFile.data;
+              }
+            }
+            break;
+          case 'request':
+            const existingItem = state.items.get(parsedFile.id);
+            if (!existingItem) {
+              state.items.set(parsedFile.id, {
+                type: 'request',
+                id: parsedFile.id,
+                meta: parsedFile.meta,
+                data: parsedFile.data,
+                parentId: parsedFile.parentId
+              });
+              ensureParentExists(parsedFile.id, parsedFile.parentId);
+              break;
+            }
+
+            fixParentId(parsedFile.id, parsedFile.parentId);
+            existingItem.meta = parsedFile.meta;
+            if (parsedFile.data.contentHash !== existingItem.data?.contentHash) {
+              existingItem.data = parsedFile.data;
+            }
+            break;
+          case 'envFile':
+          //
+          case 'parsingError':
         }
       });
     }
@@ -124,8 +206,10 @@ export const collectionStore = createStore(
 
 // Collection was opened. We get first Infos of the collection to show in UI
 window.ipcRenderer.on('collection:load-started', (collectionId: string, dirMeta: DirMetaSchema) => {
-  collectionStore.getState().collectionLoadStarted();
+  collectionStore.getState().collectionLoadStarted(collectionId, dirMeta);
 });
 
 // All collection items have been parsed
-window.ipcRenderer.on('collection:load-finished', (collectionId: string, parsedFiles: ParsedFile[]) => {});
+window.ipcRenderer.on('collection:load-finished', (collectionId: string, parsedFiles: ParsedFile[]) => {
+  collectionStore.getState().collectionLoadFinished(collectionId, parsedFiles);
+});
