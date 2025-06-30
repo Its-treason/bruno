@@ -73,6 +73,10 @@ export const collectionsSlice = createSlice({
     },
     removeCollection: (state, action) => {
       state.collections = filter(state.collections, (c) => c.uid !== action.payload.collectionUid);
+      state.collectionCustomOrder = filter(
+        state.collectionCustomOrder,
+        (collectionUid) => collectionUid !== action.payload.collectionUid
+      );
     },
     sortCollections: (state, action) => {
       state.collectionSortOrder = action.payload.order;
