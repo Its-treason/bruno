@@ -3,6 +3,7 @@ import {
   BrunoConfigSchema,
   CollectionMetadataSchema,
   DirMetaSchema,
+  EnvironmentSchema,
   FileMetaSchema,
   RequestSchema
 } from '@usebruno/schema';
@@ -22,6 +23,9 @@ export type CollectionInfo = {
 
   children: Set<string>;
   processEnvVariables: Record<string, string>;
+
+  activeEnvironmentId?: string;
+  environments: Map<string, EnvironmentSchema>;
 };
 
 export type ItemInfo = {
@@ -71,7 +75,8 @@ export const collectionStore = createStore(
           id: collectionId,
           initialLoaded: false,
           openedDate: Date.now(),
-          processEnvVariables: {}
+          processEnvVariables: {},
+          environments: new Map()
         });
       });
     },
@@ -196,8 +201,13 @@ export const collectionStore = createStore(
             }
             break;
           case 'envFile':
-          //
+            const environment = collection.environments.get(parsedFile.data.id);
+            if (!environment && environment.contentHash !== parsedFile.data.contentHash) {
+              collection.environments.set(parsedFile.data.id, parsedFile.data);
+            }
+            break;
           case 'parsingError':
+            console.error('Parsing of file failed!', parsedFile);
         }
       });
     }
