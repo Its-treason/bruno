@@ -764,6 +764,11 @@ export const collectionsSlice = createSlice({
           if (!item.draft) {
             item.draft = cloneDeep(item);
           }
+
+          if (!item.draft.request.body.file) {
+            item.draft.request.body.file = [];
+          }
+
           item.draft.request.body.file.push({
             uid: uuid(),
             contentType: '',
