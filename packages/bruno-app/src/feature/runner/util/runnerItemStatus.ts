@@ -22,7 +22,10 @@ export default function runnerItemStatus(item: Response): 'passed' | 'failed' | 
         return 'failed';
       }
 
-      const hasFailedTests = item.testResults?.some((result) => result.status === 'fail');
+      const hasFailedTests =
+        item.testResults?.some((result) => result.status === 'fail') ||
+        item.testResultsPre?.some((result) => result.status === 'fail') ||
+        item.testResultsPost?.some((result) => result.status === 'fail');
       if (hasFailedTests) {
         return 'failed';
       }

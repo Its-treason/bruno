@@ -10,6 +10,7 @@ export async function preRequestScript(context: RequestContext, folderData: Fold
   const preRequestScript = [collectionPreRequestScript, ...folderLevelScripts, requestPreRequestScript].join(os.EOL);
 
   if (preRequestScript.replaceAll('\n', '').trim().length === 0) {
+    context.callback.testResults(context, { testResultsPre: [] });
     return;
   }
 
@@ -26,7 +27,6 @@ export async function preRequestScript(context: RequestContext, folderData: Fold
       null,
       null,
       context,
-      false,
       context.collection.pathname,
       context.executionMode,
       context.collection.brunoConfig.scripts,
@@ -40,6 +40,7 @@ export async function preRequestScript(context: RequestContext, folderData: Fold
     context.timings.stopMeasure('preScript');
   }
 
+  context.callback.testResults(context, { testResultsPre: scriptResult.results });
   if (scriptResult.failHandler) {
     context.failHandler = scriptResult.failHandler;
   }

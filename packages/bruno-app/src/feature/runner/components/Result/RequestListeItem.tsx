@@ -68,6 +68,26 @@ export const RequestListItem: React.FC<RequestListItemProps> = memo(({ requestId
           </List.Item>
         ))}
 
+        {response?.testResultsPre?.map((test) => (
+          <List.Item
+            key={test.uid}
+            styles={{ itemIcon: { marginInlineEnd: 4 } }}
+            c={test.status === 'pass' ? 'teal' : 'red'}
+            icon={test.status === 'pass' ? <IconCheck size={18} /> : <IconX size={18} />}
+          >
+            {test.description}
+          </List.Item>
+        ))}
+        {response?.testResultsPost?.map((test) => (
+          <List.Item
+            key={test.uid}
+            styles={{ itemIcon: { marginInlineEnd: 4 } }}
+            c={test.status === 'pass' ? 'teal' : 'red'}
+            icon={test.status === 'pass' ? <IconCheck size={18} /> : <IconX size={18} />}
+          >
+            {test.description}
+          </List.Item>
+        ))}
         {response?.testResults?.map((test) => (
           <List.Item
             key={test.uid}
@@ -80,7 +100,7 @@ export const RequestListItem: React.FC<RequestListItemProps> = memo(({ requestId
         ))}
       </List>
     );
-  }, [response?.testResults, response?.assertionResults]);
+  }, [response?.testResults, response?.testResults, response?.testResultsPost, response?.assertionResults]);
 
   const { status, icon, color } = useMemo(() => {
     const status = response ? runnerItemStatus(response) : 'running';

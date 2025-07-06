@@ -16,6 +16,13 @@ type Actions = {
   clearResponse: (requestId: string, itemUd: string) => void;
 };
 
+export type TestResult = {
+  status: 'pass' | 'fail';
+  uid: string;
+  description: string;
+  error?: string;
+};
+
 export type Response = {
   requestId: string;
   itemId: string;
@@ -38,12 +45,9 @@ export type Response = {
   debug?: DebugInfo;
 
   // assertion-results & test-results
-  testResults?: {
-    status: 'pass' | 'fail';
-    uid: string;
-    description: string;
-    error?: string;
-  }[];
+  testResultsPre?: TestResult[];
+  testResultsPost?: TestResult[];
+  testResults?: TestResult[];
   assertionResults?: {
     status: 'pass' | 'fail';
     uid: string;

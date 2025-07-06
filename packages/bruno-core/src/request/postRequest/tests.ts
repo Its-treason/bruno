@@ -14,7 +14,7 @@ export async function tests(context: RequestContext, folderData: FolderData[]) {
       : [requestPostRequestScript, ...folderLevelTests.reverse(), collectionPostRequestScript].join(EOL);
 
   if (testScript.replaceAll('\n', '').trim().length === 0) {
-    context.callback.testResults(context, []);
+    context.callback.testResults(context, { testResults: [] });
     return;
   }
 
@@ -31,7 +31,6 @@ export async function tests(context: RequestContext, folderData: FolderData[]) {
       context.response!,
       context.responseBody,
       context,
-      true,
       context.collection.pathname,
       context.executionMode,
       context.collection.brunoConfig.scripts,
@@ -45,7 +44,9 @@ export async function tests(context: RequestContext, folderData: FolderData[]) {
     context.timings.stopMeasure('test');
   }
 
-  context.callback.testResults(context, scriptResult.results);
+  context.callback.testResults(context, {
+    testResults: scriptResult.results
+  });
   context.callback.updateScriptEnvironment(context);
 
   context.debug.log('Test script finished', {

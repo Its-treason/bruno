@@ -64,7 +64,7 @@ export const Script: React.FC<ScriptProps> = ({ item, collection }) => {
           mode="javascript"
           onRun={onRun}
           onSave={onSave}
-          extraLibs={['bru', 'req', 'res']}
+          extraLibs={['bru', 'req', 'res', 'chai']}
         />
       </div>
       <div>
@@ -85,7 +85,7 @@ export const Script: React.FC<ScriptProps> = ({ item, collection }) => {
           mode="javascript"
           onRun={onRun}
           onSave={onSave}
-          extraLibs={['bru', 'req', 'res']}
+          extraLibs={['bru', 'req', 'res', 'chai']}
         />
       </div>
     </div>
