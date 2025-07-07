@@ -1,7 +1,10 @@
+import { TableTbody } from '@mantine/core';
 import { createSlice } from '@reduxjs/toolkit';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
 import last from 'lodash/last';
+import { saveCollectionRoot, saveFolderRoot, saveRequest } from './collections/actions';
+import { appStore } from 'src/store/appStore';
 
 // todo: errors should be tracked in each slice and displayed as toasts
 
@@ -12,6 +15,30 @@ const initialState = {
 
 const tabTypeAlreadyExists = (tabs, collectionUid, type) => {
   return find(tabs, (tab) => tab.collectionUid === collectionUid && tab.type === type);
+};
+
+export const autoSaveTabContent = (dispatch, getState) => {
+  if (!appStore.getState().preferences.request.autoSave) {
+    return;
+  }
+
+  const { tabs, activeTabUid } = getState().tabs;
+  const tab = tabs.find((tab) => tab.uid === activeTabUid);
+  if (!tab) {
+    return;
+  }
+
+  switch (tab.type) {
+    case 'request':
+      dispatch(saveRequest(tab.uid, tab.collectionUid, true));
+      break;
+    case 'collection-settings':
+      dispatch(saveCollectionRoot(tab.collectionUid, true));
+      break;
+    case 'folder-settings':
+      dispatch(saveFolderRoot(tab.collectionUid, tab.folderUid, true));
+      break;
+  }
 };
 
 export const tabsSlice = createSlice({
@@ -64,6 +91,7 @@ export const tabsSlice = createSlice({
         toBeActivatedTabIndex = (activeTabIndex + 1) % state.tabs.length;
       }
 
+      autoSaveTabContent(state.tabs, state.activeTabUid);
       state.activeTabUid = state.tabs[toBeActivatedTabIndex].uid;
     },
     updateRequestPaneTabWidth: (state, action) => {

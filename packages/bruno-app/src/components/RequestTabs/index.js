@@ -4,7 +4,7 @@ import filter from 'lodash/filter';
 import classnames from 'classnames';
 import { IconChevronRight, IconChevronLeft } from '@tabler/icons-react';
 import { useSelector, useDispatch } from 'react-redux';
-import { focusTab, closeTabs } from 'providers/ReduxStore/slices/tabs';
+import { focusTab, closeTabs, autoSaveTabContent } from 'providers/ReduxStore/slices/tabs';
 import RequestTab from './RequestTab';
 import StyledWrapper from './StyledWrapper';
 import ConfirmRequestClose from './RequestTab/ConfirmRequestClose/index';
@@ -36,6 +36,7 @@ const RequestTabs = () => {
   };
 
   const handleClick = (tab) => {
+    dispatch(autoSaveTabContent);
     dispatch(
       focusTab({
         uid: tab.uid

@@ -42,6 +42,7 @@ import { parsePathParams, parseQueryParams, splitOnFirst } from 'utils/url';
 import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
 import { responseStore } from 'src/store/responseStore';
 import { runnerStore } from 'src/store/runnerStore';
+import { appStore } from 'src/store/appStore';
 
 export const renameCollection = (newName, collectionUid) => (dispatch, getState) => {
   const state = getState();
@@ -59,7 +60,6 @@ export const renameCollection = (newName, collectionUid) => (dispatch, getState)
 export const saveRequest = (itemUid, collectionUid, saveSilently) => async (dispatch, getState) => {
   const state = getState();
   const collection = findCollectionByUid(state.collections.collections, collectionUid);
-
   if (!collection) {
     throw new Error('Collection not found');
   }
@@ -122,60 +122,72 @@ export const saveMultipleRequests = (items) => (dispatch, getState) => {
   });
 };
 
-export const saveCollectionRoot = (collectionUid) => (dispatch, getState) => {
-  const state = getState();
-  const collection = findCollectionByUid(state.collections.collections, collectionUid);
+export const saveCollectionRoot =
+  (collectionUid, saveSilent = false) =>
+  (dispatch, getState) => {
+    const state = getState();
+    const collection = findCollectionByUid(state.collections.collections, collectionUid);
 
-  return new Promise((resolve, reject) => {
-    if (!collection) {
-      return reject(new Error('Collection not found'));
-    }
+    return new Promise((resolve, reject) => {
+      if (!collection) {
+        return reject(new Error('Collection not found'));
+      }
 
-    const { ipcRenderer } = window;
+      const { ipcRenderer } = window;
 
-    ipcRenderer
-      .invoke('renderer:save-collection-root', collection.pathname, collection.root)
-      .then(() => toast.success('Collection Settings saved successfully'))
-      .then(resolve)
-      .catch((err) => {
-        toast.error('Failed to save collection settings!');
-        reject(err);
-      });
-  });
-};
+      ipcRenderer
+        .invoke('renderer:save-collection-root', collection.pathname, collection.root)
+        .then(() => {
+          if (!saveSilent) {
+            toast.success('Collection Settings saved successfully');
+          }
+        })
+        .then(resolve)
+        .catch((err) => {
+          toast.error('Failed to save collection settings!');
+          reject(err);
+        });
+    });
+  };
 
-export const saveFolderRoot = (collectionUid, folderUid) => (dispatch, getState) => {
-  const state = getState();
-  const collection = findCollectionByUid(state.collections.collections, collectionUid);
-  const folder = findItemInCollection(collection, folderUid);
+export const saveFolderRoot =
+  (collectionUid, folderUid, saveSilent = false) =>
+  (dispatch, getState) => {
+    const state = getState();
+    const collection = findCollectionByUid(state.collections.collections, collectionUid);
+    const folder = findItemInCollection(collection, folderUid);
 
-  return new Promise((resolve, reject) => {
-    if (!collection) {
-      return reject(new Error('Collection not found'));
-    }
+    return new Promise((resolve, reject) => {
+      if (!collection) {
+        return reject(new Error('Collection not found'));
+      }
 
-    if (!folder) {
-      return reject(new Error('Folder not found'));
-    }
+      if (!folder) {
+        return reject(new Error('Folder not found'));
+      }
 
-    const { ipcRenderer } = window;
+      const { ipcRenderer } = window;
 
-    const folderData = {
-      name: folder.name,
-      pathname: folder.pathname,
-      root: folder.root ?? {}
-    };
+      const folderData = {
+        name: folder.name,
+        pathname: folder.pathname,
+        root: folder.root ?? {}
+      };
 
-    ipcRenderer
-      .invoke('renderer:save-folder-root', folderData)
-      .then(() => toast.success('Folder Settings saved successfully'))
-      .then(resolve)
-      .catch((err) => {
-        toast.error('Failed to save folder settings!');
-        reject(err);
-      });
-  });
-};
+      ipcRenderer
+        .invoke('renderer:save-folder-root', folderData)
+        .then(() => {
+          if (!saveSilent) {
+            toast.success('Folder Settings saved successfully');
+          }
+        })
+        .then(resolve)
+        .catch((err) => {
+          toast.error('Failed to save folder settings!');
+          reject(err);
+        });
+    });
+  };
 
 export const sendCollectionOauth2Request = (collectionUid, itemUid) => (dispatch, getState) => {
   const state = getState();
@@ -204,7 +216,11 @@ export const sendCollectionOauth2Request = (collectionUid, itemUid) => (dispatch
   });
 };
 
-export const sendRequest = (item, collectionUid) => async (_dispatch, getState) => {
+export const sendRequest = (item, collectionUid) => async (dispatch, getState) => {
+  if (appStore.getState().preferences.request.autoSave) {
+    dispatch(saveRequest(item.uid, collectionUid, true));
+  }
+
   const state = getState();
   const collection = findCollectionByUid(state.collections.collections, collectionUid);
   if (!collection) {

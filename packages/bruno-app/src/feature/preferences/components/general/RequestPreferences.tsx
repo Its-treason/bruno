@@ -54,6 +54,12 @@ export const RequestPreferences: React.FC<GeneralPreferencesProps> = ({ form }) 
         step={250}
         label={'Request timeout'}
       />
+
+      <Switch
+        {...form.getInputProps('request.autoSave', { type: 'checkbox' })}
+        label="Auto save requests"
+        description="Requests will be saved, when switching requests and sending requests"
+      />
     </Stack>
   );
 };
