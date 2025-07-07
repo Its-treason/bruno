@@ -15,7 +15,7 @@ export function getMockData(placeholder: string) {
     case '$randomBoolean':
       return faker.datatype.boolean();
     case '$randomInt':
-      return faker.number.int();
+      return faker.number.int(1000);
     case '$randomColor':
       return faker.color.human();
     case '$randomHexColor':

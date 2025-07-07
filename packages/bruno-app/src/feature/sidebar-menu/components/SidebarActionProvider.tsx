@@ -18,7 +18,7 @@ import {
 } from 'providers/ReduxStore/slices/collections/actions';
 import { getCollectionAndItem } from '../util/getCollectionAndItem';
 import { hideHomePage } from 'providers/ReduxStore/slices/app';
-import { addTab, focusTab } from 'providers/ReduxStore/slices/tabs';
+import { addTab, autoSaveTabContent, focusTab } from 'providers/ReduxStore/slices/tabs';
 import { collectionClicked, collectionFolderClicked } from 'providers/ReduxStore/slices/collections';
 import { uuid } from 'utils/common';
 import { CodeGeneratorModal } from 'src/feature/code-generator';
@@ -94,6 +94,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
 
   const openCollectionSettings = useCallback((collectionUid: string) => {
     dispatch(hideHomePage());
+    dispatch(autoSaveTabContent);
     dispatch(
       addTab({
         uid: collectionUid,
@@ -109,6 +110,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
   }, []);
   const openFolderSettings = useCallback((collectionUid: string, folderUid: string) => {
     dispatch(hideHomePage());
+    dispatch(autoSaveTabContent);
     dispatch(
       addTab({
         uid: folderUid,
@@ -160,6 +162,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
       }, 50);
 
       dispatch(hideHomePage());
+      dispatch(autoSaveTabContent);
       dispatch(
         addTab({
           uid: item.uid,
@@ -184,6 +187,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
   }, []);
   const openRunner = useCallback((collectionUid: string, itemUid?: string) => {
     dispatch(hideHomePage());
+    dispatch(autoSaveTabContent);
     dispatch(
       addTab({
         uid: uuid(),

@@ -33,7 +33,8 @@ export const preferencesSchema = z.object({
         .default({ enabled: true }),
       storeCookies: z.boolean().default(true),
       sendCookies: z.boolean().default(true),
-      timeout: z.number().min(0).max(3_600_000).default(30_000)
+      timeout: z.number().min(0).max(3_600_000).default(30_000),
+      autoSave: z.boolean().default(false)
     })
     .default({} as any),
   display: z

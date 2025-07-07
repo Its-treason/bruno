@@ -96,7 +96,7 @@ export const requestBodySchema = z.discriminatedUnion('mode', [
   z
     .object({
       mode: z.literal('file'),
-      file: z.array(fileBodySchema)
+      file: z.array(fileBodySchema).default([])
     })
     .passthrough()
 ]);

@@ -1,6 +1,7 @@
 import { RequestContext } from '../types';
 import { Cookie, CookieJar } from 'tough-cookie';
 import { cleanJson } from '../runtime/utils';
+import { TestResult } from '../runtime/dataObject/TestResults';
 
 type Callback = (payload: any) => void;
 export type RawCallbacks = {
@@ -79,15 +80,20 @@ export class Callbacks {
     });
   }
 
-  testResults(context: RequestContext, testResults: any[]) {
+  testResults(
+    context: RequestContext,
+    data: {
+      testResultsPre?: TestResult[];
+      testResultsPost?: TestResult[];
+      testResults?: TestResult[];
+    }
+  ) {
     this.send('requestEvent', context, {
       type: 'test-results',
       itemUid: context.requestItem.uid,
       requestUid: context.uid,
       collectionUid: context.collection.uid,
-      data: {
-        testResults
-      }
+      data
     });
   }
 

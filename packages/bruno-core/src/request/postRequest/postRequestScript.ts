@@ -14,6 +14,7 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
       : [requestPostRequestScript, ...folderLevelScripts.reverse(), collectionPostRequestScript].join(EOL);
 
   if (postRequestScript.replaceAll('\n', '').trim().length === 0) {
+    context.callback.testResults(context, { testResultsPost: [] });
     return;
   }
 
@@ -29,7 +30,6 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
       context.response!,
       context.responseBody,
       context,
-      false,
       context.collection.pathname,
       context.executionMode,
       context.collection.brunoConfig.scripts,
@@ -43,6 +43,7 @@ export async function postRequestScript(context: RequestContext, folderData: Fol
     context.timings.stopMeasure('postScript');
   }
 
+  context.callback.testResults(context, { testResultsPost: scriptResult.results });
   context.callback.updateScriptEnvironment(context);
 
   context.debug.log('Post request script finished', {

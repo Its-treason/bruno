@@ -16,9 +16,17 @@ export const Tests: React.FC<TestsProps> = ({ requestId }) => {
   return (
     <>
       <Text size="lg" className={classes.title}>
+        Tests Pre-Request
+      </Text>
+      <TestResults itemUid={requestId} script="testResultsPre" />
+      <Text size="lg" mt={'xl'} className={classes.title}>
+        Tests Post-Request
+      </Text>
+      <TestResults itemUid={requestId} script="testResultsPost" />
+      <Text size="lg" mt={'xl'} className={classes.title}>
         Tests
       </Text>
-      <TestResults itemUid={requestId} />
+      <TestResults itemUid={requestId} script="testResults" />
       <Text size="lg" mt={'xl'} className={classes.title}>
         Assertions
       </Text>

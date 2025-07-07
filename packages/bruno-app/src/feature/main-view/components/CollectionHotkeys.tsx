@@ -10,7 +10,7 @@ import {
   saveRequest,
   sendRequest
 } from 'providers/ReduxStore/slices/collections/actions';
-import { closeTabs, switchTab } from 'providers/ReduxStore/slices/tabs';
+import { autoSaveTabContent, closeTabs, switchTab } from 'providers/ReduxStore/slices/tabs';
 import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { appStore } from 'src/store/appStore';
@@ -91,6 +91,7 @@ export const CollectionHotkeys: React.FC<CollectionHotkeys> = ({ collection, act
         if (disableHotkeys) {
           return;
         }
+        dispatch(autoSaveTabContent);
         dispatch(switchTab({ direction: 'pagedown' }));
       }
     ],
@@ -100,6 +101,7 @@ export const CollectionHotkeys: React.FC<CollectionHotkeys> = ({ collection, act
         if (disableHotkeys) {
           return;
         }
+        dispatch(autoSaveTabContent);
         dispatch(switchTab({ direction: 'pageup' }));
       }
     ]

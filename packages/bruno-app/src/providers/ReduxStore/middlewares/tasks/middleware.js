@@ -3,7 +3,7 @@ import each from 'lodash/each';
 import filter from 'lodash/filter';
 import { createListenerMiddleware } from '@reduxjs/toolkit';
 import { removeTaskFromQueue, hideHomePage } from 'providers/ReduxStore/slices/app';
-import { addTab } from 'providers/ReduxStore/slices/tabs';
+import { addTab, autoSaveTabContent } from 'providers/ReduxStore/slices/tabs';
 import { collectionAddFileEvent } from 'providers/ReduxStore/slices/collections';
 import { findCollectionByUid, findItemInCollectionByPathname, getDefaultRequestPaneTab } from 'utils/collections/index';
 import { taskTypes } from './utils';
@@ -29,6 +29,7 @@ taskMiddleware.startListening({
         const collection = findCollectionByUid(state.collections.collections, collectionUid);
         const item = findItemInCollectionByPathname(collection, task.itemPathname);
         if (item) {
+          listenerApi.dispatch(autoSaveTabContent);
           listenerApi.dispatch(
             addTab({
               uid: item.uid,

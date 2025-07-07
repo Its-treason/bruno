@@ -3,26 +3,27 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { Group, List, Text, ThemeIcon } from '@mantine/core';
-import { IconCircleDashed } from '@tabler/icons-react';
+import { IconCircleCheck, IconCircleX } from '@tabler/icons-react';
 import React, { useMemo } from 'react';
 import { responseStore } from 'src/store/responseStore';
 import { useStore } from 'zustand';
 
 type TestResultsProps = {
   itemUid: string;
+  script: 'testResults' | 'testResultsPre' | 'testResultsPost';
 };
 
-export const TestResults: React.FC<TestResultsProps> = ({ itemUid }) => {
-  const results = useStore(responseStore, (state) => state.responses.get(itemUid)?.testResults);
+export const TestResults: React.FC<TestResultsProps> = ({ itemUid, script }) => {
+  const results = useStore(responseStore, (state) => state.responses.get(itemUid)?.[script]) || [];
 
   const rows = useMemo(() => {
-    return (results ?? []).map((value) => (
+    return results.map((value) => (
       <List.Item
-        color={value.status === 'pass' ? 'green' : 'red'}
+        c={value.status === 'pass' ? 'green' : 'red'}
         styles={{ itemIcon: { marginInlineEnd: 4 } }}
         icon={
-          <ThemeIcon size={24} radius="xl">
-            {value.status === 'pass' ? <IconCircleDashed size={18} /> : <IconCircleDashed size={18} />}
+          <ThemeIcon color={value.status === 'pass' ? 'green' : 'red'} size={24} radius="xl">
+            {value.status === 'pass' ? <IconCircleCheck size={18} /> : <IconCircleX size={18} />}
           </ThemeIcon>
         }
       >
@@ -53,7 +54,9 @@ export const TestResults: React.FC<TestResultsProps> = ({ itemUid }) => {
         <Text c={'green'}>Passed: {passedTests.length}</Text>
         <Text c={'red'}>Failed: {failedTests.length}</Text>
       </Group>
-      <List>{rows}</List>
+      <List size="md" mt={'xs'} styles={{ itemWrapper: { alignItems: 'flex-start' } }}>
+        {rows}
+      </List>
     </>
   );
 };

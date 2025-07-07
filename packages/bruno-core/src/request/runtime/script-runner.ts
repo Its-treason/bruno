@@ -32,7 +32,6 @@ export async function runScript(
   response: Response | null,
   responseBody: any | null,
   requestContext: RequestContext,
-  useTests: boolean,
   collectionPath: string,
   executionMode: string,
   scriptingConfig: BrunoConfig['scripts'],
@@ -43,7 +42,6 @@ export async function runScript(
     response,
     responseBody,
     requestContext,
-    useTests,
     collectionPath,
     executionMode,
     scriptingConfig,
@@ -87,7 +85,7 @@ export async function runScript(
   return {
     failHandler: scriptContext.req._failHandler,
     responseBody: scriptContext.res?.body,
-    results: scriptContext.brunoTestResults ? cleanJson(scriptContext.brunoTestResults.getResults()) : null
+    results: cleanJson(scriptContext.brunoTestResults.getResults())
   };
 }
 
@@ -96,7 +94,6 @@ function buildScriptContext(
   response: Response | null,
   responseBody: any | null,
   requestContext: RequestContext,
-  useTests: boolean,
   collectionPath: string,
   executionMode: string,
   scriptingConfig: BrunoConfig['scripts'],
@@ -108,28 +105,22 @@ function buildScriptContext(
     req: BrunoRequest;
     res: BrunoResponse | null;
     bru: Bru;
-    expect: typeof chai.expect | null;
-    assert: typeof chai.assert | null;
-    brunoTestResults: TestResults | null;
-    test: ReturnType<typeof Test> | null;
+    // Since: https://github.com/usebruno/bruno/pull/4878 tests are available in all scripts
+    expect: typeof chai.expect;
+    assert: typeof chai.assert;
+    brunoTestResults: TestResults;
+    test: ReturnType<typeof Test>;
   } = {
     require: createCustomRequire(scriptingConfig, collectionPath),
     console: createCustomConsole(onConsoleLog),
     req: new BrunoRequest(request, response !== null, executionMode),
     res: null,
     bru: new Bru(requestContext),
-    expect: null,
-    assert: null,
-    brunoTestResults: null,
-    test: null
+    ...createTestContext()
   };
 
   if (response) {
     context.res = new BrunoResponse(response, responseBody);
-  }
-
-  if (useTests) {
-    Object.assign(context, createTestContext());
   }
 
   return context;
