@@ -758,6 +758,10 @@ export const areItemsTheSameExceptSeqUpdate = (_item1, _item2) => {
 
 export const getDefaultRequestPaneTab = (item) => {
   if (item.type === 'http-request') {
+    const request = item.draft ? item.draft.request : item.request;
+    if (request.body.mode !== 'none') {
+      return 'body';
+    }
     return 'params';
   }
 
