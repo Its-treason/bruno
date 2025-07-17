@@ -322,6 +322,10 @@ declare const res: {
    * Overwrites the response body. Useful if you want to transform the server response to better view it.
    */
   setBody(newBody: unknown): void;
+  /**
+   * Returns a Buffer with the contents of the response.
+   */
+  getDataBuffer(): Buffer;
 } & ((path: string) => any);
 `;
 

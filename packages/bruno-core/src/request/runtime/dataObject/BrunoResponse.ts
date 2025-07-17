@@ -1,4 +1,4 @@
-import { writeFileSync } from 'node:fs';
+import { readFileSync, writeFileSync } from 'node:fs';
 import { Response } from '../../types';
 import { stringify } from 'lossless-json';
 import { get } from '@usebruno/query';
@@ -71,5 +71,9 @@ export class BrunoResponse {
     }
 
     writeFileSync(this[res].path, stringifiedBody);
+  }
+
+  getDataBuffer(): Buffer {
+    return readFileSync(this[res].path);
   }
 }
