@@ -53,8 +53,8 @@ app.on('ready', async () => {
 
       // See: https://github.com/electron/electron/issues/41613#issuecomment-2576307939
       await setTimeout(1_000);
-      for (const extension of mainSession.getAllExtensions()) {
-        await mainSession.loadExtension(extension.path);
+      for (const extension of mainSession.extensions.getAllExtensions()) {
+        await mainSession.extensions.loadExtension(extension.path);
       }
     } catch (err) {
       console.error('An error occurred while loading extensions: ', err);

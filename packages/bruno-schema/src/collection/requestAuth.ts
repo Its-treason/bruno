@@ -124,35 +124,35 @@ export const requestAuthSchema = z
     }),
     z.object({
       mode: z.literal('awsv4'),
-      awsv4: awsV4AuthSchema.default({})
+      awsv4: awsV4AuthSchema.default(awsV4AuthSchema.parse({}))
     }),
     z.object({
       mode: z.literal('basic'),
-      basic: basicAuthSchema.default({})
+      basic: basicAuthSchema.default(basicAuthSchema.parse({}))
     }),
     z.object({
       mode: z.literal('bearer'),
-      bearer: bearerAuthSchema.default({})
+      bearer: bearerAuthSchema.default(bearerAuthSchema.parse({}))
     }),
     z.object({
       mode: z.literal('digest'),
-      digest: digestAuthSchema.default({})
+      digest: digestAuthSchema.default(digestAuthSchema.parse({}))
     }),
     z.object({
       mode: z.literal('oauth2'),
-      oauth2: oauth2AuthSchema.default({ grantType: 'authorization_code' })
+      oauth2: oauth2AuthSchema.default(authorizationCodeGrantSchema.parse({ grantType: 'authorization_code' }))
     }),
     z.object({
       mode: z.literal('apikey'),
-      apikey: apiKeyAuthSchema.default({})
+      apikey: apiKeyAuthSchema.default(apiKeyAuthSchema.parse({}))
     }),
     z.object({
       mode: z.literal('wsse'),
-      wsse: wsseAuthSchema.default({})
+      wsse: wsseAuthSchema.default(wsseAuthSchema.parse({}))
     }),
     z.object({
       mode: z.literal('ntlm'),
-      ntlm: ntlmAuthSchema.default({})
+      ntlm: ntlmAuthSchema.default(ntlmAuthSchema.parse({}))
     })
   ])
   .default({ mode: 'inherit' });

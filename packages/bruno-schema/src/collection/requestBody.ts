@@ -46,58 +46,40 @@ export const fileBodySchema = z.object({
 export type FileBodySchema = z.infer<typeof fileBodySchema>;
 
 export const requestBodySchema = z.discriminatedUnion('mode', [
-  z
-    .object({
-      mode: z.literal('none')
-    })
-    .passthrough(),
-  z
-    .object({
-      mode: z.literal('json'),
-      json: z.string().default('')
-    })
-    .passthrough(),
-  z
-    .object({
-      mode: z.literal('text'),
-      text: z.string().default('')
-    })
-    .passthrough(),
-  z
-    .object({
-      mode: z.literal('xml'),
-      xml: z.string().default('')
-    })
-    .passthrough(),
-  z
-    .object({
-      mode: z.literal('formUrlEncoded'),
-      formUrlEncoded: z.array(formUrlEncodedBodySchema).default([])
-    })
-    .passthrough(),
-  z
-    .object({
-      mode: z.literal('multipartForm'),
-      multipartForm: z.array(multipartFormBodySchema).default([])
-    })
-    .passthrough(),
-  z
-    .object({
-      mode: z.literal('graphql'),
-      graphql: graphqlBodySchema
-    })
-    .passthrough(),
-  z
-    .object({
-      mode: z.literal('sparql'),
-      sparql: z.string().default('')
-    })
-    .passthrough(),
-  z
-    .object({
-      mode: z.literal('file'),
-      file: z.array(fileBodySchema).default([])
-    })
-    .passthrough()
+  z.looseObject({
+    mode: z.literal('none')
+  }),
+  z.looseObject({
+    mode: z.literal('json'),
+    json: z.string().default('')
+  }),
+  z.looseObject({
+    mode: z.literal('text'),
+    text: z.string().default('')
+  }),
+  z.looseObject({
+    mode: z.literal('xml'),
+    xml: z.string().default('')
+  }),
+  z.looseObject({
+    mode: z.literal('formUrlEncoded'),
+    formUrlEncoded: z.array(formUrlEncodedBodySchema).default([])
+  }),
+  z.looseObject({
+    mode: z.literal('multipartForm'),
+    multipartForm: z.array(multipartFormBodySchema).default([])
+  }),
+  z.looseObject({
+    mode: z.literal('graphql'),
+    graphql: graphqlBodySchema
+  }),
+  z.looseObject({
+    mode: z.literal('sparql'),
+    sparql: z.string().default('')
+  }),
+  z.looseObject({
+    mode: z.literal('file'),
+    file: z.array(fileBodySchema).default([])
+  })
 ]);
 export type RequestBodySchema = z.infer<typeof requestBodySchema>;

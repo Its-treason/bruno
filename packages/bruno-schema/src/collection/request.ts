@@ -58,7 +58,10 @@ export const httpRequestSchema = z.object({
       req: z.string().default(''),
       res: z.string().default('')
     })
-    .default({}),
+    .default({
+      req: '',
+      res: ''
+    }),
   vars: z.object({
     req: z.array(requestVarSchema).default([]),
     res: z.array(requestVarSchema).default([])
@@ -78,7 +81,10 @@ export const collectionRequestSchema = z.object({
       req: z.string().default(''),
       res: z.string().default('')
     })
-    .default({}),
+    .default({
+      req: '',
+      res: ''
+    }),
   tests: z.string().default(''),
   docs: z.string().default('')
 });
