@@ -3,59 +3,57 @@ import { collectionRequestSchema, headerSchema, requestItemSchema, requestVarSch
 import { environmentSchema } from './environment';
 import { requestAuthSchema } from './requestAuth';
 
-// This has a lot of defaults because the Config may be older and Bruno has to set defaults
-export const brunoConfigSchema = z
-  .object({
-    version: z.literal('1'),
-    name: z.string(),
-    type: z.literal('collection'),
-    ignore: z.array(z.string()).default([]),
-    scripts: z
-      .object({
-        moduleWhitelist: z.array(z.string()).default([])
-      })
-      .default({ moduleWhitelist: [] }),
-    proxy: z
-      .object({
-        enabled: z.boolean().or(z.literal('global')).default('global'),
-        protocol: z.enum(['http', 'https', 'socks4', 'socks5']).default('https'),
-        hostname: z.string().default(''),
-        port: z.number().or(z.string()).nullable(),
-        auth: z.object({
-          enabled: z.boolean(),
-          username: z.string().default(''),
-          password: z.string().default('')
-        }),
-        bypassProxy: z.string().default('')
-      })
-      .default({
-        enabled: 'global',
-        protocol: 'http',
-        hostname: '',
-        port: 0,
-        auth: { enabled: false, username: '', password: '' },
-        bypassProxy: ''
-      }),
-    clientCertificates: z
-      .object({
+// This has a lot of defaults because the Config may be older and Bruno set any defaults
+export const brunoConfigSchema = z.looseObject({
+  version: z.literal('1'),
+  name: z.string(),
+  type: z.literal('collection'),
+  ignore: z.array(z.string()).default([]),
+  scripts: z
+    .object({
+      moduleWhitelist: z.array(z.string()).default([])
+    })
+    .default({ moduleWhitelist: [] }),
+  proxy: z
+    .looseObject({
+      enabled: z.boolean().or(z.literal('global')).default('global'),
+      protocol: z.enum(['http', 'https', 'socks4', 'socks5']).default('https'),
+      hostname: z.string().default(''),
+      port: z.number().or(z.string()).nullable(),
+      auth: z.object({
         enabled: z.boolean(),
-        certs: z.array(z.unknown())
-      })
-      .default({ enabled: false, certs: [] }),
-    presets: z
-      .object({
-        requestType: z.enum(['graphql', 'http']).default('http'),
-        requestMethod: z
-          .string()
-          .min(1)
-          .regex(/^[a-zA-Z]+$/)
-          .transform((base) => base.toUpperCase())
-          .default('GET'),
-        requestUrl: z.string().default('')
-      })
-      .default({ requestType: 'http', requestMethod: 'GET', requestUrl: '' })
-  })
-  .passthrough();
+        username: z.string().default(''),
+        password: z.string().default('')
+      }),
+      bypassProxy: z.string().default('')
+    })
+    .default({
+      enabled: 'global',
+      protocol: 'http',
+      hostname: '',
+      port: 0,
+      auth: { enabled: false, username: '', password: '' },
+      bypassProxy: ''
+    }),
+  clientCertificates: z
+    .looseObject({
+      enabled: z.boolean(),
+      certs: z.array(z.unknown())
+    })
+    .default({ enabled: false, certs: [] }),
+  presets: z
+    .looseObject({
+      requestType: z.enum(['graphql', 'http']).default('http'),
+      requestMethod: z
+        .string()
+        .min(1)
+        .regex(/^[a-zA-Z]+$/)
+        .transform((base) => base.toUpperCase())
+        .default('GET'),
+      requestUrl: z.string().default('')
+    })
+    .default({ requestType: 'http', requestMethod: 'GET', requestUrl: '' })
+});
 export type BrunoConfigSchema = z.infer<typeof brunoConfigSchema>;
 
 export const collectionSchema = z.object({
@@ -66,8 +64,8 @@ export const collectionSchema = z.object({
   activeEnvironmentUid: z.string().uuid().nullable(),
   environments: z.array(environmentSchema),
   pathname: z.string(),
-  runtimeVariables: z.record(z.unknown()),
-  processEnvVariables: z.record(z.unknown()).optional(),
+  runtimeVariables: z.record(z.string(), z.unknown()),
+  processEnvVariables: z.record(z.string(), z.unknown()).optional(),
   root: z
     .object({
       request: collectionRequestSchema.optional()
@@ -89,7 +87,10 @@ export const collectionMetadataSchema = z.object({
       req: z.string().default(''),
       res: z.string().default('')
     })
-    .default({}),
+    .default({
+      req: '',
+      res: ''
+    }),
   vars: z.array(requestVarSchema).default([]),
   tests: z.string().default(''),
   docs: z.string().default(''),

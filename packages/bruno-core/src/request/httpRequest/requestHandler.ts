@@ -208,6 +208,17 @@ function handleRedirect(request: BrunoRequestOptions, response: HttpRequestInfo)
     }
   }
 
+  // Remove "Authorization" header when hostname changes
+  // See: https://fetch.spec.whatwg.org/#http-redirect-fetch Step 13.
+  // This is not in the original RFC, but curl also has the same behavior
+  if (newLocationUrl.hostname !== request.hostname) {
+    for (const headerName in request.headers) {
+      if (headerName.toLowerCase() === 'authorization') {
+        delete (request.headers as OutgoingHttpHeaders)[headerName];
+      }
+    }
+  }
+
   request.hostname = newLocationUrl.hostname;
   request.port = newLocationUrl.port;
   request.protocol = newLocationUrl.protocol;
