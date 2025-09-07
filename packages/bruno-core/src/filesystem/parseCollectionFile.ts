@@ -70,6 +70,14 @@ export async function parseCollectionFile(itemPath: string, collectionPath: stri
   }
 }
 
+export function parseDeletedFile(itemPath: string, collectionPath: string): ParsedFile {
+  return {
+    type: 'delete',
+    id: getItemId(itemPath),
+    parentId: getParentId(itemPath, collectionPath)
+  };
+}
+
 type FileType =
   | 'UNKNOWN' // Some other file. Will be ignored
   | 'ENVIRONMENT_DIR' // Environment directory of the collection. Will be ignored
@@ -80,7 +88,7 @@ type FileType =
   | 'COLLECTION_DATA' // `collection.bru` file
   | 'BRUNO_JSON'; // `bruno.json` with config settings for the current collection
 
-export async function determineFileType(itemPath: string, collectionPath: string): Promise<FileType> {
+async function determineFileType(itemPath: string, collectionPath: string): Promise<FileType> {
   const itemStats = await fs.stat(itemPath);
 
   const environmentDir = path.join(collectionPath, 'environments');
@@ -205,7 +213,7 @@ function getParentId(itemPath: string, collectionPath: string): string | undefin
   return store.getOrCreate(parentDir);
 }
 
-function createFileContentHash(buffer: Buffer): string {
+export function createFileContentHash(buffer: Buffer): string {
   return createHash('sha1').update(buffer).digest('hex');
 }
 // #endRegion

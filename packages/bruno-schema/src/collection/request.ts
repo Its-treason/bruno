@@ -3,8 +3,6 @@ import { requestAuthSchema } from './requestAuth';
 import { requestBodySchema } from './requestBody';
 import { generateId } from '@usebruno/common';
 
-// TODO: Remove some defaults
-
 export const headerSchema = z.object({
   uid: z.string().default(generateId),
   name: z.string(),
@@ -124,7 +122,7 @@ export const requestSchema = z.object({
     name: z.string()
   }),
   http: z.object({
-    method: z.string(),
+    method: z.string().toLowerCase(),
     url: z.string()
   }),
   headers: z.array(headerSchema).default([]),
@@ -137,13 +135,19 @@ export const requestSchema = z.object({
       req: z.string().default(''),
       res: z.string().default('')
     })
-    .default({}),
+    .default({
+      req: '',
+      res: ''
+    }),
   vars: z
     .object({
       req: z.array(requestVarSchema).default([]),
       res: z.array(requestVarSchema).default([])
     })
-    .default({}),
+    .default({
+      req: [],
+      res: []
+    }),
   assertions: z.array(assertionSchema).default([]),
   tests: z.string().default(''),
   docs: z.string().default(''),

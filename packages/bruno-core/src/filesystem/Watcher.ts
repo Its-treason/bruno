@@ -1,6 +1,7 @@
 import { subscribe, getEventsSince, writeSnapshot, AsyncSubscription, Event } from '@parcel/watcher';
 import path from 'node:path';
-import { randomUUID } from 'node:crypto';
+import { generateId } from '@usebruno/common';
+import { WatcherEvent } from './types';
 
 export class CollectionWatcher {
   private subscription: AsyncSubscription | null = null;
@@ -10,7 +11,7 @@ export class CollectionWatcher {
     private collectionDir: string,
     private ignore: string[], // GlobPattern or FilePath
     private tmpDir: string,
-    private callback: (events: Event[]) => void,
+    private callback: (events: WatcherEvent[]) => void,
     private errCallback: (err: Error) => void
   ) {}
 
@@ -30,7 +31,7 @@ export class CollectionWatcher {
   }
 
   public async suspend() {
-    this.lastSnapshotPath = path.join(this.tmpDir, `parcel_snapshot_${randomUUID()}`);
+    this.lastSnapshotPath = path.join(this.tmpDir, `parcel_snapshot_${generateId()}`);
     await writeSnapshot(this.collectionDir, this.lastSnapshotPath, { ignore: this.ignore });
 
     await this.subscription?.unsubscribe();

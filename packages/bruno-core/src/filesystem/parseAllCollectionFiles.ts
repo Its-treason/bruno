@@ -4,6 +4,7 @@ import { minimatch } from 'minimatch';
 import { ParsedFile } from './types';
 import { parseCollectionFile } from './parseCollectionFile';
 import { realpathSync } from 'node:fs';
+import { ItemIdStore } from './ItemIdStore';
 
 export async function parseAllCollectionFiles(collectionDir: string) {
   const collectionRealPath = realpathSync(collectionDir, { encoding: 'utf-8' });
@@ -26,6 +27,8 @@ export async function parseAllCollectionFiles(collectionDir: string) {
       results.push(result);
     }
   }
+
+  ItemIdStore.getInstance().commitToDisk();
 
   return results;
 }

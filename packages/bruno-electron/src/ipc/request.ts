@@ -14,6 +14,7 @@ import {
 import { getPreferences } from '../store/preferences';
 const { uuid, safeStringifyJSON } = require('../utils/common');
 const { cookieJar } = require('../utils/cookies');
+import { generateId } from '@usebruno/common';
 
 ItemIdStore.init(path.join(app.getPath('userData'), 'storage', 'itemIdStore.json'));
 
@@ -229,15 +230,15 @@ ipcMain.handle(
       globalVariables = variables.getGlobalVariables();
       environment = {
         name: environment?.name ?? '',
-        uid: '',
+        id: '',
         contentHash: '',
         variables: Object.entries(variables.getEnvironmentVariables()).map(([name, value]) => ({
+          id: generateId(),
           enabled: true,
           name,
           value: value as any,
           secret: false,
-          type: 'text',
-          uid: ''
+          type: 'text'
         }))
       };
 

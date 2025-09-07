@@ -40,7 +40,7 @@ export class ItemIdStore {
     if (!this.targetPath) {
       return;
     }
-    const contents = JSON.stringify(Object.entries(this.idMap));
+    const contents = JSON.stringify(Object.fromEntries(this.idMap));
     writeFileSync(this.targetPath, contents, { encoding: 'utf-8' });
   }
 

@@ -1,7 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import filter from 'lodash/filter';
 import find from 'lodash/find';
-import get from 'lodash/get';
 import trim from 'lodash/trim';
 import { insertTaskIntoQueue } from 'providers/ReduxStore/slices/app';
 import toast from 'react-hot-toast';
@@ -243,9 +242,7 @@ export const sendRequest = (item, collectionUid) => async (dispatch, getState) =
     await sendNetworkRequest(item, collection, environment);
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
-
     if (message.includes('Request cancelled')) {
-      console.warn('Request canceleed!! REMOVE ME');
       store.cancelResponse(item.uid);
       return;
     }

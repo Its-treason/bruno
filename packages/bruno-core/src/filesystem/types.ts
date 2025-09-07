@@ -1,3 +1,4 @@
+import { Event } from '@parcel/watcher';
 import type {
   BrunoConfigSchema,
   CollectionMetadataSchema,
@@ -6,6 +7,8 @@ import type {
   FileMetaSchema,
   RequestSchema
 } from '@usebruno/schema';
+
+export type WatcherEvent = Event;
 
 export type ParsedFile =
   | {
@@ -47,4 +50,9 @@ export type ParsedFile =
   | {
       type: 'brunoJson';
       data: BrunoConfigSchema;
+    }
+  | {
+      type: 'delete';
+      id: string;
+      parentId?: string;
     };
