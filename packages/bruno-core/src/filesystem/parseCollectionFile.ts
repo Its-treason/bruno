@@ -49,12 +49,14 @@ export async function parseCollectionFile(itemPath: string, collectionPath: stri
         parentId: getParentId(itemPath, collectionPath)
       };
     case 'DIR_DATA':
+      // This is the `folder.bru` file which is directly tied to the parent dir
+      const folderPath = dirname(itemPath);
       return {
         type: 'dirMeta',
         data: await parseMetadataBru(itemPath),
-        meta: await collectDirMeta(itemPath),
-        id: getItemId(itemPath),
-        parentId: getParentId(itemPath, collectionPath)
+        meta: await collectDirMeta(folderPath),
+        id: getItemId(folderPath),
+        parentId: getParentId(folderPath, collectionPath)
       };
     case 'ENVIRONMENT_FILE':
       return {

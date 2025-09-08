@@ -895,7 +895,11 @@ ipcMain.on('main:collection-opened', async (win, pathname, uid, brunoConfig) => 
   lastOpenedCollections.add(pathname);
   app.addRecentDocument(pathname);
 
-  win.webContents.send('collection:load-started', uid);
+  win.webContents.send('collection:load-started', uid, {
+    basename: path.basename(pathname),
+    dirname: path.dirname(pathname),
+    path: pathname
+  });
 
   const items = await parseAllCollectionFiles(pathname);
   win.webContents.send('collection:load-finished', uid, items);

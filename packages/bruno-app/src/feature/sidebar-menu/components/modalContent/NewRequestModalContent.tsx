@@ -2,9 +2,10 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Alert, Button, Group, Radio, Stack, Switch, TextInput, Textarea, rem } from '@mantine/core';
-import { useForm, zodResolver } from '@mantine/form';
+import { Alert, Button, Group, Radio, Switch, TextInput, Textarea, rem } from '@mantine/core';
+import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
+import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { useDispatch } from 'react-redux';
 import { newHttpRequest } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
@@ -35,7 +36,7 @@ type NewFolderFormSchema = z.infer<typeof newRequestFormSchema>;
 type NewRequestModalContentProps = {
   onClose: () => void;
   collectionUid: string;
-  brunoConfig: BrunoConfigSchema;
+  brunoConfig?: BrunoConfigSchema;
   itemUid?: string;
 };
 
@@ -103,7 +104,7 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
   });
 
   const newRequestForm = useForm<NewFolderFormSchema>({
-    validate: zodResolver(newRequestFormSchema),
+    validate: zod4Resolver(newRequestFormSchema),
     initialValues: {
       curlImport: false,
       name: '',

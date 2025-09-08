@@ -18,6 +18,7 @@ import { immer } from 'zustand/middleware/immer';
 //#region Types
 export type CollectionInfo = {
   id: string;
+  name: string; // Either from CollectionMetadataSchema or DirMetaSchema.basename as a fallback
   dirMeta: DirMetaSchema;
 
   config?: BrunoConfigSchema;
@@ -41,11 +42,13 @@ export type ItemInfo = {
 } & (
   | {
       type: 'request';
+      name: string;
       meta: FileMetaSchema;
       data: RequestSchema;
     }
   | {
       type: 'dir';
+      name: string;
       meta: DirMetaSchema;
       data?: CollectionMetadataSchema;
       children: Set<string>;
@@ -87,6 +90,7 @@ export const collectionStore = createStore(
           children: new Set(),
           dirMeta,
           id: collectionId,
+          name: dirMeta.basename,
           initialLoaded: false,
           openedDate: Date.now(),
           processEnvVariables: {},
@@ -121,6 +125,7 @@ export const collectionStore = createStore(
           case 'collectionMeta':
             if (shouldUpdateContent(collection.data, parsedFile.data)) {
               collection.data = parsedFile.data;
+              collection.name = parsedFile.data.name;
             }
             break;
           case 'dir':
@@ -133,7 +138,8 @@ export const collectionStore = createStore(
                 id: parsedFile.id,
                 meta: parsedFile.meta,
                 data: parsedFile.type === 'dirMeta' ? parsedFile.data : null,
-                parentId: parsedFile.parentId
+                parentId: parsedFile.parentId,
+                name: parsedFile.meta.basename
               });
               ensureParentExists(state, collection, parsedFile.id, parsedFile.parentId);
               break;
@@ -143,10 +149,10 @@ export const collectionStore = createStore(
             existingDir.meta = parsedFile.meta;
             if (parsedFile.type === 'dirMeta' && shouldUpdateContent(parsedFile.data, existingDir.data)) {
               existingDir.data = parsedFile.data;
+              existingDir.name = parsedFile.data.name;
             }
             break;
           case 'request':
-            console.log(parsedFile);
             const existingItem = state.items.get(parsedFile.id);
             if (!existingItem) {
               state.items.set(parsedFile.id, {
@@ -154,7 +160,8 @@ export const collectionStore = createStore(
                 id: parsedFile.id,
                 meta: parsedFile.meta,
                 data: parsedFile.data,
-                parentId: parsedFile.parentId
+                parentId: parsedFile.parentId,
+                name: parsedFile.data.meta.name
               });
               ensureParentExists(state, collection, parsedFile.id, parsedFile.parentId);
               break;
@@ -164,6 +171,7 @@ export const collectionStore = createStore(
             existingItem.meta = parsedFile.meta;
             if (shouldUpdateContent(parsedFile.data, existingItem.data)) {
               existingItem.data = parsedFile.data;
+              existingItem.name = parsedFile.data.meta.name;
             }
             break;
           case 'envFile':
@@ -321,7 +329,8 @@ const ensureParentExists = (state: CollectionStore, collection: CollectionInfo, 
       id: parentId,
       type: 'dir',
       children: new Set([itemId]),
-      meta: { basename: '', dirname: '', path: '' }
+      meta: { basename: '', dirname: '', path: '' },
+      name: ''
     };
     state.items.set(parentId, parent);
   } else if (parent.type === 'dir') {

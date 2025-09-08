@@ -3,13 +3,14 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { Alert, Button, Group, TextInput, rem } from '@mantine/core';
-import { useForm, zodResolver } from '@mantine/form';
+import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { newFolder } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { IconAlertCircle } from '@tabler/icons-react';
 import { z } from 'zod';
+import { zod4Resolver } from 'mantine-form-zod-resolver';
 
 const newFolderFormSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(255)
@@ -26,7 +27,7 @@ export const NewFolderModalContent: React.FC<NewFolderModalContentProps> = ({ on
   const dispatch = useDispatch();
 
   const newFolderForm = useForm<NewFolderFormSchema>({
-    validate: zodResolver(newFolderFormSchema),
+    validate: zod4Resolver(newFolderFormSchema),
     initialValues: {
       name: ''
     }

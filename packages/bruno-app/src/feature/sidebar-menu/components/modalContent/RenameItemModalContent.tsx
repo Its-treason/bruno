@@ -3,7 +3,7 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { Alert, Button, Group, Text, TextInput, rem } from '@mantine/core';
-import { useForm, zodResolver } from '@mantine/form';
+import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { renameItem, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
@@ -13,6 +13,7 @@ import { RequestItemSchema } from '@usebruno/schema';
 import { z } from 'zod';
 import { useEffect } from 'react';
 import { closeTabs } from 'providers/ReduxStore/slices/tabs';
+import { zod4Resolver } from 'mantine-form-zod-resolver';
 
 const renameItemFormSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(255)
@@ -29,7 +30,7 @@ export const RenameItemModalContent: React.FC<RenameItemModalContentProps> = ({ 
   const dispatch = useDispatch();
 
   const renameForm = useForm<RenameItemFormSchema>({
-    validate: zodResolver(renameItemFormSchema),
+    validate: zod4Resolver(renameItemFormSchema),
     initialValues: {
       name: ''
     }

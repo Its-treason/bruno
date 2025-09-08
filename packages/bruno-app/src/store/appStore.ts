@@ -7,6 +7,11 @@ type Actions = {
 
   setPreferencesOpen: (newState: boolean) => void;
   setCookiesOpen: (newState: boolean) => void;
+
+  updateSidebarFilter: (filter: string) => void;
+  updateCollectionSortOrder: (newOrder: 'default' | 'asc' | 'desc') => void;
+  updateCollectionCustomOrder: (newOrder: string[]) => void;
+  updateCollapsedItems: (itemId: string, collapsed: boolean) => void;
 };
 
 type AppStore = {
@@ -14,6 +19,11 @@ type AppStore = {
 
   preferencesOpen: boolean;
   cookiesOpen: boolean;
+
+  sidebarFilter: string;
+  collectionSortOrder: 'default' | 'asc' | 'desc';
+  collectionCustomOrder: string[];
+  collapsedItems: Map<string, boolean>;
 };
 
 export const appStore = createStore(
@@ -22,6 +32,12 @@ export const appStore = createStore(
 
     preferencesOpen: false,
     cookiesOpen: false,
+
+    // Sidebar related things
+    sidebarFilter: '',
+    collectionSortOrder: 'asc',
+    collectionCustomOrder: [],
+    collapsedItems: new Map(),
 
     updatePreferences: (newPreferences: Preferences) => {
       set((state) => {
@@ -37,6 +53,27 @@ export const appStore = createStore(
     setCookiesOpen: (newState: boolean) => {
       set((state) => {
         state.cookiesOpen = newState;
+      });
+    },
+
+    updateSidebarFilter: (filter: string) => {
+      set((state) => {
+        state.sidebarFilter = filter;
+      });
+    },
+    updateCollectionSortOrder: (newOrder: 'default' | 'asc' | 'desc') => {
+      set((state) => {
+        state.collectionSortOrder = newOrder;
+      });
+    },
+    updateCollectionCustomOrder: (newOrder: string[]) => {
+      set((state) => {
+        state.collectionCustomOrder = newOrder;
+      });
+    },
+    updateCollapsedItems: (itemId: string, collapsed: boolean) => {
+      set((state) => {
+        state.collapsedItems.set(itemId, collapsed);
       });
     }
   }))

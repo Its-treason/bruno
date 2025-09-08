@@ -3,8 +3,8 @@ const path = require('path');
 const { dialog, ipcMain, WebContentsView, BrowserWindow } = require('electron');
 const Yup = require('yup');
 const { isDirectory, normalizeAndResolvePath } = require('../utils/filesystem');
-const { generateUidBasedOnHash } = require('../utils/common');
 const Watcher = require('./watcher');
+const { generateId } = require('@usebruno/common');
 
 // todo: bruno.json config schema validation errors must be propagated to the UI
 const configSchema = Yup.object({
@@ -73,7 +73,7 @@ const openCollection = async (collectionPath, init = false) => {
 
   try {
     const brunoConfig = await getCollectionConfigFile(collectionPath);
-    const uid = generateUidBasedOnHash(collectionPath);
+    const uid = generateId();
 
     if (!brunoConfig.ignore || brunoConfig.ignore.length === 0) {
       // 5 Feb 2024:

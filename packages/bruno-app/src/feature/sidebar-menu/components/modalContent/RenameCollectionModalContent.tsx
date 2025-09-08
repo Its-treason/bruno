@@ -3,7 +3,7 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { Alert, Button, Group, Text, TextInput, rem } from '@mantine/core';
-import { useForm, zodResolver } from '@mantine/form';
+import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { renameCollection } from 'providers/ReduxStore/slices/collections/actions';
@@ -12,6 +12,8 @@ import { IconAlertCircle } from '@tabler/icons-react';
 import { CollectionSchema } from '@usebruno/schema';
 import { z } from 'zod';
 import { useEffect } from 'react';
+import { CollectionInfo } from 'src/store/collectionStore';
+import { zod4Resolver } from 'mantine-form-zod-resolver';
 
 const renameCollectionFormSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(255)
@@ -20,7 +22,7 @@ type RenameCollectionFormSchema = z.infer<typeof renameCollectionFormSchema>;
 
 type RenameCollectionModalContentProps = {
   onClose: () => void;
-  collection: CollectionSchema;
+  collection: CollectionInfo;
 };
 
 export const RenameCollectionModalContent: React.FC<RenameCollectionModalContentProps> = ({ onClose, collection }) => {
@@ -28,7 +30,7 @@ export const RenameCollectionModalContent: React.FC<RenameCollectionModalContent
 
   const renameMutation = useMutation({
     mutationFn: async (values: RenameCollectionFormSchema) => {
-      await dispatch(renameCollection(values.name.trim(), collection?.uid));
+      await dispatch(renameCollection(values.name.trim(), collection?.id));
     },
     onSuccess: () => {
       toast.success('Renamed collection');
@@ -37,7 +39,7 @@ export const RenameCollectionModalContent: React.FC<RenameCollectionModalContent
   });
 
   const renameForm = useForm<RenameCollectionFormSchema>({
-    validate: zodResolver(renameCollectionFormSchema),
+    validate: zod4Resolver(renameCollectionFormSchema),
     initialValues: {
       name: ''
     }

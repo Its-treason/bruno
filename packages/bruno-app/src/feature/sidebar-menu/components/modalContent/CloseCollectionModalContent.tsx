@@ -7,12 +7,12 @@ import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import toast from 'react-hot-toast';
 import { IconAlertCircle } from '@tabler/icons-react';
-import { CollectionSchema } from '@usebruno/schema';
 import { removeCollection } from 'providers/ReduxStore/slices/collections/actions';
+import { CollectionInfo } from 'src/store/collectionStore';
 
 type CloseCollectionModalProps = {
   onClose: () => void;
-  collection: CollectionSchema;
+  collection: CollectionInfo;
 };
 
 export const CloseCollectionModalContent: React.FC<CloseCollectionModalProps> = ({ onClose, collection }) => {
@@ -20,7 +20,7 @@ export const CloseCollectionModalContent: React.FC<CloseCollectionModalProps> = 
 
   const closeMutation = useMutation({
     mutationFn: async () => {
-      await dispatch(removeCollection(collection?.uid));
+      await dispatch(removeCollection(collection.id));
     },
     onSuccess: () => {
       toast.success('Closed collection');

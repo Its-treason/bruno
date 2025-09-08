@@ -3,36 +3,23 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
-import { findCollectionByUid, findItemInCollection } from 'utils/collections';
+import { CollectionInfo, collectionStore, ItemInfo } from 'src/store/collectionStore';
 
-export function getCollectionAndItem(
-  collections: CollectionSchema[],
-  collectionUid: string
-): [CollectionSchema, undefined];
-export function getCollectionAndItem(
-  collections: CollectionSchema[],
-  collectionUid: string,
-  itemUid: string
-): [CollectionSchema, RequestItemSchema];
-export function getCollectionAndItem(
-  collections: CollectionSchema[],
-  collectionUid: string,
-  itemUid?: string
-): [CollectionSchema, RequestItemSchema | undefined];
-export function getCollectionAndItem(
-  collections: CollectionSchema[],
-  collectionUid: string,
-  itemUid?: string
-): [CollectionSchema, RequestItemSchema | undefined] {
-  const collection = findCollectionByUid(collections, collectionUid);
+export function getCollectionAndItem(collectionUid: string): [CollectionInfo, undefined];
+export function getCollectionAndItem(collectionUid: string, itemId: string): [CollectionInfo, ItemInfo];
+export function getCollectionAndItem(collectionUid: string, itemId?: string): [CollectionInfo, ItemInfo | undefined];
+export function getCollectionAndItem(collectionId: string, itemId?: string): [CollectionInfo, ItemInfo | undefined] {
+  const state = collectionStore.getState();
+
+  const collection = state.collections.get(collectionId);
   if (!collection) {
-    throw new Error(`No collection with id ${collectionUid} found`);
+    throw new Error(`No collection with id ${collectionId} found`);
   }
 
-  if (itemUid) {
-    const item = findItemInCollection(collection, itemUid);
+  if (itemId) {
+    const item = state.items.get(itemId);
     if (!item) {
-      throw new Error(`No item with id ${itemUid} in ${collection.name} found!`);
+      throw new Error(`No item with id: "${itemId}" found`);
     }
     return [collection, item];
   }
