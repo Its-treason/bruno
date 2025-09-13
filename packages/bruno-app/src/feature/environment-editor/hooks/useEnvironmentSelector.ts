@@ -7,15 +7,7 @@ import { useDispatch } from 'react-redux';
 import { selectEnvironment } from 'providers/ReduxStore/slices/collections/actions';
 import { updateEnvironmentSettingsModalVisibility } from 'providers/ReduxStore/slices/app';
 import { ComboboxItem } from '@mantine/core';
-
-type Collection = {
-  uid: string;
-  environments: {
-    uid: string;
-    name: string;
-  }[];
-  activeEnvironmentUid: string | null;
-};
+import { CollectionInfo } from 'src/store/collectionStore';
 
 type UseEnvironmentSelectorData = {
   data: ComboboxItem[];
@@ -27,17 +19,23 @@ type UseEnvironmentSelectorData = {
   onEnvironmentModalClose: () => void;
 };
 
-export function useEnvironmentSelector(collection: Collection): UseEnvironmentSelectorData {
+export function useEnvironmentSelector(collection: CollectionInfo): UseEnvironmentSelectorData {
   const dispatch = useDispatch();
 
   const { data, activeEnvironment } = useMemo(() => {
-    const data: ComboboxItem[] = collection.environments.map((env) => ({ label: env.name, value: env.uid }));
+    const data: ComboboxItem[] = [];
+    collection.environments.forEach((value) => {
+      data.push({
+        label: value.name,
+        value: value.id
+      });
+    });
     data.push({ label: 'No Environment', value: '' });
     return {
       data,
-      activeEnvironment: collection.activeEnvironmentUid ?? ''
+      activeEnvironment: collection.activeEnvironmentId ?? ''
     };
-  }, [collection.activeEnvironmentUid, collection.environments]);
+  }, [collection.activeEnvironmentId, collection.environments]);
 
   const onChange = useCallback(
     (newValue: string | null) => {
@@ -46,9 +44,9 @@ export function useEnvironmentSelector(collection: Collection): UseEnvironmentSe
         newUid = undefined;
       }
 
-      dispatch(selectEnvironment(newUid, collection.uid));
+      dispatch(selectEnvironment(newUid, collection.id));
     },
-    [dispatch, collection.uid]
+    [dispatch, collection.id]
   );
 
   const [environmentModalOpen, setEnvironmentModalOpen] = useState(false);

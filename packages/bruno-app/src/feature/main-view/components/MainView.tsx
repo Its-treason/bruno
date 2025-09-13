@@ -37,24 +37,16 @@ export const MainView: React.FC = () => {
     return tabs.find((tab) => tab.uid === activeTabUid);
   }, [tabs, activeTabUid]);
 
-  const collection = useMemo(() => {
-    return collections.find((col) => col.uid === focusedTab?.collectionUid);
-  }, [collections, focusedTab?.collectionUid]);
+  const itemId = activeTabUid;
+  const collectionId = focusedTab?.collectionUid;
 
-  const item = useMemo(() => {
-    if (!focusedTab) {
-      return null;
-    }
-    return findItemInCollection(collection, focusedTab.uid);
-  }, [collections, focusedTab?.uid]);
-
-  if (!focusedTab || !collection) {
+  if (!focusedTab || !collectionId) {
     return <Homepage />;
   }
 
   return (
     <div className={classes.main}>
-      <CollectionHotkeys collection={collection} activeTab={focusedTab} item={item} tabs={tabs} />
+      <CollectionHotkeys collectionId={collectionId} activeTab={focusedTab} itemId={itemId} tabs={tabs} />
 
       <CollectionToolBar activeTabUid={activeTabUid} collection={collection} />
 

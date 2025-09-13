@@ -15,6 +15,8 @@ import { IconAlertCircle } from '@tabler/icons-react';
 import { MethodSelector } from 'src/feature/request-url-bar';
 import { useEffect } from 'react';
 import CodeEditor from 'components/CodeEditor';
+import { useStore } from 'zustand';
+import { collectionStore } from 'src/store/collectionStore';
 
 const newRequestFormSchema = z.discriminatedUnion('curlImport', [
   z.object({
@@ -35,17 +37,11 @@ type NewFolderFormSchema = z.infer<typeof newRequestFormSchema>;
 
 type NewRequestModalContentProps = {
   onClose: () => void;
-  collectionUid: string;
-  brunoConfig?: BrunoConfigSchema;
+  collectionId: string;
   itemUid?: string;
 };
 
-export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
-  onClose,
-  collectionUid,
-  itemUid,
-  brunoConfig
-}) => {
+export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({ onClose, collectionId, itemUid }) => {
   const dispatch = useDispatch();
 
   const newRequestMutation = useMutation({
@@ -77,7 +73,7 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
             requestUrl: request.url,
             requestMethod: request.method,
             auth: request.auth,
-            collectionUid,
+            collectionId,
             itemUid,
             headers: request.headers,
             body: request.body
@@ -91,7 +87,7 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
             requestType: values.type,
             requestUrl: values.url,
             requestMethod: values.method,
-            collectionUid,
+            collectionId,
             itemUid
           })
         );
@@ -102,6 +98,8 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
       onClose();
     }
   });
+
+  const brunoConfig = useStore(collectionStore, (state) => state.collections.get(collectionId).config);
 
   const newRequestForm = useForm<NewFolderFormSchema>({
     validate: zod4Resolver(newRequestFormSchema),
@@ -122,7 +120,8 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
       url: brunoConfig?.presets?.requestUrl ?? ''
     });
     newRequestForm.reset();
-  }, [collectionUid]);
+    // Explicitly only listen to CollectionId change, to reset the form
+  }, [collectionId]);
 
   return (
     <form

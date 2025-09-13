@@ -16,13 +16,13 @@ import { DeleteEnvironmentModal } from './modals/DeleteEnvironmentModal';
 import { RenameEnvironmentModal } from './modals/RenameEnvironmentModal';
 import { ImportEnvironmentModal } from './modals/ImportEnvironmentModal';
 import { ManageSecretModals } from './modals/ManageSecretsModal';
-import { CollectionSchema } from '@usebruno/schema';
 import { CodeEditorVariableProvider } from 'components/CodeEditor/CodeEditorVariableProvider';
+import { CollectionInfo } from 'src/store/collectionStore';
 
 type EnvironmentDrawerProps = {
   opened: boolean;
   onClose: () => void;
-  collection: CollectionSchema;
+  collection: CollectionInfo;
 };
 
 export const EnvironmentDrawer: React.FC<EnvironmentDrawerProps> = ({ opened, onClose, collection }) => {
