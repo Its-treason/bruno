@@ -11,7 +11,7 @@ const { getRequestUid } = require('../cache/requestUids');
 const { decryptString } = require('../utils/encryption');
 const EnvironmentSecretsStore = require('../store/env-secrets');
 
-const environmentSecretsStore = new EnvironmentSecretsStore();
+const environmentSecretsStore = EnvironmentSecretsStore.getInstance();
 
 const isDotEnvFile = (pathname, collectionPath) => {
   const dirname = path.dirname(pathname);

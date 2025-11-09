@@ -3,12 +3,12 @@ const _ = require('lodash');
 const { indentString, getValueString } = require('./utils');
 const jsonToExampleBru = require('./example/jsonToBru');
 
-const enabled = (items = [], key = "enabled") => items.filter((item) => item[key]);
-const disabled = (items = [], key = "enabled") => items.filter((item) => !item[key]);
+const enabled = (items = [], key = 'enabled') => items.filter((item) => item[key]);
+const disabled = (items = [], key = 'enabled') => items.filter((item) => !item[key]);
 const quoteKey = (key) => {
   const quotableChars = [':', '"', '{', '}', ' '];
-  return quotableChars.some(char => key.includes(char)) ? ('"' + key.replaceAll('"', '\\"') + '"') : key;
-}
+  return quotableChars.some((char) => key.includes(char)) ? '"' + key.replaceAll('"', '\\"') + '"' : key;
+};
 
 // remove the last line if two new lines are found
 const stripLastLine = (text) => {
@@ -18,7 +18,24 @@ const stripLastLine = (text) => {
 };
 
 const jsonToBru = (json) => {
-  const { meta, http, grpc, ws, params, headers, metadata, auth, body, script, tests, vars, assertions, settings, docs, examples } = json;
+  const {
+    meta,
+    http,
+    grpc,
+    ws,
+    params,
+    headers,
+    metadata,
+    auth,
+    body,
+    script,
+    tests,
+    vars,
+    assertions,
+    settings,
+    docs,
+    examples
+  } = json;
 
   let bru = '';
 
@@ -63,21 +80,21 @@ const jsonToBru = (json) => {
     bru += `\n}\n\n`;
   }
 
-  if(grpc && grpc.url) {
-      bru += `grpc {
+  if (grpc && grpc.url) {
+    bru += `grpc {
   url: ${grpc.url}`;
 
-    if(grpc.method && grpc.method.length) {
+    if (grpc.method && grpc.method.length) {
       bru += `
   method: ${grpc.method}`;
     }
 
-    if(grpc.body && grpc.body.length) {
+    if (grpc.body && grpc.body.length) {
       bru += `
   body: ${grpc.body}`;
     }
 
-    if(grpc.protoPath && grpc.protoPath.length) {
+    if (grpc.protoPath && grpc.protoPath.length) {
       bru += `
   protoPath: ${grpc.protoPath}`;
     }
@@ -122,7 +139,6 @@ const jsonToBru = (json) => {
 
 `;
   }
-
 
   if (params && params.length) {
     const queryParams = params.filter((param) => param.type === 'query');
@@ -248,7 +264,6 @@ ${indentString(`password: ${auth?.digest?.password || ''}`)}
 `;
   }
 
-
   if (auth && auth.ntlm) {
     bru += `auth:ntlm {
 ${indentString(`username: ${auth?.ntlm?.username || ''}`)}
@@ -275,10 +290,14 @@ ${indentString(`scope: ${auth?.oauth2?.scope || ''}`)}
 ${indentString(`credentials_placement: ${auth?.oauth2?.credentialsPlacement || ''}`)}
 ${indentString(`credentials_id: ${auth?.oauth2?.credentialsId || ''}`)}
 ${indentString(`token_placement: ${auth?.oauth2?.tokenPlacement || ''}`)}${
-  auth?.oauth2?.tokenPlacement == 'header' ? '\n' + indentString(`token_header_prefix: ${auth?.oauth2?.tokenHeaderPrefix || ''}`) : ''
-}${
-  auth?.oauth2?.tokenPlacement !== 'header' ? '\n' + indentString(`token_query_key: ${auth?.oauth2?.tokenQueryKey || ''}`) : ''
-}
+          auth?.oauth2?.tokenPlacement == 'header'
+            ? '\n' + indentString(`token_header_prefix: ${auth?.oauth2?.tokenHeaderPrefix || ''}`)
+            : ''
+        }${
+          auth?.oauth2?.tokenPlacement !== 'header'
+            ? '\n' + indentString(`token_query_key: ${auth?.oauth2?.tokenQueryKey || ''}`)
+            : ''
+        }
 ${indentString(`auto_fetch_token: ${(auth?.oauth2?.autoFetchToken ?? true).toString()}`)}
 ${indentString(`auto_refresh_token: ${(auth?.oauth2?.autoRefreshToken ?? false).toString()}`)}
 }
@@ -300,10 +319,14 @@ ${indentString(`pkce: ${(auth?.oauth2?.pkce || false).toString()}`)}
 ${indentString(`credentials_placement: ${auth?.oauth2?.credentialsPlacement || ''}`)}
 ${indentString(`credentials_id: ${auth?.oauth2?.credentialsId || ''}`)}
 ${indentString(`token_placement: ${auth?.oauth2?.tokenPlacement || ''}`)}${
-  auth?.oauth2?.tokenPlacement == 'header' ? '\n' + indentString(`token_header_prefix: ${auth?.oauth2?.tokenHeaderPrefix || ''}`) : ''
-}${
-  auth?.oauth2?.tokenPlacement !== 'header' ? '\n' + indentString(`token_query_key: ${auth?.oauth2?.tokenQueryKey || ''}`) : ''
-}
+          auth?.oauth2?.tokenPlacement == 'header'
+            ? '\n' + indentString(`token_header_prefix: ${auth?.oauth2?.tokenHeaderPrefix || ''}`)
+            : ''
+        }${
+          auth?.oauth2?.tokenPlacement !== 'header'
+            ? '\n' + indentString(`token_query_key: ${auth?.oauth2?.tokenQueryKey || ''}`)
+            : ''
+        }
 ${indentString(`auto_fetch_token: ${(auth?.oauth2?.autoFetchToken ?? true).toString()}`)}
 ${indentString(`auto_refresh_token: ${(auth?.oauth2?.autoRefreshToken ?? false).toString()}`)}
 }
@@ -321,10 +344,14 @@ ${indentString(`scope: ${auth?.oauth2?.scope || ''}`)}
 ${indentString(`credentials_placement: ${auth?.oauth2?.credentialsPlacement || ''}`)}
 ${indentString(`credentials_id: ${auth?.oauth2?.credentialsId || ''}`)}
 ${indentString(`token_placement: ${auth?.oauth2?.tokenPlacement || ''}`)}${
-  auth?.oauth2?.tokenPlacement == 'header' ? '\n' + indentString(`token_header_prefix: ${auth?.oauth2?.tokenHeaderPrefix || ''}`) : ''
-}${
-  auth?.oauth2?.tokenPlacement !== 'header' ? '\n' + indentString(`token_query_key: ${auth?.oauth2?.tokenQueryKey || ''}`) : ''
-}
+          auth?.oauth2?.tokenPlacement == 'header'
+            ? '\n' + indentString(`token_header_prefix: ${auth?.oauth2?.tokenHeaderPrefix || ''}`)
+            : ''
+        }${
+          auth?.oauth2?.tokenPlacement !== 'header'
+            ? '\n' + indentString(`token_query_key: ${auth?.oauth2?.tokenQueryKey || ''}`)
+            : ''
+        }
 ${indentString(`auto_fetch_token: ${(auth?.oauth2?.autoFetchToken ?? true).toString()}`)}
 ${indentString(`auto_refresh_token: ${(auth?.oauth2?.autoRefreshToken ?? false).toString()}`)}
 }
@@ -341,10 +368,14 @@ ${indentString(`scope: ${auth?.oauth2?.scope || ''}`)}
 ${indentString(`state: ${auth?.oauth2?.state || ''}`)}
 ${indentString(`credentials_id: ${auth?.oauth2?.credentialsId || ''}`)}
 ${indentString(`token_placement: ${auth?.oauth2?.tokenPlacement || ''}`)}${
-  auth?.oauth2?.tokenPlacement == 'header' ? '\n' + indentString(`token_header_prefix: ${auth?.oauth2?.tokenHeaderPrefix || ''}`) : ''
-}${
-  auth?.oauth2?.tokenPlacement !== 'header' ? '\n' + indentString(`token_query_key: ${auth?.oauth2?.tokenQueryKey || ''}`) : ''
-}
+          auth?.oauth2?.tokenPlacement == 'header'
+            ? '\n' + indentString(`token_header_prefix: ${auth?.oauth2?.tokenHeaderPrefix || ''}`)
+            : ''
+        }${
+          auth?.oauth2?.tokenPlacement !== 'header'
+            ? '\n' + indentString(`token_query_key: ${auth?.oauth2?.tokenQueryKey || ''}`)
+            : ''
+        }
 ${indentString(`auto_fetch_token: ${(auth?.oauth2?.autoFetchToken ?? true).toString()}`)}
 }
 
@@ -353,107 +384,111 @@ ${indentString(`auto_fetch_token: ${(auth?.oauth2?.autoFetchToken ?? true).toStr
     }
 
     if (auth?.oauth2?.additionalParameters) {
-      const { authorization: authorizationParams, token: tokenParams, refresh: refreshParams } = auth?.oauth2?.additionalParameters;
-      const authorizationHeaders = authorizationParams?.filter(p => p?.sendIn == 'headers');
+      const {
+        authorization: authorizationParams,
+        token: tokenParams,
+        refresh: refreshParams
+      } = auth?.oauth2?.additionalParameters;
+      const authorizationHeaders = authorizationParams?.filter((p) => p?.sendIn == 'headers');
       if (authorizationHeaders?.length) {
         bru += `auth:oauth2:additional_params:auth_req:headers {
 ${indentString(
   authorizationHeaders
-    .filter(item => item?.name?.length)
+    .filter((item) => item?.name?.length)
     .map((item) => `${item.enabled ? '' : '~'}${item.name}: ${item.value}`)
     .join('\n')
-  )}
+)}
 }
 
 `;
       }
-      const authorizationQueryParams = authorizationParams?.filter(p => p?.sendIn == 'queryparams');
+      const authorizationQueryParams = authorizationParams?.filter((p) => p?.sendIn == 'queryparams');
       if (authorizationQueryParams?.length) {
         bru += `auth:oauth2:additional_params:auth_req:queryparams {
 ${indentString(
   authorizationQueryParams
-    .filter(item => item?.name?.length)
+    .filter((item) => item?.name?.length)
     .map((item) => `${item.enabled ? '' : '~'}${item.name}: ${item.value}`)
     .join('\n')
-  )}
+)}
 }
 
 `;
       }
-      const tokenHeaders = tokenParams?.filter(p => p?.sendIn == 'headers');
+      const tokenHeaders = tokenParams?.filter((p) => p?.sendIn == 'headers');
       if (tokenHeaders?.length) {
         bru += `auth:oauth2:additional_params:access_token_req:headers {
 ${indentString(
   tokenHeaders
-    .filter(item => item?.name?.length)
+    .filter((item) => item?.name?.length)
     .map((item) => `${item.enabled ? '' : '~'}${item.name}: ${item.value}`)
     .join('\n')
-  )}
+)}
 }
 
 `;
       }
-      const tokenQueryParams = tokenParams?.filter(p => p?.sendIn == 'queryparams');
+      const tokenQueryParams = tokenParams?.filter((p) => p?.sendIn == 'queryparams');
       if (tokenQueryParams?.length) {
         bru += `auth:oauth2:additional_params:access_token_req:queryparams {
 ${indentString(
   tokenQueryParams
-    .filter(item => item?.name?.length)
+    .filter((item) => item?.name?.length)
     .map((item) => `${item.enabled ? '' : '~'}${item.name}: ${item.value}`)
     .join('\n')
-  )}
+)}
 }
 
 `;
       }
-      const tokenBodyValues = tokenParams?.filter(p => p?.sendIn == 'body');
+      const tokenBodyValues = tokenParams?.filter((p) => p?.sendIn == 'body');
       if (tokenBodyValues?.length) {
         bru += `auth:oauth2:additional_params:access_token_req:body {
 ${indentString(
   tokenBodyValues
-    .filter(item => item?.name?.length)
+    .filter((item) => item?.name?.length)
     .map((item) => `${item.enabled ? '' : '~'}${item.name}: ${item.value}`)
     .join('\n')
-  )}
+)}
 }
 
 `;
       }
-      const refreshHeaders = refreshParams?.filter(p => p?.sendIn == 'headers');
+      const refreshHeaders = refreshParams?.filter((p) => p?.sendIn == 'headers');
       if (refreshHeaders?.length) {
         bru += `auth:oauth2:additional_params:refresh_token_req:headers {
 ${indentString(
   refreshHeaders
-    .filter(item => item?.name?.length)
+    .filter((item) => item?.name?.length)
     .map((item) => `${item.enabled ? '' : '~'}${item.name}: ${item.value}`)
     .join('\n')
-  )}
+)}
 }
 
 `;
       }
-      const refreshQueryParams = refreshParams?.filter(p => p?.sendIn == 'queryparams');
+      const refreshQueryParams = refreshParams?.filter((p) => p?.sendIn == 'queryparams');
       if (refreshQueryParams?.length) {
         bru += `auth:oauth2:additional_params:refresh_token_req:queryparams {
 ${indentString(
   refreshQueryParams
-    .filter(item => item?.name?.length)
+    .filter((item) => item?.name?.length)
     .map((item) => `${item.enabled ? '' : '~'}${item.name}: ${item.value}`)
     .join('\n')
-  )}
+)}
 }
 
 `;
       }
-      const refreshBodyValues = refreshParams?.filter(p => p?.sendIn == 'body');
+      const refreshBodyValues = refreshParams?.filter((p) => p?.sendIn == 'body');
       if (refreshBodyValues?.length) {
         bru += `auth:oauth2:additional_params:refresh_token_req:body {
 ${indentString(
   refreshBodyValues
-    .filter(item => item?.name?.length)
+    .filter((item) => item?.name?.length)
     .map((item) => `${item.enabled ? '' : '~'}${item.name}: ${item.value}`)
     .join('\n')
-  )}
+)}
 }
 
 `;
@@ -554,10 +589,9 @@ ${indentString(body.sparql)}
     bru += '\n}\n\n';
   }
 
-
   if (body && body.file && body.file.length) {
     bru += `body:file {`;
-    const files = enabled(body.file, "selected").concat(disabled(body.file, "selected"));
+    const files = enabled(body.file, 'selected').concat(disabled(body.file, 'selected'));
 
     if (files.length) {
       bru += `\n${indentString(
@@ -568,7 +602,7 @@ ${indentString(body.sparql)}
               item.contentType && item.contentType !== '' ? ' @contentType(' + item.contentType + ')' : '';
             const filePath = item.filePath || '';
             const value = `@file(${filePath})`;
-            const itemName = "file";
+            const itemName = 'file';
             return `${selected}${itemName}: ${value}${contentType}`;
           })
           .join('\n')
@@ -594,15 +628,15 @@ ${indentString(body.sparql)}
     // Convert each gRPC message to a separate body:grpc block
     if (Array.isArray(body.grpc)) {
       body.grpc.forEach((m) => {
-        const {name, content} = m;
-        
+        const { name, content } = m;
+
         bru += `body:grpc {\n`;
-        
+
         bru += `${indentString(`name: ${getValueString(name)}`)}\n`;
-        
+
         // Convert content to JSON string if it's an object
         let jsonValue = typeof content === 'object' ? JSON.stringify(content, null, 2) : content || '{}';
-        
+
         // Wrap content with triple quotes for multiline support, without extra indentation
         bru += `${indentString(`content: '''\n${indentString(jsonValue)}\n'''`)}\n`;
         bru += '}\n\n';

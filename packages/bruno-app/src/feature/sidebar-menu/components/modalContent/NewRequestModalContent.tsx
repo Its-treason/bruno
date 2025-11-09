@@ -2,9 +2,10 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Alert, Button, Group, Radio, Stack, Switch, TextInput, Textarea, rem } from '@mantine/core';
-import { useForm, zodResolver } from '@mantine/form';
+import { Alert, Button, Group, Radio, Switch, TextInput, Textarea, rem } from '@mantine/core';
+import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
+import { zod4Resolver } from 'mantine-form-zod-resolver';
 import { useDispatch } from 'react-redux';
 import { newHttpRequest } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
@@ -14,6 +15,8 @@ import { IconAlertCircle } from '@tabler/icons-react';
 import { MethodSelector } from 'src/feature/request-url-bar';
 import { useEffect } from 'react';
 import CodeEditor from 'components/CodeEditor';
+import { useStore } from 'zustand';
+import { collectionStore } from 'src/store/collectionStore';
 
 const newRequestFormSchema = z.discriminatedUnion('curlImport', [
   z.object({
@@ -34,17 +37,11 @@ type NewFolderFormSchema = z.infer<typeof newRequestFormSchema>;
 
 type NewRequestModalContentProps = {
   onClose: () => void;
-  collectionUid: string;
-  brunoConfig: BrunoConfigSchema;
+  collectionId: string;
   itemUid?: string;
 };
 
-export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
-  onClose,
-  collectionUid,
-  itemUid,
-  brunoConfig
-}) => {
+export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({ onClose, collectionId, itemUid }) => {
   const dispatch = useDispatch();
 
   const newRequestMutation = useMutation({
@@ -76,7 +73,7 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
             requestUrl: request.url,
             requestMethod: request.method,
             auth: request.auth,
-            collectionUid,
+            collectionId,
             itemUid,
             headers: request.headers,
             body: request.body
@@ -90,7 +87,7 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
             requestType: values.type,
             requestUrl: values.url,
             requestMethod: values.method,
-            collectionUid,
+            collectionId,
             itemUid
           })
         );
@@ -102,8 +99,10 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
     }
   });
 
+  const brunoConfig = useStore(collectionStore, (state) => state.collections.get(collectionId).config);
+
   const newRequestForm = useForm<NewFolderFormSchema>({
-    validate: zodResolver(newRequestFormSchema),
+    validate: zod4Resolver(newRequestFormSchema),
     initialValues: {
       curlImport: false,
       name: '',
@@ -121,7 +120,8 @@ export const NewRequestModalContent: React.FC<NewRequestModalContentProps> = ({
       url: brunoConfig?.presets?.requestUrl ?? ''
     });
     newRequestForm.reset();
-  }, [collectionUid]);
+    // Explicitly only listen to CollectionId change, to reset the form
+  }, [collectionId]);
 
   return (
     <form

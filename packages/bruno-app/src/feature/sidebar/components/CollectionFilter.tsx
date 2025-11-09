@@ -1,41 +1,32 @@
 import { ActionIcon, CloseButton, Group, TextInput, Tooltip, rem } from '@mantine/core';
-import { useDebouncedState, useDebouncedValue } from '@mantine/hooks';
+import { useDebouncedValue } from '@mantine/hooks';
 import { IconArrowsSort, IconSearch, IconSortAscendingLetters, IconSortDescendingLetters } from '@tabler/icons-react';
-import { sortCollections, filterCollections } from 'providers/ReduxStore/slices/collections/actions';
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
-
-type ReduxState = {
-  collections: {
-    collectionSortOrder: 'default' | 'alphabetical' | 'reverseAlphabetical';
-    collectionFilter: string;
-  };
-};
+import { appStore } from 'src/store/appStore';
+import { useStore } from 'zustand';
 
 export const CollectionFilter: React.FC = () => {
-  const dispatch = useDispatch();
-  const { collectionSortOrder, collectionFilter } = useSelector((state: ReduxState) => state.collections);
-
-  const [searchValue, setSearchValue] = useState(collectionFilter ?? '');
-  const [debounced] = useDebouncedValue(searchValue, 200);
+  const [searchValue, setSearchValue] = useState(() => appStore.getState().sidebarFilter);
+  const [debouncedFilter] = useDebouncedValue(searchValue, 200);
   useEffect(() => {
-    dispatch(filterCollections({ filter: debounced }));
-  }, [debounced]);
+    appStore.getState().updateSidebarFilter(debouncedFilter);
+  }, [debouncedFilter]);
 
+  const sortOrder = useStore(appStore, (state) => state.collectionSortOrder);
   const sortCollectionOrder = () => {
     let order;
-    switch (collectionSortOrder) {
+    switch (sortOrder) {
       case 'default':
-        order = 'alphabetical';
+        order = 'asc';
         break;
-      case 'alphabetical':
-        order = 'reverseAlphabetical';
+      case 'asc':
+        order = 'desc';
         break;
-      case 'reverseAlphabetical':
+      case 'desc':
         order = 'default';
         break;
     }
-    dispatch(sortCollections({ order }));
+    appStore.getState().updateCollectionSortOrder(order);
   };
 
   return (
@@ -64,9 +55,9 @@ export const CollectionFilter: React.FC = () => {
           onClick={sortCollectionOrder}
           aria-label={'Change collection sorting'}
         >
-          {collectionSortOrder == 'default' ? (
+          {sortOrder == 'default' ? (
             <IconArrowsSort style={{ width: rem(16) }} strokeWidth={1.5} />
-          ) : collectionSortOrder == 'alphabetical' ? (
+          ) : sortOrder == 'asc' ? (
             <IconSortAscendingLetters style={{ width: rem(16) }} strokeWidth={1.5} />
           ) : (
             <IconSortDescendingLetters style={{ width: rem(16) }} strokeWidth={1.5} />

@@ -65,9 +65,13 @@ const astResponseAttribute = {
     }
     // Filter out empty items and merge the results
     const validItems = tags.ast.filter((item) => item && Object.keys(item).length > 0);
-    return _.reduce(validItems, (result, item) => {
-      return _.merge(result, item);
-    }, {});
+    return _.reduce(
+      validItems,
+      (result, item) => {
+        return _.merge(result, item);
+      },
+      {}
+    );
   },
   responsecontent(content) {
     return content.ast;
@@ -110,7 +114,10 @@ const astResponseAttribute = {
     };
   },
   responsebodycontentvalue(_1, _2, _3, _4, _5, multilinetextblock) {
-    const multilineString = multilinetextblock.sourceString?.replace(/^'''|'''$/g, '').replace(/  $/g, '').replace(/^\n|\n$/g, '');
+    const multilineString = multilinetextblock.sourceString
+      ?.replace(/^'''|'''$/g, '')
+      .replace(/  $/g, '')
+      .replace(/^\n|\n$/g, '');
 
     return {
       content: outdentString(multilineString ?? '', 4)

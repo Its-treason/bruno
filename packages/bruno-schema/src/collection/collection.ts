@@ -1,6 +1,7 @@
 import { z } from 'zod';
-import { collectionRequestSchema, httpRequestSchema, requestItemSchema } from './request';
+import { collectionRequestSchema, headerSchema, requestItemSchema, requestVarSchema } from './request';
 import { environmentSchema } from './environment';
+import { requestAuthSchema } from './requestAuth';
 
 // This has a lot of defaults because the Config may be older and Bruno set any defaults
 export const brunoConfigSchema = z.looseObject({
@@ -74,3 +75,40 @@ export const collectionSchema = z.object({
   collapsed: z.boolean().default(true)
 });
 export type CollectionSchema = z.infer<typeof collectionSchema>;
+
+export const collectionMetadataSchema = z.object({
+  name: z.string(),
+  seq: z.coerce.number().nullable().default(null),
+
+  headers: z.array(headerSchema).default([]),
+  auth: requestAuthSchema.default({ mode: 'none' }),
+  script: z
+    .object({
+      req: z.string().default(''),
+      res: z.string().default('')
+    })
+    .default({
+      req: '',
+      res: ''
+    }),
+  vars: z.array(requestVarSchema).default([]),
+  tests: z.string().default(''),
+  docs: z.string().default(''),
+  contentHash: z.string()
+});
+export type CollectionMetadataSchema = z.infer<typeof collectionMetadataSchema>;
+
+export const dirMetaSchema = z.object({
+  path: z.string(),
+  basename: z.string(),
+  dirname: z.string()
+});
+export type DirMetaSchema = z.infer<typeof dirMetaSchema>;
+
+export const fileMetaSchema = z.object({
+  path: z.string(),
+  basename: z.string(),
+  dirname: z.string(),
+  size: z.number()
+});
+export type FileMetaSchema = z.infer<typeof fileMetaSchema>;

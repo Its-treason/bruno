@@ -24,8 +24,8 @@
       "enabled": true
     },
     {
-      "name" : "multi word param",
-      "value" : "is allowed",
+      "name": "multi word param",
+      "value": "is allowed",
       "type": "query",
       "enabled": true
     },
@@ -54,8 +54,8 @@
       "enabled": true
     },
     {
-      "name" : "multi word header",
-      "value" : "is allowed",
+      "name": "multi word header",
+      "value": "is allowed",
       "enabled": true
     },
     {

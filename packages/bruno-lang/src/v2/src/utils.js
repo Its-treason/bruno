@@ -7,7 +7,6 @@ const safeParseJson = (json) => {
   }
 };
 
-
 const indentString = (str) => {
   if (!str || !str.length) {
     return str || '';

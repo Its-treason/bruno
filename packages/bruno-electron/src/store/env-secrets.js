@@ -1,6 +1,7 @@
 const _ = require('lodash');
 const Store = require('electron-store');
-const { encryptString } = require('../utils/encryption');
+const { encryptString, decryptString } = require('../utils/encryption');
+const { AbstractSecretStore } = require('@usebruno/core');
 
 /**
  * Sample secrets store file
@@ -25,6 +26,14 @@ class EnvironmentSecretsStore {
       name: 'secrets',
       clearInvalidConfig: true
     });
+  }
+
+  static instance;
+  static getInstance() {
+    if (!EnvironmentSecretsStore.instance) {
+      EnvironmentSecretsStore.instance = new EnvironmentSecretsStore();
+    }
+    return EnvironmentSecretsStore.instance;
   }
 
   isValidValue(val) {
@@ -122,5 +131,21 @@ class EnvironmentSecretsStore {
     this.store.set('collections', collections);
   }
 }
+
+class SecretStore extends AbstractSecretStore {
+  getSecret(collectionPath, environmentName, name) {
+    const envSecrets = EnvironmentSecretsStore.getInstance().getEnvSecrets(collectionPath, { name: environmentName });
+
+    for (const secret of envSecrets) {
+      if (secret.name === name) {
+        return decryptString(secret.value);
+      }
+    }
+
+    return '';
+  }
+}
+
+AbstractSecretStore.init(new SecretStore());
 
 module.exports = EnvironmentSecretsStore;

@@ -320,60 +320,62 @@ const sem = grammar.createSemantics().addAttribute('ast', {
                 tokenPlacement: tokenPlacementKey?.value ? tokenPlacementKey.value : 'header',
                 tokenHeaderPrefix: tokenHeaderPrefixKey?.value ? tokenHeaderPrefixKey.value : '',
                 tokenQueryKey: tokenQueryKeyKey?.value ? tokenQueryKeyKey.value : 'access_token',
-                autoFetchToken: autoFetchTokenKey ? safeParseJson(autoFetchTokenKey?.value) ?? true : true,
-                autoRefreshToken: autoRefreshTokenKey ? safeParseJson(autoRefreshTokenKey?.value) ?? false : false
+                autoFetchToken: autoFetchTokenKey ? (safeParseJson(autoFetchTokenKey?.value) ?? true) : true,
+                autoRefreshToken: autoRefreshTokenKey ? (safeParseJson(autoRefreshTokenKey?.value) ?? false) : false
               }
             : grantTypeKey?.value && grantTypeKey?.value == 'authorization_code'
-            ? {
-                grantType: grantTypeKey ? grantTypeKey.value : '',
-                callbackUrl: callbackUrlKey ? callbackUrlKey.value : '',
-                authorizationUrl: authorizationUrlKey ? authorizationUrlKey.value : '',
-                accessTokenUrl: accessTokenUrlKey ? accessTokenUrlKey.value : '',
-                refreshTokenUrl: refreshTokenUrlKey ? refreshTokenUrlKey.value : '',
-                clientId: clientIdKey ? clientIdKey.value : '',
-                clientSecret: clientSecretKey ? clientSecretKey.value : '',
-                scope: scopeKey ? scopeKey.value : '',
-                state: stateKey ? stateKey.value : '',
-                pkce: pkceKey ? safeParseJson(pkceKey?.value) ?? false : false,
-                credentialsPlacement: credentialsPlacementKey?.value ? credentialsPlacementKey.value : 'body',
-                credentialsId: credentialsIdKey?.value ? credentialsIdKey.value : 'credentials',
-                tokenPlacement: tokenPlacementKey?.value ? tokenPlacementKey.value : 'header',
-                tokenHeaderPrefix: tokenHeaderPrefixKey?.value ? tokenHeaderPrefixKey.value : '',
-                tokenQueryKey: tokenQueryKeyKey?.value ? tokenQueryKeyKey.value : 'access_token',
-                autoFetchToken: autoFetchTokenKey ? safeParseJson(autoFetchTokenKey?.value) ?? true : true,
-                autoRefreshToken: autoRefreshTokenKey ? safeParseJson(autoRefreshTokenKey?.value) ?? false : false
-              }
-            : grantTypeKey?.value && grantTypeKey?.value == 'implicit'
-            ? {
-                grantType: grantTypeKey ? grantTypeKey.value : '',
-                callbackUrl: callbackUrlKey ? callbackUrlKey.value : '',
-                authorizationUrl: authorizationUrlKey ? authorizationUrlKey.value : '',
-                clientId: clientIdKey ? clientIdKey.value : '',
-                scope: scopeKey ? scopeKey.value : '',
-                state: stateKey ? stateKey.value : '',
-                credentialsId: credentialsIdKey?.value ? credentialsIdKey.value : 'credentials',
-                tokenPlacement: tokenPlacementKey?.value ? tokenPlacementKey.value : 'header',
-                tokenHeaderPrefix: tokenHeaderPrefixKey?.value ? tokenHeaderPrefixKey.value : '',
-                tokenQueryKey: tokenQueryKeyKey?.value ? tokenQueryKeyKey.value : 'access_token',
-                autoFetchToken: autoFetchTokenKey ? safeParseJson(autoFetchTokenKey?.value) ?? true : true,
-              }
-            : grantTypeKey?.value && grantTypeKey?.value == 'client_credentials'
-            ? {
-                grantType: grantTypeKey ? grantTypeKey.value : '',
-                accessTokenUrl: accessTokenUrlKey ? accessTokenUrlKey.value : '',
-                refreshTokenUrl: refreshTokenUrlKey ? refreshTokenUrlKey.value : '',
-                clientId: clientIdKey ? clientIdKey.value : '',
-                clientSecret: clientSecretKey ? clientSecretKey.value : '',
-                scope: scopeKey ? scopeKey.value : '',
-                credentialsPlacement: credentialsPlacementKey?.value ? credentialsPlacementKey.value : 'body',
-                credentialsId: credentialsIdKey?.value ? credentialsIdKey.value : 'credentials',
-                tokenPlacement: tokenPlacementKey?.value ? tokenPlacementKey.value : 'header',
-                tokenHeaderPrefix: tokenHeaderPrefixKey?.value ? tokenHeaderPrefixKey.value : '',
-                tokenQueryKey: tokenQueryKeyKey?.value ? tokenQueryKeyKey.value : 'access_token',
-                autoFetchToken: autoFetchTokenKey ? safeParseJson(autoFetchTokenKey?.value) ?? true : true,
-                autoRefreshToken: autoRefreshTokenKey ? safeParseJson(autoRefreshTokenKey?.value) ?? false : false
-              }
-            : {}
+              ? {
+                  grantType: grantTypeKey ? grantTypeKey.value : '',
+                  callbackUrl: callbackUrlKey ? callbackUrlKey.value : '',
+                  authorizationUrl: authorizationUrlKey ? authorizationUrlKey.value : '',
+                  accessTokenUrl: accessTokenUrlKey ? accessTokenUrlKey.value : '',
+                  refreshTokenUrl: refreshTokenUrlKey ? refreshTokenUrlKey.value : '',
+                  clientId: clientIdKey ? clientIdKey.value : '',
+                  clientSecret: clientSecretKey ? clientSecretKey.value : '',
+                  scope: scopeKey ? scopeKey.value : '',
+                  state: stateKey ? stateKey.value : '',
+                  pkce: pkceKey ? (safeParseJson(pkceKey?.value) ?? false) : false,
+                  credentialsPlacement: credentialsPlacementKey?.value ? credentialsPlacementKey.value : 'body',
+                  credentialsId: credentialsIdKey?.value ? credentialsIdKey.value : 'credentials',
+                  tokenPlacement: tokenPlacementKey?.value ? tokenPlacementKey.value : 'header',
+                  tokenHeaderPrefix: tokenHeaderPrefixKey?.value ? tokenHeaderPrefixKey.value : '',
+                  tokenQueryKey: tokenQueryKeyKey?.value ? tokenQueryKeyKey.value : 'access_token',
+                  autoFetchToken: autoFetchTokenKey ? (safeParseJson(autoFetchTokenKey?.value) ?? true) : true,
+                  autoRefreshToken: autoRefreshTokenKey ? (safeParseJson(autoRefreshTokenKey?.value) ?? false) : false
+                }
+              : grantTypeKey?.value && grantTypeKey?.value == 'implicit'
+                ? {
+                    grantType: grantTypeKey ? grantTypeKey.value : '',
+                    callbackUrl: callbackUrlKey ? callbackUrlKey.value : '',
+                    authorizationUrl: authorizationUrlKey ? authorizationUrlKey.value : '',
+                    clientId: clientIdKey ? clientIdKey.value : '',
+                    scope: scopeKey ? scopeKey.value : '',
+                    state: stateKey ? stateKey.value : '',
+                    credentialsId: credentialsIdKey?.value ? credentialsIdKey.value : 'credentials',
+                    tokenPlacement: tokenPlacementKey?.value ? tokenPlacementKey.value : 'header',
+                    tokenHeaderPrefix: tokenHeaderPrefixKey?.value ? tokenHeaderPrefixKey.value : '',
+                    tokenQueryKey: tokenQueryKeyKey?.value ? tokenQueryKeyKey.value : 'access_token',
+                    autoFetchToken: autoFetchTokenKey ? (safeParseJson(autoFetchTokenKey?.value) ?? true) : true
+                  }
+                : grantTypeKey?.value && grantTypeKey?.value == 'client_credentials'
+                  ? {
+                      grantType: grantTypeKey ? grantTypeKey.value : '',
+                      accessTokenUrl: accessTokenUrlKey ? accessTokenUrlKey.value : '',
+                      refreshTokenUrl: refreshTokenUrlKey ? refreshTokenUrlKey.value : '',
+                      clientId: clientIdKey ? clientIdKey.value : '',
+                      clientSecret: clientSecretKey ? clientSecretKey.value : '',
+                      scope: scopeKey ? scopeKey.value : '',
+                      credentialsPlacement: credentialsPlacementKey?.value ? credentialsPlacementKey.value : 'body',
+                      credentialsId: credentialsIdKey?.value ? credentialsIdKey.value : 'credentials',
+                      tokenPlacement: tokenPlacementKey?.value ? tokenPlacementKey.value : 'header',
+                      tokenHeaderPrefix: tokenHeaderPrefixKey?.value ? tokenHeaderPrefixKey.value : '',
+                      tokenQueryKey: tokenQueryKeyKey?.value ? tokenQueryKeyKey.value : 'access_token',
+                      autoFetchToken: autoFetchTokenKey ? (safeParseJson(autoFetchTokenKey?.value) ?? true) : true,
+                      autoRefreshToken: autoRefreshTokenKey
+                        ? (safeParseJson(autoRefreshTokenKey?.value) ?? false)
+                        : false
+                    }
+                  : {}
       }
     };
   },
@@ -430,8 +432,8 @@ const sem = grammar.createSemantics().addAttribute('ast', {
           password
         }
       }
-    }
-  }, 
+    };
+  },
   authapikey(_1, dictionary) {
     const auth = mapPairListToKeyValPairs(dictionary.ast, false);
 

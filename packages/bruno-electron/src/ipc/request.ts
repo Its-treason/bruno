@@ -4,7 +4,7 @@
  */
 import { ipcMain, app } from 'electron';
 import path from 'node:path';
-import { request as executeRequest, FolderItem, RequestItem } from '@usebruno/core';
+import { request as executeRequest, FolderItem, RequestItem, ItemIdStore } from '@usebruno/core';
 import { CollectionSchema, EnvironmentSchema } from '@usebruno/schema';
 import { getIntrospectionQuery } from 'graphql';
 import {
@@ -14,6 +14,9 @@ import {
 import { getPreferences } from '../store/preferences';
 const { uuid, safeStringifyJSON } = require('../utils/common');
 const { cookieJar } = require('../utils/cookies');
+import { generateId } from '@usebruno/common';
+
+ItemIdStore.init(path.join(app.getPath('userData'), 'storage', 'itemIdStore.json'));
 
 const getAllRequestsInFolderRecursively = (items: any[] = []) => {
   // This is the sort function from useRequestList.tsx
@@ -227,14 +230,15 @@ ipcMain.handle(
       globalVariables = variables.getGlobalVariables();
       environment = {
         name: environment?.name ?? '',
-        uid: '',
+        id: '',
+        contentHash: '',
         variables: Object.entries(variables.getEnvironmentVariables()).map(([name, value]) => ({
+          id: generateId(),
           enabled: true,
           name,
           value: value as any,
           secret: false,
-          type: 'text',
-          uid: ''
+          type: 'text'
         }))
       };
 

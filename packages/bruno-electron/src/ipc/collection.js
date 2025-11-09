@@ -11,7 +11,7 @@ const {
   jsonToCollectionBru,
   updateFolderMetadata
 } = require('../bru');
-const { generateCode } = require('@usebruno/core');
+const { generateCode, parseAllCollectionFiles, CollectionWatcher } = require('@usebruno/core');
 
 const {
   writeFile,
@@ -44,6 +44,9 @@ const Watcher = require('../app/watcher');
 const LastOpenedCollection = require('../store/last-opened-collections');
 const { handleAuthorizationCodeInElectron } = require('../utils/handleAuthorizationCodeInElectron');
 const { parseCurlCommand } = require('../common/parseCurlCommand');
+const { createCollectionWatcher } = require('../common/watcher');
+const { jsonToBruV2 } = require('@usebruno/lang');
+const { createFileContentHash } = require('@usebruno/core');
 
 const environmentSecretsStore = new EnvironmentSecretsStore();
 
@@ -243,16 +246,27 @@ ipcMain.handle('renderer:new-request', async (event, pathname, request) => {
 
 // save request
 ipcMain.handle('renderer:save-request', async (event, pathname, request) => {
-  try {
-    if (!fs.existsSync(pathname)) {
-      throw new Error(`path: ${pathname} does not exist`);
-    }
+  if (!fs.existsSync(pathname)) {
+    throw new Error(`path: ${pathname} does not exist`);
+  }
 
+  if (!request.contentHash) {
     const content = jsonToBru(request);
     await writeFile(pathname, content);
-  } catch (error) {
-    return Promise.reject(error);
+    return;
   }
+
+  const content = jsonToBruV2(request);
+
+  // Prevent saving the exact file contents. The watcher would still see this as a file change
+  const originalContentHash = request.contentHash;
+  const contentBuffer = Buffer.from(content);
+  const newContentHash = createFileContentHash(contentBuffer);
+  if (newContentHash === originalContentHash) {
+    return;
+  }
+
+  await writeFile(pathname, content);
 });
 
 // save multiple requests
@@ -873,12 +887,24 @@ ipcMain.on('main:open-docs', () => {
   shell.openExternal(docsURL);
 });
 
-ipcMain.on('main:collection-opened', (win, pathname, uid, brunoConfig) => {
+ipcMain.on('main:collection-opened', async (win, pathname, uid, brunoConfig) => {
+  /** @var {BrowserWindow} win */
   const watcher = Watcher.getInstance();
   watcher.addWatcher(win, pathname, uid, brunoConfig);
   const lastOpenedCollections = LastOpenedCollection.getInstance();
   lastOpenedCollections.add(pathname);
   app.addRecentDocument(pathname);
+
+  win.webContents.send('collection:load-started', uid, {
+    basename: path.basename(pathname),
+    dirname: path.dirname(pathname),
+    path: pathname
+  });
+
+  const items = await parseAllCollectionFiles(pathname);
+  win.webContents.send('collection:load-finished', uid, items);
+
+  createCollectionWatcher(pathname, brunoConfig.ignore, uid);
 });
 
 // The app listen for this event and allows the user to save unsaved requests before closing the app

@@ -4,10 +4,10 @@
  */
 import React from 'react';
 import { useGenerateCode } from '../hooks/useGenerateCode';
-import { Alert, Box, Button, CopyButton, Group, Loader, LoadingOverlay, rem } from '@mantine/core';
+import { Alert, Box, Button, CopyButton, LoadingOverlay } from '@mantine/core';
 import CodeEditor from 'components/CodeEditor';
 import { useDebouncedValue } from '@mantine/hooks';
-import { IconClipboard, IconClipboardCheck, IconClipboardCopy } from '@tabler/icons-react';
+import { IconClipboard, IconClipboardCheck } from '@tabler/icons-react';
 
 type CodeGeneratorProps = {
   collectionUid: string;

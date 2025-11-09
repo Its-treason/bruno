@@ -29,11 +29,13 @@ import { DeleteItemModalContent } from './modalContent/DeleteItemModalContent';
 import { NewFolderModalContent } from './modalContent/NewFolderModalContent';
 import { CloseCollectionModalContent } from './modalContent/CloseCollectionModalContent';
 import { ExportCollectionModalContent } from './modalContent/ExportCollectionModalContent';
+import { CollectionInfo, ItemInfo } from 'src/store/collectionStore';
+import { appStore } from 'src/store/appStore';
 
 type ActiveAction = {
   type: SidebarActionTypes;
-  collection: CollectionSchema; // TODO: Refactor
-  item?: any | RequestItemSchema;
+  collection: CollectionInfo;
+  item?: any | ItemInfo;
 };
 
 const modalTitleMap: Record<SidebarActionTypes, string> = {
@@ -49,47 +51,34 @@ const modalTitleMap: Record<SidebarActionTypes, string> = {
   generate: 'Generate code'
 };
 
-type ReduxState = {
-  collections: {
-    collections: CollectionSchema[];
-  };
-};
-
 type SidebarActionProviderProps = {
   children: ReactNode;
 };
 
 export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ children }) => {
   const dispatch = useDispatch();
-  const { collections } = useSelector((state: ReduxState) => state.collections);
-  // Ref this here so the callbacks don't need be executed for every change in the collection
-  const collectionsRef = useRef(collections);
-  useEffect(() => {
-    collectionsRef.current = collections;
-  }, [collections]);
-
   const [activeAction, setActiveActionState] = useState<ActiveAction | null>(null);
 
   const setActiveAction = useCallback(
     (type: SidebarActionTypes, collectionUid: string, itemUid: string | undefined) => {
-      const [collection, item] = getCollectionAndItem(collectionsRef.current, collectionUid, itemUid);
+      const [collection, item] = getCollectionAndItem(collectionUid, itemUid);
       setActiveActionState({ type, item, collection });
     },
     []
   );
 
   const openInExplorer = useCallback((collectionUid: string, itemUid?: string) => {
-    const [collection, item] = getCollectionAndItem(collectionsRef.current, collectionUid, itemUid);
-    const path = item ? item.pathname : collection.pathname;
+    const [collection, item] = getCollectionAndItem(collectionUid, itemUid);
+    const path = item ? item.meta.path : collection.dirMeta.path;
     dispatch(shellOpenCollectionPath(path, !itemUid, false));
   }, []);
   const openInEditor = useCallback((collectionUid: string, itemUid: string) => {
-    const [_, item] = getCollectionAndItem(collectionsRef.current, collectionUid, itemUid);
-    dispatch(shellOpenCollectionPath(item.pathname, true, true));
+    const [_, item] = getCollectionAndItem(collectionUid, itemUid);
+    dispatch(shellOpenCollectionPath(item.meta.path, true, true));
   }, []);
   const editBrunoJson = useCallback((collectionUid: string) => {
-    const [collection] = getCollectionAndItem(collectionsRef.current, collectionUid);
-    dispatch(shellOpenCollectionPath(collection.pathname, true, true));
+    const [collection] = getCollectionAndItem(collectionUid);
+    dispatch(shellOpenCollectionPath(collection.dirMeta.path, true, true));
   }, []);
 
   const openCollectionSettings = useCallback((collectionUid: string) => {
@@ -126,33 +115,36 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
     );
   }, []);
   const itemClicked = useCallback((collectionUid: string, itemUid?: string, toggleFolders: boolean = true) => {
-    const [collection, item] = getCollectionAndItem(collectionsRef.current, collectionUid, itemUid);
+    const [collection, item] = getCollectionAndItem(collectionUid, itemUid);
 
     if (!item) {
       if (toggleFolders) {
-        dispatch(collectionClicked(collection.uid));
+        const appState = appStore.getState();
+        appState.updateCollapsedItems(collectionUid, !appState.collapsedItems.get(collectionUid));
       } else {
-        openCollectionSettings(collection.uid);
+        openCollectionSettings(collection.id);
       }
 
       // TODO: This should happen on the collection open event
       // if collection doesn't have any active environment
       // try to load last selected environment
-      if (!collection.activeEnvironmentUid) {
+      if (!collection.activeEnvironmentId) {
         window.ipcRenderer
-          .invoke('renderer:get-last-selected-environment', collection.uid)
-          .then((lastSelectedEnvName: string) => {
-            const collectionEnvironments = collection.environments || [];
-            const lastSelectedEnvironment = collectionEnvironments.find((env) => env.name === lastSelectedEnvName);
+          .invoke('renderer:get-last-selected-environment', collection.id)
+          .then((lastSelectedEnvId: string) => {
+            const collectionEnvironments = collection.environments;
+            const lastSelectedEnvironment = collectionEnvironments.get(lastSelectedEnvId);
             if (lastSelectedEnvironment) {
-              dispatch(selectEnvironment(lastSelectedEnvironment.uid, collection.uid));
+              dispatch(selectEnvironment(lastSelectedEnvironment.id, collection.id));
+            } else {
+              console.warn('Last selected env id not found :((', lastSelectedEnvId);
             }
           });
       }
       return;
     }
 
-    if (isItemARequest(item)) {
+    if (item.type === 'request') {
       setTimeout(() => {
         // TODO: This is bad. The Tab should listen to this themself
         const activeTab = document.querySelector('.request-tab.active');
@@ -165,24 +157,20 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
       dispatch(autoSaveTabContent);
       dispatch(
         addTab({
-          uid: item.uid,
-          collectionUid: collection.uid,
+          uid: item.id,
+          collectionUid: collection.id,
           requestPaneTab: getDefaultRequestPaneTab(item)
         })
       );
-      dispatch(focusTab({ uid: item.uid }));
+      dispatch(focusTab({ uid: item.id }));
       return;
     }
 
     if (toggleFolders) {
-      dispatch(
-        collectionFolderClicked({
-          itemUid: item.uid,
-          collectionUid: collection.uid
-        })
-      );
+      const appState = appStore.getState();
+      appState.updateCollapsedItems(item.id, !appState.collapsedItems.get(item.id));
     } else {
-      openFolderSettings(collection.uid, item.uid);
+      openFolderSettings(collection.id, item.id);
     }
   }, []);
   const openRunner = useCallback((collectionUid: string, itemUid?: string) => {
@@ -200,7 +188,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
     }
   }, []);
   const runRequest = useCallback((collectionUid: string, itemUid: string) => {
-    const [_, item] = getCollectionAndItem(collectionsRef.current, collectionUid, itemUid);
+    const [_, item] = getCollectionAndItem(collectionUid, itemUid);
     dispatch(sendRequest(item, collectionUid));
   }, []);
 
@@ -227,7 +215,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
         return (
           <CloneItemModalContent
             onClose={() => setActiveActionState(null)}
-            collectionUid={activeAction.collection.uid}
+            collectionUid={activeAction.collection.id}
             item={activeAction.item}
           />
         );
@@ -235,7 +223,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
         return (
           <DeleteItemModalContent
             onClose={() => setActiveActionState(null)}
-            collectionUid={activeAction.collection.uid}
+            collectionUid={activeAction.collection.id}
             item={activeAction.item}
           />
         );
@@ -243,7 +231,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
         return (
           <RenameItemModalContent
             onClose={() => setActiveActionState(null)}
-            collectionUid={activeAction.collection.uid}
+            collectionUid={activeAction.collection.id}
             item={activeAction.item}
           />
         );
@@ -251,8 +239,8 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
         return (
           <NewRequestModalContent
             onClose={() => setActiveActionState(null)}
-            collectionUid={activeAction.collection.uid}
-            brunoConfig={activeAction.collection.brunoConfig}
+            collectionUid={activeAction.collection.id}
+            brunoConfig={activeAction.collection.config}
             itemUid={activeAction.item?.uid}
           />
         );
@@ -260,7 +248,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
         return (
           <NewFolderModalContent
             onClose={() => setActiveActionState(null)}
-            collectionUid={activeAction.collection.uid}
+            collectionUid={activeAction.collection.id}
             itemUid={activeAction.item?.uid}
           />
         );
@@ -268,8 +256,8 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
         return (
           <CloneCollectionModalContent
             onClose={() => setActiveActionState(null)}
-            collectionName={activeAction.collection.name}
-            collectionPath={activeAction.collection.pathname}
+            collectionName={activeAction.collection.data?.name || activeAction.collection.data?.name}
+            collectionPath={activeAction.collection.dirMeta.path}
           />
         );
       case 'close-collection':
@@ -313,7 +301,7 @@ export const SidebarActionProvider: React.FC<SidebarActionProviderProps> = ({ ch
       <CodeGeneratorModal
         opened={activeAction?.type === 'generate'}
         onClose={() => setActiveActionState(null)}
-        collectionUid={activeAction?.collection.uid}
+        collectionUid={activeAction?.collection.id}
         requestUid={activeAction?.item?.uid}
       />
 

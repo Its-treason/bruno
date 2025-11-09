@@ -18,6 +18,8 @@ import { useDispatch } from 'react-redux';
 import { isElectron } from 'utils/common/platform';
 import { globalEnvironmentStore } from 'src/store/globalEnvironmentStore';
 
+let initSent = false;
+
 const useIpcEvents = () => {
   const dispatch = useDispatch();
 
@@ -78,7 +80,10 @@ const useIpcEvents = () => {
       }
     };
 
-    ipcRenderer.invoke('renderer:ready');
+    if (!initSent) {
+      ipcRenderer.invoke('renderer:ready');
+      initSent = true;
+    }
 
     const removeCollectionTreeUpdateListener = ipcRenderer.on('main:collection-tree-updated', _collectionTreeUpdated);
 

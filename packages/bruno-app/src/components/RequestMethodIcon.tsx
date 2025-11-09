@@ -19,7 +19,7 @@ type RequestMethodIconProps = {
 };
 
 export const RequestMethodIcon: React.FC<RequestMethodIconProps> = ({ method }) => {
-  switch (method) {
+  switch (method.toUpperCase()) {
     case 'GET':
       return <IconHttpGet className={classes.icon} color="var(--mantine-color-lime-7)" />;
     case 'POST':

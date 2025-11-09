@@ -17,11 +17,13 @@
     "test": "jest"
   },
   "dependencies": {
+    "@parcel/watcher": "^2.1.1",
     "@msgpack/msgpack": "^3.1.1",
-    "@readme/httpsnippet": "^11.0.0",
     "@usebruno/common": "workspace:*",
-    "@usebruno/query": "workspace:*",
     "@usebruno/schema": "workspace:*",
+    "@usebruno/query": "workspace:*",
+    "@usebruno/lang": "workspace:*",
+    "@readme/httpsnippet": "^11.0.0",
     "ajv": "^8.17.1",
     "ajv-formats": "^2.1.1",
     "axios": "^1.13.2",
@@ -34,6 +36,7 @@
     "json-query": "^2.2.2",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
+    "minimatch": "^10.0.1",
     "lossless-json": "^4.3.0",
     "moment": "^2.30.1",
     "nanoid": "3.3.4",

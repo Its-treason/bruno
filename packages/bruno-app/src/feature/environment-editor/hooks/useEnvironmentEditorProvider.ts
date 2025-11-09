@@ -9,16 +9,10 @@ import { useDispatch } from 'react-redux';
 import { saveEnvironment } from 'providers/ReduxStore/slices/collections/actions';
 import toast from 'react-hot-toast';
 import { variableNameRegex } from 'utils/common/regex';
-import { EnvironmentSchema } from '@usebruno/schema';
-
-type Collection = {
-  environments: EnvironmentSchema[];
-  activeEnvironmentUid: string | undefined;
-  uid: string;
-};
+import { CollectionInfo } from 'src/store/collectionStore';
 
 export const useEnvironmentEditorProvider = (
-  collection: Collection,
+  collection: CollectionInfo,
   closeModal: () => void
 ): EnvironmentProviderProps => {
   const dispatch = useDispatch();
@@ -27,7 +21,7 @@ export const useEnvironmentEditorProvider = (
     if (!env) {
       return null;
     }
-    return { id: env.uid, name: env.name };
+    return { id: env.id, name: env.name };
   });
   const [unsavedChangesCallback, setUnsavedChangesCallback] = useState<(() => void) | null>(null);
   const [activeModal, setActiveModal] = useState<EnvironmentEditorModalTypes>(null);
@@ -54,35 +48,35 @@ export const useEnvironmentEditorProvider = (
 
   // Try to always select the active environment
   useEffect(() => {
-    if (collection.activeEnvironmentUid === null) {
+    if (collection.activeEnvironmentId === null) {
       return;
     }
 
-    const foundSelectedEnv = collection.environments.find((env) => env.uid === collection.activeEnvironmentUid);
+    const foundSelectedEnv = collection.environments.get(collection.activeEnvironmentId);
     if (!foundSelectedEnv) {
       return;
     }
 
-    setSelectedEnvironment({ id: foundSelectedEnv.uid, name: foundSelectedEnv.name });
+    setSelectedEnvironment({ id: foundSelectedEnv.id, name: foundSelectedEnv.name });
     const variables: EnvironmentVariable[] = foundSelectedEnv.variables.map((env) => ({
-      id: env.uid,
+      id: env.id,
       name: env.name,
       value: env.value,
       enabled: env.enabled,
-      secret: env.secret,
-    }))
+      secret: env.secret
+    }));
     form.setInitialValues({ variables });
     form.reset();
-  }, [collection.activeEnvironmentUid]);
+  }, [collection.activeEnvironmentId]);
 
   useEffect(() => {
     // If the collection has no environments, reset the selected environment
-    if (collection.environments.length === 0) {
+    if (collection.environments.size === 0) {
       setSelectedEnvironment(null);
       return;
     }
 
-    const foundSelectedEnv = collection.environments.find((env) => env.name === selectedEnvironment?.name);
+    const foundSelectedEnv = collection.environments.get(selectedEnvironment.id);
     // If the selected environment is not found in the collection, select the first one
     if (!foundSelectedEnv) {
       const env = collection.environments[0];
@@ -92,7 +86,7 @@ export const useEnvironmentEditorProvider = (
         name: env.name,
         value: env.value,
         enabled: env.enabled,
-        secret: env.secret,
+        secret: env.secret
       }));
       form.setInitialValues({ variables });
       form.reset();
@@ -109,9 +103,9 @@ export const useEnvironmentEditorProvider = (
           value: value.value,
           enabled: value.enabled,
           secret: value.secret,
-          type: 'text',
+          type: 'text'
         }));
-        await dispatch(saveEnvironment(variables, selectedEnvironment?.id, collection.uid));
+        await dispatch(saveEnvironment(variables, selectedEnvironment?.id, collection.id));
       } catch (error) {
         console.error('Could not save environment', error);
         toast.error('An error occurred while saving the changes');
@@ -121,7 +115,7 @@ export const useEnvironmentEditorProvider = (
       form.setInitialValues({ variables: values });
       form.reset();
     },
-    [selectedEnvironment, collection.uid]
+    [selectedEnvironment, collection.id]
   );
 
   const onClose = useCallback(() => {
@@ -156,17 +150,17 @@ export const useEnvironmentEditorProvider = (
         return;
       }
 
-      const newEnvironment = collection.environments.find((env) => env.uid === targetEnvironmentId);
+      const newEnvironment = collection.environments.get(targetEnvironmentId);
       if (!newEnvironment) {
         throw new Error(`Could not find env "${targetEnvironmentId}" for switching`);
       }
-      setSelectedEnvironment({ id: newEnvironment.uid, name: newEnvironment.name });
+      setSelectedEnvironment({ id: newEnvironment.id, name: newEnvironment.name });
       const variables: EnvironmentVariable[] = newEnvironment.variables.map((env) => ({
-        id: env.uid,
+        id: env.id,
         name: env.name,
         value: env.value,
         enabled: env.enabled,
-        secret: env.secret,
+        secret: env.secret
       }));
       form.setInitialValues({ variables });
       form.reset();
@@ -175,8 +169,10 @@ export const useEnvironmentEditorProvider = (
   );
 
   const allEnvironments = useMemo(() => {
-    return collection.environments.map((env) => ({ id: env.uid, name: env.name }));
-  }, [collection.environments])
+    const environments = [];
+    collection.environments.forEach((env) => environments.push({ id: env.id, name: env.name }));
+    return environments;
+  }, [collection.environments]);
 
   return {
     collection,

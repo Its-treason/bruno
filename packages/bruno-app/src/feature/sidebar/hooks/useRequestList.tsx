@@ -3,10 +3,13 @@
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
 import { useSelector } from 'react-redux';
-import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
+import { CollectionSchema } from '@usebruno/schema';
 import { RequestListItem } from '../types/requestList';
 import { useMemo } from 'react';
 import { sortCollections } from '../util/sortCollections';
+import { useStore } from 'zustand';
+import { collectionStore } from 'src/store/collectionStore';
+import { appStore } from 'src/store/appStore';
 
 type ReduxState = {
   collections: {
@@ -21,59 +24,69 @@ type ReduxState = {
 };
 
 export const useRequestList = (): RequestListItem[] => {
-  const { collections, collectionSortOrder, collectionFilter, collectionCustomOrder } = useSelector(
-    (state: ReduxState) => state.collections
-  );
   const activeTabUid = useSelector((state: ReduxState) => state.tabs.activeTabUid);
+
+  const sidebarFilter = useStore(appStore, (state) => state.sidebarFilter);
+  const sortOrder = useStore(appStore, (state) => state.collectionSortOrder);
+  const customOrder = useStore(appStore, (state) => state.collectionCustomOrder);
+  const collapsedItems = useStore(appStore, (state) => state.collapsedItems);
+
+  console.log('coll', collapsedItems);
+
+  const collections = useStore(collectionStore, (state) => state.collections);
+  const collectionItems = useStore(collectionStore, (state) => state.items);
 
   return useMemo(() => {
     const items: RequestListItem[] = [];
 
     const insertItemsRecursive = (
-      requestItems: RequestItemSchema[],
+      requestItemIds: string[],
       collectionUid: string,
       indent: number,
       parentUid: string | null,
       filter: string | null
     ): RequestListItem[] => {
+      const requestItems = requestItemIds.map((id) => collectionItems.get(id));
+
       const sorted = requestItems.toSorted((a, b) => {
-        if (a.seq === undefined && b.seq !== undefined) {
+        const aSeq = a.type === 'dir' ? a.data?.seq : a.data?.meta.seq;
+        const bSeq = b.type === 'dir' ? b.data?.seq : b.data?.meta.seq;
+
+        if (aSeq === undefined && bSeq !== undefined) {
           return -1;
-        } else if (a.seq !== undefined && b.seq === undefined) {
+        } else if (aSeq !== undefined && bSeq === undefined) {
           return 1;
-        } else if (a.seq === undefined && b.seq === undefined) {
+        } else if (aSeq === undefined && bSeq === undefined) {
           return 0;
         }
-        return a.seq < b.seq ? -1 : 1;
+        return aSeq < bSeq ? -1 : 1;
       });
 
       const newItems = [];
       for (const requestItem of sorted) {
         switch (requestItem.type) {
-          case 'http-request':
-          case 'graphql-request':
-          case 'ws':
-          case 'grpc':
-            if (filter && !requestItem.name.toLowerCase().includes(filter)) {
+          case 'request':
+            if (filter && !requestItem.data.meta.name.toLowerCase().includes(filter)) {
               continue;
             }
             newItems.push({
               type: 'request',
               collectionUid,
               indent,
-              method: requestItem.request.method,
-              name: requestItem.name,
-              uid: requestItem.uid,
+              method: requestItem.data.http.method,
+              name: requestItem.data.meta.name,
+              uid: requestItem.id,
               parentUid,
-              active: activeTabUid === requestItem.uid
+              active: activeTabUid === requestItem.id
             });
             break;
-          case 'folder':
-            const collapsed = filter === null ? requestItem.collapsed : false;
+          case 'dir':
+            const collapsed = filter === null ? !!collapsedItems.get(requestItem.id) : false;
 
             let folderItems = [];
             if (!collapsed) {
-              folderItems = insertItemsRecursive(requestItem.items, collectionUid, indent + 1, requestItem.uid, filter);
+              const children = Array.from(requestItem.children.values());
+              folderItems = insertItemsRecursive(children, collectionUid, indent + 1, requestItem.id, filter);
             }
 
             if (!filter || folderItems.length > 0) {
@@ -81,40 +94,45 @@ export const useRequestList = (): RequestListItem[] => {
                 type: 'folder',
                 collectionUid,
                 indent,
-                name: requestItem.name,
-                uid: requestItem.uid,
+                name: requestItem.data?.name || requestItem.meta.basename,
+                uid: requestItem.id,
                 parentUid,
                 collapsed,
-                active: activeTabUid === requestItem.uid
+                active: activeTabUid === requestItem.id
               });
               newItems.push(...folderItems);
             }
-          case "js":
-            break;
           default:
-            console.error(`Unknown request type ${requestItem.type}`)
+            console.error(`Unknown request type ${requestItem.type}`);
         }
       }
 
       return newItems;
     };
 
-    const sortedCollections = sortCollections(collections, collectionSortOrder, collectionCustomOrder);
+    const sortedCollections = sortCollections(Array.from(collections.values()), sortOrder, customOrder);
     for (const collection of sortedCollections) {
+      if (!collection.loadFinishedDate) {
+        continue;
+      }
+
+      const collapsed = !!collapsedItems.get(collection.id);
+      console.log('rea', collapsed);
       items.push({
         type: 'collection',
-        collapsed: collection.collapsed,
-        name: collection.name,
-        uid: collection.uid,
-        active: activeTabUid === collection.uid
+        collapsed,
+        name: collection.config?.name || collection.dirMeta.basename,
+        uid: collection.id,
+        active: activeTabUid === collection.id
       });
 
-      const filter = collectionFilter.trim().length > 0 ? collectionFilter.toLowerCase() : null;
-      if (!collection.collapsed || filter !== null) {
-        items.push(...insertItemsRecursive(collection.items, collection.uid, 1, null, filter));
+      const filter = sidebarFilter.trim().length > 0 ? sidebarFilter.toLowerCase() : null;
+      if (!collapsed || filter !== null) {
+        const children = Array.from(collection.children.values());
+        items.push(...insertItemsRecursive(children, collection.id, 1, null, filter));
       }
     }
 
     return items;
-  }, [collections, collectionSortOrder, collectionFilter, collectionCustomOrder, activeTabUid]);
+  }, [sidebarFilter, sortOrder, customOrder, collapsedItems, collections, collectionItems]);
 };

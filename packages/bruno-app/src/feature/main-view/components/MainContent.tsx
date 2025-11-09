@@ -55,7 +55,7 @@ export const MainContent: React.FC<MainContentProps> = ({ collection, focusedTab
 
       return (
         <>
-          <RequestUrlBar item={item} collection={collection} />
+          <RequestUrlBar collection={collection} />
           <RequestPaneSplit
             left={left}
             right={

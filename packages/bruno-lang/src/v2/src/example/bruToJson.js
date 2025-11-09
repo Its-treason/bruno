@@ -69,9 +69,13 @@ const astExampleAttribute = {
       return {};
     }
 
-    const result = _.reduce(tags.ast, (acc, item) => {
-      return _.merge(acc, item);
-    }, {});
+    const result = _.reduce(
+      tags.ast,
+      (acc, item) => {
+        return _.merge(acc, item);
+      },
+      {}
+    );
 
     return result;
   },

@@ -2,8 +2,8 @@
  * This file is part of bruno-app.
  * For license information, see the file LICENSE_GPL3 at the root directory of this distribution.
  */
-import { Alert, Button, Group, Text, TextInput, rem } from '@mantine/core';
-import { useForm, zodResolver } from '@mantine/form';
+import { Alert, Button, Group, TextInput, rem } from '@mantine/core';
+import { useForm } from '@mantine/form';
 import { useMutation } from '@tanstack/react-query';
 import { useDispatch } from 'react-redux';
 import { cloneItem } from 'providers/ReduxStore/slices/collections/actions';
@@ -12,6 +12,7 @@ import { IconAlertCircle } from '@tabler/icons-react';
 import { RequestItemSchema } from '@usebruno/schema';
 import { z } from 'zod';
 import { useEffect } from 'react';
+import { zod4Resolver } from 'mantine-form-zod-resolver';
 
 const cloneItemCollectionSchema = z.object({
   name: z.string().trim().min(1, 'Name is required').max(255)
@@ -28,7 +29,7 @@ export const CloneItemModalContent: React.FC<CloneItemModalContentProps> = ({ on
   const dispatch = useDispatch();
 
   const cloneForm = useForm<CloneCollectionFormSchema>({
-    validate: zodResolver(cloneItemCollectionSchema),
+    validate: zod4Resolver(cloneItemCollectionSchema),
     initialValues: {
       name: ''
     }

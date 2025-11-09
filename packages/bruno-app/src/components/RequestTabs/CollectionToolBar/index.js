@@ -4,8 +4,9 @@ import { EnvironmentSelector } from 'src/feature/environment-editor/components/E
 import { addTab } from 'providers/ReduxStore/slices/tabs';
 import { useDispatch, useSelector } from 'react-redux';
 import StyledWrapper from './StyledWrapper';
-import { findItemInCollection } from 'utils/collections';
 import { CollectionTabButtons } from './CollectionTabButtons';
+import { useStore } from 'zustand';
+import { collectionStore } from 'src/store/collectionStore';
 
 const CollectionToolBar = ({ collection, activeTabUid }) => {
   const dispatch = useDispatch();
@@ -22,14 +23,16 @@ const CollectionToolBar = ({ collection, activeTabUid }) => {
     );
   };
 
+  const itemName = useStore(collectionStore, (state) => state.items.get(activeTabUid)?.name);
+  const itemHasDraft = useStore(collectionStore, (state) => state.draftItems.has(activeTabUid));
+
   let tabType = null;
   let tabInfo = null;
   switch (activeTab.type) {
     case 'request':
-      const item = findItemInCollection(collection, activeTabUid);
-      if (item) {
-        tabInfo = item.name;
-        if (item.draft) {
+      if (itemName) {
+        tabInfo = itemName;
+        if (itemHasDraft) {
           tabInfo += '*';
         }
       }

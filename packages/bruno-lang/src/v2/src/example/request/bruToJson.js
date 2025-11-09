@@ -82,11 +82,13 @@ const astRequestAttribute = {
       return {};
     }
 
-    return _.reduce(tags.ast,
+    return _.reduce(
+      tags.ast,
       (result, item) => {
         return _.mergeWith(result, item, concatArrays);
       },
-      {});
+      {}
+    );
   },
   requesturl(_1, _2, _3, _4, value) {
     return {

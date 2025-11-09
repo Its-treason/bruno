@@ -9,7 +9,7 @@ const stripLastLine = (text) => {
 
 const quoteKey = (key) => {
   const quotableChars = [':', '"', '{', '}', ' '];
-  return quotableChars.some((char) => key.includes(char)) ? ('"' + key.replaceAll('"', '\\"') + '"') : key;
+  return quotableChars.some((char) => key.includes(char)) ? '"' + key.replaceAll('"', '\\"') + '"' : key;
 };
 
 // Custom indentation function for proper spacing
@@ -29,7 +29,12 @@ const indentStringCustom = (str, spaces = 4) => {
 const jsonToExampleBru = (json) => {
   const { name, description, request, response } = json;
   const { url, method, params, headers, body } = request || {};
-  const { headers: responseHeaders, status: responseStatus, statusText: responseStatusText, body: responseBody } = response || {};
+  const {
+    headers: responseHeaders,
+    status: responseStatus,
+    statusText: responseStatusText,
+    body: responseBody
+  } = response || {};
 
   let bru = '';
 
@@ -59,26 +64,29 @@ const jsonToExampleBru = (json) => {
 
     if (queryParams.length) {
       bru += '  params:query: {\n';
-      bru += `${indentStringCustom(queryParams
-        .map((item) => `${item.enabled ? '' : '~'}${quoteKey(item.name)}: ${item.value}`)
-        .join('\n'), 4)}`;
+      bru += `${indentStringCustom(
+        queryParams.map((item) => `${item.enabled ? '' : '~'}${quoteKey(item.name)}: ${item.value}`).join('\n'),
+        4
+      )}`;
       bru += '\n  }\n\n';
     }
 
     if (pathParams.length) {
       bru += '  params:path: {\n';
-      bru += `${indentStringCustom(pathParams
-        .map((item) => `${item.enabled ? '' : '~'}${quoteKey(item.name)}: ${item.value}`)
-        .join('\n'), 4)}`;
+      bru += `${indentStringCustom(
+        pathParams.map((item) => `${item.enabled ? '' : '~'}${quoteKey(item.name)}: ${item.value}`).join('\n'),
+        4
+      )}`;
       bru += '\n  }\n\n';
     }
   }
 
   if (headers && headers.length) {
     bru += '  headers: {\n';
-    bru += `${indentStringCustom(headers
-      .map((item) => `${item.enabled ? '' : '~'}${quoteKey(item.name)}: ${item.value}`)
-      .join('\n'), 4)}`;
+    bru += `${indentStringCustom(
+      headers.map((item) => `${item.enabled ? '' : '~'}${quoteKey(item.name)}: ${item.value}`).join('\n'),
+      4
+    )}`;
     bru += '\n  }\n\n';
   }
 
@@ -131,24 +139,27 @@ const jsonToExampleBru = (json) => {
     bru += `  body:multipart-form: {\n`;
     const multipartForms = body.multipartForm;
     if (multipartForms.length) {
-      bru += `${indentStringCustom(multipartForms
-        .map((item) => {
-          const enabled = item.enabled ? '' : '~';
-          const contentType
-            = item.contentType && item.contentType !== '' ? ' @contentType(' + item.contentType + ')' : '';
+      bru += `${indentStringCustom(
+        multipartForms
+          .map((item) => {
+            const enabled = item.enabled ? '' : '~';
+            const contentType =
+              item.contentType && item.contentType !== '' ? ' @contentType(' + item.contentType + ')' : '';
 
-          if (item.type === 'text') {
-            return `${enabled}${quoteKey(item.name)}: ${item.value}${contentType}`;
-          }
+            if (item.type === 'text') {
+              return `${enabled}${quoteKey(item.name)}: ${item.value}${contentType}`;
+            }
 
-          if (item.type === 'file') {
-            const filepaths = Array.isArray(item.value) ? item.value : [];
-            const filestr = filepaths.join('|');
-            const value = `@file(${filestr})`;
-            return `${enabled}${quoteKey(item.name)}: ${value}${contentType}`;
-          }
-        })
-        .join('\n'), 4)}\n`;
+            if (item.type === 'file') {
+              const filepaths = Array.isArray(item.value) ? item.value : [];
+              const filestr = filepaths.join('|');
+              const value = `@file(${filestr})`;
+              return `${enabled}${quoteKey(item.name)}: ${value}${contentType}`;
+            }
+          })
+          .join('\n'),
+        4
+      )}\n`;
     }
     bru += '  }\n\n';
   }
@@ -157,17 +168,20 @@ const jsonToExampleBru = (json) => {
     bru += `  body:file: {\n`;
     const files = body.file;
     if (files.length) {
-      bru += `${indentStringCustom(files
-        .map((item) => {
-          const selected = item.selected ? '' : '~';
-          const contentType
-            = item.contentType && item.contentType !== '' ? ' @contentType(' + item.contentType + ')' : '';
-          const filePath = item.filePath || '';
-          const value = `@file(${filePath})`;
-          const itemName = 'file';
-          return `${selected}${quoteKey(itemName)}: ${value}${contentType}`;
-        })
-        .join('\n'), 4)}\n`;
+      bru += `${indentStringCustom(
+        files
+          .map((item) => {
+            const selected = item.selected ? '' : '~';
+            const contentType =
+              item.contentType && item.contentType !== '' ? ' @contentType(' + item.contentType + ')' : '';
+            const filePath = item.filePath || '';
+            const value = `@file(${filePath})`;
+            const itemName = 'file';
+            return `${selected}${quoteKey(itemName)}: ${value}${contentType}`;
+          })
+          .join('\n'),
+        4
+      )}\n`;
     }
     bru += '  }\n\n';
   }
@@ -188,9 +202,10 @@ const jsonToExampleBru = (json) => {
     // Response headers
     if (responseHeaders && responseHeaders.length) {
       bru += '  headers: {\n';
-      bru += `${indentStringCustom(responseHeaders
-        .map((item) => `${quoteKey(item.name)}: ${item.value}`)
-        .join('\n'), 4)}`;
+      bru += `${indentStringCustom(
+        responseHeaders.map((item) => `${quoteKey(item.name)}: ${item.value}`).join('\n'),
+        4
+      )}`;
       bru += '\n  }\n\n';
     }
 
@@ -215,7 +230,10 @@ const jsonToExampleBru = (json) => {
       }
 
       if (responseBody.content !== undefined) {
-        let contentString = typeof responseBody.content === 'string' ? responseBody.content : JSON.stringify(responseBody.content, null, 2);
+        let contentString =
+          typeof responseBody.content === 'string'
+            ? responseBody.content
+            : JSON.stringify(responseBody.content, null, 2);
         bru += `    content: '''\n${indentStringCustom(contentString, 6)}\n    '''\n`;
       }
 

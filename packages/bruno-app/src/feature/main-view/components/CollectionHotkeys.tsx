@@ -1,29 +1,23 @@
 import { Modal } from '@mantine/core';
 import { useHotkeys } from '@mantine/hooks';
-import { CollectionSchema, RequestItemSchema } from '@usebruno/schema';
 import { EnvironmentDrawer } from 'feature/environment-editor';
 import { NewRequestModalContent } from 'feature/sidebar-menu/components/modalContent/NewRequestModalContent';
 import { useAppHotkeys } from 'hooks/useAppHotkeys';
-import {
-  saveCollectionRoot,
-  saveFolderRoot,
-  saveRequest,
-  sendRequest
-} from 'providers/ReduxStore/slices/collections/actions';
+import { saveCollectionRoot, saveFolderRoot, saveRequest } from 'providers/ReduxStore/slices/collections/actions';
 import { autoSaveTabContent, closeTabs, switchTab } from 'providers/ReduxStore/slices/tabs';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { appStore } from 'src/store/appStore';
 import { useStore } from 'zustand';
 
 type CollectionHotkeys = {
-  collection: CollectionSchema;
-  item: RequestItemSchema;
+  collectionId: string;
+  itemId?: string;
   activeTab: { uid: string; type: string };
   tabs: { uid: string; collectionUid: string }[];
 };
 
-export const CollectionHotkeys: React.FC<CollectionHotkeys> = ({ collection, activeTab, item, tabs }) => {
+export const CollectionHotkeys: React.FC<CollectionHotkeys> = ({ collectionId, activeTab, itemId, tabs }) => {
   const dispatch = useDispatch();
   const hotkeys = useAppHotkeys();
   const [showNewRequestModal, setShowNewRequestModal] = useState(false);
@@ -45,13 +39,13 @@ export const CollectionHotkeys: React.FC<CollectionHotkeys> = ({ collection, act
 
         switch (activeTab.type) {
           case 'folder-settings':
-            dispatch(saveFolderRoot(collection.uid, item.uid));
+            dispatch(saveFolderRoot(collectionId, itemId));
             break;
           case 'collection-settings':
-            dispatch(saveCollectionRoot(collection.uid));
+            dispatch(saveCollectionRoot(collectionId));
             break;
           case 'request':
-            dispatch(saveRequest(item.uid, collection.uid));
+            dispatch(saveRequest(itemId, collectionId));
             break;
         }
       }
@@ -59,10 +53,11 @@ export const CollectionHotkeys: React.FC<CollectionHotkeys> = ({ collection, act
     [
       hotkeys.sendRequest,
       () => {
-        if (disableHotkeys || !item) {
+        if (disableHotkeys || !itemId) {
           return;
         }
-        dispatch(sendRequest(item, collection.uid));
+        //dispatch(sendRequest(item, collection.id));
+        console.log('TODO: Reimplement sendRequest', itemId);
       }
     ],
     // Tabs
@@ -81,7 +76,7 @@ export const CollectionHotkeys: React.FC<CollectionHotkeys> = ({ collection, act
         if (disableHotkeys) {
           return;
         }
-        const tabUids = tabs.filter((tab) => tab.collectionUid === collection.uid).map((tab) => tab.uid);
+        const tabUids = tabs.filter((tab) => tab.collectionUid === collectionId).map((tab) => tab.uid);
         dispatch(closeTabs({ tabUids }));
       }
     ],
@@ -111,17 +106,13 @@ export const CollectionHotkeys: React.FC<CollectionHotkeys> = ({ collection, act
     <>
       <EnvironmentDrawer
         opened={showEnvironmentModal}
-        collection={collection}
+        collection={collectionId}
         onClose={() => setShowEnvironmentModal(false)}
       />
 
       <Modal opened={showNewRequestModal} onClose={() => setShowNewRequestModal(false)} title="New request" size={'lg'}>
         {showNewRequestModal ? (
-          <NewRequestModalContent
-            brunoConfig={collection.brunoConfig}
-            collectionUid={collection.uid}
-            onClose={() => setShowNewRequestModal(false)}
-          />
+          <NewRequestModalContent collectionId={collectionId} onClose={() => setShowNewRequestModal(false)} />
         ) : null}
       </Modal>
     </>

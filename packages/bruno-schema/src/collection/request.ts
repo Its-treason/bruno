@@ -1,11 +1,10 @@
 import { z } from 'zod';
 import { requestAuthSchema } from './requestAuth';
 import { requestBodySchema } from './requestBody';
-
-// TODO: Remove some defaults
+import { generateId } from '@usebruno/common';
 
 export const headerSchema = z.object({
-  uid: z.string(),
+  uid: z.string().default(generateId),
   name: z.string(),
   value: z.string(),
   description: z.string().default(''),
@@ -14,7 +13,7 @@ export const headerSchema = z.object({
 export type HeaderSchema = z.infer<typeof headerSchema>;
 
 export const paramSchema = z.object({
-  uid: z.string(),
+  uid: z.string().default(generateId),
   name: z.string(),
   value: z.string(),
   description: z.string().default(''),
@@ -24,7 +23,7 @@ export const paramSchema = z.object({
 export type ParamSchema = z.infer<typeof paramSchema>;
 
 export const requestVarSchema = z.object({
-  uid: z.string(),
+  uid: z.string().default(generateId),
   name: z.string(),
   value: z.string(),
   description: z.string().default(''),
@@ -33,7 +32,7 @@ export const requestVarSchema = z.object({
 export type RequestVarSchema = z.infer<typeof requestVarSchema>;
 
 export const assertionSchema = z.object({
-  uid: z.string(),
+  uid: z.string().default(generateId),
   name: z.string(),
   value: z.string(),
   description: z.string().default(''),
@@ -115,3 +114,43 @@ export const requestItemSchema = baseRequestItemSchema.extend({
   items: z.lazy(() => requestItemSchema.array()).optional(),
   draft: z.lazy(() => requestItemSchema).optional()
 }) as z.ZodType<RequestItemSchema>;
+
+export const requestSchema = z.object({
+  meta: z.object({
+    type: z.enum(['http', 'graphql']),
+    seq: z.coerce.number().default(1),
+    name: z.string()
+  }),
+  http: z.object({
+    method: z.string().toLowerCase(),
+    url: z.string()
+  }),
+  headers: z.array(headerSchema).default([]),
+  params: z.array(paramSchema).default([]),
+  body: requestBodySchema.default({ mode: 'none' }),
+  auth: requestAuthSchema.default({ mode: 'none' }),
+
+  script: z
+    .object({
+      req: z.string().default(''),
+      res: z.string().default('')
+    })
+    .default({
+      req: '',
+      res: ''
+    }),
+  vars: z
+    .object({
+      req: z.array(requestVarSchema).default([]),
+      res: z.array(requestVarSchema).default([])
+    })
+    .default({
+      req: [],
+      res: []
+    }),
+  assertions: z.array(assertionSchema).default([]),
+  tests: z.string().default(''),
+  docs: z.string().default(''),
+  contentHash: z.string()
+});
+export type RequestSchema = z.infer<typeof requestSchema>;
