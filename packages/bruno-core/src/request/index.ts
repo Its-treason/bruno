@@ -82,6 +82,10 @@ async function doRequest(context: RequestContext): Promise<RequestContext> {
   context.callback.requestQueued(context);
   context.callback.folderRequestAdded(context);
 
+  if (context.requestItem.type !== 'http-request' && context.requestItem.type !== 'graphql-request') {
+    throw new Error(`Cannot execute request with type: ${context.requestItem.type}`);
+  }
+
   // This will only be used for the request runner
   if (context.delay > 0) {
     context.callback.requestDelayed(context);

@@ -620,7 +620,11 @@ export const deleteItemInCollectionByPathname = (pathname, collection) => {
 };
 
 export const isItemARequest = (item) => {
-  return item.hasOwnProperty('request') && ['http-request', 'graphql-request'].includes(item.type) && !item.items;
+  return (
+    item.hasOwnProperty('request') &&
+    ['http-request', 'graphql-request', 'ws', 'grpc'].includes(item.type) &&
+    !item.items
+  );
 };
 
 export const isItemAFolder = (item) => {

@@ -4,14 +4,12 @@
  */
 import { Editor, Monaco } from '@monaco-editor/react';
 import { useContext, useEffect, useRef } from 'react';
-import { debounce } from 'lodash';
 import { useTheme } from 'providers/Theme';
 import { editor } from 'monaco-editor';
 import classes from './Monaco.module.scss';
 import { CodeEditorVariableContext } from '../CodeEditorVariableContext';
 import { addMonacoCommands, BrunoEditorCallbacks } from '../utils/monocoInit';
 import { getExtraLibraries, TypeInfoTargets } from '../utils/typeInformations';
-import { useDebouncedCallback } from '@mantine/hooks';
 import { useStore } from 'zustand';
 import { appStore } from 'src/store/appStore';
 

@@ -56,6 +56,13 @@ export const RequestUrlBar: React.FC<RequestUrlBarProps> = ({ collection }) => {
     return requestState === 'queued' || requestState === 'sending';
   });
 
+  if (item.type === 'grpc' || item.type === 'ws') {
+    return 'not implemented';
+  }
+
+  const method = item.draft ? get(item, 'draft.request.method') : get(item, 'request.method');
+  const url = item.draft ? get(item, 'draft.request.url', '') : get(item, 'request.url', '');
+
   return (
     <>
       <CodeGeneratorModal

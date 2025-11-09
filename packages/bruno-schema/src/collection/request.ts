@@ -91,7 +91,7 @@ export type CollectionRequestSchema = z.infer<typeof collectionRequestSchema>;
 
 const baseRequestItemSchema = z.object({
   uid: z.string(),
-  type: z.enum(['http-request', 'graphql-request', 'folder', 'js']),
+  type: z.enum(['http-request', 'graphql-request', 'folder', 'js', 'ws', 'grpc']),
   seq: z.coerce.number().min(1).optional(),
   name: z.string().min(1),
   request: httpRequestSchema.optional(),

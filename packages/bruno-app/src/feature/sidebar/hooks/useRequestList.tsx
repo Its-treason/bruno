@@ -102,8 +102,8 @@ export const useRequestList = (): RequestListItem[] => {
               });
               newItems.push(...folderItems);
             }
-
-            break;
+          default:
+            console.error(`Unknown request type ${requestItem.type}`);
         }
       }
 
