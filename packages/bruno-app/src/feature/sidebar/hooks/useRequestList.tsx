@@ -52,6 +52,8 @@ export const useRequestList = (): RequestListItem[] => {
         switch (requestItem.type) {
           case 'http-request':
           case 'graphql-request':
+          case 'ws':
+          case 'grpc':
             if (filter && !requestItem.name.toLowerCase().includes(filter)) {
               continue;
             }
@@ -87,8 +89,10 @@ export const useRequestList = (): RequestListItem[] => {
               });
               newItems.push(...folderItems);
             }
-
+          case "js":
             break;
+          default:
+            console.error(`Unknown request type ${requestItem.type}`)
         }
       }
 

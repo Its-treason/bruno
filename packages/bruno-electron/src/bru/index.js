@@ -120,6 +120,8 @@ const bruToJson = (bru) => {
       requestType = 'http-request';
     } else if (requestType === 'graphql') {
       requestType = 'graphql-request';
+    } else if (requestType === 'ws' || requestType === 'grpc') {
+      // Ignore, i don't want to prefix both string with `request`
     } else {
       requestType = 'http-request';
     }

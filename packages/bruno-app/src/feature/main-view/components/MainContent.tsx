@@ -11,6 +11,7 @@ import { ResponsePane } from 'src/feature/response-pane';
 import { useDispatch } from 'react-redux';
 import { updateResponsePaneTab } from 'providers/ReduxStore/slices/tabs';
 import { VariablesViewer } from 'src/feature/variables-viewer';
+import { ReactNode } from 'react';
 
 type MainContentProps = {
   collection: CollectionSchema;
@@ -37,17 +38,26 @@ export const MainContent: React.FC<MainContentProps> = ({ collection, focusedTab
       if (!item) {
         return <Text p="md">Request not found! It was probably manually deleted. You can close this tab.</Text>;
       }
+
+      let left: ReactNode = `Unknown type: ${item.type}`;
+      switch (item.type) {
+        case 'http-request':
+          left = <HttpRequestPane item={item} collection={collection} activeTab={focusedTab} />;
+          break;
+        case 'graphql-request':
+          left = <GraphqlRequestPane item={item} collection={collection} activeTab={focusedTab} />;
+          break;
+        case 'grpc':
+        case 'ws':
+          left = 'Not implemented yet :(';
+          break;
+      }
+
       return (
         <>
           <RequestUrlBar item={item} collection={collection} />
           <RequestPaneSplit
-            left={
-              item.type === 'http-request' ? (
-                <HttpRequestPane item={item} collection={collection} activeTab={focusedTab} />
-              ) : (
-                <GraphqlRequestPane item={item} collection={collection} activeTab={focusedTab} />
-              )
-            }
+            left={left}
             right={
               <ResponsePane
                 item={item}
